@@ -1,0 +1,11 @@
+{
+  "name": "account",
+  "version": "0.0.0",
+  "main": "server.js",
+  "private": true,
+  "license": "GPL",
+  "author": "Edge Network <core@edge.network>",
+  "contributors": [
+    "Adam K Dean <adam@edge.network>"
+  ]
+}
