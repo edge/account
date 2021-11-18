@@ -10,7 +10,7 @@ import Header from "@/components/Header"
 export default {
   name: 'Index',
   title() {
-    return 'Edge Account » Index'
+    return 'Edge Account Portal » Index'
   },
   data: function () {
     return {

@@ -8,7 +8,7 @@ module.exports = {
     config
       .plugin('html')
       .tap(args => {
-        args[0].title = 'Edge Network'
+        args[0].title = 'Edge Account Portal'
         return args
       })
   }

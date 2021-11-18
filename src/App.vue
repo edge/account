@@ -7,7 +7,7 @@
 <script>
 export default {
   title() {
-    return 'Edge Accounts'
+    return 'Edge Account Portal'
   },
   methods: {
     setViewHeight: function() {

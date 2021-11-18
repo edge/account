@@ -1,7 +1,7 @@
 {
   "name": "account",
   "version": "1.0.0",
-  "description": "",
+  "description": "Edge Account Portal",
   "private": true,
   "license": "GPL",
   "author": "Edge Network <core@edge.network>",
