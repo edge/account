@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Common styles
+ */
+html {
+  @apply text-gray-800;
+}
+
+.monospace {
+ font-family: 'Roboto Mono', monospace;
+}
