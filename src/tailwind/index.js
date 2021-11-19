@@ -3,7 +3,7 @@ const _ = require('lodash')
 const { round } = require('./utils')
 
 const colors = require('./base/colors')
-const { spacing } = require('./base/spacing')
+// const { spacing } = require('./base/spacing')
 const { styles } = require('./base/styles')
 const { brandTypography } = require('./base/typography')
 const { rem } = require('./utils')
@@ -67,7 +67,7 @@ module.exports = plugin.withOptions(
             7: '1.7',
             8: '1.8'
           },
-          spacing: spacing,
+          // spacing: spacing,
           borderRadius: {
             4: rem(4),
             xl: '1rem',
@@ -110,7 +110,7 @@ module.exports = plugin.withOptions(
           },
           container: {
             padding: {
-              DEFAULT: spacing[15]
+              // DEFAULT: spacing[15]
             }
           }
         }

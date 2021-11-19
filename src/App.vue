@@ -26,6 +26,6 @@ export default {
 
 <style>
 .app {
-  @apply bg-gray-200 h-screen;
+  @apply bg-gray-200 min-h-screen;
 }
 </style>

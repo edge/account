@@ -12,7 +12,7 @@
 </script>
 <style scoped>
   .nav-opener {
-    @apply w-38 h-38 bg-green rounded relative focus:outline-none cursor-pointer;
+    @apply w-36 h-36 bg-green rounded relative focus:outline-none cursor-pointer;
   }
 
   .nav-opener:before,

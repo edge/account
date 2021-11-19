@@ -1,9 +1,15 @@
 <template>
-  <Header />
+  <div class="flex w-full">
+    <SideNavigation />
+    <main class="mainContent">
+      <UserNav />
+    </main>
+  </div>
 </template>
 
 <script>
-import Header from "@/components/Header"
+import SideNavigation from "@/components/SideNavigation"
+import UserNav from "@/components/UserNav"
 
 // import { fetchBlocks, fetchTransactions } from '../utils/api'
 
@@ -24,7 +30,8 @@ export default {
     }
   },
   components: {
-    Header
+    SideNavigation,
+    UserNav
   },
   mounted() {
     this.loading = true
@@ -44,8 +51,7 @@ export default {
 }
 </script>
 <style scoped>
-  .row {
-    @apply grid items-start grid-cols-1 gap-24;
-    @apply lg:grid-cols-2;
+  .mainContent {
+    @apply relative flex-1 p-8;
   }
 </style>

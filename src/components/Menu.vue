@@ -1,6 +1,6 @@
 
 <template>
-  <ul class="flex-1 main-nav">
+  <ul class="main-nav">
     <li
       v-for="(item, index) in mainNav"
       :key="index"
@@ -10,9 +10,9 @@
       <router-link
         :to="item.link"
         class="main-nav__link"
-        :class="location && (item.text === 'Blocks' && location.startsWith('/block') || item.text === 'Transactions' && location.startsWith('/transaction') ) ? 'router-link-active' : ''"
+        :class="location && (item.text === location) ? 'router-link-active' : ''"
       >
-        {{ item.text }}
+        {{item.text}}
       </router-link>
     </li>
   </ul>
@@ -34,41 +34,20 @@ export default {
 </script>
 
 <style scoped>
+  .main-nav {
+    @apply flex flex-col w-full space-y-1;
+  }
   .main-nav__link {
-    @apply text-gray block px-12 py-20 my-px transition bg-black-100 bg-opacity-60 hover:text-white;
+    @apply block rounded-lg p-3;
+    @apply hover:bg-gray-100 hover:bg-opacity-50;
   }
 
   .main-nav__link.router-link-active {
-    @apply bg-black-100 text-green;
-  }
-  
-  .main-nav__link.router-link-exact-active {
-    @apply bg-black-100 text-green;
+    @apply text-black bg-gray-100;
   }
 
   .main-nav__item.disabled {
     opacity: 0.3;
     pointer-events: none;
-  }
-
-  @screen md {
-    .main-nav {
-      @apply flex flex-wrap -my-20 md:pl-32;
-    }
-    .main-nav__link {
-      @apply py-20 px-24 my-0;
-    }
-  }
-  @screen lg {
-    .main-nav__link {
-      @apply py-20 px-32;
-    }
-  }
-
-  @screen xl {
-    .main-nav__item {}
-    .main-nav__link {
-      @apply py-20 px-32;
-    }
   }
 </style>

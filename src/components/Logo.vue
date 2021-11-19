@@ -1,7 +1,7 @@
 <template>
-  <strong class="flex-shrink-0 block logo w-52 md:w-38">
+  <strong class="flex-shrink-0 block logo">
     <router-link to="/">
-      Edge Account Portal <img src="/assets/logo.svg" alt="XE">
+      <img src="/assets/logo.svg" alt="Edge" class="w-28">
     </router-link>
   </strong>
 </template>
