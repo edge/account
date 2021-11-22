@@ -9,7 +9,7 @@ const getSection = parent => {
 
 /**
  * Create the ID generator using the format `0000 0000 0000 0000`.
- * New ID values are created by calling `ids.id()`.
+ * New ID values are created by calling `idGenerator.id()`.
  */
 const idGenerator = anyid
   .anyid()
