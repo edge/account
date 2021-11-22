@@ -1,0 +1,74 @@
+<template>
+  <div class="signIn">
+    <div class="signIn__left">
+      <div class="signIn__content">
+        <Logo/>
+        <p class="pr-5 text-lg">Welcome back. Enter your account number to sign into the Edge Network.</p>
+        <form class="signIn__form">
+          
+          <!-- input group -->
+          <!-- apply input-group__error class for error styles -->
+          <div class="input-group">
+            <label class="label">Account number</label>
+            <input type="text" placeholder="Input placeholder" class="input input--floating" />
+          </div>
+
+          <!-- error message  -->
+          <div class="flex items-center errorMessage"> 
+            <ExclamationIcon class="w-3.5 h-3.5" />
+            <span class="errorMessage__text">This is an error message</span>
+          </div>
+
+          <!-- buttons -->
+          <div class="flex flex-col space-y-2">
+            <button class="button button--success">Sign In</button>
+            <span class="w-full tracking-wider text-center text-black">OR</span>
+            <button class="button button--solid">Create new account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="signIn__right">
+      <img class="object-cover w-full h-full" src="https://images.unsplash.com/photo-1614777735430-7b46df56b404?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=664&q=80" />
+    </div>
+  </div>
+</template>
+
+<script>
+import Logo from "@/components/Logo";
+import SideNavigation from "@/components/SideNavigation"
+import UserNav from "@/components/UserNav"
+import {ExclamationIcon} from "@heroicons/vue/outline"
+
+// import { fetchBlocks, fetchTransactions } from '../utils/api'
+
+export default {
+  name: 'Sign In',
+  title() {
+    return 'Edge Account Portal » Sign In'
+  },
+  components: {
+    ExclamationIcon,
+    Logo,
+    SideNavigation,
+    UserNav,
+  }
+}
+</script>
+<style scoped>
+  .signIn {
+    @apply flex w-screen h-screen bg-white;
+  }
+  .signIn__left {
+    @apply flex justify-center w-full h-full px-5 lg:w-1/2;
+  }
+  .signIn__right {
+    @apply hidden w-1/2 h-full lg:block;
+  }
+  .signIn__content {
+    @apply flex flex-col w-full my-auto space-y-8 py-10 sm:max-w-md;
+  }
+  .signIn__form {
+    @apply flex flex-col space-y-6;
+  }
+</style>
