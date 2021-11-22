@@ -35,10 +35,10 @@
 </template>
 
 <script>
+import {ExclamationIcon} from "@heroicons/vue/outline"
 import Logo from "@/components/Logo";
 import SideNavigation from "@/components/SideNavigation"
 import UserNav from "@/components/UserNav"
-import {ExclamationIcon} from "@heroicons/vue/outline"
 
 // import { fetchBlocks, fetchTransactions } from '../utils/api'
 
