@@ -2,7 +2,7 @@
   <Menu as='div' class="menu">
     <MenuButton class="menu__button">
       <span>3333 3810 7877 31616</span>
-      <ChevronDownIcon class="w-5 h-5" />
+      <ChevronDownIcon class="w-5 h-5 text-gray-400" />
     </MenuButton>
     <MenuItems class="menu__items">
       <div class="p-1">

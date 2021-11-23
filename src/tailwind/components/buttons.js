@@ -98,7 +98,7 @@ const buttonsStyles = ({ theme }) => ({
     cursor: 'pointer',
     justifyContent: 'center',
     position: 'relative',
-    fontWeight: theme('fontWeight.bold'),
+    fontWeight: theme('fontWeight.normal'),
     transitionProperty: theme('transitionProperty.default'),
     transitionTimingFunction: theme("transitionTimingFunction['in-out']"),
     transitionDuration: theme('transitionDuration.200'),

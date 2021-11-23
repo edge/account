@@ -23,8 +23,8 @@ html {
 
 /* input */
 .input-group .input--floating {
-  @apply pb-px text-lg border-b border-gray-400 text-green;
-  @apply focus:outline-none focus:border-green;
+  @apply pb-px text-lg border-b border-gray-400 text-gray-600;
+  @apply focus:outline-none focus:border-green focus:text-green;
 }
 .input-group__error .input--floating {
   @apply border-red text-red;
@@ -33,7 +33,7 @@ html {
 
 /* label */
 .input-group .label, .input-group label {
-  @apply text-gray-600;
+  @apply text-gray-500;
 }
 .input-group__error  .label, .input-group__error  label {
   @apply text-red;

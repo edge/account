@@ -54,12 +54,12 @@ const brandTypography = ({ theme }) => ({
       lineHeight: baseTypography.lineHeight.headings,
       marginBottom: baseTypography.headingsMarginBottom,
       fontFamily: theme('fontFamily.sans'),
-      fontWeight: theme('fontWeight.semibold'),
+      fontWeight: theme('fontWeight.normal'),
       [media(theme('screens.md'))]: {
         fontSize: rem(32)
       },
       [media(theme('screens.lg'))]: {
-        fontSize: rem(40)
+        fontSize: rem(36)
       }
     },
     '.h2, h2': {
@@ -81,8 +81,13 @@ const brandTypography = ({ theme }) => ({
       marginBottom: rem(16),
       fontFamily: theme('fontFamily.sans'),
       fontWeight: theme('fontWeight.normal'),
-      textTransform: 'uppercase',
-      letterSpacing: '2.4px'
+      textTransform: 'uppercase'
+    },
+    '.h4, h4': {
+      fontSize: rem(18),
+      lineHeight: baseTypography.lineHeight.headings,
+      fontFamily: theme('fontFamily.sans'),
+      fontWeight: theme('fontWeight.normal')
     },
     'a:not([class])': {
       color: colors.black.DEFAULT,

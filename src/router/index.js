@@ -7,6 +7,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Index from '@/views/Index'
 import NotFound from '@/views/404'
 import SignIn from '@/views/SignIn'
+import Deploy from '@/views/Deploy'
 // import Transactions from '@/views/Transactions'
 // import Wallet from '@/views/Wallet'
 
@@ -15,6 +16,11 @@ const routes = [
     path: '/',
     name: 'Index',
     component: Index
+  },
+  {
+    path: '/deploy',
+    name: 'Deploy',
+    component: Deploy
   },
   {
     path: '/signIn',
