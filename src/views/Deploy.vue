@@ -6,7 +6,7 @@
       <div class="mt-24">
         <h1>Deploy a new server</h1>
 
-        <div class="grid grid-cols-12 mt-10 space-x-10">
+        <div class="grid items-start grid-cols-12 mt-10 space-x-10">
           <form class="flex flex-col col-span-12 pb-20 space-y-5 lg:col-span-9">
             
             <!-- network region -->
@@ -57,7 +57,7 @@
             </div>
           </form>
 
-          <div class="hidden col-span-3 lg:block">
+          <div class="sticky hidden col-span-3 top-10 lg:block">
             <Summary/>
           </div>
         </div>
