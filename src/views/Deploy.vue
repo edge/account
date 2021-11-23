@@ -58,7 +58,7 @@
           </form>
 
           <div class="hidden col-span-3 lg:block">
-            activity
+            <Summary/>
           </div>
         </div>
       </div>
@@ -74,6 +74,7 @@ import Password from '@/components/deploy/Password'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 import ServerName from '@/components/deploy/ServerName'
 import SideNavigation from "@/components/SideNavigation"
+import Summary from "@/components/Summary"
 import UserNav from "@/components/UserNav"
 import Toggle from '@vueform/toggle'
 
@@ -89,6 +90,7 @@ export default {
     ServerName,
     ServerSpecs,
     SideNavigation,
+    Summary,
     Toggle,
     UserNav
   },

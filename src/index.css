@@ -43,3 +43,10 @@ html {
 .errorMessage {
   @apply flex items-center space-x-1 text-xs font-medium text-red;
 }
+
+/* 
+  TYPOGRAPHY
+*/
+.loose {
+  @apply tracking-widest text-sm;
+}
