@@ -2,81 +2,272 @@
 // Use of this source code is governed by a GNU GPL-style license
 // that can be found in the LICENSE.md file. All rights reserved.
 
-const qs = require('querystring')
-const {
-  xeStringFromMicroXe
-} = require('@edge/wallet-utils')
+// const ApiWrapper = require('@dadi/api-wrapper-core')
+// const qs = require('querystring')
 
-const BLOCKCHAIN_API_URL = process.env.VUE_APP_BLOCKCHAIN_API_URL
-const INDEX_API_URL = process.env.VUE_APP_INDEX_API_URL
+const ACCOUNTS_API_URL = process.env.VUE_APP_ACCOUNTS_API_URL
 
-const fetchBlocks = async ({ blockId, options = {} }) => {
-  if (!options.page) {
-    options.page = 1
-  }
+// const API_SETTINGS = {
+//   uri: process.env.API_HOST,
+//   port: process.env.API_PORT,
+//   credentials: {
+//     clientId: process.env.API_CLIENT,
+//     secret: process.env.API_SECRET
+//   }
+// }
 
-  if (!options.limit) {
-    options.limit = 20
-  }
+// const API_SETTINGS.property = 'accounts'
 
-  // Standard URL for blocks query.
-  let url = `${INDEX_API_URL}/blocks?${qs.encode(options)}`
 
-  if (blockId) {
-    // Single block query.
-    url = `${INDEX_API_URL}/block/${blockId}`
 
-    return fetchData(url)
-      .then(results => {
-        if (results.results && Array.isArray(results.results) && !results.results[0]) {
-          return {
-            blocks: [],
-            metadata: {}
-          }
-        }
+// const url = require('./url')()
+// const ApiWrapper = require('@dadi/api-wrapper-core')
+// const TokenStore = require('./tokenStore')
 
-        const block = { ...results }
+// const DOCUMENT_LIMIT = 1
 
-        block.transactions = pluckBlockTransactions(block)
+// class API {
+//   constructor (req, res) {
+//     this.tokenStore = TokenStore(req, res)
 
-        // Add total XE.
-        block.total = block.transactions.reduce((accumulator, currentItem) => {
-          accumulator += Number(currentItem.amount)
-          return accumulator
-        }, 0)
+// const API_SETTINGS = {
+//   uri: process.env.VUE_APP_API_HOST,
+//   port: process.env.VUE_APP_API_PORT,
+//   property: process.env.VUE_APP_API_DATABASE,
+//   version: '1.0',
+//   credentials: {
+//     clientId: process.env.VUE_APP_API_CLIENT_ID,
+//     secret: process.env.VUE_APP_API_CLIENT_SECRET
+//   }
+// }
 
-        // Add average XE.
-        block.average = block.transactions.length ? block.total / block.transactions.length : 0
-        block.average = block.average.toFixed(6)
+    // this.api = new ApiWrapper(this.settings)
+  // }
 
-        return {
-          blocks: [block],
-          metadata: {}
-        }
-      })
-  }
+  // create (...args) {
+  //   return this.save(...args)
+  // }
 
-  return fetchData(url)
+  // delete (collection, query) {
+  //   return this.api
+  //     .in(collection)
+  //     .where(query)
+  //     .delete()
+  // }
+
+  // find (collection, query, options = {}) {
+  //   let apiQuery = this.api
+  //     .in(collection)
+  //     .where(query)
+
+  //   if (options.fields) {
+  //     apiQuery = apiQuery.useFields(options.fields)
+  //   }
+
+  //   if (options.limit) {
+  //     apiQuery = apiQuery.limitTo(options.limit)
+  //   }
+
+  //   return apiQuery
+  //     .find({ extractResults: true })
+  // }
+
+  // findPostBySlug (slug) {
+  //   return this.api
+  //     .fromEndpoint('posts')
+  //     .whereFieldIsEqualTo('slug', slug)
+  //     .find()
+  // }
+
+  // getCount (sequence) {
+  //   return this.api
+  //     .fromEndpoint('posts')
+  //     .whereFieldIsGreaterThan('sequence', sequence)
+  //     .limitTo(1)
+  //     .find()
+  // }
+
+  // getPosts (query, page, limit, sort) {
+  //   const sortKey = Object.keys(sort)[0]
+
+  //   return this.api
+  //     .fromEndpoint('posts')
+  //     .where(query)
+  //     .goToPage(page)
+  //     .sortBy(sortKey, sort[sortKey] === 1 ? 'asc' : 'desc')
+  //     .limitTo(limit > DOCUMENT_LIMIT ? limit : DOCUMENT_LIMIT)
+  //     .find()
+  // }
+
+  // getInteractions (query) {
+  //   return this.api
+  //     .fromEndpoint('interaction')
+  //     .where(query)
+  //     .find()
+  // }
+
+  // findById (collection, id) {
+  //   return this.api
+  //     .in(collection)
+  //     .whereFieldIsEqualTo('_id', id)
+  //     .find({ extractResults: true })
+  // }
+
+  // save (collection, data) {
+  //   return this.api
+  //     .in(collection).create(data)
+  // }
+
+  // update (collection, query, data) {
+  //   return this.api
+  //     .in(collection)
+  //     .where(query)
+  //     .update(data)
+  // }
+
+  // recordInteraction (data) {
+  //   return this.api
+  //     .fromEndpoint('interaction').create(data)
+  // }
+
+  // subscribe (data) {
+  //   return this.api
+  //     .fromEndpoint('subscribe').create(data)
+  // }
+
+  // updateById (collection, id, data) {
+  //   return this.api
+  //     .in(collection)
+  //     .whereFieldIsEqualTo('_id', id)
+  //     .update(data)
+  //     .then(replies => {
+  //       return replies
+  //     })
+  //     .catch(err => {
+  //       console.log(err)
+  //     })
+  // }
+
+  // const fetchToken = () => {
+  //   const uri = `${process.env.API_HOST}/token`
+
+  //   console.log('Fetching API access token...')
+
+  //   try {
+  //     return fetch(uri, {
+  //       body: JSON.stringify(apisettings.credentials),
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       method: 'post',
+  //       responseType: 'json'
+  //     })
+  //       .then(response => {
+  //         return Promise.resolve(response.json())
+  //       })
+  //   } catch (error) {
+  //     console.log('error :>> ', error)
+  //   }
+  // }
+
+  // const requestToken = () => {
+  //   console.log('Requesting API access token...')
+
+  //   return fetchToken()
+  //     .then(response => {
+  //       console.log('response', response)
+  //       console.log('Storing token...')
+
+  //       // return this
+  //       //   .tokenStore
+  //       //   .storeToken(response)
+  //       //   .then(tokenData => {
+  //       //     console.log('Returning token...')
+  //       //     return Promise.resolve(tokenData.at)
+  //       //   })
+  //     }).catch(errorData => {
+  //       console.log('errorData :>> ', errorData)
+  //       return Promise.reject(errorData)
+  //     // return Promise.reject(this.createErrorObject(errorData))
+  //     })
+  // }
+
+  // const executeRequest = requestObject => {
+  //   // return this.getToken()
+  //   //   .then(async bearerToken => {
+  //       return fetch(requestObject.uri.href, {
+  //         body: JSON.stringify(requestObject.body),
+  //         headers: Object.assign({}, requestObject.headers, {
+  //   //         Authorization: `Bearer ${bearerToken}`,
+  //           'Content-Type': 'application/json'
+  //         }),
+  //         method: requestObject.method
+  //       }).then(response => {
+  //         return response.json()
+  //       }).catch(err => {
+  //         console.log('error :>> ', err)
+  //       })
+  //   //   }).catch(err => {
+  //   //     console.log('error :>> ', err)
+  //   //   })
+  // }
+
+//   getToken (refresh) {
+//     // if (!this.walletModule) {
+//     //   return this.requestToken()
+//     // }
+
+//     // if (refresh) {
+//     //   return this.requestToken()
+//     // }
+
+//     const currentDate = Math.floor(Date.now() / 1000)
+
+//     return this.tokenStore
+//       .getToken()
+//       .then(tokenData => {
+//         if (!tokenData) {
+//           return this.requestToken()
+//         }
+
+//         // console.log('Found existing API access token')
+
+//         // Use existing token if it hasn't expired, else request new one.
+//         if (tokenData.ed > currentDate) {
+//           console.log('Using existing API access token')
+
+//           return Promise.resolve(tokenData.at)
+//         } else {
+//           // console.log('Existing API access token expired')
+
+//           return this.requestToken()
+//         }
+//       })
+//       .catch(err => {
+//         if (err) {
+//           console.log('err :>> ', err)
+//         }
+
+//         return this.requestToken()
+//       })
+//   }
+// // }
+
+// module.exports = ({ req, res }) => {
+//   return new API(req, res)
+// }
+
+// const getApi = () => {
+//   console.log('apisettings', API_SETTINGS)
+//   return new ApiWrapper(API_SETTINGS)
+// }
+
+const createAccount = async () => {
+  const url = `${ACCOUNTS_API_URL}/1.0/accounts`
+
+  return fetchData(url, { method: 'post' })
     .then(response => {
-      const { results, metadata } = response
-
-      results.forEach(block => {
-        block.transactions = pluckBlockTransactions(block)
-
-        // Add total XE.
-        block.total = block.transactions.reduce((accumulator, currentItem) => {
-          accumulator += Number(currentItem.amount)
-          return accumulator
-        }, 0)
-
-        // Add average XE.
-        block.average = block.transactions.length ? block.total / block.transactions.length : 0
-      })
-
-      return {
-        blocks: results,
-        metadata
-      }
+      console.log('response', response)
     })
 }
 
@@ -112,178 +303,79 @@ const fetchData = (url, options = {}, payload) => {
     })
 }
 
-const fetchPendingTransactions = (address, options = {}) => {
-  const url = `${BLOCKCHAIN_API_URL}/transactions/pending/${address}`
-  return fetchData(url)
-}
+// const deleteBy = (collection, field, value) => {
+//   return getApi()
+//     .inProperty(API_SETTINGS.property)
+//     .in(collection)
+//     .whereFieldIsEqualTo(field, value)
+//     .delete()
+// }
 
-const fetchExchangeTransaction = (hash) => {
-  const url = `${INDEX_API_URL}/exchange/${hash}`
-  return fetchData(url)
-}
+// const deleteWhere = (collection, query) => {
+//   return getApi()
+//     .inProperty(API_SETTINGS.property)
+//     .in(collection)
+//     .where(query)
+//     .delete()
+// }
 
-const fetchWallet = async (address) => {
-  const url = `${BLOCKCHAIN_API_URL}/wallet/${address}`
-  const results = await fetchData(url)
+// const find = (collection, query) => {
+//   return getApi()
+//     .inProperty(API_SETTINGS.property)
+//     .in(collection)
+//     .where(query)
+//     .limitTo(500)
+//     .find({ extractResults: true })
+// }
 
-  // If fetchData returns an empty response, we
-  // return an empty wallet. TODO: tidy up fetchData.
-  return results && results.metadata
-    ? { address, balance: 0, nonce: 0 }
-    : results
-}
+// const findById = (collection, id) => {
+//   return getApi()
+//     .inProperty(API_SETTINGS.property)
+//     .in(collection)
+//     .whereFieldIsEqualTo('_id', id)
+//     .find({ extractResults: true })
+// }
 
-const fetchTransactions = async ({ address, hash, options = {} }) => {
-  if (typeof address !== 'string') {
-    address = ''
-  }
+// const findWithMeta = (collection, query) => {
+//   return getApi()
+//     .inProperty(API_SETTINGS.property)
+//     .in(collection)
+//     .where(query)
+//     .find({ extractResults: false })
+// }
 
-  if (!options.page) {
-    options.page = 1
-  }
+// const save = (collection, data) => {
+//   return getApi()
+//     .inProperty(API_SETTINGS.property)
+//     .in(collection)
+//     .create(data)
+// }
 
-  if (!options.limit) {
-    options.limit = 20
-  }
+// const update = (collection, query, data) => {
+//   return getApi()
+//     .inProperty(API_SETTINGS.property)
+//     .in(collection)
+//     .where(query)
+//     .update(data)
+// }
 
-  // Standard URL for pending transactions query.
-  const pendingTxUrl = `${BLOCKCHAIN_API_URL}/transactions/pending/${address}`
-
-  // Standard URL for transactions query.
-  let txUrl = `${INDEX_API_URL}/transactions/${address}?${qs.encode(options)}`
-
-  let txResults = []
-
-  if (hash) {
-    txUrl = `${INDEX_API_URL}/transaction/${hash}`
-
-    return fetchData(txUrl)
-      .then(results => {
-        if (results.results && Array.isArray(results.results) && !results.results[0]) {
-          return {
-            transactions: [],
-            metadata: {}
-          }
-        }
-
-        const tx = { ...results }
-
-        return {
-          raw: {
-            ...tx
-          },
-          transactions: [{
-            amount: xeStringFromMicroXe(tx.amount),
-            block: tx.block,
-            date: new Date(tx.timestamp).toLocaleString(), // '16/04/2021 13:06',
-            memo: tx.data.memo,
-            hash: tx.hash,
-            recipient: tx.recipient,
-            sender: tx.sender,
-            timestamp: tx.timestamp,
-            confirmations: tx.confirmations,
-            pending: false
-          }],
-          metadata: {}
-        }
-      })
-  }
-
-  // Fetch pending transactions first, if we're on page 1.
-  let pendingTxFetcher = options.page > 1 ? Promise.resolve([]) : fetchData(pendingTxUrl)
-  
-  return pendingTxFetcher
-    .then(response => {
-      // Pending transactions need to be reversed to show them in the correct order.
-      response = response.reverse()
-
-      txResults = txResults.concat(formatTransactions(address, response, true))
-
-      // Fetch confirmed transactions.
-      return fetchData(txUrl)
-        .then(response => {
-          const { results, metadata } = response
-          txResults = txResults.concat(formatTransactions(address, results))
-
-          return {
-            transactions: txResults,
-            metadata
-          }
-        })
-    })
-}
-
-const formatTransactions = (address, data, pending) => {
-  return data.map(tx => {
-    return {
-      address: tx.sender === address ? tx.recipient : tx.sender,
-      amount: xeStringFromMicroXe(tx.amount),
-      date: new Date(tx.timestamp).toLocaleString(), // '16/04/2021 13:06',
-      memo: tx.data.memo,
-      hash: tx.hash,
-      recipient: tx.recipient,
-      sender: tx.sender,
-      timestamp: tx.timestamp,
-      type: tx.sender === address ? 'Sent' : 'Received',
-      confirmations: tx.confirmations,
-      block: tx.block,
-      pending
-    }
-  })
-}
-
-const pluckBlockTransactions = block => {
-  const transactions = []
-  const blockTransactionData = {
-    ...block.data.transactions
-  }
-
-  Object.keys(blockTransactionData).forEach(address => {
-    const addressData = blockTransactionData[address]
-
-    Object.keys(addressData).forEach(tx => {
-      transactions.push(addressData[tx])
-    })
-  })
-
-  block.transactions = transactions.sort((a, b) => {
-    if (a.timestamp === b.timestamp) return 0
-    return a.timestamp < b.timestamp ? -1 : 1
-  })
-
-  return formatTransactions(null, block.transactions)
-}
-
-const search = async input => {
-  const addressRegex = /^xe_[0-9a-fA-F]{40}$/
-  const blockHeightRegex = /^[0-9]+$/
-  const hashRegex = /[0-9a-f]{64}/
-
-  if (addressRegex.test(input)) {
-    return fetchWallet(input)
-  } else if (hashRegex.test(input)) {
-    // The hash format is the same for blocks and transactions,
-    // so we need to query both for the input.
-    const { blocks } = await fetchBlocks({ blockId: input })
-    const { transactions } = await fetchTransactions({ hash: input })
-
-    return Promise.resolve({
-      blocks: blocks.length ? blocks : null,
-      transactions: transactions.length ? transactions : null
-    })
-  } else if (blockHeightRegex.test(input)) {
-    return fetchBlocks({ blockId: input })
-  } else {
-    return Promise.resolve({})
-  }
-}
+// const updateById = (collection, id, data) => {
+//   return getApi()
+//     .inProperty(API_SETTINGS.property)
+//     .in(collection)
+//     .whereFieldIsEqualTo('_id', id.toString())
+//     .update(data)
+// }
 
 export {
-  fetchBlocks,
-  fetchPendingTransactions,
-  fetchExchangeTransaction,
-  fetchTransactions,
-  fetchWallet,
-  formatTransactions,
-  search
+  createAccount
+  // deleteBy,
+  // deleteWhere,
+  // executeRequest,
+  // find,
+  // findById,
+  // findWithMeta,
+  // save,
+  // update,
+  // updateById
 }

@@ -11,8 +11,6 @@
 import SideNavigation from "@/components/SideNavigation"
 import UserNav from "@/components/UserNav"
 
-// import { fetchBlocks, fetchTransactions } from '../utils/api'
-
 export default {
   name: 'Index',
   title() {

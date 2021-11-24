@@ -4,13 +4,13 @@
       <div class="signIn__content">
         <Logo/>
         <p class="pr-5 text-lg">Welcome back. Enter your account number to sign into the Edge Network.</p>
-        <form class="signIn__form">
-          
+
+        <form class="signIn__form">          
           <!-- input group -->
           <!-- apply input-group__error class for error styles -->
           <div class="input-group">
             <label class="label">Account number</label>
-            <input type="text" placeholder="Input placeholder" class="input input--floating" />
+            <input class="input input--floating" v-mask="'#### #### #### ####'" v-model="accountNumber" placeholder="1234 5678 9012 3456" />
           </div>
 
           <!-- error message  -->
@@ -21,11 +21,12 @@
 
           <!-- buttons -->
           <div class="flex flex-col space-y-2">
-            <button class="button button--success">Sign In</button>
+            <button @click.prevent="signIn()" class="button button--success">Sign In</button>
             <span class="w-full tracking-wider text-center text-black">OR</span>
-            <button class="button button--solid">Create new account</button>
+            <button @click.prevent="createNewAccount()" class="button button--solid">Create new account</button>
           </div>
         </form>
+
       </div>
     </div>
     <div class="signIn__right">
@@ -40,8 +41,6 @@ import Logo from "@/components/Logo";
 import SideNavigation from "@/components/SideNavigation"
 import UserNav from "@/components/UserNav"
 
-// import { fetchBlocks, fetchTransactions } from '../utils/api'
-
 export default {
   name: 'Sign In',
   title() {
@@ -52,6 +51,19 @@ export default {
     Logo,
     SideNavigation,
     UserNav,
+  },
+  data() {
+    return {
+      accountNumber: ''
+    }
+  },
+  methods: {
+    createNewAccount() {
+      createAccount()
+    },
+    signIn() {
+      console.log('signin', this.accountNumber)
+    }
   }
 }
 </script>
