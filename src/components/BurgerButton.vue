@@ -12,13 +12,13 @@
 </script>
 <style scoped>
   .nav-opener {
-    @apply w-36 h-36 bg-green rounded relative focus:outline-none cursor-pointer;
+    @apply w-9 h-9 border border-green rounded relative focus:outline-none cursor-pointer;
   }
 
   .nav-opener:before,
   .nav-opener:after,
   .nav-opener span {
-    @apply bg-white h-2 absolute top-1/2 left-1/4 right-1/4 transition-all;
+    @apply bg-green h-px absolute top-1/2 left-1/4 right-1/4 transition-all;
   }
 
   .nav-opener:after,

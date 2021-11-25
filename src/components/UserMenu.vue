@@ -1,7 +1,7 @@
 <template>
   <Menu as='div' class="menu">
     <MenuButton class="menu__button">
-      <span>3333 3810 7877 31616</span>
+      <span class="w-full truncate">3333 3810 7877 31616</span>
       <ChevronDownIcon class="w-5 h-5 text-gray-400" />
     </MenuButton>
     <MenuItems class="menu__items">
@@ -45,7 +45,7 @@
   import {ChevronDownIcon} from "@heroicons/vue/solid"
   import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue"
   export default {
-    name: "UserNav",
+    name: "UserMenu",
     components: {
       ChevronDownIcon,
       Menu,
@@ -57,10 +57,11 @@
 </script>
 <style scoped>
   .menu {
-    @apply absolute top-8 right-8;
+    @apply relative;
+    /* @apply absolute top-8 right-8; */
   }
   .menu__button {
-    @apply flex items-center p-3 space-x-4 bg-white border border-gray-300 rounded-md;
+    @apply flex items-center p-3 space-x-1 bg-white border border-gray-300 rounded-md;
     @apply focus:outline-none focus:ring-1 focus:ring-green-200 focus:ring-opacity-25;
   }
   .menu__items {
