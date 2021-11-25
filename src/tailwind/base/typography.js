@@ -54,7 +54,7 @@ const brandTypography = ({ theme }) => ({
       lineHeight: baseTypography.lineHeight.headings,
       marginBottom: baseTypography.headingsMarginBottom,
       fontFamily: theme('fontFamily.sans'),
-      fontWeight: theme('fontWeight.normal'),
+      fontWeight: theme('fontWeight.medium'),
       [media(theme('screens.md'))]: {
         fontSize: rem(32)
       },

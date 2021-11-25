@@ -39,7 +39,7 @@
 import {ExclamationIcon} from "@heroicons/vue/outline"
 import Logo from "@/components/Logo";
 import SideNavigation from "@/components/SideNavigation"
-import UserNav from "@/components/UserNav"
+import UserMenu from "@/components/UserMenu"
 
 export default {
   name: 'Sign In',
@@ -50,7 +50,7 @@ export default {
     ExclamationIcon,
     Logo,
     SideNavigation,
-    UserNav,
+    UserMenu,
   },
   data() {
     return {

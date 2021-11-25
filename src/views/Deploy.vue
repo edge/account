@@ -2,8 +2,8 @@
   <div class="flex w-full">
     <SideNavigation />
     <main class="mainContent">
-      <UserNav />
-      <div class="mt-24">
+      <TopNavigation />
+      <div class="mainContent__inner">
         <h1>Deploy a new server</h1>
 
         <div class="grid items-start grid-cols-12 mt-10 space-x-10">
@@ -57,7 +57,7 @@
             </div>
           </form>
 
-          <div class="sticky hidden col-span-3 top-10 lg:block">
+          <div class="sticky hidden col-span-3 top-32 lg:block">
             <Summary/>
           </div>
         </div>
@@ -75,8 +75,8 @@ import ServerSpecs from '@/components/deploy/ServerSpecs'
 import ServerName from '@/components/deploy/ServerName'
 import SideNavigation from "@/components/SideNavigation"
 import Summary from "@/components/Summary"
-import UserNav from "@/components/UserNav"
 import Toggle from '@vueform/toggle'
+import TopNavigation from "@/components/TopNavigation"
 
 export default {
   name: 'Deploy',
@@ -92,7 +92,7 @@ export default {
     SideNavigation,
     Summary,
     Toggle,
-    UserNav
+    TopNavigation,
   },
   data() {
     return {
@@ -104,7 +104,10 @@ export default {
 <style src="@vueform/toggle/themes/default.css"></style>
 <style scoped>
   .mainContent {
-    @apply relative flex-1 p-3 md:p-5 lg:p-8;
+    @apply relative flex-1;
+  }
+  .mainContent__inner {
+    @apply p-3 md:p-5 lg:p-8 mt-8;
   }
   .box {
     @apply w-full p-6 bg-white rounded-lg;
