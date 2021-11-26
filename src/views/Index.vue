@@ -34,7 +34,9 @@
           >
             <span class="serverList__status" :class="[server.status]" />
             <div class="serverList__main">
-              <a class="serverList__name" href="#">{{ server.name }}</a>
+              <router-link class="serverList__name" to="/server">
+                {{ server.name }}
+              </router-link>
               <div class="serverList__stats">
                 <span>{{ server.cpu }}</span>
                 <span class="text-gray-400">/</span>
@@ -236,7 +238,7 @@ export default {
 
   /* the list */
   .serverList {
-    @apply mt-5 lg:mt-10 space-y-2;
+    @apply mt-5 lg:mt-5 space-y-2;
   }
 
   /* the list item */

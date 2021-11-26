@@ -11,7 +11,9 @@
 
     <!-- user nav and deploy button - hidden on small screens -->
     <div class="topNavigation__right">
-      <button class="h-full button button--success">Deploy Server</button>
+      <router-link to="/deploy">
+        <button class="h-full button button--success">Deploy Server</button>
+      </router-link>
       <UserMenu />
     </div>
   </div>

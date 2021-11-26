@@ -6,6 +6,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 // import Blocks from '@/views/Blocks'
 import Index from '@/views/Index'
 import NotFound from '@/views/404'
+import Server from '@/views/Server'
 import SignIn from '@/views/SignIn'
 import Deploy from '@/views/Deploy'
 // import Transactions from '@/views/Transactions'
@@ -26,6 +27,11 @@ const routes = [
     path: '/signIn',
     name: 'Sign In',
     component: SignIn
+  },
+  {
+    path: '/server',
+    name: 'Server',
+    component: Server
   },
   { path: '/:catchAll(.*)', component: NotFound }
 ]
