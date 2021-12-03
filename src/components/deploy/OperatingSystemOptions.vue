@@ -87,7 +87,7 @@
     @apply absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
   }
   .listOption {
-    @apply relative py-2 pl-10 pr-4 text-gray-900 cursor-default select-none;
+    @apply relative cursor-pointer py-2 pl-10 pr-4 text-gray-900 cursor-default select-none;
   }
   .listOption.active {
     @apply text-green bg-green bg-opacity-5;
