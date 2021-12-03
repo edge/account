@@ -7,6 +7,14 @@
 
 const ACCOUNTS_API_URL = process.env.VUE_APP_ACCOUNTS_API_URL
 
+const fetcher = function(url) {
+  return fetch(`${ACCOUNTS_API_URL}${url}`)
+    .then(response => response.json())
+    .then(results => {
+      return Promise.resolve(results)
+    })
+}
+
 // const API_SETTINGS = {
 //   uri: process.env.API_HOST,
 //   port: process.env.API_PORT,
@@ -368,7 +376,8 @@ const fetchData = (url, options = {}, payload) => {
 // }
 
 export {
-  createAccount
+  createAccount,
+  fetcher
   // deleteBy,
   // deleteWhere,
   // executeRequest,

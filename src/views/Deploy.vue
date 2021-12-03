@@ -23,10 +23,11 @@
 
             <!-- automated backups -->
             <div class="box">
-              <div @click="value=!value" class="flex items-center justify-between w-full cursor-pointer">
+              <div @click="toggleBackups" class="flex items-center justify-between w-full cursor-pointer">
                 <h4>Automated Backups</h4>
                 <Toggle
-                  v-model="value"
+                  v-model="enableBackups"
+                  @click="toggleBackups"
                   :classes="{
                     toggleOn: 'bg-green border-green'
                   }"
@@ -55,6 +56,15 @@
               <button class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1">Deploy</button>
               <span class="flex-1 order-1 text-red md:order-2">Please select an operating system</span>
             </div>
+
+            <div>
+              <h4>Selected:</h4>
+              <ul>
+                <li>Region: {{ serverRegion }}</li>
+                <li>OS: {{ os }} {{ osVersion }}</li>
+                <li>Backups enabled: {{ enableBackups }}</li>
+              </ul>
+            </div>
           </form>
 
           <div class="sticky hidden col-span-3 top-32 lg:block">
@@ -77,6 +87,7 @@ import SideNavigation from "@/components/SideNavigation"
 import Summary from "@/components/Summary"
 import Toggle from '@vueform/toggle'
 import TopNavigation from "@/components/TopNavigation"
+import { mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'Deploy',
@@ -94,9 +105,15 @@ export default {
     Toggle,
     TopNavigation,
   },
-  data() {
-    return {
-      value: false
+  computed: {
+    ...mapState(['count', 'enableBackups', 'os', 'osVersion', 'serverRegion'])
+  },
+  methods: {
+    ...mapMutations([
+      'selectServerProperty'
+    ]),
+    toggleBackups () {
+      this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     }
   }
 }

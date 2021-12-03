@@ -1,13 +1,9 @@
 <template>
-  <Listbox v-model="selectedSystem">
+  <Listbox v-model="selectedVersion">
     <div class="relative w-full mt-1">
-      <ListboxButton
-        class="listButton"
-      >
-        <span class="block truncate">{{ selectedSystem.name }}</span>
-        <span
-          class="listButton__icon"
-        >
+      <ListboxButton class="listButton">
+        <span class="block truncate">{{selectedVersion}}</span>
+        <span class="listButton__icon">
           <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
         </span>
       </ListboxButton>
@@ -17,30 +13,22 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <ListboxOptions
-          class="listOptions"
-        >
+        <ListboxOptions class="listOptions">
           <ListboxOption
             v-slot="{ active, selected }"
-            v-for="system in systems"
-            :key="system.name"
-            :value="system"
+            v-for="version in versions"
+            :key="version"
+            :value="version"
             as="template"
+            @click="() => selectServerProperty({ property: 'osVersion', value: version })" 
           >
-            <li
-              :class="[active ? 'active' : '']"
-              class="listOption"
-            >
-              <span
-                :class="[
+            <li :class="[active ? 'active' : '']" class="listOption">
+              <span :class="[
                   'block truncate',
                 ]"
-                >{{ system.name }}</span
+                >{{version}}</span
               >
-              <span
-                v-if="selected"
-                class="checkmark"
-              >
+              <span v-if="selected" class="checkmark" >
                 <CheckIcon class="w-5 h-5" aria-hidden="true" />
               </span>
             </li>
@@ -55,6 +43,8 @@
   import { ChevronDownIcon, CheckIcon } from "@heroicons/vue/solid"
   import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption, } from "@headlessui/vue"
   import { ref } from 'vue'
+  import { mapMutations } from 'vuex'
+
   export default {
     name: "OperatingSystemOptions",
     components: {
@@ -66,16 +56,18 @@
       ListboxOptions,
       ListboxOption,
     },
-    setup() {
-      const systems = [
-        { name: '20.04' },
-        { name: '18.04 (LTS) x64' }
-      ]
-      const selectedSystem = ref(systems[0])
+    methods: {
+      ...mapMutations([
+        'selectServerProperty'
+      ])
+    },
+    props: ['versions'],
+    setup(props) {
+      const selectedVersion = ref(props.versions[0])
 
       return {
-        systems,
-        selectedSystem,
+        // systems,
+        selectedVersion
       }
     }
   }

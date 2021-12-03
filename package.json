@@ -39,9 +39,11 @@
     "morgan": "^1.10.0",
     "path": "^0.12.7",
     "ramda": "^0.27.1",
+    "swrv": "^1.0.0-beta.8",
     "v-mask": "^2.3.0",
     "vue": "^3.0.11",
-    "vue-router": "^4.0.0-0"
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

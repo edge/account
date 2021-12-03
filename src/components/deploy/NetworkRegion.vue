@@ -1,7 +1,11 @@
 <template>
   <RadioGroup v-model="selected">
     <RadioGroupLabel class="sr-only">Network region</RadioGroupLabel>
-    <div class="box__grid">
+
+    <div v-if="regions === undefined">loading...</div>
+    <div>{{selected}}</div>
+
+    <div class="box__grid" v-if="regions">
       <RadioGroupOption
         as="template"
         v-for="region in regions"
@@ -9,6 +13,7 @@
         :value="region"
         v-slot="{ active, checked, disabled }"
         :disabled="!region.enabled"
+        @click="() => selectServerProperty({ property: 'serverRegion', value: region.name })"
       >
         <div
           :class="[
@@ -32,20 +37,14 @@
             <CheckIcon class="checkmark__icon" />
           </div>
           <div class="optionDetails">
-            <RadioGroupLabel
-              as="h4"
-              class="optionDetails__country"
-            >
-              {{ region.name }}
+            <RadioGroupLabel as="h4" class="optionDetails__country">
+              {{region.name}}
             </RadioGroupLabel>
-            <RadioGroupDescription
-              as="span"
-              class="optionDetails__city"
-            >
-              <span>{{ region.city }}</span>
+            <RadioGroupDescription as="span" class="optionDetails__city">
+              <span>{{region.city}}</span>
             </RadioGroupDescription>
           </div>
-          <img :src=region.flag width="40" class="rounded-sm" />
+          <img :src=region.image width="40" class="rounded-sm" />
         </div>
       </RadioGroupOption>
     </div>
@@ -61,44 +60,11 @@ import {
 } from '@headlessui/vue'
 
 import { CheckIcon } from '@heroicons/vue/outline'
-
 import { ref } from 'vue'
+import useSWRV from 'swrv'
+import { fetcher } from '../../utils/api'
 
-const regions = [
-  {
-    name: 'UK #1',
-    city: 'London',
-    flag: '/assets/images/flag_uk.png',
-    enabled: true
-  },
-  {
-    name: 'UK #2',
-    city: 'London',
-    flag: '/assets/images/flag_uk.png',
-    enabled: true
-  },
-  {
-    name: 'UK #3',
-    city: 'London',
-    flag: '/assets/images/flag_uk.png',
-    enabled: true
-  },
-  {
-    name: 'UK #4',
-    city: 'London',
-    flag: '/assets/images/flag_uk.png'
-  },
-  {
-    name: 'UK #5',
-    city: 'London',
-    flag: '/assets/images/flag_uk.png',
-  },
-  {
-    name: 'UK #6',
-    city: 'London',
-    flag: '/assets/images/flag_uk.png',
-  },
-]
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'NetworkRegion',
@@ -109,10 +75,25 @@ export default {
     RadioGroupDescription,
     RadioGroupOption,
   },
+  methods: {
+    ...mapMutations([
+      'selectServerProperty'
+    ])
+  },
   setup() {
-    const selected = ref(regions[0])
+    const { data: regions, error } = useSWRV(() => '/regions', fetcher)
 
-    return { selected, regions }
+    const selected = ref({})
+
+    if (regions && regions.value) {
+      // console.log('regions', regions.value)
+      selected.value = regions.value[0]
+    }
+
+    return {
+      selected,
+      regions
+    }
   }
 }
 </script>

@@ -4,11 +4,12 @@
     <div class="box__grid">
       <RadioGroupOption
         as="template"
-        v-for="system in systems"
-        :key="system.name"
-        :value="system"
+        v-for="os in operatingSystems"
+        :key="os.name"
+        :value="os"
         v-slot="{ active, checked, disabled }"
-        :disabled="!system.enabled"
+        :disabled="!os.enabled"
+        @click="() => selectServerProperty({ property: 'os', value: os.name })"
       >
         <div
           :class="[
@@ -32,12 +33,10 @@
                 disabled ? 'disabled' : ''
               ]"
             >
-              <h4>
-                {{ system.name }}
-              </h4>
+              <h4>{{os.name}}</h4>
             </RadioGroupLabel>
             <div class="w-full mt-2">
-              <OperatingSystemOptions />
+              <OperatingSystemOptions :versions=os.versions />
             </div>
           </div>
         </div>
@@ -53,29 +52,13 @@ import {
   RadioGroupDescription,
   RadioGroupOption,
 } from '@headlessui/vue'
-import { ref } from 'vue'
 import OperatingSystemOptions from "@/components/deploy/OperatingSystemOptions"
 
-const systems = [
-  {
-    name: 'CentOS',
-    options: [
-      '8 stream',
-      '8 x64',
-      '7 x64'
-    ],
-    enabled: true
-  },
-  {
-    name: 'Ubuntu',
-    options: [
-      '20.04',
-      '18.04',
-      '16.04'
-    ],
-    enabled: true
-  },
-]
+import { ref } from 'vue'
+import useSWRV from 'swrv'
+import { fetcher } from '../../utils/api'
+
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'OperatingSystem',
@@ -86,10 +69,24 @@ export default {
     RadioGroupOption,
     OperatingSystemOptions
   },
+  methods: {
+    ...mapMutations([
+      'selectServerProperty'
+    ])
+  },
   setup() {
-    const selected = ref(systems[0])
+    const { data: operatingSystems, error } = useSWRV(() => '/os', fetcher)
 
-    return { selected, systems }
+    const selected = ref({})
+
+    if (operatingSystems && operatingSystems.value) {
+      selected.value = operatingSystems.value[0]
+    }
+
+    return {
+      selected,
+      operatingSystems
+    }
   }
 }
 </script>

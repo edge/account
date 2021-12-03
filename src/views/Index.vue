@@ -26,6 +26,7 @@
       <!-- if servers exist -->
       <div class="mainContent__inner">
         <h1>Edge Servers</h1>
+
         <ul role="list" class="serverList">
           <li
             v-for="server in servers" :key="server.name"
@@ -34,7 +35,7 @@
           >
             <span class="serverList__status" :class="[server.status]" />
             <div class="serverList__main">
-              <router-link class="serverList__name" to="/server">
+              <router-link class="serverList__name" :to="'/server/'+ server.name">
                 {{ server.name }}
               </router-link>
               <div class="serverList__stats">
@@ -46,12 +47,13 @@
               </div>
             </div>
             <div class="flex items-center justify-center space-x-1 serverList__cell">
-              <UbuntuIcon className="w-5 h-5 text-gray-400" />
-              <span>{{ server.os }}</span>
+              <UbuntuIcon @click="increment" v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400" />
+              <CentOsIcon v-if="server.os === 'centos'" className="w-5 h-5 text-gray-400" />
+              <span @click="() => selectOsVersion(server.osVersion)">{{ server.os }} {{ server.osVersion }}</span>
             </div>
             <span class="text-center serverList__cell">{{ server.ip }}</span>
             <div class="flex items-center justify-end serverList__cell">
-              {{ server.location }}
+              {{ server.region }}
               <img :src=server.flag width="25" class="ml-2 rounded-sm" />
             </div>
           </li>
@@ -68,135 +70,39 @@ import TopNavigation from "@/components/TopNavigation"
 import UbuntuIcon from '@/components/icons/Ubuntu'
 import { CloudUploadIcon, ServerIcon, ShieldCheckIcon } from '@heroicons/vue/outline'
 
-const servers = [
-  {
-    name: 'forest_tamarite',
-    ip: '185.167.216.33',
-    os: 'ubuntu',
-    location: 'London #1',
-    cpu: '2 vCPU',
-    storage: '20GB',
-    memory: '1GB',
-    status: 'active',
-    flag: '/assets/images/flag_uk.png'
-  },
-  {
-    name: 'burgundy_marsupial',
-    ip: '185.167.215.37',
-    os: 'ubuntu',
-    location: 'London #3',
-    cpu: '2 vCPU',
-    storage: '10GB',
-    memory: '2GB',
-    status: 'inactive',
-    flag: '/assets/images/flag_uk.png'
-  },
-    {
-    name: 'forest_tamarite',
-    ip: '185.167.216.33',
-    os: 'ubuntu',
-    location: 'London #1',
-    cpu: '2 vCPU',
-    storage: '20GB',
-    memory: '1GB',
-    status: 'active',
-    flag: '/assets/images/flag_uk.png'
-  },
-    {
-    name: 'forest_tamarite',
-    ip: '185.167.216.33',
-    os: 'ubuntu',
-    location: 'London #1',
-    cpu: '2 vCPU',
-    storage: '20GB',
-    memory: '1GB',
-    status: 'active',
-    flag: '/assets/images/flag_uk.png'
-  },
-    {
-    name: 'forest_tamarite',
-    ip: '185.167.216.33',
-    os: 'ubuntu',
-    location: 'London #1',
-    cpu: '2 vCPU',
-    storage: '20GB',
-    memory: '1GB',
-    status: 'active',
-    flag: '/assets/images/flag_uk.png'
-  },
-  {
-    name: 'forest_tamarite',
-    ip: '185.167.216.33',
-    os: 'ubuntu',
-    location: 'London #1',
-    cpu: '2 vCPU',
-    storage: '20GB',
-    memory: '1GB',
-    status: 'active',
-    flag: '/assets/images/flag_uk.png'
-  },
-  {
-    name: 'burgundy_marsupial',
-    ip: '185.167.215.37',
-    os: 'ubuntu',
-    location: 'London #3',
-    cpu: '2 vCPU',
-    storage: '10GB',
-    memory: '2GB',
-    status: 'inactive',
-    flag: '/assets/images/flag_uk.png'
-  },
-    {
-    name: 'forest_tamarite',
-    ip: '185.167.216.33',
-    os: 'ubuntu',
-    location: 'London #1',
-    cpu: '2 vCPU',
-    storage: '20GB',
-    memory: '1GB',
-    status: 'active',
-    flag: '/assets/images/flag_uk.png'
-  },
-    {
-    name: 'forest_tamarite',
-    ip: '185.167.216.33',
-    os: 'ubuntu',
-    location: 'London #1',
-    cpu: '2 vCPU',
-    storage: '20GB',
-    memory: '1GB',
-    status: 'active',
-    flag: '/assets/images/flag_uk.png'
-  },
-    {
-    name: 'forest_tamarite',
-    ip: '185.167.216.33',
-    os: 'ubuntu',
-    location: 'London #1',
-    cpu: '2 vCPU',
-    storage: '20GB',
-    memory: '1GB',
-    status: 'active',
-    flag: '/assets/images/flag_uk.png'
-  }
-]
+import useSWRV from 'swrv'
+import { fetcher } from '../utils/api'
+
+import { mapState } from 'vuex'
+
+//     {
+//     name: 'forest_tamarite',
+//     ip: '185.167.216.33',
+//     os: 'ubuntu',
+//     location: 'London #1',
+//     cpu: '2 vCPU',
+//     storage: '20GB',
+//     memory: '1GB',
+//     status: 'active',
+//     flag: '/assets/images/flag_uk.png'
+//   }
 
 export default {
   name: 'Index',
   title() {
     return 'Edge Account Portal » Index'
   },
-  data: function () {
-    return {
-      // blockMetadata: null,
-      // blocks: [],
-      // transactionMetadata: null,
-      // transactions: [],
-      loading: false
-      // pollInterval: 10000,
-      // polling: null
-    }
-  },
+  // data: function () {
+  //   return {
+  //     // blockMetadata: null,
+  //     // blocks: [],
+  //     // transactionMetadata: null,
+  //     // transactions: [],
+  //     loading: false
+  //     // pollInterval: 10000,
+  //     // polling: null
+  //   }
+  // },
   components: {
     CentOsIcon,
     CloudUploadIcon,
@@ -206,24 +112,28 @@ export default {
     TopNavigation,
     UbuntuIcon
   },
-  mounted() {
-    this.loading = true
-    // this.fetchBlocks()
-    // this.fetchTransactions()
-    // this.pollData()
+  computed: {
+    ...mapState(['count', 'osVersion', 'serverRegion'])
+  },
+  methods: {
+    increment() {
+      this.$store.commit('increment', { amount: 11 })
+    },
+    selectOsVersion(value) {
+      this.$store.commit('selectServerProperty', { property: 'osVersion', value })
+    }
+  },
+  setup() {
+    const { data: servers, error } = useSWRV('/servers', fetcher)
+
+    return {
+      servers
+    }
   },
   watch: {
     $route(to, from) {
       // clearInterval(this.polling)
       // this.polling = null
-    }
-  },
-  methods: {
-
-  },
-  setup() {
-    return {
-      servers
     }
   }
 }
