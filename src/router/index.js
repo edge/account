@@ -29,7 +29,7 @@ const routes = [
     component: SignIn
   },
   {
-    path: '/server',
+    path: '/server/:slug',
     name: 'Server',
     component: Server
   },

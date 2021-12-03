@@ -4,7 +4,7 @@
     <main class="flex flex-col mainContent">
       <TopNavigation />
 
-      <div class="mainContent__inner">
+      <div class="mainContent__inner" v-if="server">
         
         <!-- crumbs -->
         <ul class="crumbs">
@@ -17,7 +17,7 @@
         </ul>
 
         <!-- title -->
-        <h1>Forest Tanzanite</h1>
+        <h1>{{server.name}}</h1>
 
         <!-- overview -->
         <div class="flex items-center space-x-3 text-gray-500">
@@ -26,17 +26,18 @@
             <span class="text-xs text-green">online</span>
           </div>
           <div class="flex items-center justify-center space-x-1">
-            <UbuntuIcon className="w-4 h-4 text-gray-400" />
-            <span>ubuntu</span>
+            <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-4 h-4 text-gray-400" />
+            <CentOsIcon v-if="server.os === 'centos'" className="w-4 h-4 text-gray-400" />
+            <span>{{server.os}} {{server.osVersion}}</span>
           </div>
           <span class="text-gray-400">/</span>
-          <span>185.147.216.33</span>
+          <span>{{server.ip}}</span>
           <span class="text-gray-400">/</span>
-          <span>2 vCPU</span>
+          <span>{{server.cpu}}</span>
           <span class="text-gray-400">/</span>
-          <span>20GB storage</span>
+          <span>{{server.storage}} storage</span>
           <span class="text-gray-400">/</span>
-          <span>5GB RAM</span>
+          <span>{{server.memory}} RAM</span>
         </div>
 
         <div class="grid items-start grid-cols-12 mt-12 space-x-10">
@@ -114,6 +115,10 @@ import TopNavigation from "@/components/TopNavigation"
 import UbuntuIcon from '@/components/icons/Ubuntu'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 
+import { useRoute } from 'vue-router'
+import useSWRV from 'swrv'
+import { fetcher } from '../utils/api'
+
 export default {
   name: 'Server',
   title() {
@@ -147,6 +152,14 @@ export default {
     // this.fetchBlocks()
     // this.fetchTransactions()
     // this.pollData()
+  },
+  setup() {
+    const route = useRoute()
+    const { data: server, error } = useSWRV(() => '/servers?slug=' + route.params.slug, fetcher)
+
+    return {
+      server
+    }
   },
   watch: {
     $route(to, from) {
