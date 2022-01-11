@@ -34,6 +34,7 @@
             :class="[server.status]"
           >
             <span class="serverList__status" :class="[server.status]" />
+            
             <div class="serverList__main">
               <router-link class="serverList__name" :to="'/server/'+ server.name">
                 {{ server.name }}
@@ -46,15 +47,17 @@
                 <span>{{ server.memory }} RAM</span>
               </div>
             </div>
-            <div class="flex items-center justify-center space-x-1 serverList__cell">
-              <UbuntuIcon @click="increment" v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400" />
-              <CentOsIcon v-if="server.os === 'centos'" className="w-5 h-5 text-gray-400" />
-              <span @click="() => selectOsVersion(server.osVersion)">{{ server.os }} {{ server.osVersion }}</span>
-            </div>
-            <span class="text-center serverList__cell">{{ server.ip }}</span>
-            <div class="flex items-center justify-end serverList__cell">
-              {{ server.region }}
-              <img :src=server.flag width="25" class="ml-2 rounded-sm" />
+            <div class="flex items-center flex-shrink-0 mt-3 space-x-5 lg:space-x-0 lg:flex-1 lg:mt-0 lg:justify-between">
+              <div class="flex items-center space-x-1 lg:justify-center serverList__cell">
+                <UbuntuIcon @click="increment" v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <CentOsIcon v-if="server.os === 'centos'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <span @click="() => selectOsVersion(server.osVersion)">{{ server.os }} {{ server.osVersion }}</span>
+              </div>
+              <span class="lg:text-center serverList__cell">{{ server.ip }}</span>
+              <div class="flex items-center lg:justify-end serverList__cell">
+                {{ server.region }}
+                <img :src=server.flag width="25" class="ml-2 rounded-sm" />
+              </div>
             </div>
           </li>
         </ul>
@@ -153,7 +156,7 @@ export default {
 
   /* the list item */
   .serverList__item {
-    @apply relative flex items-center justify-between bg-white rounded-md w-full p-5 pr-12;
+    @apply relative flex flex-wrap flex-col lg:flex-row  lg:items-center justify-between bg-white rounded-md w-full p-5 lg:pr-12;
   }
   .serverList__item.active {
     @apply border-green;
@@ -175,17 +178,20 @@ export default {
 
   /* first col (multi line) */
   .serverList__main {
-    @apply w-1/4 text-gray-500 flex flex-col space-y-0.5;
+    @apply lg:w-1/4 text-gray-500 flex flex-col space-y-0.5 flex-shrink-0;
   }
   .serverList__name {
     @apply text-green text-base font-medium truncate w-full hover:underline;
   }
   .serverList__stats {
-    @apply flex space-x-1.5 text-xs;
+    @apply flex space-x-1.5 text-xs flex-shrink-0;
+  }
+  .serverList__stats span {
+    @apply flex-shrink-0;
   }
 
   /* standard cell */
   .serverList__cell {
-    @apply text-gray-500 text-sm w-1/4 truncate;
+    @apply text-gray-500 text-sm lg:w-1/3 truncate;
   }
 </style>
