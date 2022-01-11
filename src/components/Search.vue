@@ -1,5 +1,12 @@
 <template>
-  <div class="search" :class="size==='large' ? 'search--lge' : ''">
+  <div class="search"
+    :class="[
+      (size==='large' ? 'search--lge' : ''),
+      (size==='full' ? 'search--full' : '' ),
+      (border ? 'search--border' : '' ),
+      (background === 'transparent' ? 'search--transparent' : '' )
+    ]"
+  >
     <input @keyup.enter="search" class="search__input" v-model="searchInput" type="text" placeholder="Search servers by IP, name or tag" />
     <button
       class="search__submit"
@@ -41,6 +48,12 @@ export default {
   },
   props: {
     size: {
+      type: String
+    },
+    border: {
+      type: Boolean
+    },
+    background: {
       type: String
     }
   },
@@ -95,6 +108,15 @@ export default {
   }
   .search--lge {
     @apply md:h-11 w-80 xl:w-96;
+  }
+  .search--full {
+    @apply md:h-11 w-full lg:w-full;
+  }
+  .search--border {
+    @apply border border-gray-300;
+  }
+  .search--transparent {
+    @apply bg-transparent;
   }
   .search__input {
     @apply bg-transparent text-black rounded-r-none border-none h-full flex items-center w-full focus:outline-none !important;
