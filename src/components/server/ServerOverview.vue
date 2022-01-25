@@ -1,151 +1,56 @@
 <template>
-  <div class="flex w-full min-h-screen">
-    <SideNavigation />
-    <main class="flex flex-col mainContent">
-      <TopNavigation />
+  <div class="flex flex-col items-start space-y-5">
 
-      <div class="mainContent__inner" v-if="server">
-        
-        <!-- crumbs -->
-        <ul class="crumbs">
-          <li>
-            <router-link to="/">
-              Edge Servers
-            </router-link>
-          </li>
-          <li>/</li>
-        </ul>
+    <div class="buttonGroup">
+      <button class="buttonGroup__button active">Today</button>
+      <button class="buttonGroup__button">This week</button>
+      <button class="buttonGroup__button">This month</button>
+      <button class="border-none buttonGroup__button">This year</button>
+    </div>
 
-        <!-- title -->
-        <h1>{{server.name}}</h1>
+    <div class="grid w-full grid-cols-1 gap-5">
 
-        <!-- overview -->
-        <div class="flex items-center space-x-3 text-gray-500">
-          <div class="flex items-center px-2 py-1 space-x-2 border rounded bg-green bg-opacity-10 border-green">
-            <span class="block w-2 h-2 rounded-full bg-green"></span>
-            <span class="text-xs text-green">online</span>
-          </div>
-          <div class="flex items-center justify-center space-x-1">
-            <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-4 h-4 text-gray-400" />
-            <CentOsIcon v-if="server.os === 'centos'" className="w-4 h-4 text-gray-400" />
-            <span>{{server.os}} {{server.osVersion}}</span>
-          </div>
-          <span class="text-gray-400">/</span>
-          <span>{{server.ip}}</span>
-          <span class="text-gray-400">/</span>
-          <span>{{server.cpu}}</span>
-          <span class="text-gray-400">/</span>
-          <span>{{server.storage}} storage</span>
-          <span class="text-gray-400">/</span>
-          <span>{{server.memory}} RAM</span>
-        </div>
-
-        <div class="grid items-start grid-cols-12 mt-12 space-x-10">
-          <div class="col-span-12">
-            <!-- tabs -->
-            <TabGroup
-              as="div"
-            >
-              <TabList class="tabs">
-                <Tab v-slot="{selected}">
-                  <button
-                    class="tab"
-                    :class="[selected ? 'tab--selected' : '']"
-                  >
-                    Overview
-                  </button>
-                </Tab>
-                <Tab v-slot="{selected}">
-                  <button
-                    class="tab"
-                    :class="[selected ? 'tab--selected' : '']"
-                  >
-                    Console
-                  </button>
-                </Tab>
-                <Tab v-slot="{selected}">
-                  <button
-                    class="tab"
-                    :class="[selected ? 'tab--selected' : '']"
-                  >
-                    Resize
-                  </button>
-                </Tab>
-                <Tab v-slot="{selected}">
-                  <button
-                    class="tab"
-                    :class="[selected ? 'tab--selected' : '']"
-                  >
-                    Backups
-                  </button>
-                </Tab>
-                <Tab v-slot="{selected}">
-                  <button
-                    class="tab"
-                    :class="[selected ? 'tab--selected' : '']"
-                  >
-                    Network
-                  </button>
-                </Tab>
-                <Tab v-slot="{selected}">
-                  <button
-                    class="tab"
-                    :class="[selected ? 'tab--selected' : '']"
-                  >
-                    History
-                  </button>
-                </Tab>
-              </TabList>
-              <TabPanels class="mt-5">
-                <TabPanel>
-                  <ServerOverview />
-                </TabPanel>
-                <TabPanel>Console</TabPanel>
-                <TabPanel>Resize</TabPanel>
-                <TabPanel>Backups</TabPanel>
-                <TabPanel>Network</TabPanel>
-                <TabPanel>History</TabPanel>
-              </TabPanels>
-            </TabGroup>
-          </div>
-          <!-- <div class="hidden col-span-3 lg:block">
-            <Summary/>
-          </div> -->
-        </div>
-
+      <div class="box">
+        <h4 class="mb-8">CPU load</h4>
+        <Line :datapoints='this.datapoints.cpu_load[0].datapoints' />
       </div>
-    </main>
+
+      <div class="box">
+        <h4 class="mb-8">Memory usage</h4>
+        <Line :datapoints='this.datapoints.mem_usage[0].datapoints' />
+      </div>
+
+      <div class="box">
+        <h4 class="mb-8">Disk usage</h4>
+        <Line :datapoints='this.datapoints["df.root.used"][0].datapoints' />
+      </div>
+
+      <div class="box">
+        <h4 class="mb-8">Disk I/O</h4>
+        <Line :datapoints='this.datapoints.iops[0].datapoints' />
+      </div>
+
+      <div class="box">
+        <h4 class="mb-8">Net RX</h4>
+        <Line :datapoints='this.datapoints.net_rx[0].datapoints' />
+      </div>
+
+      <div class="box">
+        <h4 class="mb-8">Net TX</h4>
+        <Line :datapoints='this.datapoints.net_tx[0].datapoints' />
+      </div>
+    </div>
+    
   </div>
 </template>
 
 <script>
-import CentOsIcon from '@/components/icons/Centos'
 import Line from "@/components/charts/Line"
-import ServerOverview from "@/components/server/ServerOverview"
-import SideNavigation from "@/components/SideNavigation"
-import Summary from "@/components/Summary"
-import TopNavigation from "@/components/TopNavigation"
-import UbuntuIcon from '@/components/icons/Ubuntu'
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
-
-import { useRoute } from 'vue-router'
-import useSWRV from 'swrv'
-import { fetcher } from '../utils/api'
 
 export default {
-  name: 'Server',
-  title() {
-    return 'Edge Account Portal » Server XXX'
-  },
+  name: 'ServerOverview',
   data: function () {
     return {
-      // blockMetadata: null,
-      // blocks: [],
-      // transactionMetadata: null,
-      // transactions: [],
-      loading: false,
-      // pollInterval: 10000,
-      // polling: null,
       datapoints: {
         cpu_load:[
           {
@@ -447,40 +352,13 @@ export default {
             target:"summarize(sumSeries(1.host.100_test2.net..tx.bytes.avg),'0min','avg')"
           }
         ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
       }
     }
   },
   components: {
-    CentOsIcon,
-    Line,
-    ServerOverview,
-    SideNavigation,
-    Summary,
-    TabGroup,
-    TabList,
-    Tab,
-    TabPanels,
-    TabPanel,
-    TopNavigation,
-    UbuntuIcon
-  },
-  mounted() {
-    this.loading = true
-    // this.fetchBlocks()
-    // this.fetchTransactions()
-    // this.pollData()
+    Line
   },
   setup() {
-    const route = useRoute()
-    const { data: server, error } = useSWRV(() => '/servers?slug=' + route.params.slug, fetcher)
-
-    return {
-      server
-    }
   },
   watch: {
     $route(to, from) {
@@ -494,31 +372,17 @@ export default {
 }
 </script>
 <style scoped>
-  .mainContent {
-    @apply relative flex-1;
+  .box {
+    @apply p-6 bg-white rounded-lg w-full;
   }
-  .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-7;
+  .buttonGroup {
+    @apply flex border border-gray-300 rounded-md overflow-hidden bg-white;
   }
-
-  /* crumbs */
-  .crumbs {
-    @apply flex space-x-2 mb-2 items-center;
+  .buttonGroup__button {
+    @apply px-4 py-3 border-r border-gray-300 bg-white focus:outline-none text-sm text-gray-500;
+    @apply hover:bg-gray-100;
   }
-  .crumbs li {
-    @apply text-gray-400;
-  }
-  .crumbs li a {
-    @apply text-green hover:text-green hover:underline;
-  }
-
-  .tabs {
-    @apply flex w-full space-x-8 border-b border-gray-300;
-  }
-  .tab {
-    @apply pb-1 font-medium border-b text-gray-500 border-transparent;
-  }
-  .tab--selected {
-    @apply text-black border-black;
+  .buttonGroup__button.active {
+    @apply bg-green bg-opacity-10 text-green;
   }
 </style>

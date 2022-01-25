@@ -80,7 +80,7 @@
     @apply hidden md:sticky top-0 md:flex flex-col w-64 flex-shrink-0 h-screen overflow-auto py-6 bg-white border-r border-gray-300;
   }
   .sideNavigation__menu {
-    @apply flex-1 mt-24 px-3 flex-shrink-0;
+    @apply flex-1 mt-20 px-3 flex-shrink-0;
   }
   .sideNavigation__tools {
     @apply bg-white pt-6 px-6 border-t border-gray-300;

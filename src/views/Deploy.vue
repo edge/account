@@ -7,7 +7,7 @@
         <h1>Deploy a new server</h1>
 
         <div class="grid items-start grid-cols-12 mt-5 space-x-10 lg:mt-5">
-          <form class="flex flex-col col-span-12 pb-20 space-y-5 lg:col-span-9">
+          <form class="flex flex-col col-span-12 pb-20 space-y-5">
             
             <!-- network region -->
             <div class="box">
@@ -67,9 +67,9 @@
             </div>
           </form>
 
-          <div class="sticky hidden col-span-3 top-32 lg:block">
+          <!-- <div class="sticky hidden col-span-3 top-32 lg:block">
             <Summary/>
-          </div>
+          </div> -->
         </div>
       </div>
     </main>
@@ -124,7 +124,7 @@ export default {
     @apply relative flex-1;
   }
   .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-8;
+    @apply p-3 md:p-5 lg:p-8 mt-7;
   }
   .box {
     @apply w-full p-6 bg-white rounded-lg;

@@ -146,7 +146,7 @@ export default {
     @apply relative flex-1;
   }
   .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-8;
+    @apply p-3 md:p-5 lg:p-8 mt-7;
   }
 
   /* the list */
