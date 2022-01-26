@@ -1,8 +1,8 @@
 <template>
-  <Listbox v-model="selectedVersion">
+  <Listbox v-model="selectedVersion" @click="() => selectServerProperty({ property: 'os', value: 'version' })">
     <div class="relative w-full mt-1">
       <ListboxButton class="listButton">
-        <span class="block truncate">{{selectedVersion}}</span>
+        <span class="block truncate">{{selectedVersion.name}}</span>
         <span class="listButton__icon">
           <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
         </span>
@@ -17,17 +17,13 @@
           <ListboxOption
             v-slot="{ active, selected }"
             v-for="version in versions"
-            :key="version"
+            :key="version.id"
             :value="version"
             as="template"
-            @click="() => selectServerProperty({ property: 'osVersion', value: version })" 
+            @click="() => selectServerProperty({ property: 'osVersion', value: version.id })"
           >
             <li :class="[active ? 'active' : '']" class="listOption">
-              <span :class="[
-                  'block truncate',
-                ]"
-                >{{version}}</span
-              >
+              <span :class="['block truncate']">{{version.name}}</span>
               <span v-if="selected" class="checkmark" >
                 <CheckIcon class="w-5 h-5" aria-hidden="true" />
               </span>
@@ -66,7 +62,6 @@
       const selectedVersion = ref(props.versions[0])
 
       return {
-        // systems,
         selectedVersion
       }
     }

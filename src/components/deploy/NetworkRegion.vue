@@ -3,7 +3,6 @@
     <RadioGroupLabel class="sr-only">Network region</RadioGroupLabel>
 
     <div v-if="regions === undefined">loading...</div>
-    <div>{{selected}}</div>
 
     <div class="box__grid" v-if="regions">
       <RadioGroupOption
@@ -13,7 +12,6 @@
         :value="region"
         v-slot="{ active, checked, disabled }"
         :disabled="!region.enabled"
-        @click="() => selectServerProperty({ property: 'serverRegion', value: region.name })"
       >
         <div
           :class="[
@@ -60,7 +58,7 @@ import {
 } from '@headlessui/vue'
 
 import { CheckIcon } from '@heroicons/vue/outline'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import useSWRV from 'swrv'
 import { fetcher } from '../../utils/api'
 
@@ -78,17 +76,24 @@ export default {
   methods: {
     ...mapMutations([
       'selectServerProperty'
-    ])
+    ]),
+    setServerProperty: 'selectServerProperty'
   },
   setup() {
     const { data: regions, error } = useSWRV(() => '/regions', fetcher)
 
-    const selected = ref({})
+    const selected = ref(null)
 
-    if (regions && regions.value) {
-      // console.log('regions', regions.value)
+    // Give the regions data a chance to load, then select the first
+    // avaliable region.
+    setTimeout(() => {
       selected.value = regions.value[0]
-    }
+    }, 1000)
+
+    watch(selected, newVal => {
+      console.log('selected changed', newVal)
+      // setServerProperty({ property: 'serverRegion', value: newVal.name })
+    })
 
     return {
       selected,

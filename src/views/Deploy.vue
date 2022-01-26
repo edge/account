@@ -62,14 +62,13 @@
               <ul>
                 <li>Region: {{ serverRegion }}</li>
                 <li>OS: {{ os }} {{ osVersion }}</li>
+                <li>Preset: {{ presetId }}</li>
                 <li>Backups enabled: {{ enableBackups }}</li>
+                <li>Hostname: {{ serverHostname }}</li>
               </ul>
             </div>
           </form>
 
-          <!-- <div class="sticky hidden col-span-3 top-32 lg:block">
-            <Summary/>
-          </div> -->
         </div>
       </div>
     </main>
@@ -84,7 +83,6 @@ import Password from '@/components/deploy/Password'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 import ServerName from '@/components/deploy/ServerName'
 import SideNavigation from "@/components/SideNavigation"
-import Summary from "@/components/Summary"
 import Toggle from '@vueform/toggle'
 import TopNavigation from "@/components/TopNavigation"
 import { mapMutations, mapState } from 'vuex'
@@ -101,12 +99,11 @@ export default {
     ServerName,
     ServerSpecs,
     SideNavigation,
-    Summary,
     Toggle,
     TopNavigation,
   },
   computed: {
-    ...mapState(['count', 'enableBackups', 'os', 'osVersion', 'serverRegion'])
+    ...mapState(['count', 'enableBackups', 'os', 'osVersion', 'presetId', 'serverHostname', 'serverRegion'])
   },
   methods: {
     ...mapMutations([

@@ -114,14 +114,11 @@
                 <TabPanel>Backups</TabPanel>
                 <TabPanel>Network</TabPanel>
                 <TabPanel>
-                  <ServerHistory />
+                  <ServerHistory :data=server.history />
                 </TabPanel>
               </TabPanels>
             </TabGroup>
           </div>
-          <!-- <div class="hidden col-span-3 lg:block">
-            <Summary/>
-          </div> -->
         </div>
 
       </div>
@@ -136,7 +133,6 @@ import ServerHistory from "@/components/server/ServerHistory"
 import ServerOverview from "@/components/server/ServerOverview"
 import ServerResize from "@/components/server/ServerResize"
 import SideNavigation from "@/components/SideNavigation"
-import Summary from "@/components/Summary"
 import TopNavigation from "@/components/TopNavigation"
 import UbuntuIcon from '@/components/icons/Ubuntu'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
@@ -152,10 +148,6 @@ export default {
   },
   data: function () {
     return {
-      // blockMetadata: null,
-      // blocks: [],
-      // transactionMetadata: null,
-      // transactions: [],
       loading: false,
       // pollInterval: 10000,
       // polling: null,
@@ -172,7 +164,6 @@ export default {
     ServerOverview,
     ServerResize,
     SideNavigation,
-    Summary,
     TabGroup,
     TabList,
     Tab,
@@ -183,8 +174,6 @@ export default {
   },
   mounted() {
     this.loading = true
-    // this.fetchBlocks()
-    // this.fetchTransactions()
     // this.pollData()
   },
   setup() {

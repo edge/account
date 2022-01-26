@@ -4,11 +4,12 @@
     <div class="box__grid">
       <RadioGroupOption
         as="template"
-        v-for="spec in specs"
+        v-for="spec in presets"
         :key="spec.price"
         :value="spec"
         v-slot="{ active, checked, disabled }"
         :disabled="!spec.enabled"
+        @click="() => selectServerProperty({ property: 'presetId', value: spec.id })"
       >
         <div
           :class="[
@@ -40,6 +41,7 @@
               as="div"
               class="optionSpecs"
             >
+              <span>{{ spec.name }}</span>
               <span>{{ spec.cpu }} vCPU</span>
               <span>{{ spec.ram }}</span>
               <span>{{ spec.ssd }} SSD</span>
@@ -60,42 +62,10 @@ import {
   RadioGroupOption,
 } from '@headlessui/vue'
 
-import { ref } from 'vue'
-
-const specs = [
-  {
-    price: '2',
-    cpu: '1',
-    ram: '512MB',
-    ssd: '10GB',
-    mbps: '10 Mbps',
-    enabled: true
-  },
-  {
-    price: '5',
-    cpu: '1',
-    ram: '10GB',
-    ssd: '10GB',
-    mbps: '25 Mbps',
-    enabled: true
-  },
-  {
-    price: '10',
-    cpu: '1',
-    ram: '4GB',
-    ssd: '50GB',
-    mbps: 'Unlimited',
-    enabled: true
-  },
-  {
-    price: '20',
-    cpu: '1',
-    ram: '512MB',
-    ssd: '10GB',
-    mbps: '10 Mbps',
-    enabled: true
-  },
-]
+import { ref, watch } from 'vue'
+import useSWRV from 'swrv'
+import { fetcher } from '../../utils/api'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'ServerSpecs',
@@ -105,10 +75,32 @@ export default {
     RadioGroupDescription,
     RadioGroupOption,
   },
+  methods: {
+    ...mapMutations([
+      'selectServerProperty'
+    ]),
+    setServerProperty: 'selectServerProperty'
+  },
   setup() {
-    const selected = ref(specs[0])
+    const { data: presets, error } = useSWRV(() => '/presets', fetcher)
 
-    return { selected, specs }
+    const selected = ref(null)
+
+    // Give the presets data a chance to load, then select the first
+    // avaliable preset.
+    setTimeout(() => {
+      selected.value = presets.value[0]
+    }, 1000)
+
+    watch(selected, newVal => {
+      console.log('selected changed', newVal)
+      // setServerProperty({ property: 'presetId', value: newVal.id })
+    })
+
+    return {
+      selected,
+      presets
+    }
   }
 }
 </script>

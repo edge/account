@@ -15,7 +15,7 @@
         </tr>
       </thead>
       <tbody class="tableBody">
-        <tr v-for="item in this.historyData" :key="item.event">
+        <tr v-for="item in history" :key="item.event">
           <td class="tableBody__cell">
             <div class="flex items-center">
               <div class="whitespace-nowrap">
@@ -44,8 +44,6 @@
             <span class="">{{ item.user }}</span>
           </td>
         </tr>
-
-        <!-- More people... -->
       </tbody>
     </table>
 
@@ -60,36 +58,24 @@ export default {
   components: {
     ServerSpecs
   },
-  setup() {
-  },
+  props: ['data'],
   data: function () {
     return {
+      /*
+      {
+        date_create: '2022-01-25 05:00:36',
+        id: 242,
+        name: 'disk_resize',
+        params: [Object],
+        state: 'complete',
+        task: 418,
+        user: 'james@edge.network'
+      }
+      */
+      history: this.data,
       isSaving: false,
       feedback: '',
-      showFeedback: false,
-      historyData: [
-        {
-          date: '25 Jan 2022',
-          time: '16:00',
-          event: 'Changed the disk size from 15GB to 16GB',
-          status: 'Successfully',
-          user: 'james@edge.network'
-        },
-        {
-          date: '25 Jan 2022',
-          time: '15:44',
-          event: 'Created the backup copy test2_backup_1643085796962',
-          status: 'Successfully',
-          user: 'james@edge.network'
-        },
-        {
-          date: '21 Jan 2022',
-          time: '10:31',
-          event: 'Created the VM , OS: Ubuntu 20.04, IP address: 185.167.216.64, main disk size 15GB, RAM1GB, vCPU 1',
-          status: 'Successfully',
-          user: 'james@edge.network'
-        }
-      ]
+      showFeedback: false
     }
   },
   watch: {

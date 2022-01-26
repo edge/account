@@ -36,7 +36,7 @@
             <span class="serverList__status" :class="[server.status]" />
             
             <div class="serverList__main">
-              <router-link class="serverList__name" :to="'/server/'+ server.name">
+              <router-link class="serverList__name" :to="'/server/'+ server.id">
                 {{ server.name }}
               </router-link>
               <div class="serverList__stats">

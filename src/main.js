@@ -28,6 +28,7 @@ const store = createStore({
       enableBackups: false,
       os: '',
       osVersion: '',
+      presetId: 0,
       serverRegion: '',
       serverHostname: '',
       storage: ''
