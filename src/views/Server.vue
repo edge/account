@@ -97,11 +97,20 @@
                 </Tab>
               </TabList>
               <TabPanels class="mt-5">
+                
+                <!-- overview -->
                 <TabPanel>
                   <ServerOverview />
                 </TabPanel>
+
+                <!-- console -->
                 <TabPanel>Console</TabPanel>
-                <TabPanel>Resize</TabPanel>
+
+                <!-- resize -->
+                <TabPanel>
+                  <ServerResize />
+                </TabPanel>
+
                 <TabPanel>Backups</TabPanel>
                 <TabPanel>Network</TabPanel>
                 <TabPanel>History</TabPanel>
@@ -122,6 +131,7 @@
 import CentOsIcon from '@/components/icons/Centos'
 import Line from "@/components/charts/Line"
 import ServerOverview from "@/components/server/ServerOverview"
+import ServerResize from "@/components/server/ServerResize"
 import SideNavigation from "@/components/SideNavigation"
 import Summary from "@/components/Summary"
 import TopNavigation from "@/components/TopNavigation"
@@ -458,6 +468,7 @@ export default {
     CentOsIcon,
     Line,
     ServerOverview,
+    ServerResize,
     SideNavigation,
     Summary,
     TabGroup,

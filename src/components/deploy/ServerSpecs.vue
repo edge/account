@@ -116,7 +116,7 @@ export default {
 <style scoped>
   .box__grid {
     @apply mt-6 w-full grid grid-cols-1 gap-4;
-    @apply sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3;
+    @apply sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4;
   }
 
   /* radio option */
