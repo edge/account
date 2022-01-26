@@ -25,6 +25,7 @@ export default defineComponent({
         borderColor: 'rgb(78,205,95)',
         borderWidth: 2,
         spanGaps: true,
+        stepped: false,
         tension: 0
       }]
     }

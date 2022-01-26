@@ -105,16 +105,19 @@ export default {
 </script>
 <style scoped>
   .box {
-    @apply bg-white rounded-lg w-full overflow-auto;
+    @apply bg-white rounded-lg w-full overflow-auto p-6;
   }
   .tableHead {
-    @apply bg-gray-50
+    @apply border-gray-300 border-b rounded-lg w-full;
   }
   .tableHead__cell {
     @apply px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
   }
   .tableBody {
     @apply bg-white divide-y divide-gray-200;
+  }
+  .tableBody tr {
+    /* @apply hover:bg-gray-50 transition duration-300; */
   }
   .tableBody__cell {
     @apply px-6 py-4 text-gray-500;
