@@ -69,7 +69,7 @@ export default {
         params: [Object],
         state: 'complete',
         task: 418,
-        user: 'james@edge.network'
+        user: ''
       }
       */
       history: this.data,

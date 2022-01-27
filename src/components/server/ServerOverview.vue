@@ -12,32 +12,32 @@
 
       <div class="box">
         <h4 class="mb-8">CPU load</h4>
-        <Line :datapoints='this.datapoints.cpu_load[0].datapoints' />
+        <Line :data='this.metrics.cpu_load[0].datapoints' />
       </div>
 
-      <div class="box">
+      <div class="box" v-show="this.metrics.mem_usage">
         <h4 class="mb-8">Memory usage</h4>
-        <Line :datapoints='this.datapoints.mem_usage[0].datapoints' />
+        <Line v-if="this.metrics.mem_usage" :data='this.metrics.mem_usage[0].datapoints' />
       </div>
 
       <div class="box">
         <h4 class="mb-8">Disk usage</h4>
-        <Line :datapoints='this.datapoints["df.root.used"][0].datapoints' />
+        <!-- <Line :datapoints='this.datapoints["df.root.used"][0].datapoints' /> -->
       </div>
 
       <div class="box">
         <h4 class="mb-8">Disk I/O</h4>
-        <Line :datapoints='this.datapoints.iops[0].datapoints' />
+        <!-- <Line :datapoints='this.datapoints.iops[0].datapoints' /> -->
       </div>
 
       <div class="box">
         <h4 class="mb-8">Net RX</h4>
-        <Line :datapoints='this.datapoints.net_rx[0].datapoints' />
+        <!-- <Line :datapoints='this.datapoints.net_rx[0].datapoints' /> -->
       </div>
 
       <div class="box">
         <h4 class="mb-8">Net TX</h4>
-        <Line :datapoints='this.datapoints.net_tx[0].datapoints' />
+        <!-- <Line :datapoints='this.datapoints.net_tx[0].datapoints' /> -->
       </div>
     </div>
     
@@ -49,9 +49,12 @@ import Line from "@/components/charts/Line"
 
 export default {
   name: 'ServerOverview',
+  props: {
+    metrics: Object
+  },
   data: function () {
     return {
-      datapoints: {
+      datapointsx: {
         cpu_load:[
           {
             datapoints:[
@@ -357,8 +360,6 @@ export default {
   },
   components: {
     Line
-  },
-  setup() {
   },
   watch: {
     $route(to, from) {

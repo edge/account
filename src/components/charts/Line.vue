@@ -13,10 +13,10 @@ export default defineComponent({
   name: 'Line',
   components: { LineChart },
   props: {
-    datapoints: Object
+    data: Object
   },
   setup(props) {
-    const data = JSON.parse(JSON.stringify(props.datapoints))
+    const data = JSON.parse(JSON.stringify(props.data))
     const chartData = {
       labels: data.map(point => new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})),
       datasets: [{

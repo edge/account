@@ -97,10 +97,10 @@
                 </Tab>
               </TabList>
               <TabPanels class="mt-5">
-                
+               
                 <!-- overview -->
                 <TabPanel>
-                  <ServerOverview />
+                  <ServerOverview :metrics=server.metrics />
                 </TabPanel>
 
                 <!-- console -->
