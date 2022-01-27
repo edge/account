@@ -26,7 +26,8 @@ export default defineComponent({
         borderWidth: 2,
         spanGaps: true,
         stepped: false,
-        tension: 0
+        tension: 0,
+        pointRadius: 0
       }]
     }
     const options = {
