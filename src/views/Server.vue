@@ -108,7 +108,7 @@
 
                 <!-- resize -->
                 <TabPanel>
-                  <ServerResize />
+                  <ServerResize :server=server />
                 </TabPanel>
 
                 <TabPanel>

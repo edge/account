@@ -279,6 +279,21 @@ const createAccount = async () => {
     })
 }
 
+const resizeHost = async (id, data) => {
+  const url = `${ACCOUNTS_API_URL}/servers`
+
+  const payload = {
+    action: 'resize',
+    id,
+    ...data
+  }
+
+  return fetchData(url, { method: 'post' }, payload)
+    .then(response => {
+      console.log('response', response)
+    })
+}
+
 const fetchData = (url, options = {}, payload) => {
   const fetchOptions = {
     method: options.method || 'get',
@@ -377,7 +392,8 @@ const fetchData = (url, options = {}, payload) => {
 
 export {
   createAccount,
-  fetcher
+  fetcher,
+  resizeHost
   // deleteBy,
   // deleteWhere,
   // executeRequest,
