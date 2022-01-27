@@ -12,7 +12,12 @@
 
       <div class="box">
         <h4 class="mb-8">CPU load</h4>
-        <Line :data='this.metrics.cpu_load[0].datapoints' />
+        <Line
+          :data='this.metrics.cpu_load[0].datapoints'
+          :minScale='0'
+          :maxScale='100'
+          :postpendValue="'%'"
+        />
       </div>
 
       <div class="box" v-show="this.metrics.mem_usage">

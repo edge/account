@@ -13,10 +13,17 @@ export default defineComponent({
   name: 'Line',
   components: { LineChart },
   props: {
-    data: Object
+    data: Object,
+    minScale: Number,
+    maxScale: Number,
+    postpendValue: String
   },
   setup(props) {
     const data = JSON.parse(JSON.stringify(props.data))
+    let postpendValue = ''
+    if (props.postpendValue) { 
+      postpendValue = props.postpendValue
+    }
     const chartData = {
       labels: data.map(point => new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})),
       datasets: [{
@@ -40,6 +47,18 @@ export default defineComponent({
           intersect: false,
           interaction: {
             intersect: false
+          }
+        }
+      },
+      scales: {
+        y: {
+          suggestedMin: props.minScale,
+          suggestedMax: props.maxScale,
+          ticks: {
+            // Include a dollar sign in the ticks
+            callback: function(value, index, ticks) {
+                return value + postpendValue
+            }
           }
         }
       },
