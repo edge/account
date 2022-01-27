@@ -4,6 +4,10 @@
 
 Account portal for managing Edge services
 
+## Environment variables
+
+ * `VUE_APP_ACCOUNTS_API_URL`: e.g. http://0.0.0.0:8001
+
 ## License
 
 Edge is the infrastructure of Web3. A peer-to-peer network and blockchain providing high performance decentralised web services, powered by the spare capacity all around us.
