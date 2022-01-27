@@ -22,7 +22,7 @@
                 <div class="text-sm">
                   {{ item.date }}
                 </div>
-                <div class="text-xs">
+                <div class="text-xs text-gray-400">
                   {{ item.time }}
                 </div>
               </div>
@@ -34,7 +34,10 @@
                 <div class="text-sm text-gray-900">
                   {{ item.event }}
                 </div>
-                <div class="text-xs text-green">
+                <div
+                  class="text-xs capitalize"
+                  :class="item.status === 'aborted' ? 'text-red' : 'text-green'"
+                >
                   {{ item.status }}
                 </div>
               </div>
@@ -97,7 +100,7 @@ export default {
     @apply border-gray-300 border-b rounded-lg w-full;
   }
   .tableHead__cell {
-    @apply px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
+    @apply pr-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
   }
   .tableBody {
     @apply bg-white divide-y divide-gray-200;
@@ -106,6 +109,6 @@ export default {
     /* @apply hover:bg-gray-50 transition duration-300; */
   }
   .tableBody__cell {
-    @apply px-6 py-4 text-gray-500;
+    @apply pr-6 py-4 text-gray-500;
   }
 </style>

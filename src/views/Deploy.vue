@@ -15,6 +15,12 @@
               <NetworkRegion />
             </div>
 
+            <!-- operating system -->
+            <div class="box box--error">
+              <h4>Operating System</h4>
+              <OperatingSystem />
+            </div>
+
             <!-- size -->
             <div class="box">
               <h4>Server specs</h4>
@@ -33,12 +39,6 @@
                   }"
                 />
               </div>
-            </div>
-
-            <!-- operating system -->
-            <div class="box box--error">
-              <h4>Operating System</h4>
-              <OperatingSystem />
             </div>
 
             <!-- host name / server name -->

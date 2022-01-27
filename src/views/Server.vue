@@ -111,7 +111,10 @@
                   <ServerResize />
                 </TabPanel>
 
-                <TabPanel>Backups</TabPanel>
+                <TabPanel>
+                  <ServerBackups />
+                </TabPanel>
+
                 <TabPanel>Network</TabPanel>
                 <TabPanel>
                   <ServerHistory :data=server.history />
@@ -122,6 +125,8 @@
         </div>
 
       </div>
+
+      <!-- shows if server not yet loaded -->
       <div v-else class="mainContent__inner">
         <div class="flex items-center">
           <span>Loading server</span>
@@ -138,6 +143,7 @@
           </svg>
         </div>
       </div>
+
     </main>
   </div>
 </template>
@@ -145,6 +151,7 @@
 <script>
 import CentOsIcon from '@/components/icons/Centos'
 import Line from "@/components/charts/Line"
+import ServerBackups from "@/components/server/ServerBackups"
 import ServerHistory from "@/components/server/ServerHistory"
 import ServerOverview from "@/components/server/ServerOverview"
 import ServerResize from "@/components/server/ServerResize"
@@ -176,6 +183,7 @@ export default {
   components: {
     CentOsIcon,
     Line,
+    ServerBackups,
     ServerHistory,
     ServerOverview,
     ServerResize,

@@ -41,8 +41,8 @@
               as="div"
               class="optionSpecs"
             >
-              <span>{{ spec.name }}</span>
-              <span>{{ spec.cpu }} vCPU</span>
+              <span class="font-medium text-gray-900">{{ spec.name }}</span>
+              <span class="mt-2">{{ spec.cpu }} vCPU</span>
               <span>{{ spec.ram }}</span>
               <span>{{ spec.ssd }} SSD</span>
               <span>{{ spec.mbps }}</span>
