@@ -55,7 +55,6 @@ pipeline {
               NAME=$NAME \
               IMAGE=$IMAGE \
               HTTP_PORT=$HTTP_PORT \
-              NETWORK_ACCESS=$NETWORK_ACCESS \
               DOMAIN=$DOMAIN \
                 bash -x ./${filename} && \
               rm ${filename}'"
