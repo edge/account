@@ -1,0 +1,84 @@
+#!/usr/bin/env groovy
+// Copyright (C) 2022 Edge Network Technologies Limited
+// Use of this source code is governed by a GNU GPL-style license
+// that can be found in the LICENSE.md file. All rights reserved.
+
+def b64e(input) {
+  return input.bytes.encodeBase64().toString()
+}
+
+def deployScript() {
+  return b64e('''
+  #!/bin/bash
+
+  # Pull the latest version
+  docker pull $IMAGE
+
+  # Gracefully stop/remove existing service (if it exists)
+  docker stop $NAME 2>/dev/null
+  docker rm $NAME 2>/dev/null
+
+  # And then run it again
+  docker run \
+    --detach \
+    --restart always \
+    --name $NAME \
+    --network core-network \
+    --expose $HTTP_PORT \
+    --env VIRTUAL_HOST=$DOMAIN \
+    --env LETSENCRYPT_HOST=$DOMAIN \
+    --env LETSENCRYPT_EMAIL="adam@edge.network" \
+    $IMAGE
+  ''')
+}
+
+pipeline {
+  agent {
+    label 'local'
+  }
+  stages {
+    stage('Deploy') {
+      steps {
+        script {
+          def sshPort = env.SSH_PORT != null ? env.SSH_PORT : 22
+          def ssh = "ssh -o ServerAliveInterval=120 -o ServerAliveCountMax=5 -o StrictHostKeyChecking=no -p ${sshPort} jenkins@${DEPLOY_TARGET} "
+          def filename = "deploy_${UUID.randomUUID().toString()}.sh"
+          def script = deployScript()
+
+          // Using a pre-authorized key, connect to the specified server and run the deploy script.
+          sshagent(credentials : ['a687b920-fcb4-41e4-a878-5ae1f6850b26']) {
+            println "> deploying ${IMAGE} ($NAME) to ${DEPLOY_TARGET}..."
+
+            // Execute the script
+            sh "$ssh 'echo $script | base64 -d > ${filename} && \
+              chmod +x ${filename} && \
+              NAME=$NAME \
+              IMAGE=$IMAGE \
+              HTTP_PORT=$HTTP_PORT \
+              NETWORK_ACCESS=$NETWORK_ACCESS \
+              DOMAIN=$DOMAIN \
+                bash -x ./${filename} && \
+              rm ${filename}'"
+          }
+        }
+      }
+    }
+  }
+  post {
+    success {
+      script {
+        discordSend title: JOB_NAME, description: "${env.JOB_NAME} (#${env.BUILD_NUMBER}) has been deployed", result:"SUCCESS", webhookURL: DISCORD_DEPLOY_WEBHOOK
+      }
+    }
+    failure {
+      script {
+        discordSend title: JOB_NAME, description: "${env.JOB_NAME} (#${env.BUILD_NUMBER}) failed to deploy", result:"FAILURE", webhookURL: DISCORD_DEPLOY_WEBHOOK
+      }
+    }
+    aborted {
+      script {
+        discordSend title: JOB_NAME, description: "${env.JOB_NAME} (#${env.BUILD_NUMBER}) was aborted", result:"WARNING", webhookURL: DISCORD_DEPLOY_WEBHOOK
+      }
+    }
+  }
+}
