@@ -31,69 +31,71 @@
     </div>
     <div class="box">
       <h4>Existing backups</h4>
-      <table class="min-w-full mt-4 divide-y divide-gray-200">
-        <thead class="tableHead">
-          <tr>
-            <th scope="col" class="tableHead__cell">
-              Creation Date
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Name
-            </th>
-            <th scope="col" class="tableHead__cell">
-              OS
-            </th>
-            <th scope="col" class="pr-0 tableHead__cell">
-              
-            </th>
-          </tr>
-        </thead>
-        <tbody class="tableBody">
-          <tr v-for="item in backups" :key="item.date">
-            <td class="tableBody__cell">
-              <div class="flex items-center">
-                <div class="whitespace-nowrap">
-                  <div class="text-sm">
-                    {{ item.date }}
-                  </div>
-                  <div class="text-xs text-gray-400">
-                    {{ item.time }}
-                  </div>
-                </div>
-              </div>
-            </td>
-            <td class="tableBody__cell">
-              <div class="flex items-center">
-                <div class="">
-                  <div class="text-sm text-gray-900">
-                    {{ item.name }}
-                  </div>
-                  <div class="text-xs text-green-100 opacity-75">
-                    {{ item.status }}
+      <div class="mt-4 overflow-hidden border border-gray-300 rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="tableHead">
+            <tr>
+              <th scope="col" class="tableHead__cell">
+                Creation Date
+              </th>
+              <th scope="col" class="tableHead__cell">
+                Name
+              </th>
+              <th scope="col" class="tableHead__cell">
+                OS
+              </th>
+              <th scope="col" class="pr-0 tableHead__cell">
+                
+              </th>
+            </tr>
+          </thead>
+          <tbody class="tableBody">
+            <tr v-for="item in backups" :key="item.date">
+              <td class="tableBody__cell">
+                <div class="flex items-center">
+                  <div class="whitespace-nowrap">
+                    <div class="text-sm">
+                      {{ item.date }}
+                    </div>
+                    <div class="text-xs text-gray-400">
+                      {{ item.time }}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
-            <td class="tableBody__cell">
-              <div class="flex items-center">
-                <div class="">
-                  <div class="text-sm">
-                    {{ item.os.name }}
-                  </div>
-                  <div class="text-xs">
-                    {{ item.os.size }}
+              </td>
+              <td class="tableBody__cell">
+                <div class="flex items-center">
+                  <div class="">
+                    <div class="text-sm text-gray-900">
+                      {{ item.name }}
+                    </div>
+                    <div class="text-xs text-green-100 opacity-75">
+                      {{ item.status }}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
-            <td class="pr-0 tableBody__cell">
-              <div class="flex items-center justify-end">
-                <BackupMenu />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+              <td class="tableBody__cell">
+                <div class="flex items-center">
+                  <div class="">
+                    <div class="text-sm">
+                      {{ item.os.name }}
+                    </div>
+                    <div class="text-xs">
+                      {{ item.os.size }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="pr-0 tableBody__cell">
+                <div class="flex items-center justify-end">
+                  <BackupMenu />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     </div>
   </div>
@@ -165,10 +167,10 @@ export default {
     @apply bg-white rounded-lg w-full p-6;
   }
   .tableHead {
-    @apply border-gray-300 border-b rounded-lg w-full;
+    @apply border-gray-300 bg-gray-50 border-b rounded-lg w-full;
   }
   .tableHead__cell {
-    @apply pr-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
+    @apply px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
   }
   .tableBody {
     @apply bg-white divide-y divide-gray-200;
@@ -177,6 +179,6 @@ export default {
     /* @apply hover:bg-gray-50 transition duration-300; */
   }
   .tableBody__cell {
-    @apply pr-6 py-4 text-gray-500;
+    @apply px-6 py-4 text-gray-500;
   }
 </style>
