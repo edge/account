@@ -25,6 +25,7 @@ def deployScript() {
     --name $NAME \
     --network core-network \
     --expose $HTTP_PORT \
+    --env NETWORK_ACCESS=$NETWORK_ACCESS \
     --env VIRTUAL_HOST=$DOMAIN \
     --env LETSENCRYPT_HOST=$DOMAIN \
     --env LETSENCRYPT_EMAIL="adam@edge.network" \
@@ -55,6 +56,7 @@ pipeline {
               NAME=$NAME \
               IMAGE=$IMAGE \
               HTTP_PORT=$HTTP_PORT \
+              NETWORK_ACCESS=$NETWORK_ACCESS \
               DOMAIN=$DOMAIN \
                 bash -x ./${filename} && \
               rm ${filename}'"
