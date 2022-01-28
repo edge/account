@@ -5,10 +5,10 @@
 // const ApiWrapper = require('@dadi/api-wrapper-core')
 // const qs = require('querystring')
 
-const ACCOUNTS_API_URL = process.env.VUE_APP_ACCOUNTS_API_URL
+const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 
 const fetcher = function(url) {
-  return fetch(`${ACCOUNTS_API_URL}${url}`)
+  return fetch(`${ACCOUNT_API_URL}${url}`)
     .then(response => response.json())
     .then(results => {
       return Promise.resolve(results)
@@ -271,7 +271,7 @@ const fetcher = function(url) {
 // }
 
 const createAccount = async () => {
-  const url = `${ACCOUNTS_API_URL}/1.0/accounts`
+  const url = `${ACCOUNT_API_URL}/1.0/accounts`
 
   return fetchData(url, { method: 'post' })
     .then(response => {
@@ -280,7 +280,7 @@ const createAccount = async () => {
 }
 
 const resizeHost = async (id, data) => {
-  const url = `${ACCOUNTS_API_URL}/servers`
+  const url = `${ACCOUNT_API_URL}/servers`
 
   const payload = {
     action: 'resize',
