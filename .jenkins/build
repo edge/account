@@ -1,15 +1,12 @@
 #!/usr/bin/env groovy
-// Copyright (C) 2021 Edge Network Technologies Limited
+// Copyright (C) 2022 Edge Network Technologies Limited
 // Use of this source code is governed by a GNU GPL-style license
 // that can be found in the LICENSE.md file. All rights reserved.
 
-def imagesPushed = ''
-
-def buildAndPushImage(registry, registryCredential, tag) {
-  docker.withRegistry("https://$registry", registryCredential) {
-    def image = docker.build("$registry/$tag")
+def buildAndPushImage(registryCredential, repository, buildArgs) {
+  docker.withRegistry("https://registry.edge.network", registryCredential) {
+    def image = docker.build("registry.edge.network/$repository", "$buildArgs .")
     image.push()
-    return "$registry/$tag"
   }
 }
 
@@ -21,11 +18,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
-          def tag = buildAndPushImage(REGISTRY,REGISTRY_CREDENTIAL, NAME)
-
-          // Update image list for slack reporting.
-          if (imagesPushed == '') imagesPushed = "\n$tag"
-          else imagesPushed = "$imagesPushed\n$tag"
+          buildAndPushImage(REGISTRY,REGISTRY_CREDENTIAL, NAME, "--build-arg ACCOUNTS_API_URL=$ACCOUNTS_API_URL")
         }
       }
     }
