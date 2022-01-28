@@ -18,7 +18,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
-          buildAndPushImage(REGISTRY,REGISTRY_CREDENTIAL, NAME, "--build-arg ACCOUNT_API_URL=$ACCOUNT_API_URL")
+          buildAndPushImage(REGISTRY_CREDENTIAL, NAME, "--build-arg ACCOUNT_API_URL=$ACCOUNT_API_URL")
         }
       }
     }
