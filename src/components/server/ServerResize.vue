@@ -1,9 +1,13 @@
 <template>
   <div class="box">
     <h4>Resize your server</h4>
-    <button class='p-2 mt-2 mr-2 bg-red-200 border border-gray-600' @click="resize1(server.id)">1 vCPU, 1GB RAM</button>
-    <button class='p-2 mt-2 mr-2 bg-green-200 border border-gray-600' @click="resize2(server.id)">2 vCPU, 2GB RAM</button>
+    <!-- <button class='p-2 mt-2 mr-2 bg-red-200 border border-gray-600' @click="resize1(server.id)">1 vCPU, 1GB RAM</button>
+    <button class='p-2 mt-2 mr-2 bg-green-200 border border-gray-600' @click="resize2(server.id)">2 vCPU, 2GB RAM</button> -->
     <p class="mt-4 text-gray-500">You are currently on the <b>XX plan for $XX per month</b>. Select an option below to resize your server.</p>
+    <ResizeType />
+    <span class="block mt-4 text-red">
+      <span class="font-medium">Note:</span> Because your server's filesystem will be expanded, this resize is not reversible.</span>
+    <div class="w-full h-px my-10 bg-gray-300" />
     <ServerSpecs />
     <div class="relative mt-8">
       <button @click="save" :disabled="isSaving" class="h-full button button--success">
@@ -29,12 +33,14 @@
 
 <script>
 import ServerSpecs from "@/components/deploy/ServerSpecs"
+import ResizeType from "@/components/server/ResizeType"
 import { resizeHost } from '../../utils/api'
 
 export default {
   name: 'ServerResize',
   props: ['server'],
   components: {
+    ResizeType,
     ServerSpecs
   },
   data: function () {

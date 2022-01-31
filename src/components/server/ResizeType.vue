@@ -4,12 +4,11 @@
     <div class="box__grid">
       <RadioGroupOption
         as="template"
-        v-for="spec in presets"
-        :key="spec.price"
+        v-for="spec in resizeTypes"
+        :key="spec.title"
         :value="spec"
         v-slot="{ active, checked, disabled }"
         :disabled="!spec.enabled"
-        @click="() => selectServerProperty({ property: 'presetId', value: spec.id })"
       >
         <div
           :class="[
@@ -19,15 +18,9 @@
             checked ? 'checked' : '',
             disabled ? 'disabled' : ''
           ]"
-          class="radioOption group"
+          class="radioOption"
         >
-          <div class="flex flex-col items-center w-full text-sm">
-            <div class="whyDisabled" :class="!disabled ? 'hidden' : ''">
-              <div class="whyDisabled__inner">
-                This size is not available because amet quam porta ridiculus
-                <div class="whyDisabled__notch" />
-              </div>
-            </div>
+          <div class="flex flex-col w-full text-sm">
             <RadioGroupLabel
               as="div"
               class="optionTitle"
@@ -39,19 +32,17 @@
                 disabled ? 'disabled' : ''
               ]"
             >
-              <h4 class="text-2xl">
-                <sup><span class="inline-block text-sm leading-none">$</span></sup>{{ spec.price }}<span class="text-sm text-gray-600">/mo</span>
-              </h4>
+              <h4>{{ spec.title }}</h4>
             </RadioGroupLabel>
             <RadioGroupDescription
               as="div"
               class="optionSpecs"
             >
-              <!-- <span class="font-medium text-gray-900">{{ spec.name }}</span> -->
-              <span class="mt-2">{{ spec.cpu }} vCPU</span>
+              <span class="">{{ spec.description }}</span>
+              <!-- <span class="mt-2">{{ spec.cpu }} vCPU</span>
               <span>{{ spec.ram }}</span>
               <span>{{ spec.ssd }} SSD</span>
-              <span>{{ spec.mbps }}</span>
+              <span>{{ spec.mbps }}</span> -->
             </RadioGroupDescription>
           </div>
         </div>
@@ -74,7 +65,7 @@ import { fetcher } from '../../utils/api'
 import { mapMutations } from 'vuex'
 
 export default {
-  name: 'ServerSpecs',
+  name: 'ResizeType',
   components: {
     RadioGroup,
     RadioGroupLabel,
@@ -87,25 +78,20 @@ export default {
     ]),
     setServerProperty: 'selectServerProperty'
   },
-  setup() {
-    const { data: presets, error } = useSWRV(() => '/presets', fetcher)
-
-    const selected = ref(null)
-
-    // Give the presets data a chance to load, then select the first
-    // avaliable preset.
-    setTimeout(() => {
-      selected.value = presets.value[0]
-    }, 1000)
-
-    watch(selected, newVal => {
-      console.log('selected changed', newVal)
-      // setServerProperty({ property: 'presetId', value: newVal.id })
-    })
-
+  data: function () {
     return {
-      selected,
-      presets
+      resizeTypes: [
+        {
+          title: 'CPU and  RAM only',
+          description: 'This will only increase or decrease the CPU and RAM of your server, not disk size. This can be reversed.',
+          enabled: true
+        },
+        {
+          title: 'Disk, CPU and RAM',
+          description: 'This will increase the disk size, CPU and RAM of your server. This is a permanent change and cannot be reversed.',
+          enabled: true
+        }
+      ]
     }
   }
 }
@@ -114,12 +100,12 @@ export default {
 <style scoped>
   .box__grid {
     @apply mt-6 w-full grid grid-cols-1 gap-4;
-    @apply sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4;
+    @apply sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2;
   }
 
   /* radio option */
   .radioOption {
-    @apply relative flex space-x-3 items-start p-5 border border-gray-300 rounded-md cursor-pointer;
+    @apply relative flex space-x-3 items-start p-6 border border-gray-300 rounded-md cursor-pointer;
     @apply hover:bg-gray-100 hover:bg-opacity-50;
     @apply focus:outline-none;
   }
@@ -131,12 +117,11 @@ export default {
   }
   .radioOption.disabled {
     @apply cursor-not-allowed opacity-50;
-    @apply hover:opacity-100 transition;
   }
 
   /* option title */
-  .optionTitle {
-    @apply text-center w-full pb-3 border-b border-gray-300;
+  .optionTitle h4 {
+    @apply text-base font-medium;
   }
   .optionTitle.active {
     @apply border-green border-opacity-20;
@@ -147,21 +132,6 @@ export default {
 
   /* option specs */
   .optionSpecs {
-    @apply flex flex-col items-center w-full mt-4 text-sm text-gray-500;
-  }
-
-  /* disabled tooltip */
-  .whyDisabled {
-    @apply w-full h-full md:h-auto top-0 left-0 absolute pb-2;
-    @apply transition md:transform md:-translate-y-10 md:group-hover:-translate-y-full;
-  }
-  .whyDisabled__inner {
-    @apply w-full;
-    @apply bg-black text-white rounded-md p-3 leading-snug text-xs z-10 group-hover:opacity-100 opacity-0;
-    @apply flex items-center justify-center text-center px-5 bg-opacity-90;
-  }
-  .whyDisabled__notch {
-    @apply w-4 h-4 bg-black transform rotate-45 absolute bottom-1;
-    @apply hidden md:block;
+    @apply flex flex-col lg:pr-5 xl:pr-10 items-center w-full mt-2 text-sm text-gray-500;
   }
 </style>
