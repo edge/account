@@ -152,13 +152,13 @@ export default {
 
   /* disabled tooltip */
   .whyDisabled {
-    @apply w-full h-full md:h-auto top-0 left-0 absolute pb-2;
+    @apply w-full h-full md:h-auto top-0 left-0 absolute md:pb-2;
     @apply transition md:transform md:-translate-y-10 md:group-hover:-translate-y-full;
   }
   .whyDisabled__inner {
-    @apply w-full;
-    @apply bg-black text-white rounded-md p-3 leading-snug text-xs z-10 group-hover:opacity-100 opacity-0;
-    @apply flex items-center justify-center text-center px-5 bg-opacity-90;
+    @apply flex items-center justify-center w-full h-full md:h-auto p-3;
+    @apply text-center bg-opacity-90 bg-black text-white rounded-md leading-snug text-xs z-10 opacity-0;
+    @apply group-hover:opacity-100;
   }
   .whyDisabled__notch {
     @apply w-4 h-4 bg-black transform rotate-45 absolute bottom-1;
