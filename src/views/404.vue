@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center w-full h-full">
+  <div class="flex flex-col items-center justify-center w-full h-screen">
     <router-link to="/">
       <img src="/assets/logo.svg" alt="Edge" width="100">
     </router-link>
