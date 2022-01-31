@@ -6,7 +6,7 @@ Account portal for managing Edge services
 
 ## Environment variables
 
- * `VUE_APP_ACCOUNTS_API_URL`: e.g. http://0.0.0.0:8001
+ * `VUE_APP_ACCOUNT_API_URL`: e.g. http://0.0.0.0:8001
 
 ## License
 
