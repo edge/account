@@ -110,6 +110,14 @@
                     History
                   </button>
                 </Tab>
+                <Tab v-slot="{selected}">
+                  <button
+                    class="tab"
+                    :class="[selected ? 'tab--selected' : '']"
+                  >
+                    Destroy
+                  </button>
+                </Tab>
               </TabList>
               <TabPanels class="mt-5">
                
@@ -126,14 +134,24 @@
                   <ServerResize :server=server />
                 </TabPanel>
 
+                <!-- backups -->
                 <TabPanel>
                   <ServerBackups />
                 </TabPanel>
 
+                <!-- network -->
                 <TabPanel>Network</TabPanel>
+
+                <!-- history -->
                 <TabPanel>
                   <ServerHistory :data=server.history />
                 </TabPanel>
+
+                <!-- destroy -->
+                <TabPanel>
+                  <Destroy />
+                </TabPanel>
+
               </TabPanels>
             </TabGroup>
           </div>
@@ -166,6 +184,7 @@
 <script>
 import ActiveTask from "@/components/ActiveTask"
 import CentOsIcon from '@/components/icons/Centos'
+import Destroy from "@/components/server/Destroy"
 import Line from "@/components/charts/Line"
 import ServerBackups from "@/components/server/ServerBackups"
 import ServerHistory from "@/components/server/ServerHistory"
@@ -200,6 +219,7 @@ export default {
   components: {
     ActiveTask,
     CentOsIcon,
+    Destroy,
     Line,
     ServerBackups,
     ServerHistory,
