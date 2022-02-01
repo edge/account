@@ -33,7 +33,6 @@
                 <h4>Automated Backups</h4>
                 <Toggle
                   v-model="enableBackups"
-                  @click="toggleBackups"
                   :classes="{
                     toggleOn: 'bg-green border-green'
                   }"
