@@ -38,7 +38,7 @@
                   </div>
                   <div
                     class="text-xs capitalize"
-                    :class="item.status === 'aborted' ? 'text-red' : 'text-green'"
+                    :class="item.status === 'aborted' || item.status === 'failed' || item.status === 'deferred' ? 'text-red' : 'text-green'"
                   >
                     {{ item.status }}
                   </div>

@@ -1,99 +1,82 @@
+<!-- This example requires Tailwind CSS v2.0+ -->
 <template>
-  <div>
-    <slot name="opener" :open="showModal"></slot>
-    <transition name="modal-fade">
-      <div class="modal-backdrop" v-if="isShow">
-        <div class="modal" v-click-outside="closeHandler ? closeHandler : onClickOutside">
-          <header class="modal-header">
-            <slot name="header"></slot>
-            <button
-                type="button"
-                class="btn-close"
-                @click="closeHandler ? closeHandler() : closeModal()"
-                v-if="withCloseButton"
-            >
-              <XIcon />
-            </button>
-          </header>
+  <TransitionRoot as="template" :show="open">
+    <Dialog as="div" class="fixed inset-0 z-10 overflow-y-auto" @close="open = false">
+      <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+          <DialogOverlay class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
+        </TransitionChild>
 
-          <section class="modal-body">
-            <slot name="body" :close="closeModal" :open="showModal"></slot>
-          </section>
-
-          <footer class="modal-footer">
-            <slot name="footer" :close="closeModal" :open="showModal"></slot>
-          </footer>
-        </div>
+        <!-- This element is to trick the browser into centering the modal contents. -->
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <TransitionChild
+          as="template" enter="ease-out duration-300"
+          enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          enter-to="opacity-100 translate-y-0 sm:scale-100"
+          leave="ease-in duration-200"
+          leave-from="opacity-100 translate-y-0 sm:scale-100"
+          leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        >
+          <div class="panel">
+            <div class="sm:flex sm:items-start">
+              <div class="icon">
+                <ExclamationIcon class="w-6 h-6" aria-hidden="true" />
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <DialogTitle as="h4" class="">
+                  Power down server?
+                </DialogTitle>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500">
+                    You will still be billed for a powered down server. To end billing, destroy the server instead.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 sm:mt-2 sm:ml-10 sm:pl-4 sm:flex">
+              <button type="button" class="w-full button button--small button--error sm:w-auto" @click="open = false">
+                Continue
+              </button>
+              <button type="button" class="w-full mt-3 button button--small button--outline sm:mt-0 sm:w-auto sm:ml-3" @click="open = false" ref="cancelButtonRef">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </TransitionChild>
       </div>
-    </transition>
-  </div>
+    </Dialog>
+  </TransitionRoot>
 </template>
 
 <script>
-  import vClickOutside from 'click-outside-vue3'
-  import { XIcon } from '@heroicons/vue/solid';
-  export default {
-    name: 'Modal',
-    props: ['disallowClickOutside', 'withCloseButton', 'opened', 'closeHandler'],
-    directives: {
-      clickOutside: vClickOutside.directive
-    },
-    components: {
-      XIcon
-    },
-    data: function () {
-      return {
-        isShow: !!this.opened
-      }
-    },
-    methods: {
-      onClickOutside() {
-        if (disallowClickOutside) {
+import { ref } from 'vue'
+import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 
-        } else {
-          this.closeModal()
-        }
-      },
-      showModal() {
-        this.isShow = true
-      },
-      closeModal() {
-        this.isShow = false
-      }
+export default {
+  components: {
+    Dialog,
+    DialogOverlay,
+    DialogTitle,
+    TransitionChild,
+    TransitionRoot,
+    ExclamationIcon,
+  },
+  setup() {
+    const open = ref(true)
+
+    return {
+      open,
     }
-  }
+  },
+}
 </script>
 
 <style scoped>
-  .modal-backdrop {
-    @apply fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-70 flex items-center justify-center py-20 px-20 z-50 overflow-auto;
+  .panel {
+    @apply inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6;
   }
-
-  .modal {
-    @apply w-full bg-black-100 flex flex-col rounded-md text-white max-w-612 mx-auto;
-  }
-
-  .modal-header {
-    @apply relative py-21 px-24 text-white;
-  }
-
-
-  .modal-body {
-    @apply relative py-21 px-24 text-white;
-  }
-
-  .btn-close {
-    @apply text-white w-32 top-20 absolute right-20 hover:text-green focus:outline-none;
-  }
-
-
-  .modal-fade-enter,
-  .modal-fade-leave-to {
-    @apply opacity-0;
-  }
-
-  .modal-fade-enter-active,
-  .modal-fade-leave-active {
-    @apply transition-opacity duration-500 ease-in-out;
+  .icon {
+    @apply flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 text-red rounded-full sm:mx-0 sm:h-10 sm:w-10;
   }
 </style>

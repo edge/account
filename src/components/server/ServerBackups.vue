@@ -31,7 +31,7 @@
     </div>
     <div class="box">
       <h4>Existing backups</h4>
-      <div class="mt-4 overflow-hidden border border-gray-300 rounded-lg">
+      <div class="mt-4 border border-gray-300 rounded-lg">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="tableHead">
             <tr>

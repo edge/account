@@ -65,7 +65,7 @@
     @apply focus:outline-none;
   }
   .menu__items {
-    @apply absolute right-0 w-32 mt-1 z-10 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5;
+    @apply absolute transform right-0 w-32 mt-1 z-10 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5;
     @apply focus:outline-none;
   }
   .menu__item {

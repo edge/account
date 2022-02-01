@@ -17,27 +17,42 @@
         </ul>
 
         <!-- title -->
-        <h1>{{server.name}}</h1>
+        <div class="flex flex-col items-center space-x-4 md:flex-row">
+          <div class="relative">
+            <h1 class="mb-0 leading-none">{{server.name}}</h1>
+            <span class="absolute top-0 block w-2 h-2 rounded-full -right-1 bg-green" />
+          </div>
+          <ActiveTask status="Changing the VM parameters" />
+        </div>
 
         <!-- overview -->
-        <div class="flex items-center space-x-3 text-gray-500">
-          <div class="flex items-center px-2 py-1 space-x-2 border rounded bg-green bg-opacity-10 border-green">
-            <span class="block w-2 h-2 rounded-full bg-green"></span>
-            <span class="text-xs text-green">online</span>
+        <div class="flex items-center justify-between mt-4 space-x-3 text-gray-500">
+
+          <div class="flex items-center space-x-2">
+            <div class="flex items-center justify-center space-x-1 text-gray-900">
+              <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-4 h-4 text-gray-500" />
+              <CentOsIcon v-if="server.os === 'centos'" className="w-4 h-4 text-gray-500" />
+              <span>{{server.os}} {{server.osVersion}}</span>
+            </div>
+            <span class="text-gray-400">/</span>
+            <span>{{server.ip}}</span>
+            <span class="text-gray-400">/</span>
+            <span>{{server.cpu}}</span>
+            <span class="text-gray-400">/</span>
+            <span>{{server.storage}} storage</span>
+            <span class="text-gray-400">/</span>
+            <span>{{server.memory}} RAM</span>
           </div>
-          <div class="flex items-center justify-center space-x-1">
-            <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-4 h-4 text-gray-400" />
-            <CentOsIcon v-if="server.os === 'centos'" className="w-4 h-4 text-gray-400" />
-            <span>{{server.os}} {{server.osVersion}}</span>
+
+          <div class="flex items-center space-x-2">
+            <!-- <span>Status:</span> -->
+            <ServerStatus />
+            <!-- <div class="flex items-center px-2 py-1 space-x-1 bg-white border rounded bg-opacity-10 border-green">
+              <span class="block w-2 h-2 rounded-full bg-green"></span>
+              <span class="text-xs text-green">online</span>
+            </div> -->
           </div>
-          <span class="text-gray-400">/</span>
-          <span>{{server.ip}}</span>
-          <span class="text-gray-400">/</span>
-          <span>{{server.cpu}}</span>
-          <span class="text-gray-400">/</span>
-          <span>{{server.storage}} storage</span>
-          <span class="text-gray-400">/</span>
-          <span>{{server.memory}} RAM</span>
+
         </div>
 
         <div class="grid items-start grid-cols-12 mt-12 space-x-10">
@@ -149,12 +164,14 @@
 </template>
 
 <script>
+import ActiveTask from "@/components/ActiveTask"
 import CentOsIcon from '@/components/icons/Centos'
 import Line from "@/components/charts/Line"
 import ServerBackups from "@/components/server/ServerBackups"
 import ServerHistory from "@/components/server/ServerHistory"
 import ServerOverview from "@/components/server/ServerOverview"
 import ServerResize from "@/components/server/ServerResize"
+import ServerStatus from "@/components/server/ServerStatus"
 import SideNavigation from "@/components/SideNavigation"
 import TopNavigation from "@/components/TopNavigation"
 import UbuntuIcon from '@/components/icons/Ubuntu'
@@ -181,12 +198,14 @@ export default {
     }
   },
   components: {
+    ActiveTask,
     CentOsIcon,
     Line,
     ServerBackups,
     ServerHistory,
     ServerOverview,
     ServerResize,
+    ServerStatus,
     SideNavigation,
     TabGroup,
     TabList,
@@ -243,8 +262,10 @@ export default {
   }
   .tab {
     @apply pb-1 font-medium border-b text-gray-500 border-transparent;
+    @apply hover:text-black;
   }
   .tab--selected {
-    @apply text-black border-black;
+    @apply text-green border-green;
+    @apply hover:text-green;
   }
 </style>

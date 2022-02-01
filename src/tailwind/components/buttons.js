@@ -33,18 +33,18 @@ const themes = {
     }
   },
   error: {
-    backgroundColor: colors.black.DEFAULT,
-    borderColor: colors.black.DEFAULT,
+    backgroundColor: colors.red.DEFAULT,
+    borderColor: colors.red.DEFAULT,
     color: colors.white,
 
     '&:hover, &.hover': {
       backgroundColor: 'transparent',
-      color: colors.black.DEFAULT
+      color: colors.red.DEFAULT
     },
 
     '&:disabled, &.disabled': {
-      backgroundColor: colors.black[100],
-      borderColor: colors.black[100]
+      backgroundColor: colors.red[100],
+      borderColor: colors.red[100]
     }
   },
   success: {
@@ -75,6 +75,9 @@ const themes = {
     '&:disabled, &.disabled': {
       borderColor: colors.gray.DEFAULT
     }
+  },
+  small: {
+    padding: `${rem(8)} ${rem(20)} ${rem(8)} ${rem(20)}`
   }
 }
 
@@ -138,7 +141,8 @@ const buttons = ({ theme }) => {
     '.button--outline': button.outline,
     '.button--error': button.error,
     '.button--success': button.success,
-    '.button--outline-success': button['outline-success']
+    '.button--outline-success': button['outline-success'],
+    '.button--small': button.small
   }
 }
 
