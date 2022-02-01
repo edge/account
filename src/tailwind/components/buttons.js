@@ -23,8 +23,8 @@ const themes = {
     borderColor: colors.gray.DEFAULT,
 
     '&:hover, &.hover': {
-      borderColor: colors.green[200],
-      color: colors.green[200]
+      borderColor: colors.gray[900],
+      color: colors.gray[900]
     },
 
     '&:disabled, &.disabled': {
