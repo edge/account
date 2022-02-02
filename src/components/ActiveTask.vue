@@ -1,5 +1,5 @@
 <template>
-  <div class="statusPanel animate-pulse">
+  <div class="mt-2 statusPanel animate-pulse sm:mt-0">
     <RefreshIcon class="w-4 h-4 opacity-50 animate-spin" />
     <span>{{status}}</span>
   </div>

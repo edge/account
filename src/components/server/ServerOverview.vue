@@ -379,13 +379,13 @@ export default {
 </script>
 <style scoped>
   .box {
-    @apply p-6 bg-white rounded-lg w-full;
+    @apply p-4 md:p-6 bg-white rounded-lg w-full;
   }
   .buttonGroup {
     @apply flex border border-gray-300 rounded-md overflow-hidden bg-white;
   }
   .buttonGroup__button {
-    @apply px-4 py-3 border-r border-gray-300 bg-white focus:outline-none text-sm text-gray-500;
+    @apply px-3 md:px-4 py-2 md:py-3 border-r border-gray-300 bg-white focus:outline-none text-sm text-gray-500;
     @apply hover:bg-gray-100;
   }
   .buttonGroup__button.active {

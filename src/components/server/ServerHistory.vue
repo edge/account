@@ -97,7 +97,7 @@ export default {
 </script>
 <style scoped>
   .box {
-    @apply bg-white rounded-lg w-full overflow-auto p-6;
+    @apply bg-white rounded-lg w-full overflow-auto p-4 md:p-6;
   }
   .tableHead {
     @apply border-gray-300 border-b rounded-lg w-full bg-gray-50;

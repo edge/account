@@ -66,6 +66,6 @@ export default {
 </script>
 <style scoped>
   .box {
-    @apply p-6 bg-white rounded-lg w-full;
+    @apply p-4 md:p-6 bg-white rounded-lg w-full;
   }
 </style>

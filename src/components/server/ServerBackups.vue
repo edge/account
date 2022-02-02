@@ -164,7 +164,7 @@ export default {
 </script>
 <style scoped>
   .box {
-    @apply bg-white rounded-lg w-full p-6;
+    @apply bg-white rounded-lg w-full p-4 md:p-6;
   }
   .tableHead {
     @apply border-gray-300 bg-gray-50 border-b rounded-lg w-full;

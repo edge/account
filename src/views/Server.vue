@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full min-h-screen">
     <SideNavigation />
-    <main class="flex flex-col mainContent">
+    <main class="flex flex-col w-full mainContent">
       <TopNavigation />
 
       <div class="mainContent__inner" v-if="server">
@@ -17,7 +17,7 @@
         </ul>
 
         <!-- title -->
-        <div class="flex flex-col items-center space-x-4 md:flex-row">
+        <div class="flex flex-col items-start sm:space-x-4 sm:items-center sm:flex-row">
           <div class="relative">
             <h1 class="mb-0 leading-none">{{server.name}}</h1>
             <span class="absolute top-0 block w-2 h-2 rounded-full -right-1 bg-green" />
@@ -26,31 +26,29 @@
         </div>
 
         <!-- overview -->
-        <div class="flex items-center justify-between mt-4 space-x-3 text-gray-500">
-
-          <div class="flex items-center space-x-2">
-            <div class="flex items-center justify-center space-x-1 text-gray-900">
-              <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-4 h-4 text-gray-500" />
-              <CentOsIcon v-if="server.os === 'centos'" className="w-4 h-4 text-gray-500" />
-              <span>{{server.os}} {{server.osVersion}}</span>
+        <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4">
+          
+          <div class="relative flex-1 overflow-hidden">
+            <div class="specsGradient" />
+            <div class="flex items-center justify-start space-x-2 overflow-auto">
+              <div class="flex items-center flex-shrink-0 space-x-1 text-gray-900">
+                <UbuntuIcon v-if="server.os === 'ubuntu'" className="server-icon" />
+                <CentOsIcon v-if="server.os === 'centos'" className="server-icon" />
+                <span class="server-detail">{{server.os}} {{server.osVersion}}</span>
+              </div>
+              <span class="text-gray-400 server-detail">/</span>
+              <span class="server-detail">{{server.ip}}</span>
+              <span class="text-gray-400 server-detail">/</span>
+              <span class="server-detail">{{server.cpu}}</span>
+              <span class="text-gray-400 server-detail">/</span>
+              <span class="server-detail">{{server.storage}} storage</span>
+              <span class="text-gray-400 server-detail">/</span>
+              <span class="server-detail">{{server.memory}} RAM</span>
             </div>
-            <span class="text-gray-400">/</span>
-            <span>{{server.ip}}</span>
-            <span class="text-gray-400">/</span>
-            <span>{{server.cpu}}</span>
-            <span class="text-gray-400">/</span>
-            <span>{{server.storage}} storage</span>
-            <span class="text-gray-400">/</span>
-            <span>{{server.memory}} RAM</span>
           </div>
 
-          <div class="flex items-center space-x-2">
-            <!-- <span>Status:</span> -->
+          <div class="flex-shrink-0">
             <ServerStatus />
-            <!-- <div class="flex items-center px-2 py-1 space-x-1 bg-white border rounded bg-opacity-10 border-green">
-              <span class="block w-2 h-2 rounded-full bg-green"></span>
-              <span class="text-xs text-green">online</span>
-            </div> -->
           </div>
 
         </div>
@@ -60,7 +58,9 @@
             <!-- tabs -->
             <TabGroup
               as="div"
+              class="tabGroup"
             >
+              <div class="absolute top-0 right-0 w-10 h-5 bg-gradient-to-l from-gray-200" />
               <TabList class="tabs">
                 <Tab v-slot="{selected}">
                   <button
@@ -112,7 +112,7 @@
                 </Tab>
                 <Tab v-slot="{selected}">
                   <button
-                    class="tab"
+                    class="pr-10 tab md:pr-0"
                     :class="[selected ? 'tab--selected' : '']"
                   >
                     Destroy
@@ -276,9 +276,12 @@ export default {
   .crumbs li a {
     @apply text-green hover:text-green hover:underline;
   }
+  .tabGroup {
+    @apply relative;
+  }
 
   .tabs {
-    @apply flex w-full space-x-8 border-b border-gray-300;
+    @apply w-full space-x-4 md:space-x-8 border-b border-gray-300 overflow-auto flex flex-nowrap;
   }
   .tab {
     @apply pb-1 font-medium border-b text-gray-500 border-transparent;
@@ -287,5 +290,14 @@ export default {
   .tab--selected {
     @apply text-green border-green;
     @apply hover:text-green;
+  }
+  .server-detail {
+    @apply flex-shrink-0;
+  }
+  .server-icon {
+    @apply w-4 h-4 text-gray-500 flex-shrink-0;
+  }
+  .specsGradient {
+    @apply absolute top-0 right-0 w-10 h-full pointer-events-none sm:hidden bg-gradient-to-l from-gray-200;
   }
 </style>
