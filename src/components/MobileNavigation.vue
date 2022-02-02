@@ -7,6 +7,11 @@
         </div>
         <div class="mobileNavigation__menu">
           <Menu :mainNav="mainNav"/>
+          <router-link
+            to="/deploy"
+          >
+            <button class="w-full mt-5 button button--success">Deploy Server</button>
+          </router-link>
         </div>
         <div class="mobileNavigation__tools">
           <NavigationTools/>
