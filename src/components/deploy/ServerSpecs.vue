@@ -128,6 +128,7 @@ export default {
   }
   .radioOption.checked {
     @apply bg-gray-100 border-green bg-opacity-75;
+    @apply ring-4 ring-green ring-opacity-10;
   }
   .radioOption.disabled {
     @apply cursor-not-allowed opacity-50;

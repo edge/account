@@ -48,6 +48,9 @@
         </div>
       </RadioGroupOption>
     </div>
+    <span v-if="selected.id === 2" class="block mt-4 text-red">
+      <span class="font-medium">Note:</span> Because your server's filesystem will be expanded, this resize is not reversible.
+    </span>
   </RadioGroup>
 </template>
 
@@ -78,20 +81,34 @@ export default {
     ]),
     setServerProperty: 'selectServerProperty'
   },
-  data: function () {
+  setup() {
+
+    const resizeTypes = [
+      {
+        id: 1,
+        title: 'CPU and  RAM only',
+        description: 'This will only increase or decrease the CPU and RAM of your server, not disk size. This can be reversed.',
+        enabled: true
+      },
+      {
+        id: 2,
+        title: 'Disk, CPU and RAM',
+        description: 'This will increase the disk size, CPU and RAM of your server. This is a permanent change and cannot be reversed.',
+        enabled: true
+      }
+    ]
+
+    const selected = ref(resizeTypes[0])
+
+    watch(selected, newVal => {
+      console.log('selected changed', newVal)
+      // setServerProperty({ property: 'presetId', value: newVal.id })
+    })
+    
+
     return {
-      resizeTypes: [
-        {
-          title: 'CPU and  RAM only',
-          description: 'This will only increase or decrease the CPU and RAM of your server, not disk size. This can be reversed.',
-          enabled: true
-        },
-        {
-          title: 'Disk, CPU and RAM',
-          description: 'This will increase the disk size, CPU and RAM of your server. This is a permanent change and cannot be reversed.',
-          enabled: true
-        }
-      ]
+      selected,
+      resizeTypes
     }
   }
 }
@@ -114,6 +131,7 @@ export default {
   }
   .radioOption.checked {
     @apply bg-gray-100 border-green bg-opacity-75;
+    @apply ring-4 ring-green ring-opacity-10;
   }
   .radioOption.disabled {
     @apply cursor-not-allowed opacity-50;
