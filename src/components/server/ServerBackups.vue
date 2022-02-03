@@ -6,7 +6,7 @@
       <div class="flex flex-col w-full p-4 mt-5 bg-gray-100 border-gray-300 rounded-lg lg:p-5 lg:space-x-4 lg:items-end lg:flex-row">
         <div class="flex-1 w-full lg:w-auto input-group">
           <label class="label">Backup name</label>
-          <input type="text" placeholder="Name your backup" value="test2_backup_01234" class="bg-transparent input input--floating" />
+          <input type="text" placeholder="Name your backup" :value=backupName class="bg-transparent input input--floating" />
         </div>
         <div class="relative">
           <button @click="save" :disabled="isSaving" class="h-full mt-5 lg:mt-0 button button--success">
@@ -79,10 +79,10 @@
                 <div class="flex items-center">
                   <div class="">
                     <div class="text-sm">
-                      {{ item.os.name }}
+                      {{ item.os }}
                     </div>
                     <div class="text-xs">
-                      {{ item.os.size }}
+                      {{ item.size }}
                     </div>
                   </div>
                 </div>
@@ -103,61 +103,37 @@
 
 <script>
 import BackupMenu from "@/components/server/BackupMenu"
+import { createBackup } from '../../utils/api'
+import { mapMutations } from 'vuex'
+
 export default {
   name: 'ServerBackups',
   components: {
     BackupMenu
   },
-  // props: ['data'],
+  props: ['server'],
   data: function () {
     return {
-      /*
-      {
-        date_create: '2022-01-25 05:00:36',
-        id: 242,
-        name: 'disk_resize',
-        params: [Object],
-        state: 'complete',
-        task: 418,
-        user: 'james@edge.network'
-      }
-      */
-      backups: [
-        {
-          date: '25 Jan 2022',
-          time: '15:44',
-          name: 'test2_backup_1643085796962',
-          os: {
-            name: 'Ubuntu 20.04',
-            size: '1.8 GB'
-          },
-          status: 'Ready to use'
-        },
-        {
-          date: '25 Jan 2022',
-          time: '15:44',
-          name: 'test2_backup_1643085796962',
-          os: {
-            name: 'Ubuntu 20.04',
-            size: '1.8 GB'
-          },
-          status: 'Ready to use'
-        }
-      ],
-      // backups: this.data,
+      backupName: `${this.server.name}-${new Date().getTime()}`,
+      backups: this.server.backups,
       isSaving: false,
       feedback: '',
       showFeedback: false
     }
   },
-  watch: {
-    $route(to, from) {
-    }
-  },
   methods: {
-    async save () {
+    // ...mapMutations([
+    //   'addTask'
+    // ]),
+    async save() {
       this.isSaving = true
       this.showStatus = true
+      
+      createBackup(this.server.id, { name: this.backupName, comment: 'x' })
+    }
+  },
+  watch: {
+    $route(to, from) {
     }
   }
 }
