@@ -63,12 +63,12 @@ export default {
     ExclamationIcon,
   },
   setup() {
-    const open = ref(true)
+    const open = ref(false)
 
     return {
-      open,
+      open
     }
-  },
+  }
 }
 </script>
 

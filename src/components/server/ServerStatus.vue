@@ -32,7 +32,7 @@
     methods: {
       toggleServer () {
         if (this.enabled) {
-          this.$refs.modal.openModal()
+          this.$refs.modal.open = true
         } else {
           // power back on 
           this.enabled = true
