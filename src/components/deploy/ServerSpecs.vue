@@ -54,7 +54,7 @@
               <span class="mt-2">{{ spec.cpu }} vCPU</span>
               <span>{{ spec.ramFormatted }}</span>
               <span>{{ spec.ssdFormatted }} SSD</span>
-              <span>{{ spec.mbps }}</span>
+              <!-- <span>{{ spec.mbps }}</span> -->
             </RadioGroupDescription>
           </div>
         </div>
@@ -78,7 +78,7 @@ import { mapMutations } from 'vuex'
 
 export default {
   name: 'ServerSpecs',
-  props: ['current', 'resizeType'],
+  props: ['current', 'resizeType', 'selectedSpecs'],
   components: {
     RadioGroup,
     RadioGroupLabel,
@@ -104,11 +104,11 @@ export default {
       setTimeout(() => {     
         console.log('updated!')
         console.log('props', props)
-        const { current, resizeType } = props
+        const { current, resizeType, selectedSpecs } = props
 
         let matchingPreset
         
-        if (current) {
+        if (current && !selectedSpecs) {
           matchingPreset = presets.value.map(p => {
             if (p.ram === current.ram && p.cpu === current.cpu) {
               return p
@@ -128,10 +128,14 @@ export default {
           })
         }
 
-        if (matchingPreset && matchingPreset[0]) {
-          selected.value = matchingPreset[0]
-        } else {      
-          selected.value = presets.value[0]
+        if (selectedSpecs) {
+          selected.value = selectedSpecs
+        } else {
+          if (matchingPreset && matchingPreset[0]) {
+            selected.value = matchingPreset[0]
+          } else {      
+            selected.value = presets.value[0]
+          }
         }
       }, 1000)
     })

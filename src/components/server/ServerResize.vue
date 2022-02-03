@@ -8,7 +8,7 @@
 
     <div class="w-full h-px my-10 bg-gray-300" />
    
-    <ServerSpecs :current=currentServerSpecs :resizeType=selectedResizeType @resize-specs-changed="captureResizeSpecs" />
+    <ServerSpecs :current=currentServerSpecs :resizeType=selectedResizeType @resize-specs-changed="captureResizeSpecs" :selectedSpecs=selectedResizeSpecs />
 
     <div class="relative mt-8">
       <button @click="save" :disabled="isSaving" class="h-full button button--success">
@@ -62,6 +62,7 @@ export default {
   methods: {
     captureResizeType(data) {
       this.selectedResizeType = data
+      this.selectedResizeSpecs = null
     },
     captureResizeSpecs(data) {
       this.selectedResizeSpecs = data
