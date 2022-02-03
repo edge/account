@@ -1,6 +1,6 @@
 <template>
   <RadioGroup v-model="selected">
-    <RadioGroupLabel class="sr-only">Network region</RadioGroupLabel>
+    <RadioGroupLabel class="sr-only">Size</RadioGroupLabel>
     <div class="box__grid">
       <RadioGroupOption
         as="template"
@@ -9,7 +9,10 @@
         :value="spec"
         v-slot="{ active, checked, disabled }"
         :disabled="!spec.enabled"
-        @click="() => selectServerProperty({ property: 'presetId', value: spec.id })"
+        @click="() => {
+          selectServerProperty({ property: 'presetId', value: spec.id })
+          updateParentResizeSpecs(spec)
+        }"
       >
         <div
           :class="[
@@ -49,8 +52,8 @@
             >
               <!-- <span class="font-medium text-gray-900">{{ spec.name }}</span> -->
               <span class="mt-2">{{ spec.cpu }} vCPU</span>
-              <span>{{ spec.ram }}</span>
-              <span>{{ spec.ssd }} SSD</span>
+              <span>{{ spec.ramFormatted }}</span>
+              <span>{{ spec.ssdFormatted }} SSD</span>
               <span>{{ spec.mbps }}</span>
             </RadioGroupDescription>
           </div>
@@ -68,13 +71,14 @@ import {
   RadioGroupOption,
 } from '@headlessui/vue'
 
-import { ref, watch } from 'vue'
+import { ref, watch, onUpdated } from 'vue'
 import useSWRV from 'swrv'
 import { fetcher } from '../../utils/api'
 import { mapMutations } from 'vuex'
 
 export default {
   name: 'ServerSpecs',
+  props: ['current', 'resizeType'],
   components: {
     RadioGroup,
     RadioGroupLabel,
@@ -85,18 +89,52 @@ export default {
     ...mapMutations([
       'selectServerProperty'
     ]),
-    setServerProperty: 'selectServerProperty'
+    setServerProperty: 'selectServerProperty',
+    updateParentResizeSpecs(data) {
+      this.$emit('resize-specs-changed', data)
+    }
   },
-  setup() {
+  setup(props) {
+    const selected = ref(null)
     const { data: presets, error } = useSWRV(() => '/presets', fetcher)
 
-    const selected = ref(null)
+    onUpdated(() => {
+      // Give the presets data a chance to load, then select the first
+      // avaliable preset.
+      setTimeout(() => {     
+        console.log('updated!')
+        console.log('props', props)
+        const { current, resizeType } = props
 
-    // Give the presets data a chance to load, then select the first
-    // avaliable preset.
-    setTimeout(() => {
-      selected.value = presets.value[0]
-    }, 1000)
+        let matchingPreset
+        
+        if (current) {
+          matchingPreset = presets.value.map(p => {
+            if (p.ram === current.ram && p.cpu === current.cpu) {
+              return p
+            } else {
+              return null
+            }
+          }).filter(Boolean)
+
+          // Loop over presets and disable those that can't be used.
+          presets.value.forEach(p => {
+            p.enabled = true
+            
+            // SSD cannot be downsized.
+            if (resizeType.id === 2 && p.ssd < current.ssd) {
+              p.enabled = false
+            }
+          })
+        }
+
+        if (matchingPreset && matchingPreset[0]) {
+          selected.value = matchingPreset[0]
+        } else {      
+          selected.value = presets.value[0]
+        }
+      }, 1000)
+    })
 
     watch(selected, newVal => {
       console.log('selected changed', newVal)

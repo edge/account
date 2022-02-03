@@ -1,12 +1,15 @@
 <template>
   <div class="box">
     <h4>Resize your server</h4>
-    <!-- <button class='p-2 mt-2 mr-2 bg-red-200 border border-gray-600' @click="resize1(server.id)">1 vCPU, 1GB RAM</button>
-    <button class='p-2 mt-2 mr-2 bg-green-200 border border-gray-600' @click="resize2(server.id)">2 vCPU, 2GB RAM</button> -->
+
     <p class="mt-4 text-gray-500">You are currently on the <b>XX plan for $XX per month</b>. Select an option below to resize your server.</p>
-    <ResizeType />
+    
+    <ResizeType @resize-type-changed="captureResizeType" />
+
     <div class="w-full h-px my-10 bg-gray-300" />
-    <ServerSpecs />
+   
+    <ServerSpecs :current=currentServerSpecs :resizeType=selectedResizeType @resize-specs-changed="captureResizeSpecs" />
+
     <div class="relative mt-8">
       <button @click="save" :disabled="isSaving" class="h-full button button--success">
         <span v-if="isSaving">Resizing</span>
@@ -32,7 +35,7 @@
 <script>
 import ServerSpecs from "@/components/deploy/ServerSpecs"
 import ResizeType from "@/components/server/ResizeType"
-import { resizeHost } from '../../utils/api'
+import { getTask, resizeHost } from '../../utils/api'
 
 export default {
   name: 'ServerResize',
@@ -45,19 +48,49 @@ export default {
     return {
       isSaving: false,
       feedback: '',
+      selectedResizeType: null,
+      selectedResizeSpecs: null,
       showFeedback: false,
       showStatus: false
     }
   },
+  computed: {
+    currentServerSpecs() {
+      return { cpu: this.server.cpu_number, ram: (this.server.ram_mib), ssd: this.server.disk.disk_mib }
+    }
+  },
   methods: {
-    async save () {
+    captureResizeType(data) {
+      this.selectedResizeType = data
+    },
+    captureResizeSpecs(data) {
+      this.selectedResizeSpecs = data
+    },
+    async save() {
       this.isSaving = true
+      this.resize(this.server.id, this.server.disk.id)
     },
-    resize1 (id) {
-      resizeHost(id, { cpuNumber: 1, memSize: 1 * 1024 })
-    },
-    resize2 (id) {
-      resizeHost(id, { cpuNumber: 2, memSize: 2 * 1024 })
+    async resize (id, diskId) {
+      if (this.selectedResizeType.id === 1) {
+        // CPU & RAM only.
+        const response = await resizeHost(id, {
+          diskId,
+          cpuNumber: this.selectedResizeSpecs.cpu,
+          memSize: this.selectedResizeSpecs.ram
+        })
+        
+        console.log('response', response)
+      } else {
+        // CPU, RAM & SSD.
+        const response = await resizeHost(id, {
+          diskId,
+          cpuNumber: this.selectedResizeSpecs.cpu,
+          hddSize: this.selectedResizeSpecs.ssd,
+          memSize: this.selectedResizeSpecs.ram
+        })
+        
+        console.log('response', response)
+      }
     }
   }
 }

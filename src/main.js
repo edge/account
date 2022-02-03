@@ -31,10 +31,14 @@ const store = createStore({
       presetId: 0,
       serverRegion: '',
       serverHostname: '',
-      storage: ''
+      storage: '',
+      tasks: []
     }
   },
   mutations: {
+    addTask (state, payload) {
+      state.tasks.push(payload.value)
+    },
     increment (state, payload) {
       state.count += payload.amount
     },

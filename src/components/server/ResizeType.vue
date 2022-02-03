@@ -1,14 +1,14 @@
 <template>
-  <RadioGroup v-model="selected">
-    <RadioGroupLabel class="sr-only">Network region</RadioGroupLabel>
+  <RadioGroup v-model="selectedResizeType">
+    <RadioGroupLabel class="sr-only">Resize type</RadioGroupLabel>
     <div class="box__grid">
       <RadioGroupOption
         as="template"
-        v-for="spec in resizeTypes"
-        :key="spec.title"
-        :value="spec"
+        v-for="resizeType in resizeTypes"
+        :key="resizeType.title"
+        :value="resizeType"
         v-slot="{ active, checked, disabled }"
-        :disabled="!spec.enabled"
+        :disabled="!resizeType.enabled"
       >
         <div
           :class="[
@@ -32,23 +32,19 @@
                 disabled ? 'disabled' : ''
               ]"
             >
-              <h4>{{ spec.title }}</h4>
+              <h4>{{ resizeType.title }}</h4>
             </RadioGroupLabel>
             <RadioGroupDescription
               as="div"
               class="optionSpecs"
             >
-              <span class="">{{ spec.description }}</span>
-              <!-- <span class="mt-2">{{ spec.cpu }} vCPU</span>
-              <span>{{ spec.ram }}</span>
-              <span>{{ spec.ssd }} SSD</span>
-              <span>{{ spec.mbps }}</span> -->
+              <span class="">{{ resizeType.description }}</span>
             </RadioGroupDescription>
           </div>
         </div>
       </RadioGroupOption>
     </div>
-    <span v-if="selected.id === 2" class="block mt-4 text-red">
+    <span v-show="selectedResizeType && selectedResizeType.id === 2" class="block mt-4 text-red">
       <span class="font-medium">Note:</span> Because your server's filesystem will be expanded, this resize is not reversible.
     </span>
   </RadioGroup>
@@ -62,11 +58,6 @@ import {
   RadioGroupOption,
 } from '@headlessui/vue'
 
-import { ref, watch } from 'vue'
-import useSWRV from 'swrv'
-import { fetcher } from '../../utils/api'
-import { mapMutations } from 'vuex'
-
 export default {
   name: 'ResizeType',
   components: {
@@ -75,40 +66,36 @@ export default {
     RadioGroupDescription,
     RadioGroupOption,
   },
-  methods: {
-    ...mapMutations([
-      'selectServerProperty'
-    ]),
-    setServerProperty: 'selectServerProperty'
-  },
-  setup() {
-
-    const resizeTypes = [
-      {
-        id: 1,
-        title: 'CPU and  RAM only',
-        description: 'This will only increase or decrease the CPU and RAM of your server, not disk size. This can be reversed.',
-        enabled: true
-      },
-      {
-        id: 2,
-        title: 'Disk, CPU and RAM',
-        description: 'This will increase the disk size, CPU and RAM of your server. This is a permanent change and cannot be reversed.',
-        enabled: true
-      }
-    ]
-
-    const selected = ref(resizeTypes[0])
-
-    watch(selected, newVal => {
-      console.log('selected changed', newVal)
-      // setServerProperty({ property: 'presetId', value: newVal.id })
-    })
-    
-
+  data() {
     return {
-      selected,
-      resizeTypes
+      selectedResizeType: null,
+      resizeTypes: [
+        {
+          id: 1,
+          title: 'CPU and  RAM only',
+          description: 'This will only increase or decrease the CPU and RAM of your server, not disk size. This can be reversed.',
+          enabled: true
+        },
+        {
+          id: 2,
+          title: 'Disk, CPU and RAM',
+          description: 'This will increase the disk size, CPU and RAM of your server. This is a permanent change and cannot be reversed.',
+          enabled: true
+        }
+      ]
+    }
+  },
+  methods: {
+    updateParentResizeType(data) {
+      this.$emit('resize-type-changed', data)
+    }
+  },
+  mounted() {
+    this.selectedResizeType = this.resizeTypes[0]
+  },
+  watch: {
+    selectedResizeType: function(data) {
+      this.updateParentResizeType(data)
     }
   }
 }

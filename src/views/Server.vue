@@ -23,6 +23,7 @@
             <span class="absolute top-0 block w-2 h-2 rounded-full -right-1 bg-green" />
           </div>
           <ActiveTask status="Changing the VM parameters" />
+          {{tasks}}
         </div>
 
         <!-- overview -->
@@ -136,7 +137,7 @@
 
                 <!-- backups -->
                 <TabPanel>
-                  <ServerBackups />
+                  <ServerBackups :server=server />
                 </TabPanel>
 
                 <!-- network -->
@@ -199,6 +200,8 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { useRoute } from 'vue-router'
 import useSWRV from 'swrv'
 import { fetcher } from '../utils/api'
+import { mapMutations, mapState } from 'vuex'
+import { onMounted, onUnmounted } from 'vue'
 
 export default {
   name: 'Server',
@@ -208,8 +211,6 @@ export default {
   data: function () {
     return {
       loading: false,
-      // pollInterval: 10000,
-      // polling: null,
       options: {
         responsive: true,
         maintainAspectRatio: false
@@ -235,26 +236,41 @@ export default {
     TopNavigation,
     UbuntuIcon
   },
+  computed: {
+    // ...mapState(['tasks'])
+  },
   mounted() {
     this.loading = true
-    // this.pollData()
   },
   setup() {
     const route = useRoute()
-    const { data: server, error } = useSWRV(() => '/servers?slug=' + route.params.slug, fetcher)
+    const { data: server, error: serverFetchError } = useSWRV(() => '/servers?slug=' + route.params.slug, fetcher)
+    const { data: tasks, error: taskFetchError, mutate } = useSWRV(() => '/tasks?id=' + route.params.slug, fetcher)
+
+    let polling
+
+    onMounted(() => {
+      console.log('mounted!')
+      polling = setInterval(() => {
+        console.log('Mutating')
+        mutate()
+      }, 5000)
+    })
+    
+    onUnmounted(() => {
+      console.log('unmounted!')
+      clearInterval(polling)
+      polling = null
+    })
 
     return {
-      server
+      server,
+      tasks
     }
   },
   watch: {
     $route(to, from) {
-      // clearInterval(this.polling)
-      // this.polling = null
     }
-  },
-  methods: {
-
   }
 }
 </script>
