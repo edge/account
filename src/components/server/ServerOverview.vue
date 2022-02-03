@@ -25,9 +25,9 @@
         <Line v-if="this.metrics.mem_usage" :data='this.metrics.mem_usage[0].datapoints' />
       </div>
 
-      <div class="box">
+      <div class="box" v-show="this.metrics['df.root.used']">
         <h4 class="mb-8">Disk usage</h4>
-        <!-- <Line :datapoints='this.datapoints["df.root.used"][0].datapoints' /> -->
+        <Line v-if="this.metrics['df.root.used']" :data='this.metrics["df.root.used"][0].datapoints' />
       </div>
 
       <div class="box">
