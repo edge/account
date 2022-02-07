@@ -20,7 +20,10 @@
         <div class="flex flex-col items-start sm:space-x-4 sm:items-center sm:flex-row">
           <div class="relative">
             <h1 class="mb-0 leading-none">{{server.name}}</h1>
-            <span class="absolute top-0 block w-2 h-2 rounded-full -right-1 bg-green" />
+            <span
+              class="absolute top-0 block w-2 h-2 rounded-full -right-1"
+              :class="server.status === 'active' ? 'bg-green' : 'bg-gray-300'"
+            />
           </div>
           <ActiveTask status="Changing the VM parameters" />
           {{tasks}}
@@ -49,7 +52,7 @@
           </div>
 
           <div class="flex-shrink-0">
-            <ServerStatus />
+            <ServerStatus :currentStatus="server.status" :onToggleStatus="toggleServerStatus" />
           </div>
 
         </div>
@@ -202,6 +205,7 @@ import useSWRV from 'swrv'
 import { fetcher } from '../utils/api'
 import { mapMutations, mapState } from 'vuex'
 import { onMounted, onUnmounted } from 'vue'
+import { startStopHost } from '../utils/api'
 
 export default {
   name: 'Server',
@@ -238,6 +242,18 @@ export default {
   },
   computed: {
     // ...mapState(['tasks'])
+  },
+  methods: {
+    async toggleServerStatus() {
+      console.log('this.server', this.server)
+      if (this.server.status === 'active') {
+        // Power off.
+        await startStopHost(this.server.id, 'stop')
+      } else {
+        // Power on.
+        await startStopHost(this.server.id, 'start')
+      }
+    }
   },
   mounted() {
     this.loading = true

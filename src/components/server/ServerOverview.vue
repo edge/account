@@ -10,9 +10,10 @@
 
     <div class="grid w-full grid-cols-1 gap-5">
 
-      <div class="box">
+      <div class="box" v-show="this.metrics.cpu_load && this.metrics.cpu_load[0]">
         <h4 class="mb-8">CPU load</h4>
         <Line
+          v-if="this.metrics.cpu_load[0]"
           :data='this.metrics.cpu_load[0].datapoints'
           :minScale='0'
           :maxScale='100'
@@ -22,12 +23,18 @@
 
       <div class="box" v-show="this.metrics.mem_usage">
         <h4 class="mb-8">Memory usage</h4>
-        <Line v-if="this.metrics.mem_usage" :data='this.metrics.mem_usage[0].datapoints' />
+        <Line
+          v-if="this.metrics.mem_usage[0]"
+          :data='this.metrics.mem_usage[0].datapoints'
+        />
       </div>
 
       <div class="box" v-show="this.metrics['df.root.used']">
         <h4 class="mb-8">Disk usage</h4>
-        <Line v-if="this.metrics['df.root.used']" :data='this.metrics["df.root.used"][0].datapoints' />
+        <Line
+          v-if="this.metrics['df.root.used'][0]"
+          :data='this.metrics["df.root.used"][0].datapoints'
+        />
       </div>
 
       <div class="box">

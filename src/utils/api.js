@@ -3,6 +3,7 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
+const SERVER_URL = `${ACCOUNT_API_URL}/servers`
 
 const fetcher = function(url) {
   return fetch(`${ACCOUNT_API_URL}${url}`)
@@ -22,32 +23,36 @@ const createAccount = async () => {
 }
 
 const createBackup = async (id, data) => {
-  const url = `${ACCOUNT_API_URL}/servers`
-
   const payload = {
     action: 'backup',
     id,
     ...data
   }
 
-  return fetchData(url, { method: 'post' }, payload)
+  return fetchData(SERVER_URL, { method: 'post' }, payload)
     .then(response => {
       console.log('response', response)
     })
 }
 
-const getTask = async id => {
-  const url = `${ACCOUNT_API_URL}/servers?action=task&taskId=${id}`
+const createHost = async data => {
+  const payload = {
+    action: 'create',
+    ipPool: 8,
+    ...data
+  }
 
-  return fetchData(url, { method: 'get' })
+  return fetchData(SERVER_URL, { method: 'post' }, payload)
+}
+
+const getTask = async id => {
+  return fetchData(`${SERVER_URL}?action=task&taskId=${id}`, { method: 'get' })
     .then(response => {
       return response
     })
 }
 
 const resizeHost = async (id, data) => {
-  const url = `${ACCOUNT_API_URL}/servers`
-
   const payload = {
     action: 'resize',
     id,
@@ -56,11 +61,20 @@ const resizeHost = async (id, data) => {
 
   console.log('payload', payload)
 
-  return fetchData(url, { method: 'post' }, payload)
+  return fetchData(SERVER_URL, { method: 'post' }, payload)
     .then(response => {
       console.log('response', response)
       return Promise.resolve(response)
     })
+}
+
+const startStopHost = async (id, action) => {
+  const payload = {
+    action,
+    id
+  }
+
+  return fetchData(SERVER_URL, { method: 'post' }, payload)
 }
 
 const fetchData = (url, options = {}, payload) => {
@@ -162,9 +176,11 @@ const fetchData = (url, options = {}, payload) => {
 export {
   createAccount,
   createBackup,
+  createHost,
   fetcher,
   getTask,
-  resizeHost
+  resizeHost,
+  startStopHost
   // deleteBy,
   // deleteWhere,
   // executeRequest,

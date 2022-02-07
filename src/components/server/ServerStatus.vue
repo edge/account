@@ -1,22 +1,25 @@
 <template>
-  <Switch
-    @click="toggleServer"
-    :class="enabled ? 'bg-green' : 'bg-gray-300'"
-    class="switch"
-  >
-    <span class="sr-only">Use setting</span>
-    <span
-      class="label"
-      :class="enabled ? 'justify-start text-white pl-3 md:pl-4' : 'justify-end text-gray-500 pr-2.5 md:pr-3.5'"
-      v-text="enabled ? 'ON' : 'OFF'"
-    ></span>
-    <span
-      aria-hidden="true"
-      :class="enabled ? 'translate-x-9 md:translate-x-12' : 'translate-x-0'"
-      class="transform ball"
-    />
-  </Switch>
-  <Modal ref="modal" />
+  <div>
+    <Switch
+      @click="toggleModal"
+      :class="enabled ? 'bg-green' : 'bg-gray-300'"
+      class="switch"
+    >
+      <span class="sr-only">Use setting</span>
+      <span
+        class="label"
+        :class="enabled ? 'justify-start text-white pl-3 md:pl-4' : 'justify-end text-gray-500 pr-2.5 md:pr-3.5'"
+        v-text="enabled ? 'ON' : 'OFF'"
+      ></span>
+      <span
+        aria-hidden="true"
+        :class="enabled ? 'translate-x-9 md:translate-x-12' : 'translate-x-0'"
+        class="transform ball"
+      />
+    </Switch>
+
+    <Modal v-show="enabled" ref="modal" @modal-confirmation="toggleServer" />
+  </div>
 </template>
 
 <script>
@@ -25,25 +28,34 @@
   import { Switch } from '@headlessui/vue'
   export default {
     name: "ServerStatus",
+    props: ['currentStatus', 'onToggleStatus'],
     components: {
       Modal,
       Switch
     },
-    methods: {
-      toggleServer () {
-        if (this.enabled) {
-          this.$refs.modal.open = true
-        } else {
-          // power back on 
-          this.enabled = true
-        }
+    data() {
+      return {
+        enabled: true
       }
     },
-    setup() {
-      const enabled = ref(true)
-      const showModal = ref(false)
-      return { enabled }
+    methods: {
+      toggleModal () {       
+        if (this.currentStatus === 'active') {
+          this.$refs.modal.open = true
+        } else {
+          this.toggleServer()
+        }
+      },
+      async toggleServer () {
+        await this.onToggleStatus()
+        this.$refs.modal.open = false
+
+        this.enabled = this.currentStatus !== 'active'
+      }
     },
+    mounted() {
+      this.enabled = this.currentStatus === 'active'
+    }
   }
 </script>
 <style scoped>

@@ -34,10 +34,16 @@
               </div>
             </div>
             <div class="mt-5 sm:mt-2 sm:ml-10 sm:pl-4 sm:flex">
-              <button type="button" class="w-full button button--small button--error sm:w-auto" @click="open = false">
+              <button type="button" class="w-full button button--small button--error sm:w-auto" @click="() => {
+                confirm();
+                open = false;
+              }">
                 Continue
               </button>
-              <button type="button" class="w-full mt-3 button button--small button--outline sm:mt-0 sm:w-auto sm:ml-3" @click="open = false" ref="cancelButtonRef">
+              <button type="button" class="w-full mt-3 button button--small button--outline sm:mt-0 sm:w-auto sm:ml-3" @click="() => {
+                close();
+                open = false;
+              }" ref="cancelButtonRef">
                 Cancel
               </button>
             </div>
@@ -60,7 +66,16 @@ export default {
     DialogTitle,
     TransitionChild,
     TransitionRoot,
-    ExclamationIcon,
+    ExclamationIcon
+  },
+  methods: {
+    close() {
+      this.$emit('modal-closed')
+      open = false
+    },
+    confirm() {
+      this.$emit('modal-confirmation')
+    }
   },
   setup() {
     const open = ref(false)

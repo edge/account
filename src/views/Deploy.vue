@@ -52,7 +52,23 @@
 
             <!-- submit & error message -->
             <div class="flex flex-col w-full md:space-x-5 md:items-center md:flex-row">
-              <button class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1">Deploy</button>
+              <button @click.prevent="deploy" :disabled="isSaving" class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1">
+                <span v-if="isSaving">Deploying</span>
+                <span v-else>Deploy</span>
+                <span v-if="isSaving">
+                  <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="12" y1="6" x2="12" y2="3" />
+                    <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
+                    <line x1="18" y1="12" x2="21" y2="12" />
+                    <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
+                    <line x1="12" y1="18" x2="12" y2="21" />
+                    <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
+                    <line x1="6" y1="12" x2="3" y2="12" />
+                    <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
+                  </svg>
+                </span>
+              </button>
               <span class="flex-1 order-1 text-red md:order-2">Please select an operating system</span>
             </div>
 
@@ -75,7 +91,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import NetworkRegion from '@/components/deploy/NetworkRegion'
 import OperatingSystem from '@/components/deploy/OperatingSystem'
 import Password from '@/components/deploy/Password'
@@ -85,6 +100,7 @@ import SideNavigation from "@/components/SideNavigation"
 import Toggle from '@vueform/toggle'
 import TopNavigation from "@/components/TopNavigation"
 import { mapMutations, mapState } from 'vuex'
+import { createHost } from '../utils/api'
 
 export default {
   name: 'Deploy',
@@ -104,10 +120,29 @@ export default {
   computed: {
     ...mapState(['count', 'enableBackups', 'os', 'osVersion', 'presetId', 'serverHostname', 'serverRegion'])
   },
+  data() {
+    return {
+      isSaving: false
+    }
+  },
   methods: {
     ...mapMutations([
       'selectServerProperty'
     ]),
+    async deploy () {
+      this.isSaving = true
+
+      const newHost = await createHost({
+        os: this.$store.state.osVersion,
+        preset: this.$store.state.presetId,
+        hostname: this.$store.state.serverHostname,
+        password: 'password'
+      })
+
+      // Redirect to the new server page.
+      const { id } = newHost      
+      this.$router.push({ name: 'Server', params: { slug: id } })
+    },
     toggleBackups () {
       this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     }
