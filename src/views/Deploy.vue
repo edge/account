@@ -28,7 +28,7 @@
             </div>
 
             <!-- automated backups -->
-            <div class="box">
+            <!-- <div class="box">
               <div @click="toggleBackups" class="flex items-center justify-between w-full cursor-pointer">
                 <h4>Automated Backups</h4>
                 <Toggle
@@ -38,16 +38,21 @@
                   }"
                 />
               </div>
-            </div>
+            </div> -->
 
             <!-- host name / server name -->
             <div class="box">
-              <ServerName />
+              <ServerName @name-changed="value => validate('serverName', value)" />
+              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.serverName">{{errors.serverName}}</span>
+
+              <Domain @name-changed="value => validate('domain', value)" />
+              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.domain">{{errors.domain}}</span>
             </div>
 
             <!-- password -->
             <div class="box">
-              <Password />
+              <Password @password-changed="value => validate('password', value)" />
+              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.password">{{errors.password}}</span>
             </div>
 
             <!-- submit & error message -->
@@ -91,6 +96,7 @@
 </template>
 
 <script>
+import Domain from '@/components/deploy/Domain'
 import NetworkRegion from '@/components/deploy/NetworkRegion'
 import OperatingSystem from '@/components/deploy/OperatingSystem'
 import Password from '@/components/deploy/Password'
@@ -108,6 +114,7 @@ export default {
     return 'Edge Account Portal » Deploy a new server'
   },
   components: {
+    Domain,
     NetworkRegion,
     OperatingSystem,
     Password,
@@ -122,6 +129,7 @@ export default {
   },
   data() {
     return {
+      errors: {},
       isSaving: false
     }
   },
@@ -145,6 +153,31 @@ export default {
     },
     toggleBackups () {
       this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
+    },
+    validate(inputType, value) {
+      const validationRules = {
+        domain: /^.{6,35}$/,
+        password: /^.{6,35}$/,
+        serverName: /^[a-zA-Z0-9]{1}[a-zA-Z0-9-_\.]{1,48}$/
+      }
+
+      console.log('value.length', value.length)
+      
+      const validationMessages = {
+        domain: 'Domain name',
+        password: 'Password must be between 6 and 35 characters',
+        serverName: 'Hostname must contain only alphanumeric characters, underscores, and hyphens. The first character must be alphanumeric. Maximum length is 49.'
+      }
+
+      const regex = validationRules[inputType]
+      
+      if (regex.test(value)) {
+        this.errors[inputType] = ''
+        return true
+      } else {
+        this.errors[inputType] = validationMessages[inputType]
+        return false
+      }
     }
   }
 }

@@ -5,7 +5,14 @@
     <div class="flex-1 input-group">
       <label class="label">Password</label>
       <div class="relative flex items-center">
-        <input autocomplete="off" required :type="showPassword ? 'text' : 'password'" placeholder="Create a password" :value="password" class="w-full input input--floating" />
+        <input
+          autocomplete="off"
+          class="w-full input input--floating"
+          placeholder="Create a password"
+          required
+          :type="showPassword ? 'text' : 'password'"
+          v-model="password"
+        />
         <EyeIcon v-if="showPassword" @click="showPassword = false" class="absolute right-0 w-5 h-5 text-gray-300 cursor-pointer" />
         <EyeOffIcon v-if="!showPassword" @click="showPassword = true" class="absolute right-0 w-5 h-5 text-gray-300 cursor-pointer" />
       </div>
@@ -62,6 +69,11 @@ export default {
     this.canCopy = !!navigator.clipboard
     this.idGenerator = anyid().encode('0Aa-IO').length(21).random()
     this.generate()
+  },
+  watch: {
+    password(value) {
+      this.$emit('password-changed', value)
+    }
   }
 }
 </script>
