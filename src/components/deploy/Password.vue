@@ -5,26 +5,63 @@
     <div class="flex-1 input-group">
       <label class="label">Password</label>
       <div class="relative flex items-center">
-        <input type="password" placeholder="Create a password" value="d5lsi!!77bns" class="w-full input input--floating" />
-        <EyeIcon class="absolute right-0 w-5 h-5 text-gray-300" />
+        <input autocomplete="off" required :type="showPassword ? 'text' : 'password'" placeholder="Create a password" :value="password" class="w-full input input--floating" />
+        <EyeIcon v-if="showPassword" @click="showPassword = false" class="absolute right-0 w-5 h-5 text-gray-300 cursor-pointer" />
+        <EyeOffIcon v-if="!showPassword" @click="showPassword = true" class="absolute right-0 w-5 h-5 text-gray-300 cursor-pointer" />
       </div>
     </div>
 
     <!-- buttons -->
     <div class="flex mt-5 space-x-2 lg:mt-0">
-      <button class="button button--solid">Generate</button>
-      <button class="button button--solid">Copy</button>
+      <button @click.prevent="generate" class="button button--solid">Generate</button>
+      <button
+        class="button button--solid"
+        v-if="canCopy"
+        @click.prevent="copyToClipboard"
+      >
+        {{copying ? 'Copied!' : 'Copy to clipboard'}}
+      </button>
     </div>
 
   </div>
 </template>
 
 <script>
-import { EyeIcon } from "@heroicons/vue/solid"
+import { anyid } from 'anyid'
+import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
+
 export default {
   name: 'Password',
   components: {
-    EyeIcon
+    EyeIcon,
+    EyeOffIcon
+  },
+  data() {
+    return {
+      canCopy: false,
+      copying: false,
+      idGenerator: null,
+      password: '',
+      showPassword: false
+    }
+  },
+  methods: {
+    async copyToClipboard () {
+      this.copying = true
+      await navigator.clipboard.writeText(this.password)
+      
+      setTimeout(() => {
+        this.copying = false
+      }, 2000)
+    },
+    generate() {
+      this.password = this.idGenerator.id()
+    }
+  },
+  mounted() {
+    this.canCopy = !!navigator.clipboard
+    this.idGenerator = anyid().encode('0Aa-IO').length(21).random()
+    this.generate()
   }
 }
 </script>
