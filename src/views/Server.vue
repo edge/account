@@ -25,8 +25,8 @@
               :class="server.status === 'active' ? 'bg-green' : 'bg-gray-300'"
             />
           </div>
-          <ActiveTask status="Changing the VM parameters" />
-          {{tasks}}
+          <!-- <ActiveTask status="Changing the VM parameters" /> -->
+          <!-- {{tasks}} -->
         </div>
 
         <!-- overview -->
