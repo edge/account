@@ -31,8 +31,8 @@
     <!-- if metrics exist -->
     <div v-else class="grid w-full grid-cols-1 gap-5">
 
-      <div class="box" v-show="this.metrics.cpu_load && this.metrics.cpu_load[0]">
-        <h4 class="mb-8">CPU load</h4>
+      <div class="box">
+        <h4 :class="this.metrics.cpu_load && this.metrics.cpu_load[0] ? 'mb-8' : ''">CPU load</h4>
         <Line
           v-if="this.metrics.cpu_load[0]"
           :data='this.metrics.cpu_load[0].datapoints'
@@ -40,22 +40,25 @@
           :maxScale='100'
           :postpendValue="'%'"
         />
+        <p v-else class="mt-3 mb-0 text-gray-500">CPU loaad statistics will appear here as they become available.</p>
       </div>
 
-      <div class="box" v-show="this.metrics.mem_usage">
-        <h4 class="mb-8">Memory usage</h4>
+      <div class="box">
+        <h4 :class="this.metrics.cpu_load && this.metrics.cpu_load[0] ? 'mb-8' : ''">Memory usage</h4>
         <Line
           v-if="this.metrics.mem_usage[0]"
           :data='this.metrics.mem_usage[0].datapoints'
         />
+        <p v-else class="mt-3 mb-0 text-gray-500">Memory usage statistics will appear here as they become available.</p>
       </div>
 
-      <div class="box" v-show="this.metrics['df.root.used']">
-        <h4 class="mb-8">Disk usage</h4>
+      <div class="box">
+        <h4 :class="this.metrics['df.root.used'] ? 'mb-8' : ''">Disk usage</h4>
         <Line
           v-if="this.metrics['df.root.used'][0]"
           :data='this.metrics["df.root.used"][0].datapoints'
         />
+        <p v-else class="mt-3 mb-0 text-gray-500">Disk usage statistics will appear here as they become available.</p>
       </div>
 
       <div class="box">
