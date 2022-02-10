@@ -51,7 +51,7 @@
               <div class="flex items-center space-x-1 lg:justify-center serverList__cell">
                 <UbuntuIcon @click="increment" v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
                 <CentOsIcon v-if="server.os === 'centos'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <span @click="() => selectOsVersion(server.osVersion)">{{ server.os }} {{ server.osVersion }}</span>
+                <span>{{`${server.os.charAt(0).toUpperCase()}${server.os.substring(1)}`}} {{ server.osVersion }}</span>
               </div>
               <span class="lg:text-center serverList__cell">{{ server.ip }}</span>
               <div class="flex items-center lg:justify-end serverList__cell">
@@ -90,36 +90,11 @@ import { CloudUploadIcon, ServerIcon, ShieldCheckIcon } from '@heroicons/vue/out
 import useSWRV from 'swrv'
 import { fetcher } from '../utils/api'
 
-import { mapState } from 'vuex'
-
-//     {
-//     name: 'forest_tamarite',
-//     ip: '185.167.216.33',
-//     os: 'ubuntu',
-//     location: 'London #1',
-//     cpu: '2 vCPU',
-//     storage: '20GB',
-//     memory: '1GB',
-//     status: 'active',
-//     flag: '/assets/images/flag_uk.png'
-//   }
-
 export default {
   name: 'Index',
   title() {
     return 'Edge Account Portal » Index'
   },
-  // data: function () {
-  //   return {
-  //     // blockMetadata: null,
-  //     // blocks: [],
-  //     // transactionMetadata: null,
-  //     // transactions: [],
-  //     loading: false
-  //     // pollInterval: 10000,
-  //     // polling: null
-  //   }
-  // },
   components: {
     CentOsIcon,
     CloudUploadIcon,
@@ -129,16 +104,7 @@ export default {
     TopNavigation,
     UbuntuIcon
   },
-  computed: {
-    ...mapState(['count', 'osVersion', 'serverRegion'])
-  },
   methods: {
-    increment() {
-      this.$store.commit('increment', { amount: 11 })
-    },
-    selectOsVersion(value) {
-      this.$store.commit('selectServerProperty', { property: 'osVersion', value })
-    }
   },
   setup() {
     const { data: servers, error } = useSWRV('/servers', fetcher)
