@@ -24,28 +24,20 @@ const vMaskV3 = {
 const store = createStore({
   state () {
     return {
-      count: 0,
-      enableBackups: false,
-      os: '',
-      osVersion: '',
-      presetId: 0,
-      serverRegion: '',
-      serverHostname: '',
-      storage: '',
-      tasks: []
+      // enableBackups: false,
+      // os: '',
+      // osVersion: '',
+      // presetId: 0,
+      // serverRegion: '',
+      // serverHostname: '',
+      // storage: '',
+      // tasks: []
     }
   },
   mutations: {
-    addTask (state, payload) {
-      state.tasks.push(payload.value)
-    },
-    increment (state, payload) {
-      state.count += payload.amount
-    },
-    selectServerProperty (state, payload) {
-      console.log('state, payload', state, payload)
-      state[payload.property] = payload.value
-    }
+    // selectServerProperty (state, payload) {
+    //   state[payload.property] = payload.value
+    // }
   }
 })
 

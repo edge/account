@@ -1,5 +1,5 @@
 <template>
-  <Listbox v-model="selectedVersion" @click="() => selectServerProperty({ property: 'os', value: 'version' })">
+  <Listbox v-model="selectedVersion">
     <div class="relative w-full mt-1">
       <ListboxButton class="listButton">
         <span class="block truncate">{{selectedVersion.name}}</span>
@@ -20,7 +20,9 @@
             :key="version.id"
             :value="version"
             as="template"
-            @click="() => selectServerProperty({ property: 'osVersion', value: version.id })"
+            @click="() => {
+              emitSelected(version.id)
+            }"
           >
             <li :class="[active ? 'active' : '']" class="listOption">
               <span :class="['block truncate']">{{version.name}}</span>
@@ -39,7 +41,6 @@
   import { ChevronDownIcon, CheckIcon } from "@heroicons/vue/solid"
   import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption, } from "@headlessui/vue"
   import { ref } from 'vue'
-  import { mapMutations } from 'vuex'
 
   export default {
     name: "OperatingSystemOptions",
@@ -53,9 +54,9 @@
       ListboxOption,
     },
     methods: {
-      ...mapMutations([
-        'selectServerProperty'
-      ])
+      emitSelected(data) {
+        this.$emit('os-changed', data)
+      }
     },
     props: ['versions'],
     setup(props) {

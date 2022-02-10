@@ -1,6 +1,6 @@
 <template>
   <RadioGroup v-model="selected">
-    <RadioGroupLabel class="sr-only">Network region</RadioGroupLabel>
+    <RadioGroupLabel class="sr-only">OperatingSystem</RadioGroupLabel>
     <div class="box__grid">
       <RadioGroupOption
         as="template"
@@ -9,7 +9,6 @@
         :value="os"
         v-slot="{ active, checked, disabled }"
         :disabled="!os.enabled"
-        @click="() => selectServerProperty({ property: 'os', value: os.name })"
       >
         <div
           :class="[
@@ -33,10 +32,10 @@
                 disabled ? 'disabled' : ''
               ]"
             >
-              <h4>{{os.name}}</h4>
+              <h4>{{`${os.name.charAt(0).toUpperCase()}${os.name.substring(1)}`}}</h4>
             </RadioGroupLabel>
             <div class="w-full mt-2">
-              <OperatingSystemOptions :versions=os.versions />
+              <OperatingSystemOptions :versions=os.versions @os-changed="emitSelectedOsVersion" />
             </div>
           </div>
         </div>
@@ -58,8 +57,6 @@ import { ref } from 'vue'
 import useSWRV from 'swrv'
 import { fetcher } from '../../utils/api'
 
-import { mapMutations } from 'vuex'
-
 export default {
   name: 'OperatingSystem',
   components: {
@@ -69,10 +66,15 @@ export default {
     RadioGroupOption,
     OperatingSystemOptions
   },
+  data() {
+    return {
+      os: null
+    }
+  },
   methods: {
-    ...mapMutations([
-      'selectServerProperty'
-    ])
+    emitSelectedOsVersion(data) {
+      this.$emit('os-changed', data)
+    }
   },
   setup() {
     const { data: operatingSystems, error } = useSWRV(() => '/os', fetcher)

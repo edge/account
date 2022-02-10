@@ -10,8 +10,7 @@
         v-slot="{ active, checked, disabled }"
         :disabled="!spec.enabled"
         @click="() => {
-          selectServerProperty({ property: 'presetId', value: spec.id })
-          updateParentResizeSpecs(spec)
+          updateParentResizeSpecs(spec.id)
         }"
       >
         <div
@@ -71,10 +70,9 @@ import {
   RadioGroupOption,
 } from '@headlessui/vue'
 
-import { ref, watch, onUpdated } from 'vue'
+import { ref, onUpdated } from 'vue'
 import useSWRV from 'swrv'
 import { fetcher } from '../../utils/api'
-import { mapMutations } from 'vuex'
 
 export default {
   name: 'ServerSpecs',
@@ -86,12 +84,8 @@ export default {
     RadioGroupOption,
   },
   methods: {
-    ...mapMutations([
-      'selectServerProperty'
-    ]),
-    setServerProperty: 'selectServerProperty',
     updateParentResizeSpecs(data) {
-      this.$emit('resize-specs-changed', data)
+      this.$emit('specs-changed', data)
     }
   },
   setup(props) {
@@ -138,11 +132,6 @@ export default {
           }
         }
       }, 1000)
-    })
-
-    watch(selected, newVal => {
-      console.log('selected changed', newVal)
-      // setServerProperty({ property: 'presetId', value: newVal.id })
     })
 
     return {

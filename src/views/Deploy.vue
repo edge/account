@@ -12,19 +12,20 @@
             <!-- network region -->
             <div class="box">
               <h4>Network region</h4>
-              <NetworkRegion />
+              <NetworkRegion @region-changed="value => validate('cluster', value)" />
             </div>
 
             <!-- operating system -->
-            <div class="box box--error">
+            <div class="box">
               <h4>Operating System</h4>
-              <OperatingSystem />
+              <OperatingSystem @os-changed="value => validate('os', value)" />
             </div>
 
             <!-- size -->
             <div class="box">
               <h4>Server specs</h4>
-              <ServerSpecs />
+              <ServerSpecs @specs-changed="value => validate('preset', value)" />
+              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.preset">{{errors.preset}}</span>
             </div>
 
             <!-- automated backups -->
@@ -42,8 +43,8 @@
 
             <!-- host name / server name -->
             <div class="box">
-              <ServerName @name-changed="value => validate('serverName', value)" />
-              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.serverName">{{errors.serverName}}</span>
+              <ServerName @name-changed="value => validate('hostname', value)" />
+              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.hostname">{{errors.hostname}}</span>
 
               <Domain @name-changed="value => validate('domain', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="errors.domain">{{errors.domain}}</span>
@@ -57,7 +58,11 @@
 
             <!-- submit & error message -->
             <div class="flex flex-col w-full md:space-x-5 md:items-center md:flex-row">
-              <button @click.prevent="deploy" :disabled="isSaving" class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1">
+              <button
+                @click.prevent="deploy"
+                :disabled="!settingsComplete || isSaving"
+                class="order-2 w-full mt-3 md:mt-0 button button--success md:order-1"
+              >
                 <span v-if="isSaving">Deploying</span>
                 <span v-else>Deploy</span>
                 <span v-if="isSaving">
@@ -74,18 +79,6 @@
                   </svg>
                 </span>
               </button>
-              <span class="flex-1 order-1 text-red md:order-2">Please select an operating system</span>
-            </div>
-
-            <div>
-              <h4>Selected:</h4>
-              <ul>
-                <li>Region: {{ serverRegion }}</li>
-                <li>OS: {{ os }} {{ osVersion }}</li>
-                <li>Preset: {{ presetId }}</li>
-                <li>Backups enabled: {{ enableBackups }}</li>
-                <li>Hostname: {{ serverHostname }}</li>
-              </ul>
             </div>
           </form>
 
@@ -105,7 +98,7 @@ import ServerName from '@/components/deploy/ServerName'
 import SideNavigation from "@/components/SideNavigation"
 import Toggle from '@vueform/toggle'
 import TopNavigation from "@/components/TopNavigation"
-import { mapMutations, mapState } from 'vuex'
+
 import { createHost } from '../utils/api'
 
 export default {
@@ -124,60 +117,67 @@ export default {
     Toggle,
     TopNavigation,
   },
-  computed: {
-    ...mapState(['count', 'enableBackups', 'os', 'osVersion', 'presetId', 'serverHostname', 'serverRegion'])
-  },
   data() {
     return {
       errors: {},
+      required: [
+        'cluster',
+        'hostname',
+        'password',
+        'preset',
+        'os',
+      ],
+      settings: {},
+      settingsComplete: false,
       isSaving: false
     }
   },
   methods: {
-    ...mapMutations([
-      'selectServerProperty'
-    ]),
     async deploy () {
       this.isSaving = true
 
-      const newHost = await createHost({
-        os: this.$store.state.osVersion,
-        preset: this.$store.state.presetId,
-        hostname: this.$store.state.serverHostname,
-        password: 'password'
-      })
+      const newHost = await createHost(this.settings)
 
       // Redirect to the new server page.
       const { id } = newHost      
       this.$router.push({ name: 'Server', params: { slug: id } })
     },
     toggleBackups () {
-      this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
+      // this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     },
     validate(inputType, value) {
       const validationRules = {
         domain: /^.{6,35}$/,
         password: /^.{6,35}$/,
-        serverName: /^[a-zA-Z0-9]{1}[a-zA-Z0-9-_\.]{1,48}$/
+        hostname: /^[a-zA-Z0-9]{1}[a-zA-Z0-9-_\.]{1,48}$/
       }
-
-      console.log('value.length', value.length)
-      
+     
       const validationMessages = {
         domain: 'Domain name',
         password: 'Password must be between 6 and 35 characters',
-        serverName: 'Hostname must contain only alphanumeric characters, underscores, and hyphens. The first character must be alphanumeric. Maximum length is 49.'
+        hostname: 'Hostname must contain only alphanumeric characters, underscores, and hyphens. The first character must be alphanumeric. Maximum length is 49.'
       }
 
       const regex = validationRules[inputType]
-      
-      if (regex.test(value)) {
+
+      if (!regex) {
+        this.settings[inputType] = value
         this.errors[inputType] = ''
-        return true
-      } else {
-        this.errors[inputType] = validationMessages[inputType]
-        return false
+      } else {      
+        if (regex.test(value)) {
+          this.settings[inputType] = value
+          this.errors[inputType] = ''
+        } else {
+          this.errors[inputType] = validationMessages[inputType]
+        }
       }
+
+      this.enableIfValid()
+    },
+    enableIfValid() {
+      this.settingsComplete = this.required.every(key => {
+        return this.settings[key] !== undefined
+      })
     }
   }
 }

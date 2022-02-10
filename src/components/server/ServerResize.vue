@@ -8,7 +8,7 @@
 
     <div class="w-full h-px my-10 bg-gray-300" />
    
-    <ServerSpecs :current=currentServerSpecs :resizeType=selectedResizeType @resize-specs-changed="captureResizeSpecs" :selectedSpecs=selectedResizeSpecs />
+    <ServerSpecs :current=currentServerSpecs :resizeType=selectedResizeType :selectedSpecs=selectedResizeSpecs @specs-changed="captureResizeSpecs" />
 
     <div class="relative mt-8">
       <button @click="save" :disabled="isSaving" class="h-full button button--success">
