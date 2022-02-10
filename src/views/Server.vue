@@ -127,7 +127,7 @@
                
                 <!-- overview -->
                 <TabPanel>
-                  <ServerOverview :metrics=server.metrics />
+                  <ServerOverview :metrics=server.metrics :state=server.state />
                 </TabPanel>
 
                 <!-- console -->

@@ -61,7 +61,7 @@
               <button
                 @click.prevent="deploy"
                 :disabled="!settingsComplete || isSaving"
-                class="order-2 w-full mt-3 md:mt-0 button button--success md:order-1"
+                class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1"
               >
                 <span v-if="isSaving">Deploying</span>
                 <span v-else>Deploy</span>
