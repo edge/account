@@ -2,7 +2,7 @@
   <div class="box">
     <h4>Resize your server</h4>
 
-    <p class="mt-4 text-gray-500">You are currently on the <b>XX plan for $XX per month</b>. Select an option below to resize your server.</p>
+    <p class="mt-3 text-gray-500">You are currently on the <b>XX plan for $XX per month</b>. Select an option below to resize your server.</p>
     
     <ResizeType @resize-type-changed="captureResizeType" />
 
