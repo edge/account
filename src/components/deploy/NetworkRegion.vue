@@ -11,7 +11,7 @@
         :key="region.name"
         :value="region"
         v-slot="{ active, checked, disabled }"
-        :disabled="!region.enabled"
+        :disabled="region.status !== 'active'"
       >
         <div
           :class="[
@@ -42,7 +42,7 @@
               <span>{{region.city}}</span>
             </RadioGroupDescription>
           </div>
-          <img :src=region.image width="40" class="rounded-sm" />
+          <img :src='region.flagIcon && region.flagIcon[0] ? region.flagIcon[0].url : ""' width="40" class="rounded-sm" />
         </div>
       </RadioGroupOption>
     </div>
@@ -62,8 +62,6 @@ import { ref, watch } from 'vue'
 import useSWRV from 'swrv'
 import { fetcher } from '../../utils/api'
 
-import { mapMutations } from 'vuex'
-
 export default {
   name: 'NetworkRegion',
   components: {
@@ -73,31 +71,27 @@ export default {
     RadioGroupDescription,
     RadioGroupOption,
   },
-  methods: {
-    ...mapMutations([
-      'selectServerProperty'
-    ]),
-    setServerProperty: 'selectServerProperty'
+  data() {
+    return {
+      regions: [],
+      selected: null
+    }
   },
-  setup() {
+  methods: {
+  },
+  mounted() {
     const { data: regions, error } = useSWRV(() => '/regions', fetcher)
 
-    const selected = ref(null)
+    this.selected = ref(null)
+    this.regions = regions
 
-    // Give the regions data a chance to load, then select the first
-    // avaliable region.
     setTimeout(() => {
-      selected.value = regions.value[0]
+      this.selected = regions.value[0]
     }, 1000)
-
-    watch(selected, newVal => {
-      console.log('selected changed', newVal)
-      // setServerProperty({ property: 'serverRegion', value: newVal.name })
-    })
-
-    return {
-      selected,
-      regions
+  },
+  watch: {
+    selected(value) {
+      this.$emit('region-changed', value.clusterId)
     }
   }
 }
