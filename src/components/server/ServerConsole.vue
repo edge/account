@@ -2,7 +2,7 @@
   <div class="flex flex-col pb-20 space-y-5">
     <div class="box">
       <h4>Server Console</h4>
-      <p class="mt-3 text-gray-500">Use the Droplet Console for native-like terminal access to your server from your browser.</p>
+      <p class="mt-3 text-gray-500">Use the server console for native-like terminal access to your server from your browser.</p>
       <div class="flex flex-col w-full p-4 mt-5 bg-gray-100 border-gray-300 rounded-lg lg:p-5 lg:space-x-4 lg:items-end lg:flex-row">
         <div class="flex-1 w-full lg:w-auto input-group">
           <label class="label">Login as</label>
