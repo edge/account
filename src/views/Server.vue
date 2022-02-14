@@ -131,7 +131,9 @@
                 </TabPanel>
 
                 <!-- console -->
-                <TabPanel>Console</TabPanel>
+                <TabPanel>
+                  <ServerConsole />
+                </TabPanel>
 
                 <!-- resize -->
                 <TabPanel>
@@ -191,6 +193,7 @@ import CentOsIcon from '@/components/icons/Centos'
 import Destroy from "@/components/server/Destroy"
 import Line from "@/components/charts/Line"
 import ServerBackups from "@/components/server/ServerBackups"
+import ServerConsole from "@/components/server/ServerConsole"
 import ServerHistory from "@/components/server/ServerHistory"
 import ServerOverview from "@/components/server/ServerOverview"
 import ServerResize from "@/components/server/ServerResize"
@@ -227,6 +230,7 @@ export default {
     Destroy,
     Line,
     ServerBackups,
+    ServerConsole,
     ServerHistory,
     ServerOverview,
     ServerResize,
