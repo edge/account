@@ -2,10 +2,10 @@
 // Use of this source code is governed by a GNU GPL-style license
 // that can be found in the LICENSE.md file. All rights reserved.
 
-import { createApp } from 'vue'
-import { createStore } from 'vuex'
 import App from './App.vue'
+import { createApp } from 'vue'
 import router from './router'
+import store from './store'
 import titleMixin from './mixins/titleMixin'
 import './index.css'
 import './utils'
@@ -19,27 +19,6 @@ const vMaskV3 = {
   updated: vMaskV2.componentUpdated,
   unmounted: vMaskV2.unbind
 }
-
-// Create a new vuex store.
-const store = createStore({
-  state () {
-    return {
-      // enableBackups: false,
-      // os: '',
-      // osVersion: '',
-      // presetId: 0,
-      // serverRegion: '',
-      // serverHostname: '',
-      // storage: '',
-      // tasks: []
-    }
-  },
-  mutations: {
-    // selectServerProperty (state, payload) {
-    //   state[payload.property] = payload.value
-    // }
-  }
-})
 
 createApp(App)
   .use(router)
