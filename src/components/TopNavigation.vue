@@ -14,18 +14,19 @@
       <router-link to="/deploy">
         <button class="h-full button button--success">Deploy Server</button>
       </router-link>
-      <UserMenu />
+      <UserMenu :user=User />
     </div>
     <MobileNavigation />
   </div>
 </template>
 
 <script>
-  import Logo from "@/components/Logo";
-  import BurgerButton from "@/components/BurgerButton";
-  import MobileNavigation from "@/components/MobileNavigation"
-  import Search from "@/components/Search";
-  import UserMenu from "@/components/UserMenu"
+  import Logo from '@/components/Logo'
+  import BurgerButton from '@/components/BurgerButton'
+  import MobileNavigation from '@/components/MobileNavigation'
+  import Search from '@/components/Search'
+  import UserMenu from '@/components/UserMenu'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: "TopNavigation",
@@ -40,11 +41,18 @@
         ]
       }
     },
-    watch: {
-      $route () {
-        this.showNav = false
-      },
-      showNav: 'bodyScrollLock',
+    components: {
+      Logo,
+      MobileNavigation,
+      BurgerButton,
+      Search,
+      UserMenu
+    },
+    computed : {
+      ...mapGetters({ User: 'auth/StateUser' }),
+      isLoggedIn: function() {
+        return this.$store.getters['auth/isAuthenticated']
+      }
     },
     methods: {
       bodyScrollLock () {
@@ -57,12 +65,11 @@
         }
       }
     },
-    components: {
-      Logo,
-      MobileNavigation,
-      BurgerButton,
-      Search,
-      UserMenu
+    watch: {
+      $route () {
+        this.showNav = false
+      },
+      showNav: 'bodyScrollLock'
     }
   }
 </script>
