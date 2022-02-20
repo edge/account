@@ -2,7 +2,12 @@
   <div class="flex flex-col pb-2 space-y-6 mt-5">
     <div class="input-group">
       <label class="label">Domain</label>
-      <input type="text" placeholder="Server" value="forest_tanzanite.edge.network" class="input input--floating" />
+      <input
+        v-model="domain"
+        class="input input--floating"
+        placeholder=".edge.network"
+        type="text"
+      />
     </div>
   </div>
 </template>
