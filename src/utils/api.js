@@ -78,9 +78,10 @@ const createBackup = async (id, data) => {
  *   os: 66
  * }
  */
-const createHost = async data => {
+const createHost = async (user, data) => {
   const payload = {
     action: 'create',
+    user,
     ipPool: 8,
     ...data
   }
