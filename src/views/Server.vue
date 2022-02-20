@@ -19,14 +19,13 @@
         <!-- title -->
         <div class="flex flex-col items-start sm:space-x-4 sm:items-center sm:flex-row">
           <div class="relative">
-            <h1 class="mb-0 leading-none">{{server.name}}</h1>
+            <h1 class="mb-0 leading-none">{{server.hostname}}</h1>
             <span
               class="absolute top-0 block w-2 h-2 rounded-full -right-1"
               :class="server.status === 'active' ? 'bg-green' : 'bg-gray-300'"
             />
           </div>
-          <!-- <ActiveTask status="Changing the VM parameters" /> -->
-          <!-- {{tasks}} -->
+          <ActiveTask :task=activeTask />
         </div>
 
         <!-- overview -->
@@ -127,7 +126,7 @@
                
                 <!-- overview -->
                 <TabPanel>
-                  <ServerOverview :metrics=server.metrics :state=server.state />
+                  <ServerOverview :server=server :metrics=server.metrics />
                 </TabPanel>
 
                 <!-- console -->
@@ -206,18 +205,20 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { useRoute } from 'vue-router'
 import useSWRV from 'swrv'
 import { fetcher } from '../utils/api'
-import { mapMutations, mapState } from 'vuex'
-import { onMounted, onUnmounted } from 'vue'
 import { startStopHost } from '../utils/api'
 
 export default {
   name: 'Server',
   title() {
-    return 'Edge Account Portal » Server XXX'
+    return 'Edge Account Portal » Server'
   },
   data: function () {
     return {
+      activeTask: null,
       loading: false,
+      polling: null,
+      server: null,
+      tasks: [],
       options: {
         responsive: true,
         maintainAspectRatio: false
@@ -244,53 +245,66 @@ export default {
     TopNavigation,
     UbuntuIcon
   },
-  computed: {
-    // ...mapState(['tasks'])
-  },
   methods: {
+    formatActiveTask(data) {
+      const task = {
+        id: data.id
+      }
+
+      if (data.type === 'vm_backup') {
+        task.status = 'Backing up VM'
+      }
+      
+      if (data.type === 'host_change_params') {
+        task.status = 'Changing VM parameters'
+      }
+      
+      if (data.type === 'host_start') {
+        task.status = 'Starting VM'
+      }
+      
+      if (data.type === 'host_stop') {
+        task.status = 'Stopping VM'
+      }
+
+      return task
+    },
     async toggleServerStatus() {
       console.log('this.server', this.server)
       if (this.server.status === 'active') {
         // Power off.
-        await startStopHost(this.server.id, 'stop')
+        await startStopHost(this.server.serverId, 'stop')
       } else {
         // Power on.
-        await startStopHost(this.server.id, 'start')
+        await startStopHost(this.server.serverId, 'start')
       }
     }
   },
   mounted() {
     this.loading = true
-  },
-  setup() {
     const route = useRoute()
     const { data: server, error: serverFetchError } = useSWRV(() => '/servers?slug=' + route.params.slug, fetcher)
     const { data: tasks, error: taskFetchError, mutate } = useSWRV(() => '/tasks?id=' + route.params.slug, fetcher)
 
-    let polling
+    this.server = server
+    this.tasks = tasks.value
 
-    onMounted(() => {
-      console.log('mounted!')
-      polling = setInterval(() => {
-        console.log('Mutating')
-        mutate()
-      }, 5000)
-    })
-    
-    onUnmounted(() => {
-      console.log('unmounted!')
-      clearInterval(polling)
-      polling = null
-    })
+    this.polling = setInterval(() => {
+      console.log('Mutating')
+      mutate()
 
-    return {
-      server,
-      tasks
-    }
+      this.tasks = tasks.value
+      
+      if (this.tasks[0]) {
+        this.activeTask = this.formatActiveTask(this.tasks[0])
+      } else {
+        this.activeTask = null
+      }
+    }, 2000)
   },
-  watch: {
-    $route(to, from) {
-    }
+  unmounted() {
+    clearInterval(this.polling)
+    this.polling = null
   }
 }
 </script>

@@ -1,19 +1,18 @@
 <template>
-  <div class="mt-2 statusPanel animate-pulse sm:mt-0">
+  <div v-if="task" class="mt-2 statusPanel animate-pulse sm:mt-0">
     <RefreshIcon class="w-4 h-4 opacity-50 animate-spin" />
-    <span>{{status}}</span>
+    <span>{{task.status}}</span>
   </div>
 </template>
 
 <script>
-  import {RefreshIcon} from "@heroicons/vue/solid";
+  import {RefreshIcon} from "@heroicons/vue/solid"
+
   export default {
     name: "ActiveTask",
     components: {RefreshIcon},
     props: {
-      status: {
-        type: String
-      }
+      task: Object
     },
   }
 </script>
