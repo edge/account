@@ -114,7 +114,7 @@ export default {
   props: ['server'],
   data: function () {
     return {
-      backupName: `${this.server.name}-${new Date().getTime()}`,
+      backupName: `${this.server.hostname}-${new Date().getTime()}`,
       backups: this.server.backups,
       isSaving: false,
       feedback: '',
@@ -129,7 +129,7 @@ export default {
       this.isSaving = true
       this.showStatus = true
       
-      createBackup(this.server.id, { name: this.backupName, comment: 'x' })
+      createBackup(this.server.serverId, { name: this.backupName, comment: '' })
     }
   },
   watch: {
