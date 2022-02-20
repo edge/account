@@ -139,21 +139,21 @@ export default {
       const newHost = await createHost(this.settings)
 
       // Redirect to the new server page.
-      const { id } = newHost      
-      this.$router.push({ name: 'Server', params: { slug: id } })
+      const { serverId } = newHost
+      this.$router.push({ name: 'Server', params: { slug: serverId } })
     },
     toggleBackups () {
       // this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     },
     validate(inputType, value) {
       const validationRules = {
-        domain: /^.{6,35}$/,
+        domain: /^.{6,255}$/,
         password: /^.{6,35}$/,
         hostname: /^[a-zA-Z0-9]{1}[a-zA-Z0-9-_\.]{1,48}$/
       }
      
       const validationMessages = {
-        domain: 'Domain name',
+        domain: 'Maximum length is 255 characters',
         password: 'Password must be between 6 and 35 characters',
         hostname: 'Hostname must contain only alphanumeric characters, underscores, and hyphens. The first character must be alphanumeric. Maximum length is 49.'
       }
