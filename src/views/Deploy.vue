@@ -98,7 +98,7 @@ import ServerName from '@/components/deploy/ServerName'
 import SideNavigation from "@/components/SideNavigation"
 import Toggle from '@vueform/toggle'
 import TopNavigation from "@/components/TopNavigation"
-
+import { mapGetters } from 'vuex'
 import { createHost } from '../utils/api'
 
 export default {
@@ -132,15 +132,20 @@ export default {
       isSaving: false
     }
   },
+  computed: {
+    ...mapGetters({
+      user: 'auth/StateUser'
+    })
+  },
   methods: {
     async deploy () {
       this.isSaving = true
 
-      const newHost = await createHost(this.settings)
+      const newHost = await createHost(this.user, this.settings)
 
       // Redirect to the new server page.
       const { serverId } = newHost
-      this.$router.push({ name: 'Server', params: { slug: serverId } })
+      this.$router.push({ name: 'Server', params: { id: serverId } })
     },
     toggleBackups () {
       // this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
@@ -161,7 +166,7 @@ export default {
       const regex = validationRules[inputType]
 
       if (!regex) {
-        this.settings[inputType] = value
+        this.settings[inputType] = value.id || value
         this.errors[inputType] = ''
       } else {      
         if (regex.test(value)) {
