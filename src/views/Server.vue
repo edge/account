@@ -283,8 +283,8 @@ export default {
   mounted() {
     this.loading = true
     const route = useRoute()
-    const { data: server, error: serverFetchError } = useSWRV(() => '/servers?slug=' + route.params.slug, fetcher)
-    const { data: tasks, error: taskFetchError, mutate } = useSWRV(() => '/tasks?id=' + route.params.slug, fetcher)
+    const { data: server, error: serverFetchError } = useSWRV(() => '/servers?id=' + route.params.id, fetcher)
+    const { data: tasks, error: taskFetchError, mutate } = useSWRV(() => '/tasks?id=' + route.params.id, fetcher)
 
     this.server = server
     this.tasks = tasks.value

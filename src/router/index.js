@@ -30,7 +30,7 @@ const routes = [
     meta: { guest: true }
   },
   {
-    path: '/server/:slug',
+    path: '/server/:id',
     name: 'Server',
     component: Server,
     meta: {requiresAuth: true}
