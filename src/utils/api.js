@@ -3,9 +3,16 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
-const SERVER_URL = `${ACCOUNT_API_URL}/servers`
+const ACCOUNT_ENDPOINT = `${ACCOUNT_API_URL}/accounts`
+const SERVER_ENDPOINT = `${ACCOUNT_API_URL}/servers`
 
-const fetcher = function(url) {
+/**
+ * The data fetching method called by SWRV.
+ *
+ * @param {String} url - a relative URL for an fetching data from an API endpoint, e.g. `/servers`
+ * @returns {Object}
+ */
+const fetcher = url => {
   return fetch(`${ACCOUNT_API_URL}${url}`)
     .then(response => response.json())
     .then(results => {
@@ -13,15 +20,38 @@ const fetcher = function(url) {
     })
 }
 
+/**
+ * Calls the "account" API endpoint to create a new user account.
+ *
+ * @returns {Object}
+ */
 const createAccount = async () => {
-  const url = `${ACCOUNT_API_URL}/1.0/accounts`
+  const url = `${ACCOUNT_ENDPOINT}`
 
   return fetchData(url, { method: 'post' })
-    .then(response => {
-      console.log('response', response)
-    })
 }
 
+/**
+ * Calls the "account" API endpoint to retrieve a user account.
+ *
+ * @returns {Object}
+ */
+const getAccount = async id => {
+  const url = `${ACCOUNT_ENDPOINT}?id=${id}`
+
+  return fetchData(url, { method: 'get' })
+}
+
+/**
+ * Calls the "server" API endpoint to perform a VM backup operation.
+ *
+ * @param {Number} id - the ID of the VM (as `serverId` in API schema)
+ * @param {Object} data - the parameters to apply to the VM backup
+ * @example {
+ *   name: "my-server-backup-20220219",
+ *   comment: ""
+ * }
+ */
 const createBackup = async (id, data) => {
   const payload = {
     action: 'backup',
@@ -29,12 +59,25 @@ const createBackup = async (id, data) => {
     ...data
   }
 
-  return fetchData(SERVER_URL, { method: 'post' }, payload)
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
     .then(response => {
       console.log('response', response)
     })
 }
 
+/**
+ * Calls the "server" API endpoint to perform a VM create operation.
+ *
+ * @param {Object} data - the new parameters to apply to the VM
+ * @example {
+ *   cluster: 7,
+ *   hostname: "my-server",
+ *   domain: "my-server.edge.network",
+ *   password: "2372hceuc7",
+ *   preset: 9,
+ *   os: 66
+ * }
+ */
 const createHost = async data => {
   const payload = {
     action: 'create',
@@ -42,16 +85,28 @@ const createHost = async data => {
     ...data
   }
 
-  return fetchData(SERVER_URL, { method: 'post' }, payload)
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
 }
 
-const getTask = async id => {
-  return fetchData(`${SERVER_URL}?action=task&taskId=${id}`, { method: 'get' })
-    .then(response => {
-      return response
-    })
-}
+// const getTask = async id => {
+//   return fetchData(`${SERVER_ENDPOINT}?action=task&taskId=${id}`, { method: 'get' })
+//     .then(response => {
+//       return response
+//     })
+// }
 
+/**
+ * Calls the "server" API endpoint to perform a VM resize operation.
+ *
+ * @param {Number} id - the ID of the VM (as `serverId` in API schema)
+ * @param {Object} data - the new parameters to apply to the VM
+ * @example {
+ *    diskId: 0,
+ *    cpuNumber: 2,
+ *    memSize: 2000,
+ *    hddSize: 15000,
+ *  }
+ */
 const resizeHost = async (id, data) => {
   const payload = {
     action: 'resize',
@@ -59,22 +114,25 @@ const resizeHost = async (id, data) => {
     ...data
   }
 
-  console.log('payload', payload)
-
-  return fetchData(SERVER_URL, { method: 'post' }, payload)
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
     .then(response => {
-      console.log('response', response)
       return Promise.resolve(response)
     })
 }
 
+/**
+ * Calls the "server" API endpoint to perform a VM power operation - i.e. start/stop.
+ *
+ * @param {Number} id - the ID of the VM (as `serverId` in API schema)
+ * @param {String} action - the action to perform, e.g. "start" or "stop"
+ */
 const startStopHost = async (id, action) => {
   const payload = {
     action,
     id
   }
 
-  return fetchData(SERVER_URL, { method: 'post' }, payload)
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
 }
 
 const fetchData = (url, options = {}, payload) => {
@@ -109,85 +167,12 @@ const fetchData = (url, options = {}, payload) => {
     })
 }
 
-// const deleteBy = (collection, field, value) => {
-//   return getApi()
-//     .inProperty(API_SETTINGS.property)
-//     .in(collection)
-//     .whereFieldIsEqualTo(field, value)
-//     .delete()
-// }
-
-// const deleteWhere = (collection, query) => {
-//   return getApi()
-//     .inProperty(API_SETTINGS.property)
-//     .in(collection)
-//     .where(query)
-//     .delete()
-// }
-
-// const find = (collection, query) => {
-//   return getApi()
-//     .inProperty(API_SETTINGS.property)
-//     .in(collection)
-//     .where(query)
-//     .limitTo(500)
-//     .find({ extractResults: true })
-// }
-
-// const findById = (collection, id) => {
-//   return getApi()
-//     .inProperty(API_SETTINGS.property)
-//     .in(collection)
-//     .whereFieldIsEqualTo('_id', id)
-//     .find({ extractResults: true })
-// }
-
-// const findWithMeta = (collection, query) => {
-//   return getApi()
-//     .inProperty(API_SETTINGS.property)
-//     .in(collection)
-//     .where(query)
-//     .find({ extractResults: false })
-// }
-
-// const save = (collection, data) => {
-//   return getApi()
-//     .inProperty(API_SETTINGS.property)
-//     .in(collection)
-//     .create(data)
-// }
-
-// const update = (collection, query, data) => {
-//   return getApi()
-//     .inProperty(API_SETTINGS.property)
-//     .in(collection)
-//     .where(query)
-//     .update(data)
-// }
-
-// const updateById = (collection, id, data) => {
-//   return getApi()
-//     .inProperty(API_SETTINGS.property)
-//     .in(collection)
-//     .whereFieldIsEqualTo('_id', id.toString())
-//     .update(data)
-// }
-
 export {
   createAccount,
   createBackup,
   createHost,
   fetcher,
-  getTask,
+  getAccount,
   resizeHost,
   startStopHost
-  // deleteBy,
-  // deleteWhere,
-  // executeRequest,
-  // find,
-  // findById,
-  // findWithMeta,
-  // save,
-  // update,
-  // updateById
 }
