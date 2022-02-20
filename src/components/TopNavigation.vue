@@ -14,7 +14,7 @@
       <router-link to="/deploy">
         <button class="h-full button button--success">Deploy Server</button>
       </router-link>
-      <UserMenu :user=User />
+      <UserMenu :user=user />
     </div>
     <MobileNavigation />
   </div>
@@ -48,11 +48,10 @@
       Search,
       UserMenu
     },
-    computed : {
-      ...mapGetters({ User: 'auth/StateUser' }),
-      isLoggedIn: function() {
-        return this.$store.getters['auth/isAuthenticated']
-      }
+    computed: {
+      ...mapGetters({
+        user: 'auth/StateUser'
+      })
     },
     methods: {
       bodyScrollLock () {
@@ -63,6 +62,9 @@
         } else {
           bodyScrollLock.enableBodyScroll(targetElement)
         }
+      },
+      isLoggedIn: function() {
+        return this.$store.getters['auth/isAuthenticated']
       }
     },
     watch: {
