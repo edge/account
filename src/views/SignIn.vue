@@ -36,10 +36,12 @@
 </template>
 
 <script>
-import {ExclamationIcon} from "@heroicons/vue/outline"
-import Logo from "@/components/Logo";
-import SideNavigation from "@/components/SideNavigation"
-import UserMenu from "@/components/UserMenu"
+import { ExclamationIcon } from '@heroicons/vue/outline'
+import Logo from '@/components/Logo'
+import SideNavigation from '@/components/SideNavigation'
+import UserMenu from '@/components/UserMenu'
+import { mapActions } from 'vuex'
+// import { createAccount } from '../utils/api'
 
 export default {
   name: 'Sign In',
@@ -58,11 +60,14 @@ export default {
     }
   },
   methods: {
-    createNewAccount() {
-      createAccount()
+    ...mapActions(['auth/login', 'auth/register']),
+    async createNewAccount() {
+      await this['auth/register']()
+      this.$router.push('/')
     },
-    signIn() {
-      console.log('signin', this.accountNumber)
+    async signIn() {
+      await this['auth/login'](this.accountNumber)
+      this.$router.push('/')
     }
   }
 }
