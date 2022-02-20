@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-start space-y-5">
 
-    <div v-if="this.state !== 'creating'" class="buttonGroup">
+    <div v-if="this.server.state !== 'creating'" class="buttonGroup">
       <button class="buttonGroup__button active">Today</button>
       <button class="buttonGroup__button">This week</button>
       <button class="buttonGroup__button">This month</button>
@@ -9,7 +9,7 @@
     </div>
 
     <!-- if metrics don't exist -->
-    <div v-if="this.state === 'creating'" class="box box--tall">
+    <div v-if="this.server.state === 'creating'" class="box box--tall">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="flex items-center justify-center w-16 h-16 p-4 border-2 border-green-100 rounded-full border-opacity-10 animate-pulse bg-green-50">
           <svg class="w-full h-full text-green-300" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +35,7 @@
         <h4 :class="this.metrics.cpu_load && this.metrics.cpu_load[0] ? 'mb-8' : ''">CPU load</h4>
         <Line
           v-if="this.metrics.cpu_load[0]"
-          :data='this.metrics.cpu_load[0].datapoints'
+          :data='removeEmptyPoints(this.metrics.cpu_load[0].datapoints)'
           :minScale='0'
           :maxScale='100'
           :postpendValue="'%'"
@@ -47,7 +47,9 @@
         <h4 :class="this.metrics.cpu_load && this.metrics.cpu_load[0] ? 'mb-8' : ''">Memory usage</h4>
         <Line
           v-if="this.metrics.mem_usage[0]"
-          :data='this.metrics.mem_usage[0].datapoints'
+          :data='formatDatapoints(removeEmptyPoints(this.metrics.mem_usage[0].datapoints))'
+          :maxScale="this.server.ram_mib"
+          postpendValue="MB"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">Memory usage statistics will appear here as they become available.</p>
       </div>
@@ -56,24 +58,35 @@
         <h4 :class="this.metrics['df.root.used'] ? 'mb-8' : ''">Disk usage</h4>
         <Line
           v-if="this.metrics['df.root.used'][0]"
-          :data='this.metrics["df.root.used"][0].datapoints'
+          :data='formatDatapoints(removeEmptyPoints(this.metrics["df.root.used"][0].datapoints), "GB")'
+          :maxScale="this.server.disk_mib/1024"
+          postpendValue="GB"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">Disk usage statistics will appear here as they become available.</p>
       </div>
 
       <div class="box">
         <h4 class="mb-8">Disk I/O</h4>
-        <!-- <Line :datapoints='this.datapoints.iops[0].datapoints' /> -->
+        <Line
+          v-if="this.metrics['iops'][0]"
+          :data='removeEmptyPoints(this.metrics["iops"][0].datapoints)'
+        />
       </div>
 
       <div class="box">
         <h4 class="mb-8">Net RX</h4>
-        <!-- <Line :datapoints='this.datapoints.net_rx[0].datapoints' /> -->
+        <Line
+          v-if="this.metrics['net_rx'][0]"
+          :data='removeEmptyPoints(this.metrics["net_rx"][0].datapoints)'
+        />
       </div>
 
       <div class="box">
         <h4 class="mb-8">Net TX</h4>
-        <!-- <Line :datapoints='this.datapoints.net_tx[0].datapoints' /> -->
+        <Line
+          v-if="this.metrics['net_tx'][0]"
+          :data='removeEmptyPoints(this.metrics["net_tx"][0].datapoints)'
+        />
       </div>
     </div>
     
@@ -87,325 +100,32 @@ export default {
   name: 'ServerOverview',
   props: {
     metrics: Object,
-    state: String
-  },
-  data: function () {
-    return {
-      datapointsx: {
-        cpu_load:[
-          {
-            datapoints:[
-                [
-                  10,
-                  1642993740
-                ],
-                [
-                  10,
-                  1642993800
-                ],
-                [
-                  10,
-                  1642993860
-                ],
-                [
-                  10,
-                  1642993920
-                ],
-                [
-                  10,
-                  1642993980
-                ],
-                [
-                  10,
-                  1642994040
-                ],
-                [
-                  10,
-                  1642994100
-                ],
-                [
-                  10,
-                  1642994160
-                ],
-                [
-                  10,
-                  1642994220
-                ],
-                [
-                  null,
-                  1642994280
-                ]
-            ],
-            tags:{
-                "name":"1.host.100_test2.cpu.time"
-            },
-            target:"summarize(round(scale(1.host.100_test2.cpu.time,100),-1),'0min','avg')"
-          }
-        ],
-        mem_usage:[
-          {
-            datapoints:[
-                [
-                  209585493.33333337,
-                  1642993740
-                ],
-                [
-                  211518805.33333337,
-                  1642993800
-                ],
-                [
-                  212429482.66666663,
-                  1642993860
-                ],
-                [
-                  210232661.33333337,
-                  1642993920
-                ],
-                [
-                  209668778.66666663,
-                  1642993980
-                ],
-                [
-                  210301610.66666663,
-                  1642994040
-                ],
-                [
-                  209231189.33333337,
-                  1642994100
-                ],
-                [
-                  209377962.66666663,
-                  1642994160
-                ],
-                [
-                  211016362.66666663,
-                  1642994220
-                ],
-                [
-                  null,
-                  1642994280
-                ]
-            ],
-            tags:{
-                "name":"1.host.100_test2.mem.available"
-            },
-            target:"summarize(diffSeries(1.host.100_test2.mem.available, 1.host.100_test2.mem.usable),'0min','avg')"
-          }
-        ],
-        "df.root.used":[
-          {
-            datapoints:[
-                [
-                  2585493504,
-                  1642993740
-                ],
-                [
-                  2585559040,
-                  1642993800
-                ],
-                [
-                  2585559040,
-                  1642993860
-                ],
-                [
-                  2585559040,
-                  1642993920
-                ],
-                [
-                  2585559040,
-                  1642993980
-                ],
-                [
-                  2585559040,
-                  1642994040
-                ],
-                [
-                  2585559040,
-                  1642994100
-                ],
-                [
-                  2585559040,
-                  1642994160
-                ],
-                [
-                  2585591808,
-                  1642994220
-                ],
-                [
-                  null,
-                  1642994280
-                ]
-            ],
-            tags:{
-                "name":"1.host.100_test2.hdd.allocation"
-            },
-            target:"summarize(1.host.100_test2.hdd.allocation,'0min','avg')"
-          }
-        ],
-        iops:[
-          {
-            datapoints:[
-                [
-                  0.18333333333333335,
-                  1642993740
-                ],
-                [
-                  2.216666666666667,
-                  1642993800
-                ],
-                [
-                  0.06666666666666667,
-                  1642993860
-                ],
-                [
-                  0.05000000000000001,
-                  1642993920
-                ],
-                [
-                  2.6833333333333336,
-                  1642993980
-                ],
-                [
-                  2.4666666666666663,
-                  1642994040
-                ],
-                [
-                  3.266666666666666,
-                  1642994100
-                ],
-                [
-                  0.08333333333333333,
-                  1642994160
-                ],
-                [
-                  1.8499999999999999,
-                  1642994220
-                ],
-                [
-                  null,
-                  1642994280
-                ]
-            ],
-            tags:{
-                "name":"1.host.100_test2.hdd.read_req"
-            },
-            target:"summarize(sumSeries(1.host.100_test2.hdd.{read_req,write_req}),'0min','avg')"
-          }
-        ],
-        net_rx:[
-          {
-            datapoints:[
-                [
-                  1100.8166666666668,
-                  1642993740
-                ],
-                [
-                  1020.4500000000002,
-                  1642993800
-                ],
-                [
-                  968,
-                  1642993860
-                ],
-                [
-                  1019.5,
-                  1642993920
-                ],
-                [
-                  1146.1,
-                  1642993980
-                ],
-                [
-                  1246.1500000000003,
-                  1642994040
-                ],
-                [
-                  1040.2666666666667,
-                  1642994100
-                ],
-                [
-                  1145,
-                  1642994160
-                ],
-                [
-                  1102.05,
-                  1642994220
-                ],
-                [
-                  null,
-                  1642994280
-                ]
-            ],
-            tags:{
-                "name":"1.host.100_test2.net.net0.rx.bytes.avg"
-            },
-            target:"summarize(sumSeries(1.host.100_test2.net..rx.bytes.avg),'0min','avg')"
-          }
-        ],
-        net_tx:[
-          {
-            datapoints:[
-                [
-                  116.64999999999998,
-                  1642993740
-                ],
-                [
-                  14.65,
-                  1642993800
-                ],
-                [
-                  11.333333333333334,
-                  1642993860
-                ],
-                [
-                  35.5,
-                  1642993920
-                ],
-                [
-                  224.9333333333333,
-                  1642993980
-                ],
-                [
-                  370.84999999999997,
-                  1642994040
-                ],
-                [
-                  70.3,
-                  1642994100
-                ],
-                [
-                  9.7,
-                  1642994160
-                ],
-                [
-                  168,
-                  1642994220
-                ],
-                [
-                  null,
-                  1642994280
-                ]
-            ],
-            tags:{
-                "name":"1.host.100_test2.net.net0.tx.bytes.avg"
-            },
-            target:"summarize(sumSeries(1.host.100_test2.net..tx.bytes.avg),'0min','avg')"
-          }
-        ]
-      }
-    }
+    server: Object
   },
   components: {
     Line
+  },
+  methods: {
+    formatDatapoints(data, sizeType = 'MB') {
+      const divisor = sizeType === 'MB' ? 1048576 : 1073741824
+      
+      data.forEach(datapoint => {
+        if (datapoint[0]) {
+          datapoint[0] = datapoint[0]/divisor
+        }
+      })
+
+      return data
+    },
+    removeEmptyPoints(data) {
+      return data.filter(dp => dp[0])
+    }
   },
   watch: {
     $route(to, from) {
       // clearInterval(this.polling)
       // this.polling = null
     }
-  },
-  methods: {
-
   }
 }
 </script>
