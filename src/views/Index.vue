@@ -87,8 +87,9 @@ import TopNavigation from "@/components/TopNavigation"
 import UbuntuIcon from '@/components/icons/Ubuntu'
 import { CloudUploadIcon, ServerIcon, ShieldCheckIcon } from '@heroicons/vue/outline'
 
-import useSWRV from 'swrv'
 import { fetcher } from '../utils/api'
+import { mapGetters } from 'vuex'
+import useSWRV from 'swrv'
 
 export default {
   name: 'Index',
@@ -104,6 +105,11 @@ export default {
     TopNavigation,
     UbuntuIcon
   },
+  computed: {
+    ...mapGetters({
+      user: 'auth/StateUser'
+    })
+  },
   data() {
     return {
       servers: []
@@ -112,7 +118,7 @@ export default {
   methods: {
   },
   mounted() {
-    const { data: servers, error: serverFetchError } = useSWRV('/servers', fetcher)
+    const { data: servers, error: serverFetchError } = useSWRV(() => '/servers?userId=' + this.user._id, fetcher)
 
     this.servers = servers
   }
