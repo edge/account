@@ -37,7 +37,7 @@
             
             <div class="serverList__main">
               <router-link class="serverList__name" :to="'/server/'+ server.id">
-                {{ server.name }}
+                {{ server.hostname }}
               </router-link>
               <div class="serverList__stats">
                 <span>{{ server.cpu }}</span>
@@ -49,14 +49,14 @@
             </div>
             <div class="flex items-center flex-shrink-0 mt-3 space-x-5 lg:space-x-0 lg:flex-1 lg:mt-0 lg:justify-between">
               <div class="flex items-center space-x-1 lg:justify-center serverList__cell">
-                <UbuntuIcon @click="increment" v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
                 <CentOsIcon v-if="server.os === 'centos'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
                 <span>{{`${server.os.charAt(0).toUpperCase()}${server.os.substring(1)}`}} {{ server.osVersion }}</span>
               </div>
               <span class="lg:text-center serverList__cell">{{ server.ip }}</span>
               <div class="flex items-center lg:justify-end serverList__cell">
-                {{ server.region }}
-                <img :src=server.flag width="25" class="ml-2 rounded-sm" />
+                {{ server.region.name }}
+                <img :src=server.region.flagIcon[0].url width="25" class="ml-2 rounded-sm" />
               </div>
             </div>
           </li>
@@ -104,20 +104,17 @@ export default {
     TopNavigation,
     UbuntuIcon
   },
+  data() {
+    return {
+      servers: []
+    }
+  },
   methods: {
   },
-  setup() {
-    const { data: servers, error } = useSWRV('/servers', fetcher)
+  mounted() {
+    const { data: servers, error: serverFetchError } = useSWRV('/servers', fetcher)
 
-    return {
-      servers
-    }
-  },
-  watch: {
-    $route(to, from) {
-      // clearInterval(this.polling)
-      // this.polling = null
-    }
+    this.servers = servers
   }
 }
 </script>
