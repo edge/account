@@ -1,12 +1,12 @@
 <template>
-  <Menu as='div' class="menu">
+  <Menu as='div' class="menu" v-if="user">
     <MenuButton class="menu__button">
-      <span class="w-full truncate">3333 3810 7877 31616</span>
+      <span class="w-full truncate">{{user.accountNumber}}</span>
       <ChevronDownIcon class="w-5 h-5 text-gray-400" />
     </MenuButton>
     <MenuItems class="menu__items">
       <div class="p-1">
-        <MenuItem v-slot="{ active }">
+        <!-- <MenuItem v-slot="{ active }">
           <button
             :class="[
               'menu__item',
@@ -25,15 +25,16 @@
           >
             Menu item
           </button>
-        </MenuItem>
+        </MenuItem> -->
         <MenuItem v-slot="{ active }">
           <button
+            @click.prevent="logout"
             :class="[
               'menu__item',
               active ? 'active' : ''
             ]"
           >
-            Menu item
+            Log out
           </button>
         </MenuItem>
       </div>
@@ -52,6 +53,13 @@
       MenuButton,
       MenuItems,
       MenuItem,
+    },
+    props: ['user'],
+    methods: {
+      async logout() {
+        await this.$store.dispatch('auth/logout')
+        this.$router.push('/signin')
+      }
     }
   }
 </script>
