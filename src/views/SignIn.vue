@@ -14,10 +14,10 @@
           </div>
 
           <!-- error message  -->
-          <div class="flex items-center errorMessage"> 
+          <!-- <div class="flex items-center errorMessage"> 
             <ExclamationIcon class="w-3.5 h-3.5" />
             <span class="errorMessage__text">This is an error message</span>
-          </div>
+          </div> -->
 
           <!-- buttons -->
           <div class="flex flex-col space-y-2">
@@ -63,7 +63,10 @@ export default {
     ...mapActions(['auth/login', 'auth/register']),
     async createNewAccount() {
       await this['auth/register']()
-      this.$router.push('/')
+      
+      setTimeout(() => {
+        this.$router.push('/')
+      }, 1500)
     },
     async signIn() {
       await this['auth/login'](this.accountNumber)
