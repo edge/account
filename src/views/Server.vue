@@ -255,6 +255,10 @@ export default {
         task.status = 'Backing up VM'
       }
       
+      if (data.type === 'host_create') {
+        task.status = 'Creating VM'
+      }
+
       if (data.type === 'host_change_params') {
         task.status = 'Changing VM parameters'
       }
@@ -270,7 +274,6 @@ export default {
       return task
     },
     async toggleServerStatus() {
-      console.log('this.server', this.server)
       if (this.server.status === 'active') {
         // Power off.
         await startStopHost(this.server.serverId, 'stop')
