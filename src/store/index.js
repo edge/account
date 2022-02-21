@@ -9,6 +9,41 @@ const vuexLocalStorage = new VuexPersist({
 
 // Create a new vuex store.
 const store = createStore({
+  state: {
+    serverErrors: {},
+    serverSettings: {}
+  },
+  actions: {
+    clear({ commit }) {
+      commit('clear')
+    },
+    setServerError({ commit }, payload) {
+      commit('setError', payload)
+    },
+    setServerProperty({ commit }, payload) {
+      commit('set', payload)
+    }
+  },
+  getters: {
+    StateErrors: state => state.serverErrors,
+    StateSettings: state => state.serverSettings
+  },
+  mutations: {
+    clear(state) {
+      // state.serverSettings = {}
+      Object.keys(state.serverSettings).forEach(key => {
+        state.serverSettings[key] = null
+      })
+    },
+    setError(state, payload) {
+      const { property, value } = payload
+      state.serverErrors[property] = value
+    },
+    set(state, payload) {
+      const { property, value } = payload
+      state.serverSettings[property] = value
+    }
+  },
   modules: {
     auth
   },

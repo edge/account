@@ -25,7 +25,7 @@
             <div class="box">
               <h4>Server specs</h4>
               <ServerSpecs @specs-changed="value => validate('preset', value)" />
-              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.preset">{{errors.preset}}</span>
+              <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.preset">{{serverErrors.preset}}</span>
             </div>
 
             <!-- automated backups -->
@@ -44,23 +44,23 @@
             <!-- host name / server name -->
             <div class="box">
               <ServerName @name-changed="value => validate('hostname', value)" />
-              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.hostname">{{errors.hostname}}</span>
+              <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.hostname">{{serverErrors.hostname}}</span>
 
-              <Domain :hostname="settings.hostname" @name-changed="value => validate('domain', value)" />
-              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.domain">{{errors.domain}}</span>
+              <Domain :hostname="serverSettings.hostname" @name-changed="value => validate('domain', value)" />
+              <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.domain">{{serverErrors.domain}}</span>
             </div>
 
             <!-- password -->
             <div class="box">
               <Password @password-changed="value => validate('password', value)" />
-              <span class="flex-1 order-1 text-red md:order-2" v-if="errors.password">{{errors.password}}</span>
+              <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.password">{{serverErrors.password}}</span>
             </div>
 
             <!-- submit & error message -->
             <div class="flex flex-col w-full md:space-x-5 md:items-center md:flex-row">
               <button
                 @click.prevent="deploy"
-                :disabled="!settingsComplete || isSaving"
+                :disabled="!isFormSubmittable()"
                 class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1"
               >
                 <span v-if="isSaving">Deploying</span>
@@ -98,7 +98,7 @@ import ServerName from '@/components/deploy/ServerName'
 import SideNavigation from "@/components/SideNavigation"
 import Toggle from '@vueform/toggle'
 import TopNavigation from "@/components/TopNavigation"
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { createHost } from '../utils/api'
 
 export default {
@@ -119,7 +119,7 @@ export default {
   },
   data() {
     return {
-      errors: {},
+      isSaving: false,
       required: [
         'cluster',
         'hostname',
@@ -127,19 +127,19 @@ export default {
         'password',
         'preset',
         'os',
-      ],
-      settings: {},
-      settingsComplete: false,
-      isSaving: false
+      ]
     }
   },
   computed: {
     ...mapGetters({
+      serverErrors: 'StateErrors',
+      serverSettings: 'StateSettings',
       user: 'auth/StateUser'
     })
   },
   methods: {
-    async deploy () {
+    ...mapActions(['clear', 'setServerError', 'setServerProperty']),
+    async deploy() {
       this.isSaving = true
 
       const newHost = await createHost(this.user, this.settings)
@@ -147,6 +147,11 @@ export default {
       // Redirect to the new server page.
       const { serverId } = newHost
       this.$router.push({ name: 'Server', params: { id: serverId } })
+    },
+    isFormSubmittable() {
+      return !this.isSaving && this.required.every(key => {
+        return this.serverSettings[key] !== null
+      })
     },
     toggleBackups () {
       // this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
@@ -167,24 +172,21 @@ export default {
       const regex = validationRules[inputType]
 
       if (!regex) {
-        this.settings[inputType] = value.id || value
-        this.errors[inputType] = ''
+        this.setServerProperty({ property: inputType, value: value.id || value })
+        this.setServerError({ property: inputType, value: '' })
       } else {      
         if (regex.test(value)) {
-          this.settings[inputType] = value
-          this.errors[inputType] = ''
+          this.setServerProperty({ property: inputType, value })
+          this.setServerError({ property: inputType, value: '' })
         } else {
-          this.errors[inputType] = validationMessages[inputType]
+          this.setServerError({ property: inputType, value: validationMessages[inputType] })
         }
       }
-
-      this.enableIfValid()
-    },
-    enableIfValid() {
-      this.settingsComplete = this.required.every(key => {
-        return this.settings[key] !== undefined
-      })
     }
+  },
+  mounted() {
+    // Clear the server settings.
+    this.clear()
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <RadioGroup v-model="selected">
+  <RadioGroup v-model="selectedPreset">
     <RadioGroupLabel class="sr-only">Size</RadioGroupLabel>
     <div class="box__grid">
       <RadioGroupOption
@@ -10,7 +10,7 @@
         v-slot="{ active, checked, disabled }"
         :disabled="!spec.enabled"
         @click="() => {
-          updateParentResizeSpecs(spec.id)
+          updateParentResizeSpecs(spec)
         }"
       >
         <div
@@ -83,60 +83,64 @@ export default {
     RadioGroupDescription,
     RadioGroupOption,
   },
+  data() {
+    return {
+      presets: null,
+      selectedPreset: null
+    }
+  },
   methods: {
     updateParentResizeSpecs(data) {
       this.$emit('specs-changed', data)
     }
   },
-  setup(props) {
-    const selected = ref(null)
+  mounted() {
+    this.selectedPreset = ref(null)
     const { data: presets, error } = useSWRV(() => '/presets', fetcher)
 
-    onUpdated(() => {
+    // onUpdated(() => {
+        // console.log('updated! 1')
       // Give the presets data a chance to load, then select the first
       // avaliable preset.
-      setTimeout(() => {     
-        console.log('updated!')
-        console.log('props', props)
-        const { current, resizeType, selectedSpecs } = props
+      // setTimeout(() => {     
+      //   console.log('updated! 2')
+      //   console.log('props', props)
+    const { current, resizeType, selectedSpecs } = this
 
-        let matchingPreset
-        
-        if (current && !selectedSpecs) {
-          matchingPreset = presets.value.map(p => {
-            if (p.ram === current.ram && p.cpu === current.cpu) {
-              return p
-            } else {
-              return null
-            }
-          }).filter(Boolean)
+    this.presets = presets
+    
+    let matchingPreset
 
-          // Loop over presets and disable those that can't be used.
-          presets.value.forEach(p => {
-            p.enabled = true
-            
-            // SSD cannot be downsized.
-            if (resizeType.id === 2 && p.ssd < current.ssd) {
-              p.enabled = false
-            }
-          })
-        }
-
-        if (selectedSpecs) {
-          selected.value = selectedSpecs
-        } else {
-          if (matchingPreset && matchingPreset[0]) {
-            selected.value = matchingPreset[0]
-          } else {      
-            selected.value = presets.value[0]
+    if (this.presets && this.presets.value) {
+      if (current && !selectedSpecs) {
+        matchingPreset = this.presets.value.map(p => {
+          if (p.ram === current.ram && p.cpu === current.cpu) {
+            return p
+          } else {
+            return null
           }
-        }
-      }, 1000)
-    })
+        }).filter(Boolean)
 
-    return {
-      selected,
-      presets
+        // Loop over presets and disable those that can't be used.
+        this.presets.value.forEach(p => {
+          p.enabled = true
+          
+          // SSD cannot be downsized.
+          if (resizeType.id === 2 && p.ssd < current.ssd) {
+            p.enabled = false
+          }
+        })
+      }
+
+      if (selectedSpecs) {
+        this.selectedPreset.value = selectedSpecs
+      } else {
+        if (matchingPreset && matchingPreset[0]) {
+          this.selectedPreset.value = matchingPreset[0]
+        } else {      
+          this.selectedPreset.value = this.presets.value[0]
+        }
+      }
     }
   }
 }
