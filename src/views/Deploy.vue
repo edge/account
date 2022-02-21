@@ -46,7 +46,7 @@
               <ServerName @name-changed="value => validate('hostname', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="errors.hostname">{{errors.hostname}}</span>
 
-              <Domain @name-changed="value => validate('domain', value)" />
+              <Domain :hostname="settings.hostname" @name-changed="value => validate('domain', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="errors.domain">{{errors.domain}}</span>
             </div>
 
@@ -123,6 +123,7 @@ export default {
       required: [
         'cluster',
         'hostname',
+        'domain',
         'password',
         'preset',
         'os',

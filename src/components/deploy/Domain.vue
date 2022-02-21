@@ -3,9 +3,10 @@
     <div class="input-group">
       <label class="label">Domain</label>
       <input
-        v-model="domain"
         class="input input--floating"
+        :value="domain"
         placeholder=".edge.network"
+        readonly
         type="text"
       />
     </div>
@@ -20,9 +21,11 @@ export default {
       domain: ''
     }
   },
+  props: ['hostname'],
   watch: {
-    domain(value) {
-      this.$emit('name-changed', value)
+    hostname(value) {
+      this.domain = `${value}.edge.network`
+      this.$emit('name-changed', this.domain)
     }
   }
 }

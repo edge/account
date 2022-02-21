@@ -41,7 +41,6 @@ import Logo from '@/components/Logo'
 import SideNavigation from '@/components/SideNavigation'
 import UserMenu from '@/components/UserMenu'
 import { mapActions } from 'vuex'
-// import { createAccount } from '../utils/api'
 
 export default {
   name: 'Sign In',
