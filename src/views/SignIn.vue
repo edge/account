@@ -16,24 +16,30 @@
             <!-- apply input-group__error class for error styles -->
             <div class="input-group">
               <label for="accountNumber" class="label">Account number</label>
-              <input id="accountNumber" class="input input--floating" v-mask="'#### #### #### ####'" v-model="accountNumber" placeholder="1234 5678 9012 3456" />
+              <input
+                id="accountNumber"
+                class="input input--floating"
+                v-mask="'#### #### #### ####'"
+                v-model="accountNumber"
+                placeholder="1234 5678 9012 3456"
+              />
             </div>
 
             <!-- error message  -->
-            <!-- <div class="flex items-center errorMessage"> 
+            <div class="flex items-center errorMessage" v-show="errors.accountNumber"> 
               <ExclamationIcon class="w-3.5 h-3.5" />
-              <span class="errorMessage__text">This is an error message</span>
-            </div> -->
+              <span class="errorMessage__text">{{errors.accountNumber}}</span>
+            </div>
 
             <!-- buttons -->
             <div class="flex flex-col">
               <button
                 @click.prevent="signIn()"
                 class="button button--success"
-                :disabled="isSigningIn"
+                :disabled="isSigningIn || errors.accountNumber"
               >
                 <span v-if="isSigningIn">Signing in</span>
-                <span v-else>Sign In</span>
+                <span v-else>Sign in</span>
                 <span v-if="isSigningIn">
                   <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -128,7 +134,7 @@ import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import Logo from '@/components/Logo'
 import SideNavigation from '@/components/SideNavigation'
 import UserMenu from '@/components/UserMenu'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { generateAccountNumber } from '../utils/api'
 
 export default {
@@ -146,11 +152,19 @@ export default {
   data() {
     return {
       accountNumber: '',
+      errors: {
+        accountNumber: ''
+      },
       isCreatingAccount: false,
       isSigningIn: false,
       activePanel: 'signIn',
       copied: false,
     }
+  },
+  computed: {
+    ...mapGetters({
+      user: 'auth/StateUser'
+    })
   },
   methods: {
     ...mapActions(['auth/login', 'auth/register']),
@@ -182,8 +196,27 @@ export default {
       await this['auth/login'](this.accountNumber)
 
       setTimeout(() => {
-        this.$router.push('/')
+        if (this.user) {
+          this.$router.push('/')
+        } else {
+          this.isSigningIn = false
+          this.errors.accountNumber = 'No account found'
+        }
       }, 2000)
+    },
+    validateAccountNumber(value) {    
+      const regex = /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/
+
+      if (regex.test(value)) {
+        this.errors['accountNumber'] = null
+      } else {
+        this.errors['accountNumber'] = 'Your account number is 16 digits'
+      }
+    }
+  },
+  watch: {
+    accountNumber(value) {
+      this.validateAccountNumber(value)
     }
   }
 }

@@ -17,8 +17,10 @@ const actions = {
   },
   async login({ commit }, id) {
     const userAccount = await getAccount(encodeURIComponent(id))
-    
-    await commit('setUser', userAccount)
+
+    if (userAccount._id) {
+      await commit('setUser', userAccount)
+    }
   },
   async logout({ commit }) {
     commit('LogOut', null)
