@@ -74,18 +74,14 @@
       </div>
 
       <div class="box">
-        <h4 class="mb-8">Net RX</h4>
-        <Line
+        <h4 class="mb-8">Net RX/TX</h4>
+        <MultiLine
           v-if="this.metrics['net_rx'][0]"
-          :data='removeEmptyPoints(this.metrics["net_rx"][0].datapoints)'
-        />
-      </div>
-
-      <div class="box">
-        <h4 class="mb-8">Net TX</h4>
-        <Line
-          v-if="this.metrics['net_tx'][0]"
-          :data='removeEmptyPoints(this.metrics["net_tx"][0].datapoints)'
+          :data='[
+            removeEmptyPoints(this.metrics["net_rx"][0].datapoints),
+            removeEmptyPoints(this.metrics["net_tx"][0].datapoints)
+          ]'
+          :labels="['RX', 'TX']"
         />
       </div>
     </div>
@@ -95,6 +91,7 @@
 
 <script>
 import Line from "@/components/charts/Line"
+import MultiLine from "@/components/charts/MultiLine"
 
 export default {
   name: 'ServerOverview',
@@ -103,7 +100,8 @@ export default {
     server: Object
   },
   components: {
-    Line
+    Line,
+    MultiLine
   },
   methods: {
     formatDatapoints(data, sizeType = 'MB') {
