@@ -30,7 +30,6 @@ const store = createStore({
   },
   mutations: {
     clear(state) {
-      // state.serverSettings = {}
       Object.keys(state.serverSettings).forEach(key => {
         state.serverSettings[key] = null
       })

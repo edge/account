@@ -55,7 +55,7 @@
                 <div class="flex-1 h-px bg-gray-400" />
               </div>
               <button
-                @click="this.activePanel = 'createAccount'"
+                @click="generateAccount"
                 class="button button--solid"
                 :disabled="isCreatingAccount"
               >
@@ -72,11 +72,9 @@
                 readonly
                 class="absolute opacity-0 focus:outline-none"
                 :value="accountNumber"
-                ref="clone"
-                v-on:focus="$event.target.select()"
               />
               <span class="text-3xl">{{accountNumber}}</span>
-              <button @click.prevent="copy()" class="text-gray-400 hover:text-green">
+              <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
                 <DuplicateIcon class="w-6 h-6" />  
               </button>
               <div
@@ -92,7 +90,7 @@
             <!-- buttons -->
             <div class="mt-8">
               <button
-                @click.prevent="createNewAccount()"
+                @click.prevent="register()"
                 class="w-full button button--solid"
                 :disabled="isCreatingAccount"
               >
@@ -131,6 +129,7 @@ import Logo from '@/components/Logo'
 import SideNavigation from '@/components/SideNavigation'
 import UserMenu from '@/components/UserMenu'
 import { mapActions } from 'vuex'
+import { generateAccountNumber } from '../utils/api'
 
 export default {
   name: 'Sign In',
@@ -146,7 +145,7 @@ export default {
   },
   data() {
     return {
-      accountNumber: '5293 8385 0427 4291',
+      accountNumber: '',
       isCreatingAccount: false,
       isSigningIn: false,
       activePanel: 'signIn',
@@ -155,9 +154,23 @@ export default {
   },
   methods: {
     ...mapActions(['auth/login', 'auth/register']),
-    async createNewAccount() {
+    async copyToClipboard () {
+      this.copied = true
+      await navigator.clipboard.writeText(this.accountNumber)
+      
+      setTimeout(() => {
+        this.copied = false
+      }, 2000)
+    },
+    async generateAccount() {
+      this.activePanel = 'createAccount'
+      const newAccountNumber = await generateAccountNumber()
+      this.accountNumber = newAccountNumber.accountNumber
+    },
+    async register() {
       this.isCreatingAccount = true
-      await this['auth/register']()
+
+      await this['auth/register'](this.accountNumber)
       
       setTimeout(() => {
         this.$router.push('/')
@@ -165,18 +178,12 @@ export default {
     },
     async signIn() {
       this.isSigningIn = true
+
       await this['auth/login'](this.accountNumber)
+
       setTimeout(() => {
         this.$router.push('/')
       }, 2000)
-    },
-    copy () {
-      this.$refs.clone.focus()
-      document.execCommand('copy')
-      this.copied = true
-      setTimeout(() => {
-        this.copied = false
-      }, 1000)
     }
   }
 }

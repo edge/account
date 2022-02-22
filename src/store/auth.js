@@ -10,8 +10,8 @@ const getters = {
 }
 
 const actions = {
-  async register({ commit }) {
-    const userAccount = await createAccount()
+  async register({ commit }, accountNumber) {
+    const userAccount = await createAccount(accountNumber)
 
     await commit('setUser', userAccount)
   },

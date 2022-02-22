@@ -25,10 +25,21 @@ const fetcher = url => {
  *
  * @returns {Object}
  */
-const createAccount = async () => {
+const createAccount = async accountNumber => {
   const url = `${ACCOUNT_ENDPOINT}`
 
-  return fetchData(url, { method: 'post' })
+  return fetchData(url, { method: 'post' }, { accountNumber })
+}
+
+/**
+ * Calls the "account" API endpoint to generate a new account number.
+ *
+ * @returns {Object}
+ */
+const generateAccountNumber = () => {
+  const url = `${ACCOUNT_ENDPOINT}?action=new`
+
+  return fetchData(url, { method: 'get' })
 }
 
 /**
@@ -173,6 +184,7 @@ export {
   createBackup,
   createHost,
   fetcher,
+  generateAccountNumber,
   getAccount,
   resizeHost,
   startStopHost
