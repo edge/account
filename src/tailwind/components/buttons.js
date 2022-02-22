@@ -14,8 +14,8 @@ const themes = {
     },
 
     '&:disabled, &.disabled': {
-      backgroundColor: colors.black[100],
-      borderColor: colors.black[100]
+      backgroundColor: colors.gray.DEFAULT,
+      borderColor: colors.gray.DEFAULT
     }
   },
   outline: {

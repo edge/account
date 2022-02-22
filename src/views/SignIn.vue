@@ -21,9 +21,49 @@
 
           <!-- buttons -->
           <div class="flex flex-col space-y-2">
-            <button @click.prevent="signIn()" class="button button--success">Sign In</button>
+            <button
+              @click.prevent="signIn()"
+              class="button button--success"
+              :disabled="isSigningIn"
+            >
+              <span v-if="isSigningIn">Signing in</span>
+              <span v-else>Sign In</span>
+              <span v-if="isSigningIn">
+                <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <line x1="12" y1="6" x2="12" y2="3" />
+                  <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
+                  <line x1="18" y1="12" x2="21" y2="12" />
+                  <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
+                  <line x1="12" y1="18" x2="12" y2="21" />
+                  <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
+                  <line x1="6" y1="12" x2="3" y2="12" />
+                  <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
+                </svg>
+              </span>
+            </button>
             <span class="w-full tracking-wider text-center text-black">OR</span>
-            <button @click.prevent="createNewAccount()" class="button button--solid">Create new account</button>
+            <button
+              @click.prevent="createNewAccount()"
+              class="button button--solid"
+              :disabled="isCreatingAccount"
+            >
+              <span v-if="isCreatingAccount">Creating your account</span>
+              <span v-else>Create new account</span>
+              <span v-if="isCreatingAccount">
+                <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <line x1="12" y1="6" x2="12" y2="3" />
+                  <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
+                  <line x1="18" y1="12" x2="21" y2="12" />
+                  <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
+                  <line x1="12" y1="18" x2="12" y2="21" />
+                  <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
+                  <line x1="6" y1="12" x2="3" y2="12" />
+                  <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
+                </svg>
+              </span>
+            </button>
           </div>
         </form>
 
@@ -55,21 +95,27 @@ export default {
   },
   data() {
     return {
-      accountNumber: ''
+      accountNumber: '',
+      isCreatingAccount: false,
+      isSigningIn: false
     }
   },
   methods: {
     ...mapActions(['auth/login', 'auth/register']),
     async createNewAccount() {
+      this.isCreatingAccount = true
       await this['auth/register']()
       
       setTimeout(() => {
         this.$router.push('/')
-      }, 1500)
+      }, 2000)
     },
     async signIn() {
+      this.isSigningIn = true
       await this['auth/login'](this.accountNumber)
-      this.$router.push('/')
+      setTimeout(() => {
+        this.$router.push('/')
+      }, 2000)
     }
   }
 }
