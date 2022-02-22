@@ -68,10 +68,23 @@
           <div v-else class="flex flex-col mt-6">
             <span class="text-xs font-medium tracking-wider uppercase text-green">My new account number:</span>
             <div class="accountNumber">
-              <span class="text-3xl">5293 8385 0427 4291</span>
-              <button @click.prevent="" class="text-gray-400">
+              <input
+                readonly
+                class="absolute opacity-0 focus:outline-none"
+                :value="accountNumber"
+                ref="clone"
+                v-on:focus="$event.target.select()"
+              />
+              <span class="text-3xl">{{accountNumber}}</span>
+              <button @click.prevent="copy()" class="text-gray-400 hover:text-green">
                 <DuplicateIcon class="w-6 h-6" />  
               </button>
+              <div
+                class="copied"
+                :class="copied ? 'visible' : ''"
+              >
+                Copied!
+              </div>
             </div>
             <span class="mt-6 font-medium text-black">Write down your account number!</span>
             <span class="mt-1 text-gray-500">It’s all you need to access the Edge Network. No email, no username. Just anonymity.</span>
@@ -133,10 +146,11 @@ export default {
   },
   data() {
     return {
-      accountNumber: '',
+      accountNumber: '5293 8385 0427 4291',
       isCreatingAccount: false,
       isSigningIn: false,
-      activePanel: 'signIn'
+      activePanel: 'signIn',
+      copied: false,
     }
   },
   methods: {
@@ -155,6 +169,14 @@ export default {
       setTimeout(() => {
         this.$router.push('/')
       }, 2000)
+    },
+    copy () {
+      this.$refs.clone.focus()
+      document.execCommand('copy')
+      this.copied = true
+      setTimeout(() => {
+        this.copied = false
+      }, 1000)
     }
   }
 }
@@ -176,6 +198,13 @@ export default {
     @apply flex flex-col space-y-6;
   }
   .accountNumber {
-    @apply flex items-center justify-between p-3 mt-2 bg-gray-100 border border-gray-300;
+    @apply flex items-center justify-between relative p-3 mt-2 bg-gray-100 border border-gray-300;
+  }
+  .copied {
+    @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+    @apply transition-opacity duration-200 ease-in;
+  }
+  .copied.visible {
+    @apply opacity-100;
   }
 </style>
