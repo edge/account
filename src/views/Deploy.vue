@@ -142,7 +142,7 @@ export default {
     async deploy() {
       this.isSaving = true
 
-      const newHost = await createHost(this.user, this.settings)
+      const newHost = await createHost(this.user, this.serverSettings)
 
       // Redirect to the new server page.
       const { serverId } = newHost
