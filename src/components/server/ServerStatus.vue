@@ -17,7 +17,6 @@
         class="transform ball"
       />
     </Switch>
-
     <Modal v-show="enabled" ref="modal" @modal-confirmation="toggleServer" />
   </div>
 </template>
@@ -26,9 +25,10 @@
   import Modal from '@/components/Modal'
   import { ref } from 'vue'
   import { Switch } from '@headlessui/vue'
+  
   export default {
     name: "ServerStatus",
-    props: ['currentStatus', 'onToggleStatus'],
+    props: ['server', 'onToggleStatus'],
     components: {
       Modal,
       Switch
@@ -40,7 +40,7 @@
     },
     methods: {
       toggleModal () {       
-        if (this.currentStatus === 'active') {
+        if (this.server.status === 'active') {
           this.$refs.modal.open = true
         } else {
           this.toggleServer()
@@ -50,11 +50,11 @@
         await this.onToggleStatus()
         this.$refs.modal.open = false
 
-        this.enabled = this.currentStatus !== 'active'
+        this.enabled = this.server.status !== 'active'
       }
     },
     mounted() {
-      this.enabled = this.currentStatus === 'active'
+      this.enabled = this.server.status === 'active'
     }
   }
 </script>
