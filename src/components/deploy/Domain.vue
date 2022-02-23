@@ -24,7 +24,7 @@ export default {
   props: ['hostname'],
   watch: {
     hostname(value) {
-      this.domain = `${value}.edge.network`
+      this.domain = `${value || ''}.edge.network`
       this.$emit('name-changed', this.domain)
     }
   }

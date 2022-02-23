@@ -31,11 +31,11 @@ export default defineComponent({
       'rgb(78,100,99)',
       'rgb(78,205,95)'
     ] 
-    data.map((item, index) => (
-      console.log(
-        data[0].map(point => new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'}))
-      )
-    ))
+    // data.map((item, index) => (
+    //   console.log(
+    //     data[0].map(point => new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'}))
+    //   )
+    // ))
     const chartData = {
       labels: data[0].map(point => new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})),
       datasets: data.map((item, index) => ({
