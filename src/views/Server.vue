@@ -51,7 +51,7 @@
           </div>
 
           <div class="flex-shrink-0">
-            <ServerStatus :currentStatus="server.status" :onToggleStatus="toggleServerStatus" />
+            <ServerStatus :server="server" :onToggleStatus="toggleServerStatus" />
           </div>
 
         </div>
@@ -263,6 +263,10 @@ export default {
         task.status = 'Changing VM parameters'
       }
       
+      if (data.type === 'host_restart') {
+        task.status = 'Restarting VM'
+      }
+      
       if (data.type === 'host_start') {
         task.status = 'Starting VM'
       }
@@ -286,16 +290,18 @@ export default {
   mounted() {
     this.loading = true
     const route = useRoute()
-    const { data: server, error: serverFetchError } = useSWRV(() => '/servers?id=' + route.params.id, fetcher)
-    const { data: tasks, error: taskFetchError, mutate } = useSWRV(() => '/tasks?id=' + route.params.id, fetcher)
+    const { data: server, error: serverFetchError, mutate: refetchServer } = useSWRV(() => '/servers?id=' + (route.params.id || this.server.id), fetcher)
+    const { data: tasks, error: taskFetchError, mutate: refetchTasks } = useSWRV(() => '/tasks?id=' + route.params.id, fetcher)
 
     this.server = server
     this.tasks = tasks.value
 
     this.polling = setInterval(() => {
       console.log('Mutating')
-      mutate()
+      refetchServer()
+      refetchTasks()
 
+      this.server = server
       this.tasks = tasks.value
       
       if (this.tasks[0]) {
@@ -303,7 +309,7 @@ export default {
       } else {
         this.activeTask = null
       }
-    }, 2000)
+    }, 5000)
   },
   unmounted() {
     clearInterval(this.polling)

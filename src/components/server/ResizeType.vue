@@ -60,6 +60,7 @@ import {
 
 export default {
   name: 'ResizeType',
+  props: ['resizeTypes'],
   components: {
     RadioGroup,
     RadioGroupLabel,
@@ -69,25 +70,6 @@ export default {
   data() {
     return {
       selectedResizeType: null,
-      resizeTypes: [
-        {
-          id: 1,
-          title: 'CPU and  RAM only',
-          description: 'This will only increase or decrease the CPU and RAM of your server, not disk size. This can be reversed.',
-          enabled: true
-        },
-        {
-          id: 2,
-          title: 'Disk, CPU and RAM',
-          description: 'This will increase the disk size, CPU and RAM of your server. This is a permanent change and cannot be reversed.',
-          enabled: true
-        }
-      ]
-    }
-  },
-  methods: {
-    updateParentResizeType(data) {
-      this.$emit('resize-type-changed', data)
     }
   },
   mounted() {
@@ -95,7 +77,7 @@ export default {
   },
   watch: {
     selectedResizeType: function(data) {
-      this.updateParentResizeType(data)
+      this.$emit('resize-type-changed', data)
     }
   }
 }

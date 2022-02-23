@@ -4,14 +4,14 @@
 
     <p class="mt-3 text-gray-500">You are currently on the <b>XX plan for $XX per month</b>. Select an option below to resize your server.</p>
     
-    <ResizeType @resize-type-changed="captureResizeType" />
+    <ResizeType :resizeTypes="resizeTypes" @resize-type-changed="captureResizeType" />
 
     <div class="w-full h-px my-10 bg-gray-300" />
-   
+  
     <ServerSpecs :current=currentServerSpecs :resizeType=selectedResizeType :selectedSpecs=selectedResizeSpecs @specs-changed="captureResizeSpecs" />
 
     <div class="relative mt-8">
-      <button @click="save" :disabled="isSaving" class="h-full button button--success">
+      <button @click="save" :disabled="isSaving || !selectedResizeSpecs" class="h-full button button--success">
         <span v-if="isSaving">Resizing</span>
         <span v-else>Resize</span>
         <span v-if="isSaving">
@@ -35,7 +35,7 @@
 <script>
 import ServerSpecs from "@/components/deploy/ServerSpecs"
 import ResizeType from "@/components/server/ResizeType"
-import { getTask, resizeHost } from '../../utils/api'
+import { resizeHost } from '../../utils/api'
 
 export default {
   name: 'ServerResize',
@@ -48,6 +48,20 @@ export default {
     return {
       isSaving: false,
       feedback: '',
+      resizeTypes: [
+        {
+          id: 1,
+          title: 'CPU and  RAM only',
+          description: 'This will only increase or decrease the CPU and RAM of your server, not disk size. This can be reversed.',
+          enabled: true
+        },
+        {
+          id: 2,
+          title: 'Disk, CPU and RAM',
+          description: 'This will increase the disk size, CPU and RAM of your server. This is a permanent change and cannot be reversed.',
+          enabled: true
+        }
+      ],
       selectedResizeType: null,
       selectedResizeSpecs: null,
       showFeedback: false,
@@ -56,42 +70,43 @@ export default {
   },
   computed: {
     currentServerSpecs() {
-      return { cpu: this.server.cpu_number, ram: (this.server.ram_mib), ssd: this.server.disk.disk_mib }
+      return { cpu: this.server.cpu_number, ram: (this.server.ram_mib), ssd: this.server.disk_mib }
     }
+  },
+  mounted() {
+    this.selectedResizeType = this.resizeTypes[0]
   },
   methods: {
     captureResizeType(data) {
+      console.log('data', data)
       this.selectedResizeType = data
-      this.selectedResizeSpecs = null
+      // this.selectedResizeSpecs = null
+      console.log('this.selectedResizeType', this.selectedResizeType)
     },
     captureResizeSpecs(data) {
       this.selectedResizeSpecs = data
     },
     async save() {
       this.isSaving = true
-      this.resize(this.server.id, this.server.disk.id)
+      await this.resize()
+      this.isSaving = false
     },
-    async resize (id, diskId) {
-      if (this.selectedResizeType.id === 1) {
-        // CPU & RAM only.
-        const response = await resizeHost(id, {
-          diskId,
-          cpuNumber: this.selectedResizeSpecs.cpu,
-          memSize: this.selectedResizeSpecs.ram
-        })
-        
-        console.log('response', response)
-      } else {
-        // CPU, RAM & SSD.
-        const response = await resizeHost(id, {
-          diskId,
-          cpuNumber: this.selectedResizeSpecs.cpu,
-          hddSize: this.selectedResizeSpecs.ssd,
-          memSize: this.selectedResizeSpecs.ram
-        })
-        
-        console.log('response', response)
+    async resize () {
+      // Defaults for CPU & RAM only.
+      const resizeOptions = {
+        diskId: this.server.disk_id,
+        cpuNumber: this.selectedResizeSpecs.cpu,
+        memSize: this.selectedResizeSpecs.ram
+      } 
+
+      // Additional parameter for HDD resize.
+      if (this.selectedResizeType.id === 2) {
+        resizeOptions.hddSize = this.selectedResizeSpecs.ssd
       }
+
+      console.log('this.selectedResizeSpecs', this.selectedResizeSpecs)
+      console.log('this.selectedResizeType', this.selectedResizeType)
+      const response = await resizeHost(this.server.serverId, resizeOptions)
     }
   }
 }

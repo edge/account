@@ -9,9 +9,6 @@
         :value="spec"
         v-slot="{ active, checked, disabled }"
         :disabled="!spec.enabled"
-        @click="() => {
-          updateParentResizeSpecs(spec)
-        }"
       >
         <div
           :class="[
@@ -92,55 +89,108 @@ export default {
   methods: {
     updateParentResizeSpecs(data) {
       this.$emit('specs-changed', data)
+    },
+    update() {
+      const { current, resizeType, selectedSpecs } = this
+      let matchingPreset
+
+      if (this.presets && this.presets.length) {
+        console.log('current , selectedSpecs', current , selectedSpecs)
+        // if (current && !selectedSpecs) {
+        if (current) {
+          matchingPreset = this.presets.map(p => {
+            if (p.ram === current.ram && p.cpu === current.cpu) {
+              return p
+            } else {
+              return null
+            }
+          }).filter(Boolean)
+
+
+          // Loop over presets and disable those that can't be used.
+          this.presets.forEach(p => {
+            p.enabled = true
+
+            console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
+            
+            // SSD cannot be downsized.
+            // if (p.ssd < current.ssd) {
+            if (resizeType && resizeType.id === 2 && p.ssd < current.ssd) {
+              p.enabled = false
+            }
+          })
+        }
+
+        if (selectedSpecs) {
+          this.selectedPreset = selectedSpecs
+        } else {
+          if (matchingPreset && matchingPreset[0]) {
+            this.selectedPreset = matchingPreset[0]
+          } else {      
+            this.selectedPreset = this.presets[0]
+          }
+        }
+
+        console.log('this.selectedPreset',this. selectedPreset)
+      }      
     }
   },
   mounted() {
     this.selectedPreset = ref(null)
     const { data: presets, error } = useSWRV(() => '/presets', fetcher)
 
-    // onUpdated(() => {
-        // console.log('updated! 1')
-      // Give the presets data a chance to load, then select the first
-      // avaliable preset.
-      // setTimeout(() => {     
-      //   console.log('updated! 2')
-      //   console.log('props', props)
-    const { current, resizeType, selectedSpecs } = this
+    this.presets = presets && presets.value ? presets.value : presets
 
-    this.presets = presets
-    
-    let matchingPreset
+  },
+  watch: {
+    presets(value) {     
+      this.update()
+      // const { current, resizeType, selectedSpecs } = this
+      // let matchingPreset
 
-    if (this.presets && this.presets.value) {
-      if (current && !selectedSpecs) {
-        matchingPreset = this.presets.value.map(p => {
-          if (p.ram === current.ram && p.cpu === current.cpu) {
-            return p
-          } else {
-            return null
-          }
-        }).filter(Boolean)
+      //   console.log('resizeType, current , selectedSpecs', resizeType, current , selectedSpecs)
+      // if (this.presets && this.presets.length) {
+      //   if (current && !selectedSpecs) {
+      //     matchingPreset = this.presets.map(p => {
+      //       if (p.ram === current.ram && p.cpu === current.cpu) {
+      //         return p
+      //       } else {
+      //         return null
+      //       }
+      //     }).filter(Boolean)
 
-        // Loop over presets and disable those that can't be used.
-        this.presets.value.forEach(p => {
-          p.enabled = true
-          
-          // SSD cannot be downsized.
-          if (resizeType.id === 2 && p.ssd < current.ssd) {
-            p.enabled = false
-          }
-        })
-      }
 
-      if (selectedSpecs) {
-        this.selectedPreset.value = selectedSpecs
-      } else {
-        if (matchingPreset && matchingPreset[0]) {
-          this.selectedPreset.value = matchingPreset[0]
-        } else {      
-          this.selectedPreset.value = this.presets.value[0]
-        }
-      }
+      //     // Loop over presets and disable those that can't be used.
+      //     this.presets.forEach(p => {
+      //       p.enabled = true
+
+      //       console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
+            
+      //       // SSD cannot be downsized.
+      //       if (p.ssd < current.ssd) {
+      //         p.enabled = false
+      //       }
+      //     })
+      //   }
+
+      //   if (selectedSpecs) {
+      //     this.selectedPreset = selectedSpecs
+      //   } else {
+      //     if (matchingPreset && matchingPreset[0]) {
+      //       this.selectedPreset = matchingPreset[0]
+      //     } else {      
+      //       this.selectedPreset = this.presets[0]
+      //     }
+      //   }
+      // }
+    },
+    resizeType(value) {
+      console.log('value', value)
+      // this.resizeType = value
+      this.update()
+    },
+    selectedPreset(value) {
+      this.updateParentResizeSpecs(value)
     }
   }
 }
