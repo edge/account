@@ -11,7 +11,8 @@ const vuexLocalStorage = new VuexPersist({
 const store = createStore({
   state: {
     serverErrors: {},
-    serverSettings: {}
+    serverSettings: {},
+    vncSettings: {}
   },
   actions: {
     clear({ commit }) {
@@ -22,11 +23,15 @@ const store = createStore({
     },
     setServerProperty({ commit }, payload) {
       commit('set', payload)
+    },
+    setVncSettings({ commit }, payload) {
+      commit('setVncSettings', payload)
     }
   },
   getters: {
     StateErrors: state => state.serverErrors,
-    StateSettings: state => state.serverSettings
+    StateSettings: state => state.serverSettings,
+    StateVncSettings: state => state.vncSettings
   },
   mutations: {
     clear(state) {
@@ -41,6 +46,9 @@ const store = createStore({
     set(state, payload) {
       const { property, value } = payload
       state.serverSettings[property] = value
+    },
+    setVncSettings(state, payload) {
+      state.vncSettings = payload
     }
   },
   modules: {

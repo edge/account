@@ -3,18 +3,10 @@
     <div class="box">
       <h4>Server Console</h4>
       <p class="mt-3 text-gray-500">Use the server console for native-like terminal access to your server from your browser.</p>
-      <div class="flex flex-col w-full p-4 mt-5 bg-gray-100 border-gray-300 rounded-lg lg:p-5 lg:space-x-4 lg:items-end lg:flex-row">
-        <div class="flex-1 w-full lg:w-auto input-group">
-          <label class="label">Login as</label>
-          <input type="text" placeholder="root" :value=userName class="bg-transparent input input--floating" />
-        </div>
-        <div class="relative">
-          <button @click="launchConsole(userName)" class="h-full mt-5 lg:mt-0 button button--success">
-            <span>Launch console in new window</span>
-            <DuplicateIcon class="w-4 h-4 ml-2" />
-          </button>
-        </div>
-      </div>
+      <a target="_blank" :href="`/server/${server.id}/vnc`" class="h-full mt-5 lg:mt-0 button button--success">
+        <span>Launch console in new window</span>
+        <DuplicateIcon class="w-4 h-4 ml-2" />
+      </a>
     </div>
   </div>
 </template>
@@ -24,23 +16,8 @@ import {DuplicateIcon} from "@heroicons/vue/outline";
 
 export default {
   name: 'ServerConsole',
-  methods: {
-  },
-  data: function () {
-    return {
-      userName: 'root'
-    }
-  },
-  watch: {
-    $route(to, from) {
-    }
-  },
   components: {DuplicateIcon},
-    methods: {
-    launchConsole(userName) {
-      window.open(`https://edge.network/?user=${userName}`, 'Edge Console', 'left=100,top=100,width=600,height=600');
-    }
-  }
+  props: ['server']
 }
 </script>
 <style scoped>

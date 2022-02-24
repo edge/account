@@ -8,6 +8,7 @@ import Index from '@/views/Index'
 import NotFound from '@/views/404'
 import Server from '@/views/Server'
 import SignIn from '@/views/SignIn'
+import Vnc from '@/views/Vnc'
 import store from '../store'
 
 const routes = [
@@ -33,6 +34,12 @@ const routes = [
     path: '/server/:id',
     name: 'Server',
     component: Server,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/server/:id/vnc',
+    name: 'VNC',
+    component: Vnc,
     meta: {requiresAuth: true}
   },
   { path: '/:catchAll(.*)', component: NotFound }

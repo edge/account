@@ -131,7 +131,7 @@
 
                 <!-- console -->
                 <TabPanel>
-                  <ServerConsole />
+                  <ServerConsole :server=server />
                 </TabPanel>
 
                 <!-- resize -->
@@ -205,6 +205,7 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import { useRoute } from 'vue-router'
 import useSWRV from 'swrv'
 import { fetcher } from '../utils/api'
+import { mapActions } from 'vuex'
 import { startStopHost } from '../utils/api'
 
 export default {
@@ -246,6 +247,7 @@ export default {
     UbuntuIcon
   },
   methods: {
+    ...mapActions(['setVncSettings']),
     formatActiveTask(data) {
       const task = {
         id: data.id
@@ -303,6 +305,8 @@ export default {
 
       this.server = server
       this.tasks = tasks.value
+
+      this.setVncSettings(this.server.vnc_settings)
       
       if (this.tasks[0]) {
         this.activeTask = this.formatActiveTask(this.tasks[0])
