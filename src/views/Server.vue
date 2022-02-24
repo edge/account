@@ -306,7 +306,9 @@ export default {
       this.server = server
       this.tasks = tasks.value
 
-      this.setVncSettings(this.server.vnc_settings)
+      if (this.server) {
+        this.setVncSettings(this.server.vnc_settings)
+      }
       
       if (this.tasks[0]) {
         this.activeTask = this.formatActiveTask(this.tasks[0])
