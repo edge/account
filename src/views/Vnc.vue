@@ -40,10 +40,8 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-
       const settings = this.vncSettings
 
-      console.log('server', settings)
       const url = `wss://api.vm.edge.network/gosockify/ws?token=${settings.server}%3A${settings.port}`
       this.rfb = new RFB(this.$el, url, { credentials: { password: settings.password } })
       
