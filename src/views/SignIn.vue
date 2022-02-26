@@ -65,7 +65,21 @@
                 class="button button--solid"
                 :disabled="isCreatingAccount"
               >
-                <span>Create new account</span>
+                <span v-if="isCreatingAccount">Creating your account</span>
+                <span v-else>Create new account</span>
+                <span v-if="isCreatingAccount">
+                  <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="12" y1="6" x2="12" y2="3" />
+                    <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
+                    <line x1="18" y1="12" x2="21" y2="12" />
+                    <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
+                    <line x1="12" y1="18" x2="12" y2="21" />
+                    <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
+                    <line x1="6" y1="12" x2="3" y2="12" />
+                    <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
+                  </svg>
+                </span>
               </button>
             </div>
           </div>
@@ -96,25 +110,17 @@
             <!-- buttons -->
             <div class="mt-8">
               <button
-                @click.prevent="register()"
+                
+                class="w-full button button--solid mb-2"
+              >
+                <router-link to='/account'>Set up recovery email</router-link>
+              </button>
+              <button
+                @click.prevent="finish()"
                 class="w-full button button--solid"
                 :disabled="isCreatingAccount"
               >
-                <span v-if="isCreatingAccount">Creating your account</span>
-                <span v-else>Finish creating my account</span>
-                <span v-if="isCreatingAccount">
-                  <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <line x1="12" y1="6" x2="12" y2="3" />
-                    <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-                    <line x1="18" y1="12" x2="21" y2="12" />
-                    <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-                    <line x1="12" y1="18" x2="12" y2="21" />
-                    <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-                    <line x1="6" y1="12" x2="3" y2="12" />
-                    <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-                  </svg>
-                </span>
+                <span>Go to my account</span>
               </button>
               <button @click.prevent="this.activePanel = 'signIn'" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">I already have an account</button>
             </div>
@@ -177,18 +183,18 @@ export default {
       }, 2000)
     },
     async generateAccount() {
-      this.activePanel = 'createAccount'
-      const newAccountNumber = await generateAccountNumber()
-      this.accountNumber = newAccountNumber.accountNumber
-    },
-    async register() {
       this.isCreatingAccount = true
-
-      await this['auth/register'](this.accountNumber)
+      const newAccountNumber = await generateAccountNumber()
       
-      setTimeout(() => {
-        this.$router.push('/')
+      setTimeout(async () => {
+        this.accountNumber = newAccountNumber.accountNumber
+        await this['auth/register'](this.accountNumber)
+        this.activePanel = 'createAccount'      
+        this.isCreatingAccount = false
       }, 2000)
+    },
+    async finish() {
+      this.$router.push('/')
     },
     async signIn() {
       this.isSigningIn = true
