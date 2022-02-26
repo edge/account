@@ -15,7 +15,7 @@
           >
             Menu item
           </button>
-        </MenuItem>
+        </MenuItem> -->
         <MenuItem v-slot="{ active }">
           <button
             :class="[
@@ -23,9 +23,11 @@
               active ? 'active' : ''
             ]"
           >
-            Menu item
+            <router-link to="/account">
+              Account
+            </router-link>
           </button>
-        </MenuItem> -->
+        </MenuItem>
         <MenuItem v-slot="{ active }">
           <button
             @click.prevent="logout"

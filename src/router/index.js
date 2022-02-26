@@ -3,6 +3,7 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 import { createRouter, createWebHistory } from 'vue-router'
+import Account from '@/views/Account'
 import Deploy from '@/views/Deploy'
 import Index from '@/views/Index'
 import NotFound from '@/views/404'
@@ -12,6 +13,12 @@ import Vnc from '@/views/Vnc'
 import store from '../store'
 
 const routes = [
+  {
+    path: '/account',
+    name: 'Account',
+    component: Account,
+    meta: {requiresAuth: true}
+  },
   {
     path: '/',
     name: 'Index',

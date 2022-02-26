@@ -1,4 +1,3 @@
-
 <template>
   <ul class="main-nav">
     <li
