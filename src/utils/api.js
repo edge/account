@@ -147,6 +147,16 @@ const startStopHost = async (id, action) => {
   return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
 }
 
+const handleTwoFactor = async data => {
+  const url = `${ACCOUNT_ENDPOINT}`
+
+  const payload = {
+    ...data
+  }
+
+  return fetchData(url, { method: 'post' }, payload)
+}
+
 const fetchData = (url, options = {}, payload) => {
   const fetchOptions = {
     method: options.method || 'get',
@@ -186,6 +196,7 @@ export {
   fetcher,
   generateAccountNumber,
   getAccount,
+  handleTwoFactor,
   resizeHost,
   startStopHost
 }

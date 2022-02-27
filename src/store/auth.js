@@ -1,4 +1,8 @@
-import { createAccount, getAccount } from '../utils/api'
+import {
+  createAccount,
+  getAccount, 
+  handleTwoFactor
+} from '../utils/api'
 
 const state = {
   user: null
@@ -10,6 +14,22 @@ const getters = {
 }
 
 const actions = {
+  async enable2fa({ commit }, payload) {
+    payload.action = 'enable2fa'
+    const response = await handleTwoFactor(payload)
+    
+    if (response && response.totp) {
+      await commit('setUser', response)
+    }
+  },
+  async disable2fa({ commit }, payload) {
+    payload.action = 'disable2fa'
+    const response = await handleTwoFactor(payload)
+   
+    if (response && !response.totp) {
+      await commit('setUser', response)
+    }
+  },
   async register({ commit }, accountNumber) {
     const userAccount = await createAccount(accountNumber)
 
@@ -24,6 +44,14 @@ const actions = {
   },
   async logout({ commit }) {
     commit('LogOut', null)
+  },
+  async verifyToken({ commit }, payload) {
+    payload.action = 'verify'
+    const response = await handleTwoFactor(payload)
+
+    if (response && response.totp) {
+      await commit('setUser', response)
+    }
   }
 }
 

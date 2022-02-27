@@ -7,13 +7,14 @@
       <div class="mainContent__inner">
         <h1>Account</h1>
 
-        {{user}}
+        <GoogleAuthEnable :user=user :twofactorQR=twofactorQR :twofactorUrl=twofactorUrl />
       </div>
     </main>
   </div>
 </template>
 
 <script>
+import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import SideNavigation from "@/components/SideNavigation"
 import TopNavigation from "@/components/TopNavigation"
 
@@ -27,6 +28,7 @@ export default {
     return 'Edge Account Portal » Account'
   },
   components: {
+    GoogleAuthEnable,
     SideNavigation,
     TopNavigation
   },
@@ -37,13 +39,21 @@ export default {
   },
   data() {
     return {
-      
+      twofactorUrl: '',
+      twofactorQR: ''
     }
   },
   methods: {
   },
   mounted() {
-    
+    this.loading = true
+    const { data: user, error, mutate } = useSWRV(() => '/accounts?id=' + (this.user ? this.user.accountNumber : 'XXX'), fetcher)
+
+    setTimeout(() => {
+      // console.log('user', user)
+      this.twofactorQR = user.value.twofactorQR
+      this.twofactorUrl = user.value.twofactorUrl
+    }, 1000)
   }
 }
 </script>

@@ -18,14 +18,13 @@
         </MenuItem> -->
         <MenuItem v-slot="{ active }">
           <button
+            @click.prevent="() => navigate('/account')"
             :class="[
               'menu__item',
               active ? 'active' : ''
             ]"
           >
-            <router-link to="/account">
-              Account
-            </router-link>
+            Account
           </button>
         </MenuItem>
         <MenuItem v-slot="{ active }">
@@ -58,6 +57,9 @@
     },
     props: ['user'],
     methods: {
+      navigate(path) {
+        this.$router.push(path)
+      },
       async logout() {
         await this.$store.dispatch('auth/logout')
         this.$router.push('/signin')
