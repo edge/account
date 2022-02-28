@@ -12,7 +12,7 @@
           <ol>
             <li>Install the Google Authenticator app for <a class="underline text-green" target="_blank" href="https://itunes.apple.com/au/app/google-authenticator/id388497605?mt=8">iPhone</a> or <a class="underline text-green" target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>.</li>
             <li>Scan the QR code on this page.</li>
-            <li>Save the single-use backup codes in case you lose access to your device. Note, you will still need your username and password.</li>
+            <!-- <li>Save the single-use backup codes in case you lose access to your device. Note, you will still need your username and password.</li> -->
             <li>Enter the verification code provided by Google Authenticator and click 'Enable two-factor'.</li>
             <li>You can disable two-factor at any time.</li>
           </ol>
