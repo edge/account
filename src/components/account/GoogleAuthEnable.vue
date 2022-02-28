@@ -39,7 +39,8 @@
     </div>
 
     <div v-else>
-      <div class="py-5">
+      <div class="">
+        <p class="text-gray-500">Donec sed odio dui. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum.</p>
         <button
           class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1"
           @click="disable2fa"
