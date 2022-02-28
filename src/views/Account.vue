@@ -6,7 +6,29 @@
 
       <div class="mainContent__inner">
         <h1>Account</h1>
-
+        <div>
+          <h4 class="w-full pb-2 mt-10 mb-8 font-medium border-b border-gray-400">Your account number</h4>
+          <p class="text-gray-500">
+            Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
+        </div>
+        <div class="relative inline-block lg:w-1/2 accountNumber">
+          <input
+            readonly
+            class="absolute opacity-0 focus:outline-none"
+            :value="accountNumber"
+          />
+          <span class="text-3xl">{{accountNumber}}</span>
+          <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
+            <DuplicateIcon class="w-6 h-6" />  
+          </button>
+          <div
+            class="copied"
+            :class="this.copied ? 'visible' : ''"
+          >
+            Copied!
+          </div>
+        </div>
+        <h4 class="w-full pb-2 mt-10 mb-8 font-medium border-b border-gray-400">Setup 2FA</h4>
         <GoogleAuthEnable :user=user :twofactorQR=twofactorQR :twofactorUrl=twofactorUrl />
       </div>
     </main>
@@ -15,6 +37,7 @@
 
 <script>
 import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
+import { DuplicateIcon } from '@heroicons/vue/outline'
 import SideNavigation from "@/components/SideNavigation"
 import TopNavigation from "@/components/TopNavigation"
 
@@ -28,6 +51,7 @@ export default {
     return 'Edge Account Portal » Account'
   },
   components: {
+    DuplicateIcon,
     GoogleAuthEnable,
     SideNavigation,
     TopNavigation
@@ -40,10 +64,20 @@ export default {
   data() {
     return {
       twofactorUrl: '',
-      twofactorQR: ''
+      twofactorQR: '',
+      accountNumber: '7552 0781 3520 4494',
+      copied: false
     }
   },
   methods: {
+    async copyToClipboard () {
+      this.copied = true
+      await navigator.clipboard.writeText(this.accountNumber)
+      
+      setTimeout(() => {
+        this.copied = false
+      }, 2000)
+    }
   },
   mounted() {
     this.loading = true
@@ -65,49 +99,19 @@ export default {
     @apply p-3 md:p-5 lg:p-8 mt-7;
   }
 
-  /* the list */
-  .serverList {
-    @apply mt-5 lg:mt-5 space-y-2;
-  }
-
-  /* the list item */
-  .serverList__item {
-    @apply relative flex flex-wrap flex-col lg:flex-row  lg:items-center justify-between bg-white rounded-md w-full p-5 lg:pr-12;
-  }
-  .serverList__item.active {
-    @apply border-green;
-  }
-  .serverList__item.inactive {
-    @apply border-red;
-  }
-
-  /* status dot */
-  .serverList__status {
-    @apply w-2.5 h-2.5 rounded-full block absolute right-5;
-  }
-  .serverList__status.active {
-    @apply bg-green;
-  }
-  .serverList__status.inactive {
-    @apply bg-red;
-  }
-
-  /* first col (multi line) */
-  .serverList__main {
-    @apply lg:w-1/4 text-gray-500 flex flex-col space-y-0.5 flex-shrink-0;
-  }
-  .serverList__name {
-    @apply text-green text-base font-medium truncate w-full hover:underline;
-  }
-  .serverList__stats {
-    @apply flex space-x-1.5 text-xs flex-shrink-0;
-  }
-  .serverList__stats span {
-    @apply flex-shrink-0;
-  }
-
   /* standard cell */
   .serverList__cell {
     @apply text-gray-500 text-sm lg:w-1/3 truncate;
+  }
+
+  .accountNumber {
+    @apply flex items-center justify-between relative p-3 mt-2 bg-gray-100 border border-gray-300 inline-block;
+  }
+  .copied {
+    @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+    @apply transition-opacity duration-200 ease-in;
+  }
+  .copied.visible {
+    @apply opacity-100;
   }
 </style>

@@ -111,13 +111,13 @@
             <div class="mt-8">
               <button
                 
-                class="w-full button button--solid mb-2"
+                class="w-full mb-2 button button--solid"
               >
                 <router-link to='/account'>Set up recovery email</router-link>
               </button>
               <button
                 @click.prevent="finish()"
-                class="w-full button button--solid"
+                class="w-full button button--solid button--success"
                 :disabled="isCreatingAccount"
               >
                 <span>Go to my account</span>

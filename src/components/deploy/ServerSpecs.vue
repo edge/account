@@ -69,11 +69,11 @@
     <div class="flex flex-col items-baseline">
       <span class="text-green">Your server</span>
       <div class="flex items-center space-x-2.5">
-        <span class="text-lg">8 vCPU</span>
+        <span class="text-lg">{{cpuValue}} vCPU</span>
         <span class="w-1 h-1 bg-gray-400 rounded-full" />
-        <span class="text-lg">1499mb RAM</span>
+        <span class="text-lg">{{ramValue}}mb RAM</span>
         <span class="w-1 h-1 bg-gray-400 rounded-full" />
-        <span class="text-lg">70 GB SSD</span>
+        <span class="text-lg">{{storageValue}} GB SSD</span>
       </div>
     </div>
     <div class="flex flex-col items-baseline">
