@@ -24,6 +24,7 @@
             <!-- size -->
             <div class="box">
               <h4>Server specs</h4>
+              <p class="mt-3 text-gray-500">Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
               <ServerSpecs @specs-changed="value => validate('preset', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.preset">{{serverErrors.preset}}</span>
             </div>

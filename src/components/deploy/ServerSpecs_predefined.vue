@@ -1,112 +1,89 @@
 <template>
-  
-  <div class="specs__grid">
-    <div class="box">
-      <span class="box__title">vCPU</span>
-      <vue-slider
-        v-model="cpuValue"
-        dotSize=20
-        width="100%"
-        contained=true
-        min=1
-        max=32
-        adsorb
-        tooltip="always"
-        :tooltip-formatter="'{value} vCPU'"
-        tooltipPlacement="top"
-        :marks="{'1':'1', '8':'8', '16':'16', '24':'24', '32':'32'}"
-        :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
-        :process-style="{ background: '#4ecd5f' }"
-        :dot-style="{ background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' }"
-        :label-style="{ color: '#999', fontSize: '12px' }"
-        :step-active-style="{ background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }"
-      />
+  <RadioGroup v-model="selectedPreset">
+    <RadioGroupLabel class="sr-only">Size</RadioGroupLabel>
+    <div class="box__grid">
+      <RadioGroupOption
+        as="template"
+        v-for="spec in presets"
+        :key="spec.price"
+        :value="spec"
+        v-slot="{ active, checked, disabled }"
+        :disabled="!spec.enabled"
+      >
+        <div
+          :class="[
+            active
+              ? 'active'
+              : '',
+            checked ? 'checked' : '',
+            disabled ? 'disabled' : ''
+          ]"
+          class="radioOption group"
+        >
+          <div class="flex flex-col items-center w-full text-sm">
+            <div class="whyDisabled" :class="!disabled ? 'hidden' : ''">
+              <div class="whyDisabled__inner">
+                This size is not available because amet quam porta ridiculus
+                <div class="whyDisabled__notch" />
+              </div>
+            </div>
+            <RadioGroupLabel
+              as="div"
+              class="optionTitle"
+              :class="[
+                active
+                  ? 'active'
+                  : '',
+                checked ? 'checked' : '',
+                disabled ? 'disabled' : ''
+              ]"
+            >
+              <h4 class="text-2xl">
+                <sup><span class="inline-block text-sm leading-none">$</span></sup>{{ spec.price }}<span class="text-sm text-gray-600">/mo</span>
+              </h4>
+            </RadioGroupLabel>
+            <RadioGroupDescription
+              as="div"
+              class="optionSpecs"
+            >
+              <!-- <span class="font-medium text-gray-900">{{ spec.name }}</span> -->
+              <span class="mt-2">{{ spec.cpu }} vCPU</span>
+              <span>{{ spec.ramFormatted }}</span>
+              <span>{{ spec.ssdFormatted }} SSD</span>
+              <!-- <span>{{ spec.mbps }}</span> -->
+            </RadioGroupDescription>
+          </div>
+        </div>
+      </RadioGroupOption>
     </div>
-    <div class="box">
-      <span class="box__title">RAM (mb)</span>
-      <vue-slider
-        v-model="ramValue"
-        dotSize=20
-        width="100%"
-        contained=true
-        min=512
-        max=32768
-        adsorb
-        tooltip="always"
-        :tooltip-formatter="'{value} MB'"
-        tooltipPlacement="top"
-        :marks="{'512':'512mb', '8000':'8GB', '16000':'16GB', '24000':'24GB', '32768':'32GB'}"
-        :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
-        :process-style="{ background: '#4ecd5f' }"
-        :dot-style="{ background: '#4ecd5f', boxShadow: 'none', border: 'none' }"
-        :label-style="{ color: '#999', fontSize: '12px' }"
-        :step-active-style="{ background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }"
-      />
-    </div>
-    <div class="box">
-      <span class="box__title">Storage (GB)</span>
-      <vue-slider
-        v-model="storageValue"
-        dotSize=20
-        width="100%"
-        contained=true
-        min=4
-        max=1024
-        adsorb
-        tooltip="always"
-        :tooltip-formatter="'{value} GB'"
-        tooltipPlacement="top"
-        :marks="{'4':'4GB', '256':'256GB', '500':'500GB', '750':'750GB', '1024':'1024GB'}"
-        :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
-        :process-style="{ background: '#4ecd5f' }"
-        :dot-style="{ background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' }"
-        :label-style="{ color: '#999', fontSize: '12px' }"
-        :step-active-style="{ background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }"
-      />
-    </div>
-  </div>
-  <div class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 md:space-y-0 md:flex-row pt-7">
-    <div class="flex flex-col items-baseline">
-      <span class="text-green">Your server</span>
-      <div class="flex items-center space-x-2.5">
-        <span class="text-lg">8 vCPU</span>
-        <span class="w-1 h-1 bg-gray-400 rounded-full" />
-        <span class="text-lg">1499mb RAM</span>
-        <span class="w-1 h-1 bg-gray-400 rounded-full" />
-        <span class="text-lg">70 GB SSD</span>
-      </div>
-    </div>
-    <div class="flex flex-col items-baseline">
-      <span class="text-green">Cost</span>
-      <span><span class="text-lg">$12</span> per month</span>
-    </div>
-  </div>
+  </RadioGroup>
 </template>
 
 <script>
 import {
-
+  RadioGroup,
+  RadioGroupLabel,
+  RadioGroupDescription,
+  RadioGroupOption,
 } from '@headlessui/vue'
 
 import { ref, onUpdated } from 'vue'
 import useSWRV from 'swrv'
 import { fetcher } from '../../utils/api'
-import VueSlider from 'vue-slider-component'
-import 'vue-slider-component/theme/antd.css'
 
 export default {
   name: 'ServerSpecs',
   props: ['current', 'resizeType', 'selectedSpecs'],
   components: {
-    VueSlider
+    RadioGroup,
+    RadioGroupLabel,
+    RadioGroupDescription,
+    RadioGroupOption,
   },
   data() {
     return {
       presets: null,
-      selectedPreset: null,
-      cpuValue: 1,
-      ramValue: 512,
-      storageValue: 4
+      selectedPreset: null
     }
   },
   methods: {
@@ -220,18 +197,27 @@ export default {
 </script>
 
 <style scoped>
-  .specs__grid {
-    @apply mt-10 w-full grid grid-cols-1 gap-x-4 gap-y-10;
-    @apply sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
+  .box__grid {
+    @apply mt-6 w-full grid grid-cols-1 gap-4;
+    @apply sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4;
   }
 
   /* radio option */
-  .box {
-    @apply relative flex space-x-3 items-start justify-center pr-5 pl-2 pt-14 pb-8 border border-gray-300 rounded-md;
+  .radioOption {
+    @apply relative flex space-x-3 items-start p-5 border border-gray-300 rounded-md cursor-pointer;
+    @apply hover:bg-gray-100 hover:bg-opacity-50;
+    @apply focus:outline-none;
   }
-
-  .box__title {
-    @apply absolute top-0 inline-block px-3 text-gray-500 transform -translate-y-1/2 bg-white;
+  .radioOption.active {
+    @apply border-green border-opacity-40;
+  }
+  .radioOption.checked {
+    @apply bg-gray-100 border-green bg-opacity-75;
+    @apply ring-4 ring-green ring-opacity-10;
+  }
+  .radioOption.disabled {
+    @apply cursor-not-allowed opacity-50;
+    @apply hover:opacity-100 transition;
   }
 
   /* option title */
