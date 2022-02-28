@@ -12,10 +12,13 @@
         </div>
         <p class="mt-1 text-gray-500">Write down your account number. It’s all you need to access the Edge Network. No email, no username.</p>
         <div class="flex justify-center mt-2 space-x-4">
-          <button class="button button--outline-success text-green hover:text-white">
+          <router-link
+            to="/account"
+            class="button button--outline-success text-green hover:text-white"
+          >
             <ShieldCheckIcon class="w-5 h-5 mr-2"/>
-            <span>Enable 2FA</span>
-          </button>
+            <span>Setup 2FA</span>
+          </router-link>
           <button class="button button--success" @click="$router.push('/deploy')">
             <ServerIcon class="w-5 h-5 mr-2"/>
             <span>Deploy your first server</span>
