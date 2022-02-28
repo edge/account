@@ -63,18 +63,20 @@ export default {
         }
       ],
       selectedResizeType: null,
-      selectedResizeSpecs: null,
+      selectedResizeSpecs: {},
       showFeedback: false,
       showStatus: false
     }
   },
   computed: {
     currentServerSpecs() {
-      return { cpu: this.server.cpu_number, ram: (this.server.ram_mib), ssd: this.server.disk_mib }
+      return { cpu: this.server.cpu_number, ram: this.server.ram_mib / 1024, ssd: this.server.disk_mib / 1024 }
     }
   },
   mounted() {
     this.selectedResizeType = this.resizeTypes[0]
+
+    console.log('this.currentServerSpecs', this.currentServerSpecs)
   },
   methods: {
     captureResizeType(data) {
@@ -84,7 +86,9 @@ export default {
       console.log('this.selectedResizeType', this.selectedResizeType)
     },
     captureResizeSpecs(data) {
-      this.selectedResizeSpecs = data
+      this.selectedResizeSpecs[data.spec] = data.value
+
+      console.log('this.selectedResizeSpecs', this.selectedResizeSpecs)
     },
     async save() {
       this.isSaving = true
@@ -100,13 +104,17 @@ export default {
       } 
 
       // Additional parameter for HDD resize.
-      if (this.selectedResizeType.id === 2) {
+      if (this.selectedResizeSpecs.ssd > this.currentServerSpecs.ssd) {
         resizeOptions.hddSize = this.selectedResizeSpecs.ssd
       }
 
+      console.log('resizeOptions', resizeOptions)
+
       console.log('this.selectedResizeSpecs', this.selectedResizeSpecs)
-      console.log('this.selectedResizeType', this.selectedResizeType)
+      console.log('this.currentServerSpecs', this.currentServerSpecs)
+      // console.log('this.selectedResizeType', this.selectedResizeType)
       const response = await resizeHost(this.server.serverId, resizeOptions)
+      console.log('response', response)
     }
   }
 }

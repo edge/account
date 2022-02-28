@@ -25,7 +25,7 @@
             <div class="box">
               <h4>Server specs</h4>
               <p class="mt-3 text-gray-500">Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
-              <ServerSpecs @specs-changed="value => validate('preset', value)" />
+              <ServerSpecs @specs-changed="value => validate('specs', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.preset">{{serverErrors.preset}}</span>
             </div>
 
@@ -126,7 +126,9 @@ export default {
         'hostname',
         'domain',
         'password',
-        'preset',
+        'cpu',
+        'ram',
+        'ssd',
         'os',
       ]
     }
@@ -158,6 +160,7 @@ export default {
       // this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     },
     validate(inputType, value) {
+      console.log('inputType, value', inputType, value)
       const validationRules = {
         domain: /^.{6,255}$/,
         password: /^.{6,35}$/,
@@ -173,6 +176,11 @@ export default {
       const regex = validationRules[inputType]
 
       if (!regex) {
+        if (inputType === 'specs') {
+          inputType = value.spec
+          value = value.value
+        }
+        
         this.setServerProperty({ property: inputType, value: value.id || value })
         this.setServerError({ property: inputType, value: '' })
       } else {      
