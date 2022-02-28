@@ -7,7 +7,9 @@
     <!-- burger - hidden on larger screens -->
     <div class="md:hidden"><BurgerButton @click="showNav = !showNav;" /></div>
     <!-- search - hidden on small screens -->
-    <div class="topNavigation__left"><Search size="large"/></div>
+    <div class="topNavigation__left">
+      <!-- <Search size="large"/> -->
+    </div>
 
     <!-- user nav and deploy button - hidden on small screens -->
     <div class="topNavigation__right">
