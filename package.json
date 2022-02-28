@@ -47,6 +47,7 @@
     "vue": "^3.0.11",
     "vue-chart-3": "^3.0.9",
     "vue-router": "^4.0.0-0",
+    "vue-slider-component": "^4.0.0-beta.4",
     "vuex": "^4.0.2",
     "vuex-persist": "^3.1.3"
   },
