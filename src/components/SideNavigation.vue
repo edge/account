@@ -31,7 +31,8 @@
           ,
           {
             link: "/storage",
-            text: "Storage"
+            text: "Storage",
+            disabled: true
           },
           {
             link: "/content-deliver",
