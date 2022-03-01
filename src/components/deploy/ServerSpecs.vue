@@ -71,7 +71,44 @@
         />
       </div>
     </div>
-    <div class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 md:space-y-0 md:flex-row pt-7">
+
+    <!-- selected results shown on resize screen -->
+    <!-- uses two rows to show current vs new specs and cost -->
+    <div v-if="this.current" class="mt-5">
+      <div class="flex flex-col items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 lg:flex-row">
+        <div class="flex flex-col lg:items-center lg:flex-row">
+          <div class="w-36 text-green">Current server:</div>
+          <div class="flex items-center space-x-2.5">
+            <span class="text-lg">{{this.current.cpu}} vCPU</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full" />
+            <span class="text-lg">{{this.current.ram}}GB RAM</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full" />
+            <span class="text-lg">{{this.current.ssd}}GB SSD</span>
+          </div>
+        </div>
+        <div class="flex flex-col items-baseline">
+          <span><span class="text-lg">$12</span> per month</span>
+        </div>
+      </div>
+      <div class="flex flex-col items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
+        <div class="flex flex-col lg:items-center lg:flex-row">
+          <div class="w-36 text-green">After resize:</div>
+          <div class="flex items-center space-x-2.5">
+            <span class="text-lg">{{cpuValue}} vCPU</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full" />
+            <span class="text-lg">{{ramValue}}GB RAM</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full" />
+            <span class="text-lg">{{storageValue}}GB SSD</span>
+          </div>
+        </div>
+        <div class="flex flex-col items-baseline">
+          <span><span class="text-lg font-medium">$12</span> per month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- selected results shown on deploy screen -->
+    <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 md:space-y-0 md:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Your server</span>
         <div class="flex items-center space-x-2.5">
