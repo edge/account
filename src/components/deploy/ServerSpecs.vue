@@ -54,6 +54,7 @@
           dotSize=20
           width="100%"
           contained=true
+          :disabled="resizeType && resizeType.id === 2"
           :min=10
           :max=60
           :interval=10
@@ -161,56 +162,58 @@ export default {
     },
     updateParentResizeSpecs(data) {
       this.$emit('specs-changed', data)
-    },
-    update() {
-      const { current, resizeType, selectedSpecs } = this
-      let matchingPreset
-
-      if (this.presets && this.presets.length) {
-        console.log('current , selectedSpecs', current , selectedSpecs)
-        // if (current && !selectedSpecs) {
-        if (current) {
-          matchingPreset = this.presets.map(p => {
-            if (p.ram === current.ram && p.cpu === current.cpu) {
-              return p
-            } else {
-              return null
-            }
-          }).filter(Boolean)
-
-
-          // Loop over presets and disable those that can't be used.
-          this.presets.forEach(p => {
-            p.enabled = true
-
-            console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-            
-            // SSD cannot be downsized.
-            // if (p.ssd < current.ssd) {
-            if (resizeType && resizeType.id === 2 && p.ssd < current.ssd) {
-              p.enabled = false
-            }
-          })
-        }
-
-        if (selectedSpecs) {
-          this.selectedPreset = selectedSpecs
-        } else {
-          if (matchingPreset && matchingPreset[0]) {
-            this.selectedPreset = matchingPreset[0]
-          } else {      
-            this.selectedPreset = this.presets[0]
-          }
-        }
-
-        console.log('this.selectedPreset',this. selectedPreset)
-      }      
     }
+    // update() {
+    //   const { current, resizeType, selectedSpecs } = this
+    //   let matchingPreset
+
+    //   if (this.presets && this.presets.length) {
+    //     console.log('current , selectedSpecs', current , selectedSpecs)
+    //     // if (current && !selectedSpecs) {
+    //     if (current) {
+    //       matchingPreset = this.presets.map(p => {
+    //         if (p.ram === current.ram && p.cpu === current.cpu) {
+    //           return p
+    //         } else {
+    //           return null
+    //         }
+    //       }).filter(Boolean)
+
+
+    //       // Loop over presets and disable those that can't be used.
+    //       this.presets.forEach(p => {
+    //         p.enabled = true
+
+    //         console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
+            
+    //         // SSD cannot be downsized.
+    //         // if (p.ssd < current.ssd) {
+    //         if (resizeType && resizeType.id === 2 && p.ssd < current.ssd) {
+    //           p.enabled = false
+    //         }
+    //       })
+    //     }
+
+    //     if (selectedSpecs) {
+    //       this.selectedPreset = selectedSpecs
+    //     } else {
+    //       if (matchingPreset && matchingPreset[0]) {
+    //         this.selectedPreset = matchingPreset[0]
+    //       } else {      
+    //         this.selectedPreset = this.presets[0]
+    //       }
+    //     }
+
+    //     console.log('this.selectedPreset',this. selectedPreset)
+    //   }      
+    // }
   },
   mounted() {
     this.cpuValue = this.current ? this.current.cpu : 1
     this.ramValue = this.current ? this.current.ram : 1
     this.storageValue = this.current ? this.current.ssd : 1
+
+    console.log('this', this)
   },
   watch: {
     presets(value) {     
@@ -257,7 +260,12 @@ export default {
     resizeType(value) {
       console.log('value', value)
       // this.resizeType = value
-      this.update()
+      // this.update()
+      if (this.resizeType.id === 2) {
+        // Set the ssd slider back to current.
+        this.storageValue = this.current.ssd
+        this.$refs.ssdSlider.setValue(this.current.ssd)
+      }
     },
     cpuValue(value) {
       this.$emit('specs-changed', { spec: 'cpu', value })
