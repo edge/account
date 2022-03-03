@@ -9,13 +9,13 @@
           width="100%"
           contained=true
           :min=1
-          :max=4
+          :max=32
+          :marks="true"
           adsorb
           silent
           tooltip="always"
           :tooltip-formatter="'{value} vCPU'"
           tooltipPlacement="top"
-          :marks="true"
           :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
           :process-style="{ background: '#4ecd5f' }"
           :dot-style="{ background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' }"
@@ -27,17 +27,15 @@
         <span class="box__title">RAM</span>
         <vue-slider
           v-model="ramValue"
+          :vData="ramOptions"
+          :marks="true"
           dotSize=20
+          adsorb
           width="100%"
           contained=true
-          :min=1
-          :max=8
-          adsorb
-          silent
           tooltip="always"
           :tooltip-formatter="'{value}GB'"
           tooltipPlacement="top"
-          :marks="{'1':'1GB', '2':'2GB', '3':'3GB', '4':'4GB',  '5':'5GB', '6':'6GB', '7':'7GB','8':'8GB'}"
           :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
           :process-style="{ background: '#4ecd5f' }"
           :dot-style="{ background: '#4ecd5f', boxShadow: 'none', border: 'none' }"
@@ -54,16 +52,14 @@
           dotSize=20
           width="100%"
           contained=true
-          :disabled="resizeType && resizeType.id === 2"
           :min=10
-          :max=60
-          :interval=10
+          :max=512
+          :vData="ssdOptions"
+          :marks="true"
           adsorb
-          silent
           tooltip="always"
           :tooltip-formatter="'{value} GB'"
           tooltipPlacement="top"
-          :marks="true"
           :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
           :process-style="{ background: '#4ecd5f' }"
           :dot-style="{ background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' }"
@@ -122,7 +118,7 @@
       </div>
       <div class="flex flex-col items-baseline">
         <span class="text-green">Cost</span>
-        <span><span class="text-lg">$12</span> per month</span>
+        <span><span class="text-lg">${{calculatedCost}}</span> per month</span>
       </div>
     </div>
   </div>
@@ -133,15 +129,12 @@ import {
 
 } from '@headlessui/vue'
 
-import { ref, onUpdated } from 'vue'
-import useSWRV from 'swrv'
-import { fetcher } from '../../utils/api'
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
 
 export default {
   name: 'ServerSpecs',
-  props: ['current', 'resizeType', 'selectedSpecs'],
+  props: ['calculatedCost', 'current', 'resizeType', 'selectedSpecs'],
   components: {
     VueSlider
   },
@@ -149,14 +142,33 @@ export default {
     return {
       presets: null,
       selectedPreset: null,
-      cpuValue: 0,
-      ramValue: 0,
+      cpuValue: '0',
+      ramValue: '0',
+      ssdValue: '0',
+      ramOptions: [
+        { value:'1', label:'1GB' },
+        { value:'2', label:'2GB' },
+        { value:'4', label:'4GB' },
+        { value:'6', label:'6GB' },
+        { value:'8', label:'8GB' },
+        { value:'16', label:'16GB' }
+      ],
+      ssdOptions: [
+        { value:'4', label:'4GB' },
+        { value:'8', label:'8GB' },
+        { value:'16', label:'16GB' },
+        { value:'32', label:'32GB' },
+        { value:'64', label:'64GB' },
+        { value:'128', label:'128GB' },
+        { value:'256', label:'256GB' },
+        { value:'512', label:'512GB' }
+      ],
       storageValue: 0
     }
   },
   methods: {
     changed(value) {
-      if (value < this.current.ssd) {
+      if (this.current && value < this.current.ssd) {
         this.$refs.ssdSlider.setValue(this.current.ssd)
       }
     },
@@ -209,11 +221,9 @@ export default {
     // }
   },
   mounted() {
-    this.cpuValue = this.current ? this.current.cpu : 1
-    this.ramValue = this.current ? this.current.ram : 1
-    this.storageValue = this.current ? this.current.ssd : 1
-
-    console.log('this', this)
+    this.cpuValue = this.current ? this.current.cpu : '1'
+    this.ramValue = this.current ? this.current.ram : '1'
+    this.storageValue = this.current ? this.current.ssd : '4'
   },
   watch: {
     presets(value) {     
@@ -274,7 +284,7 @@ export default {
       this.$emit('specs-changed', { spec: 'ram', value })
     },
     storageValue(value) {
-      if (this.current.ssd > value) {
+      if (this.current && this.current.ssd > value) {
         this.storageValue = this.current.ssd
       } else {
         this.$emit('specs-changed', { spec: 'ssd', value })

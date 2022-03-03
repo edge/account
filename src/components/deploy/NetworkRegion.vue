@@ -91,7 +91,7 @@ export default {
   },
   watch: {
     selected(value) {
-      this.$emit('region-changed', value.clusterId)
+      this.$emit('region-changed', value)
     }
   }
 }

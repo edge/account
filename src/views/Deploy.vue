@@ -12,20 +12,20 @@
             <!-- network region -->
             <div class="box">
               <h4>Network region</h4>
-              <NetworkRegion @region-changed="value => validate('cluster', value)" />
+              <NetworkRegion @region-changed="value => storeSelection('cluster', value)" />
             </div>
 
             <!-- operating system -->
             <div class="box">
               <h4>Operating System</h4>
-              <OperatingSystem @os-changed="value => validate('os', value)" />
+              <OperatingSystem @os-changed="value => storeSelection('os', value)" />
             </div>
 
             <!-- size -->
             <div class="box">
               <h4>Server specs</h4>
               <p class="mt-3 text-gray-500">Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
-              <ServerSpecs @specs-changed="value => validate('specs', value)" />
+              <ServerSpecs :calculatedCost=calculatedCost @specs-changed="value => storeSelection('specs', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.preset">{{serverErrors.preset}}</span>
             </div>
 
@@ -44,16 +44,16 @@
 
             <!-- host name / server name -->
             <div class="box">
-              <ServerName @name-changed="value => validate('hostname', value)" />
+              <ServerName @name-changed="value => storeSelection('hostname', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.hostname">{{serverErrors.hostname}}</span>
 
-              <Domain :hostname="serverSettings.hostname" @name-changed="value => validate('domain', value)" />
+              <Domain :hostname="serverSettings.hostname" @name-changed="value => storeSelection('domain', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.domain">{{serverErrors.domain}}</span>
             </div>
 
             <!-- password -->
             <div class="box">
-              <Password @password-changed="value => validate('password', value)" />
+              <Password @password-changed="value => storeSelection('password', value)" />
               <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.password">{{serverErrors.password}}</span>
             </div>
 
@@ -130,7 +130,19 @@ export default {
         'ram',
         'ssd',
         'os',
-      ]
+      ],
+      calculatedCost: 0,
+      selectedRegion: null,
+      validationRules: {
+        domain: /^.{6,255}$/,
+        password: /^.{6,35}$/,
+        hostname: /^[a-zA-Z0-9]{1}[a-zA-Z0-9-_\.]{1,48}$/
+      },
+      validationMessages: {
+        domain: 'Maximum length is 255 characters',
+        password: 'Password must be between 6 and 35 characters',
+        hostname: 'Hostname must contain only alphanumeric characters, underscores, and hyphens. The first character must be alphanumeric. Maximum length is 49.'
+      }
     }
   },
   computed: {
@@ -142,6 +154,16 @@ export default {
   },
   methods: {
     ...mapActions(['clear', 'setServerError', 'setServerProperty']),
+    calculateCost() {
+      if (this.selectedRegion) {
+        const { ramCostPerGb, ssdCostPerGb, cpuCostPer } = this.selectedRegion
+
+        this.calculatedCost = 
+          (ramCostPerGb * this.serverSettings.ram) +
+          (ssdCostPerGb * this.serverSettings.ssd) +
+          (cpuCostPer * this.serverSettings.cpu)
+      }
+    },
     async deploy() {
       this.isSaving = true
 
@@ -159,37 +181,34 @@ export default {
     toggleBackups () {
       // this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     },
-    validate(inputType, value) {
-      console.log('inputType, value', inputType, value)
-      const validationRules = {
-        domain: /^.{6,255}$/,
-        password: /^.{6,35}$/,
-        hostname: /^[a-zA-Z0-9]{1}[a-zA-Z0-9-_\.]{1,48}$/
-      }
-     
-      const validationMessages = {
-        domain: 'Maximum length is 255 characters',
-        password: 'Password must be between 6 and 35 characters',
-        hostname: 'Hostname must contain only alphanumeric characters, underscores, and hyphens. The first character must be alphanumeric. Maximum length is 49.'
-      }
+    storeSelection(inputType, value) {
+      if (this.validate(inputType, value)) {
+        if (inputType === 'cluster') {
+          this.selectedRegion = value
+          value = value.clusterId
+        }
 
-      const regex = validationRules[inputType]
-
-      if (!regex) {
         if (inputType === 'specs') {
           inputType = value.spec
-          value = value.value
+          value = parseInt(value.value)
         }
-        
+
         this.setServerProperty({ property: inputType, value: value.id || value })
         this.setServerError({ property: inputType, value: '' })
+
+        this.calculateCost()
+      } else {
+        this.setServerError({ property: inputType, value: this.validationMessages[inputType] })
+      }
+    },
+    validate(inputType, value) {
+      const regex = this.validationRules[inputType]
+
+      if (!regex) {        
+        return true
       } else {      
-        if (regex.test(value)) {
-          this.setServerProperty({ property: inputType, value })
-          this.setServerError({ property: inputType, value: '' })
-        } else {
-          this.setServerError({ property: inputType, value: validationMessages[inputType] })
-        }
+        return regex.test(value)
+
       }
     }
   },
