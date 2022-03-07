@@ -146,7 +146,7 @@
 
                 <!-- network -->
                 <TabPanel>
-                  Network
+                  <ServerNetworking :activeTask=activeTask :server=server />
                 </TabPanel>
 
                 <!-- history -->
@@ -196,6 +196,7 @@ import Line from "@/components/charts/Line"
 import ServerBackups from "@/components/server/ServerBackups"
 import ServerConsole from "@/components/server/ServerConsole"
 import ServerHistory from "@/components/server/ServerHistory"
+import ServerNetworking from "@/components/server/ServerNetworking"
 import ServerOverview from "@/components/server/ServerOverview"
 import ServerResize from "@/components/server/ServerResize"
 import ServerStatus from "@/components/server/ServerStatus"
@@ -236,6 +237,7 @@ export default {
     ServerBackups,
     ServerConsole,
     ServerHistory,
+    ServerNetworking,
     ServerOverview,
     ServerResize,
     ServerStatus,

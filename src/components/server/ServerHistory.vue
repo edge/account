@@ -57,13 +57,8 @@
 </template>
 
 <script>
-import ServerSpecs from "@/components/deploy/ServerSpecs"
-
 export default {
   name: 'ServerResize',
-  components: {
-    ServerSpecs
-  },
   props: ['data'],
   data: function () {
     return {
