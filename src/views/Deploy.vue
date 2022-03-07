@@ -159,8 +159,8 @@ export default {
         const { ramCostPerGb, ssdCostPerGb, cpuCostPer } = this.selectedRegion
 
         this.calculatedCost = 
-          (ramCostPerGb * this.serverSettings.ram) +
-          (ssdCostPerGb * this.serverSettings.ssd) +
+          (ramCostPerGb * this.serverSettings.ram / 1024) +
+          (ssdCostPerGb * this.serverSettings.ssd / 1024) +
           (cpuCostPer * this.serverSettings.cpu)
       }
     },

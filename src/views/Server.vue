@@ -136,16 +136,18 @@
 
                 <!-- resize -->
                 <TabPanel>
-                  <ServerResize :server=server />
+                  <ServerResize :activeTask=activeTask :server=server />
                 </TabPanel>
 
                 <!-- backups -->
                 <TabPanel>
-                  <ServerBackups :server=server />
+                  <ServerBackups :activeTask=activeTask :server=server />
                 </TabPanel>
 
                 <!-- network -->
-                <TabPanel>Network</TabPanel>
+                <TabPanel>
+                  Network
+                </TabPanel>
 
                 <!-- history -->
                 <TabPanel>
@@ -315,7 +317,7 @@ export default {
       } else {
         this.activeTask = null
       }
-    }, 5000)
+    }, 3000)
   },
   unmounted() {
     clearInterval(this.polling)

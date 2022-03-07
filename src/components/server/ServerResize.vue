@@ -7,13 +7,21 @@
     <ResizeType :resizeTypes="resizeTypes" @resize-type-changed="captureResizeType" />
 
     <div class="w-full h-px my-10 bg-gray-300" />
-    <ServerSpecs :current=currentServerSpecs :resizeType=selectedResizeType :selectedSpecs=selectedResizeSpecs @specs-changed="captureResizeSpecs" />
+    
+    <ServerSpecs
+      :currentCost=currentCost
+      :calculatedCost=newCost
+      :current=currentServerSpecs
+      :resizeType=selectedResizeType
+      :selectedSpecs=selectedResizeSpecs
+      @specs-changed="captureResizeSpecs"
+    />
 
     <div class="relative mt-8">
-      <button @click="save" :disabled="isSaving || !selectedResizeSpecs" class="h-full button button--success">
-        <span v-if="isSaving">Resizing</span>
+      <button @click="save" :disabled="isSaving || !selectedResizeSpecs || activeTask" class="h-full button button--success">
+        <span v-if="isSaving || activeTask">Resizing</span>
         <span v-else>Resize</span>
-        <span v-if="isSaving">
+        <span v-if="isSaving || activeTask">
           <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
             <line x1="12" y1="6" x2="12" y2="3" />
@@ -38,15 +46,18 @@ import { resizeHost } from '../../utils/api'
 
 export default {
   name: 'ServerResize',
-  props: ['server'],
+  props: ['activeTask','server'],
   components: {
     ResizeType,
     ServerSpecs
   },
   data: function () {
     return {
-      isSaving: false,
+      currentCost: 0,
       feedback: '',
+      isSaving: false,
+      newCost: 0,
+      polling: null,
       resizeTypes: [
         {
           id: 1,
@@ -76,8 +87,22 @@ export default {
     this.selectedResizeType = this.resizeTypes[0]
 
     console.log('this.currentServerSpecs', this.currentServerSpecs)
+    this.calculateCosts()
   },
   methods: {
+    calculateCosts() {
+      const { ramCostPerGb, ssdCostPerGb, cpuCostPer } = this.server.region
+      
+      this.currentCost = 
+        (ramCostPerGb * this.currentServerSpecs.ram) +
+        (ssdCostPerGb * this.currentServerSpecs.ssd) +
+        (cpuCostPer * this.currentServerSpecs.cpu)
+      
+      this.newCost = 
+        (ramCostPerGb * this.selectedResizeSpecs.ram / 1024) +
+        (ssdCostPerGb * this.selectedResizeSpecs.ssd / 1024) +
+        (cpuCostPer * this.selectedResizeSpecs.cpu)
+    },
     captureResizeType(data) {
       console.log('data', data)
       this.selectedResizeType = data
@@ -85,14 +110,21 @@ export default {
       console.log('this.selectedResizeType', this.selectedResizeType)
     },
     captureResizeSpecs(data) {
+      console.log('data', data)
       this.selectedResizeSpecs[data.spec] = data.value
 
       console.log('this.selectedResizeSpecs', this.selectedResizeSpecs)
+      this.calculateCosts()
     },
     async save() {
       this.isSaving = true
       await this.resize()
-      this.isSaving = false
+      
+      this.polling = setInterval(() => {
+        if (!this.activeTask) {
+          this.isSaving = false
+        }
+      }, 5000)
     },
     async resize () {
       // Defaults for CPU & RAM only.
@@ -114,6 +146,14 @@ export default {
       // console.log('this.selectedResizeType', this.selectedResizeType)
       const response = await resizeHost(this.server.serverId, resizeOptions)
       console.log('response', response)
+    }
+  },
+  watch: {
+    activeTask(value) {
+      if (value === null) {
+        clearInterval(this.polling)
+        this.polling = null
+      }
     }
   }
 }

@@ -10,37 +10,48 @@
           contained=true
           :min=1
           :max=32
-          :marks="true"
+          :marks="{
+            '1': '1',
+            '4': '4',
+            '8': '8',
+            '12': '12',
+            '16': '16',
+            '20': '20',
+            '24': '24',
+            '28': '28',
+            '32': '32'
+          }"
           adsorb
           silent
           tooltip="always"
           :tooltip-formatter="'{value} vCPU'"
           tooltipPlacement="top"
-          :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
-          :process-style="{ background: '#4ecd5f' }"
-          :dot-style="{ background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' }"
-          :label-style="{ color: '#999', fontSize: '12px' }"
-          :step-active-style="{ background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }"
+          :tooltip-style="styles.tooltip"
+          :process-style="styles.process"
+          :dot-style="styles.dots"
+          :label-style="styles.labels"
+          :step-active-style="styles.activeStep"
         />
       </div>
       <div class="box">
-        <span class="box__title">RAM</span>
+        <span class="box__title">RAM (GB)</span>
         <vue-slider
           v-model="ramValue"
           :vData="ramOptions"
+          ref="ramSlider"
           :marks="true"
           dotSize=20
           adsorb
           width="100%"
           contained=true
           tooltip="always"
-          :tooltip-formatter="'{value}GB'"
+          :tooltip-formatter="formatValue"
           tooltipPlacement="top"
-          :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
-          :process-style="{ background: '#4ecd5f' }"
-          :dot-style="{ background: '#4ecd5f', boxShadow: 'none', border: 'none' }"
-          :label-style="{ color: '#999', fontSize: '12px' }"
-          :step-active-style="{ background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }"
+          :tooltip-style="styles.tooltip"
+          :process-style="styles.process"
+          :dot-style="styles.dots"
+          :label-style="styles.labels"
+          :step-active-style="styles.activeStep"
         />
       </div>
       <div class="box">
@@ -60,11 +71,11 @@
           tooltip="always"
           :tooltip-formatter="'{value} GB'"
           tooltipPlacement="top"
-          :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
-          :process-style="{ background: '#4ecd5f' }"
-          :dot-style="{ background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' }"
-          :label-style="{ color: '#999', fontSize: '12px' }"
-          :step-active-style="{ background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }"
+          :tooltip-style="styles.tooltip"
+          :process-style="styles.process"
+          :dot-style="styles.dots"
+          :label-style="styles.labels"
+          :step-active-style="styles.activeStep"
         />
       </div>
     </div>
@@ -84,7 +95,7 @@
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span><span class="text-lg">$12</span> per month</span>
+          <span><span class="text-lg">${{currentCost}}</span> per month</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
@@ -99,7 +110,7 @@
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span><span class="text-lg font-medium">$12</span> per month</span>
+          <span><span class="text-lg font-medium">${{calculatedCost}}</span> per month</span>
         </div>
       </div>
     </div>
@@ -111,7 +122,7 @@
         <div class="flex items-center space-x-2.5">
           <span class="text-lg">{{cpuValue}} vCPU</span>
           <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{ramValue}}GB RAM</span>
+          <span class="text-lg">{{formatValue(ramValue)}} RAM</span>
           <span class="w-1 h-1 bg-gray-400 rounded-full" />
           <span class="text-lg">{{storageValue}}GB SSD</span>
         </div>
@@ -134,7 +145,7 @@ import 'vue-slider-component/theme/antd.css'
 
 export default {
   name: 'ServerSpecs',
-  props: ['calculatedCost', 'current', 'resizeType', 'selectedSpecs'],
+  props: ['calculatedCost', 'currentCost', 'current', 'resizeType', 'selectedSpecs'],
   components: {
     VueSlider
   },
@@ -144,8 +155,9 @@ export default {
       selectedPreset: null,
       cpuValue: '0',
       ramValue: '0',
-      ssdValue: '0',
+      storageValue: '0',
       ramOptions: [
+        { value:'0.5', label:'512MB' },
         { value:'1', label:'1GB' },
         { value:'2', label:'2GB' },
         { value:'4', label:'4GB' },
@@ -154,8 +166,7 @@ export default {
         { value:'16', label:'16GB' }
       ],
       ssdOptions: [
-        { value:'4', label:'4GB' },
-        { value:'8', label:'8GB' },
+        { value:'10', label:'10GB' },
         { value:'16', label:'16GB' },
         { value:'32', label:'32GB' },
         { value:'64', label:'64GB' },
@@ -163,7 +174,13 @@ export default {
         { value:'256', label:'256GB' },
         { value:'512', label:'512GB' }
       ],
-      storageValue: 0
+      styles: {
+        activeStep: { background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' },
+        dots: { background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' },
+        labels: { color: '#999', fontSize: '12px' },
+        process: { background: '#4ecd5f' },
+        tooltip: { background: '#4ecd5f', borderColor: '#4ecd5f' }
+      }
     }
   },
   methods: {
@@ -171,6 +188,13 @@ export default {
       if (this.current && value < this.current.ssd) {
         this.$refs.ssdSlider.setValue(this.current.ssd)
       }
+    },
+    formatValue(value) {
+      if (value < 1) {
+        return `${value * 1024}MB`
+      }
+
+      return `${value}GB`
     },
     updateParentResizeSpecs(data) {
       this.$emit('specs-changed', data)
@@ -222,8 +246,13 @@ export default {
   },
   mounted() {
     this.cpuValue = this.current ? this.current.cpu : '1'
-    this.ramValue = this.current ? this.current.ram : '1'
-    this.storageValue = this.current ? this.current.ssd : '4'
+    this.ramValue = this.current ? this.current.ram : '0.5'
+    this.storageValue = this.current ? this.current.ssd : '10'
+
+    console.log('this', this)
+
+    this.$refs.ramSlider.setValue(this.ramValue.toString())
+    this.$refs.ssdSlider.setValue(this.storageValue.toString())
   },
   watch: {
     presets(value) {     
@@ -281,13 +310,13 @@ export default {
       this.$emit('specs-changed', { spec: 'cpu', value })
     },
     ramValue(value) {
-      this.$emit('specs-changed', { spec: 'ram', value })
+      this.$emit('specs-changed', { spec: 'ram', value: value * 1024 })
     },
     storageValue(value) {
       if (this.current && this.current.ssd > value) {
         this.storageValue = this.current.ssd
       } else {
-        this.$emit('specs-changed', { spec: 'ssd', value })
+        this.$emit('specs-changed', { spec: 'ssd', value: value * 1024 })
       }
     },
     selectedPreset(value) {

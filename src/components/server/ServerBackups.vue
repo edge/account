@@ -9,10 +9,10 @@
           <input type="text" placeholder="Name your backup" :value=backupName class="bg-transparent input input--floating" />
         </div>
         <div class="relative">
-          <button @click="save" :disabled="isSaving" class="h-full mt-5 lg:mt-0 button button--success">
-            <span v-if="isSaving">Creating</span>
+          <button @click="save" :disabled="isSaving || activeTask" class="h-full mt-5 lg:mt-0 button button--success">
+            <span v-if="isSaving || activeTask">Creating</span>
             <span v-else>Create backup</span>
-            <span v-if="isSaving">
+            <span v-if="isSaving || activeTask">
               <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                 <line x1="12" y1="6" x2="12" y2="3" />
@@ -111,29 +111,37 @@ export default {
   components: {
     BackupMenu
   },
-  props: ['server'],
+  props: ['activeTask','server'],
   data: function () {
     return {
       backupName: `${this.server.hostname}-${new Date().getTime()}`,
       backups: this.server.backups,
       isSaving: false,
       feedback: '',
+      polling: null,
       showFeedback: false
     }
   },
   methods: {
-    // ...mapMutations([
-    //   'addTask'
-    // ]),
     async save() {
       this.isSaving = true
       this.showStatus = true
       
       createBackup(this.server.serverId, { name: this.backupName, comment: '' })
+
+      this.polling = setInterval(() => {
+        if (!this.activeTask) {
+          this.isSaving = false
+        }
+      }, 5000)
     }
   },
   watch: {
-    $route(to, from) {
+    activeTask(value) {
+      if (value === null) {
+        clearInterval(this.polling)
+        this.polling = null
+      }
     }
   }
 }
