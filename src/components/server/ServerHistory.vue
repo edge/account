@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <h4>Server history</h4>
-    <div class="mt-4 overflow-hidden border border-gray-300 rounded-lg">
+    <div class="hidden mt-4 overflow-hidden border border-gray-300 rounded-lg lg:block">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="tableHead">
           <tr>
@@ -53,12 +53,46 @@
       </table>
     </div>
 
+      <!-- mobile table view -->
+      <div class="flex flex-col w-full mt-4 border-t border-gray-200 divide-y divide-gray-200 lg:hidden">
+        <div v-for="item in history" :key="item.event" class="flex flex-col items-start w-full py-3 space-y-2">
+          <div class="flex items-center justify-between w-full">
+            <div class="text-sm text-gray-900 truncate">
+              {{ item.event }}
+            </div>
+          </div>
+          <div class="flex items-center space-x-4 text-xs">
+            <div class="flex items-center space-x-0.5">
+              <CalendarIcon class="w-3.5 h-3.5 text-gray-500" />
+              <span>{{ item.date }}</span>
+            </div>
+            <div class="flex items-center space-x-0.5">
+              <ClockIcon class="w-3.5 h-3.5 text-gray-500" />
+              <span>{{ item.time }}</span>
+            </div>
+            <div class="flex items-center space-x-0.5">
+              <UserIcon class="w-3.5 h-3.5 text-gray-500" />
+              <span>{{ item.user }}</span>
+            </div>
+          </div>
+          <div class="flex-shrink-0 text-xs text-green-100 opacity-75">
+            <span class="text-gray-900">Status:</span> {{ item.status }}
+          </div>
+        </div>
+      </div>
+
   </div>
 </template>
 
 <script>
+import {CalendarIcon, ClockIcon, UserIcon} from "@heroicons/vue/outline";
 export default {
   name: 'ServerResize',
+  components: {
+    CalendarIcon,
+    ClockIcon,
+    UserIcon
+  },
   props: ['data'],
   data: function () {
     return {
