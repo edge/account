@@ -32,7 +32,9 @@
     </div>
     <div class="box">
       <h4>Existing backups</h4>
-      <div class="mt-4 border border-gray-300 rounded-lg">
+
+      <!-- desktop table view -->
+      <div class="hidden mt-4 border border-gray-300 rounded-lg lg:block">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="tableHead">
             <tr>
@@ -98,6 +100,36 @@
         </table>
       </div>
 
+      <!-- mobile table view -->
+      <div class="flex flex-col w-full mt-4 border-t border-gray-200 divide-y divide-gray-200 lg:hidden">
+        <div v-for="item in backups" :key="item.date" class="flex flex-col items-start w-full py-3 space-y-2">
+          <div class="flex items-center justify-between w-full">
+            <div class="pr-5 text-sm text-gray-900 truncate">
+              {{ item.name }}
+            </div>
+            <div class="flex-shrink-0 text-xs text-green-100 opacity-75">
+              {{ item.status }}
+            </div>
+          </div>
+          <div class="flex items-center space-x-4 text-xs">
+            <div class="flex items-center space-x-0.5">
+              <CalendarIcon class="w-3.5 h-3.5 text-gray-500" />
+              <span>{{ item.date }}</span>
+            </div>
+            <div class="flex items-center space-x-0.5">
+              <ClockIcon class="w-3.5 h-3.5 text-gray-500" />
+              <span>{{ item.time }}</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 text-xs">
+            <span>{{ item.os }}</span>
+            <div class="block w-1 h-1 bg-gray-300 rounded-full" />
+            <span>{{ item.size }}</span>
+          </div>
+          <button class="button--extraSmall button--success">Restore</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -105,11 +137,14 @@
 <script>
 import BackupMenu from "@/components/server/BackupMenu"
 import { createBackup } from '../../utils/api'
+import {CalendarIcon, ClockIcon} from "@heroicons/vue/outline";
 
 export default {
   name: 'ServerBackups',
   components: {
-    BackupMenu
+    BackupMenu,
+    CalendarIcon,
+    ClockIcon
   },
   props: ['activeTask','server'],
   data: function () {

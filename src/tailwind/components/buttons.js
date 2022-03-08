@@ -78,6 +78,11 @@ const themes = {
   },
   small: {
     padding: `${rem(8)} ${rem(20)} ${rem(8)} ${rem(20)}`
+  },
+  extraSmall: {
+    padding: `${rem(5)} ${rem(10)} ${rem(5)} ${rem(10)}`,
+    fontSize: '12px',
+    borderRadius: '5px'
   }
 }
 
@@ -142,7 +147,8 @@ const buttons = ({ theme }) => {
     '.button--error': button.error,
     '.button--success': button.success,
     '.button--outline-success': button['outline-success'],
-    '.button--small': button.small
+    '.button--small': button.small,
+    '.button--extraSmall': button.extraSmall
   }
 }
 
