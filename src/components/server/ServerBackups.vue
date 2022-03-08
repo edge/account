@@ -10,7 +10,8 @@
         </div>
         <div class="relative">
           <button @click="save" :disabled="isSaving || activeTask" class="h-full mt-5 lg:mt-0 button button--success">
-            <span v-if="isSaving || activeTask">Creating</span>
+            <span v-if="isSaving">Creating</span>
+            <span v-else-if="activeTask">{{activeTask.status}}</span>
             <span v-else>Create backup</span>
             <span v-if="isSaving || activeTask">
               <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">

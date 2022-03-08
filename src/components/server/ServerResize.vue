@@ -19,7 +19,8 @@
 
     <div class="relative mt-8">
       <button @click="save" :disabled="isSaving || !selectedResizeSpecs || activeTask" class="h-full button button--success">
-        <span v-if="isSaving || activeTask">Resizing</span>
+        <span v-if="isSaving">Resizing</span>
+        <span v-else-if="activeTask">{{activeTask.status}}</span>
         <span v-else>Resize</span>
         <span v-if="isSaving || activeTask">
           <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">

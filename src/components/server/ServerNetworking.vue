@@ -69,7 +69,8 @@
     </div>
 
     <button @click="save" :disabled="isSaving || activeTask" class="h-full mt-5 lg:mt-0 button button--success">
-      <span v-if="isSaving || activeTask">Adding</span>
+      <span v-if="isSaving">Adding</span>
+      <span v-else-if="activeTask">{{activeTask.status}}</span>
       <span v-else>Add IP address</span>
       <span v-if="isSaving || activeTask">
         <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -108,7 +109,7 @@ export default {
     async save() {
       this.isSaving = true
 
-      const response = await addIpAddress(this.server.serverId)
+      await addIpAddress(this.server.serverId)
 
       this.polling = setInterval(() => {
         if (!this.activeTask) {
@@ -119,9 +120,8 @@ export default {
     async removeIpAddress(id) {
       this.isSaving = true
 
-      const response = await removeIpAddress(id)
-      console.log('response', response)
-
+      await removeIpAddress(id)
+      
       this.polling = setInterval(() => {
         if (!this.activeTask) {
           this.isSaving = false

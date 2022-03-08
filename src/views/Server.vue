@@ -156,7 +156,7 @@
 
                 <!-- destroy -->
                 <TabPanel>
-                  <Destroy />
+                  <Destroy :activeTask=activeTask :server=server />
                 </TabPanel>
 
               </TabPanels>
@@ -264,6 +264,10 @@ export default {
       if (data.type === 'host_create') {
         task.status = 'Creating VM'
       }
+      
+      if (data.type === 'host_delete') {
+        task.status = 'Destroying VM'
+      }
 
       if (data.type === 'host_change_params') {
         task.status = 'Changing VM parameters'
@@ -288,6 +292,8 @@ export default {
       if (data.type === 'ip_delete') {
         task.status = 'Removing IP address'
       }
+
+      console.log('data', data)
 
       return task
     },

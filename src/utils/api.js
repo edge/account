@@ -111,6 +111,23 @@ const createHost = async (user, data) => {
   return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
 }
 
+/**
+ * Calls the "server" API endpoint to perform a VM delete operation.
+ *
+ * @param {Object} data - contains the id of the VM to delete.
+ * @example {
+ *   id: 7
+ * }
+ */
+const destroyHost = async id => {
+  const payload = {
+    action: 'destroy',
+    id
+  }
+
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
+}
+
 // const getTask = async id => {
 //   return fetchData(`${SERVER_ENDPOINT}?action=task&taskId=${id}`, { method: 'get' })
 //     .then(response => {
@@ -219,6 +236,7 @@ export {
   createAccount,
   createBackup,
   createHost,
+  destroyHost,
   fetcher,
   generateAccountNumber,
   getAccount,
