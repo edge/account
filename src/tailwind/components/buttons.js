@@ -81,8 +81,7 @@ const themes = {
   },
   extraSmall: {
     padding: `${rem(5)} ${rem(10)} ${rem(5)} ${rem(10)}`,
-    fontSize: '12px',
-    borderRadius: '5px'
+    fontSize: '12px'
   }
 }
 

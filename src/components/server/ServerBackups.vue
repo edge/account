@@ -126,7 +126,7 @@
             <div class="block w-1 h-1 bg-gray-300 rounded-full" />
             <span>{{ item.size }}</span>
           </div>
-          <button class="button--extraSmall button--success">Restore</button>
+          <button class="button button--extraSmall button--success">Restore</button>
         </div>
       </div>
 

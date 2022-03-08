@@ -2,7 +2,7 @@
   <div class="box">
     <h4>Public Network</h4>
     <!-- <p>Anybody can access the VM via these public addresses.</p> -->
-    <div class="mt-4 mb-5 overflow-hidden border border-gray-300 rounded-lg">
+    <div class="hidden mt-4 mb-5 overflow-hidden border border-gray-300 rounded-lg lg:block">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="tableHead">
           <tr>
@@ -37,7 +37,7 @@
             <td class="tableBody__cell">
               <div class="flex items-center">
                 <div class="">
-                  <div class="text-sm text-gray-900">
+                  <div class="text-sm">
                     {{ item.gateway }}
                   </div>
                   <div
@@ -58,14 +58,49 @@
             <td class="tableBody__cell">
               <button
                 :disabled="isSaving || activeTask || server.ipv4.length === 1"
-                class="h-full mt-5 lg:mt-0 button button--success"
+                class="text-gray-500 hover:text-red"
                 @click.prevent="() => removeIpAddress(item.id)">
-                Delete
+                <TrashIcon class="w-5 h-5" />
               </button>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- mobile table view -->
+    <div class="flex flex-col w-full mt-4 mb-5 border-t border-b border-gray-200 divide-y divide-gray-200 lg:hidden">
+      <div v-for="item in server.ipv4" :key="item.id" class="grid w-full grid-cols-2 py-3 text-sm gap-y-4 gap-x-2">
+        <div class="flex flex-col space-y-0.5">
+          <span class="text-xs tracking-wider text-gray-500 uppercase">IP</span>
+          <span class="truncate">{{ item.ip_addr }}</span>
+        </div>
+        <div class="flex flex-col space-y-0.5">
+          <span class="text-xs tracking-wider text-gray-500 uppercase">Gateway</span>
+          <span class="truncate">{{ item.gateway }}</span>
+          <span
+            class="text-xs capitalize"
+            :class="item.status === 'aborted' || item.status === 'failed' || item.status === 'deferred' ? 'text-red' : 'text-green'"
+          >
+            {{ item.state }}
+          </span>
+        </div>
+        <div class="flex flex-col space-y-0.5">
+          <span class="text-xs tracking-wider text-gray-500 uppercase">Mask</span>
+          <span class="truncate">{{ item.mask }}</span>
+        </div>
+        <div class="flex flex-col space-y-0.5">
+          <span class="text-xs tracking-wider text-gray-500 uppercase">Domain</span>
+          <span class="truncate">{{ item.domain }}</span>
+        </div>
+        <button
+          :disabled="isSaving || activeTask || server.ipv4.length === 1"
+          class="w-1/2 button button--extraSmall button--error"
+          @click.prevent="() => removeIpAddress(item.id)">
+          <TrashIcon class="w-3.5 h-3.5 mr-1" />
+          <span>Delete</span>
+        </button>
+      </div>
     </div>
 
     <button @click="save" :disabled="isSaving || activeTask" class="h-full mt-5 lg:mt-0 button button--success">
@@ -92,11 +127,12 @@
 
 <script>
 import { addIpAddress, removeIpAddress } from '../../utils/api'
+import {TrashIcon} from "@heroicons/vue/outline";
 
 export default {
   name: 'ServerNetworking',
   components: {
-    
+    TrashIcon
   },
   props: ['activeTask', 'server'],
   data: function () {
