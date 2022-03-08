@@ -104,7 +104,6 @@
 <script>
 import BackupMenu from "@/components/server/BackupMenu"
 import { createBackup } from '../../utils/api'
-import { mapMutations } from 'vuex'
 
 export default {
   name: 'ServerBackups',
@@ -117,15 +116,12 @@ export default {
       backupName: `${this.server.hostname}-${new Date().getTime()}`,
       backups: this.server.backups,
       isSaving: false,
-      feedback: '',
-      polling: null,
-      showFeedback: false
+      polling: null
     }
   },
   methods: {
     async save() {
       this.isSaving = true
-      this.showStatus = true
       
       createBackup(this.server.serverId, { name: this.backupName, comment: '' })
 

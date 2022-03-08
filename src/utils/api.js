@@ -21,6 +21,20 @@ const fetcher = url => {
 }
 
 /**
+ * Calls the "server" API endpoint to perform add an IP address to the specified VM.
+ *
+ * @param {Number} id - the ID of the VM (as `serverId` in API schema)
+ */
+const addIpAddress = async id => {
+  const payload = {
+    action: 'addIp',
+    id
+  }
+
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
+}
+
+/**
  * Calls the "account" API endpoint to create a new user account.
  *
  * @returns {Object}
@@ -71,9 +85,6 @@ const createBackup = async (id, data) => {
   }
 
   return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
-    .then(response => {
-      console.log('response', response)
-    })
 }
 
 /**
@@ -106,6 +117,20 @@ const createHost = async (user, data) => {
 //       return response
 //     })
 // }
+
+/**
+ * Calls the "server" API endpoint to perform remove an IP address from the specified VM.
+ *
+ * @param {Number} id - the ID of the IP address to remove
+ */
+const removeIpAddress = async id => {
+  const payload = {
+    action: 'removeIp',
+    id
+  }
+
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
+}
 
 /**
  * Calls the "server" API endpoint to perform a VM resize operation.
@@ -190,6 +215,7 @@ const fetchData = (url, options = {}, payload) => {
 }
 
 export {
+  addIpAddress,
   createAccount,
   createBackup,
   createHost,
@@ -197,6 +223,7 @@ export {
   generateAccountNumber,
   getAccount,
   handleTwoFactor,
+  removeIpAddress,
   resizeHost,
   startStopHost
 }

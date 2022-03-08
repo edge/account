@@ -280,6 +280,14 @@ export default {
       if (data.type === 'host_stop') {
         task.status = 'Stopping VM'
       }
+      
+      if (data.type === 'ip_allocate') {
+        task.status = 'Adding IP address'
+      }
+      
+      if (data.type === 'ip_delete') {
+        task.status = 'Removing IP address'
+      }
 
       return task
     },
@@ -319,7 +327,7 @@ export default {
       } else {
         this.activeTask = null
       }
-    }, 3000)
+    }, 10000)
   },
   unmounted() {
     clearInterval(this.polling)
