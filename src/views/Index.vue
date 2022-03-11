@@ -13,6 +13,7 @@
         <p class="mt-1 text-gray-500">Write down your account number. It’s all you need to access the Edge Network. No email, no username.</p>
         <div class="flex justify-center mt-2 space-x-4">
           <router-link
+            v-if="user && !user.totp"
             to="/account"
             class="button button--outline-success text-green hover:text-white"
           >

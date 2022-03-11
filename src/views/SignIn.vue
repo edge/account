@@ -31,6 +31,26 @@
               <span class="errorMessage__text">{{errors.accountNumber}}</span>
             </div>
 
+            <div class="flex items-center" v-show="requires2fa"> 
+              <input
+                v-model="totpToken"
+                verify2fa
+                label="Two-factor code"
+                type="text"
+                autocomplete="off"
+                class="flex-1 w-full px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
+                placeholder="Enter your authentication code"
+              />
+              <span class="flex-1 order-1 text-red lg:order-2" v-if="errors.totpToken">{{errors.totpToken}}</span>
+              <button
+                class="order-2 rounded-l-none button button--success lg:order-1"
+                @click.prevent="verify2fa"
+                :disabled="errors.totpToken || !totpToken"
+              >
+                Verify
+              </button>
+            </div>
+
             <!-- buttons -->
             <div class="flex flex-col">
               <button
@@ -158,13 +178,16 @@ export default {
   data() {
     return {
       accountNumber: '',
+      activePanel: 'signIn',
+      copied: false,
       errors: {
         accountNumber: ''
       },
       isCreatingAccount: false,
       isSigningIn: false,
-      activePanel: 'signIn',
-      copied: false,
+      requires2fa: false,
+      totpSecret: null,
+      totpToken: null
     }
   },
   computed: {
@@ -173,7 +196,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['auth/login', 'auth/register']),
+    ...mapActions(['auth/login', 'auth/register', 'auth/verifyToken']),
     async copyToClipboard () {
       this.copied = true
       await navigator.clipboard.writeText(this.accountNumber)
@@ -199,14 +222,46 @@ export default {
     async signIn() {
       this.isSigningIn = true
 
-      await this['auth/login'](this.accountNumber)
+      const loginResponse = await this['auth/login'](this.accountNumber)
+
+      setTimeout(() => {
+        if (this.user) {
+          this.$router.push('/')
+        } else {
+          if (loginResponse.requires2fa) {
+            this.requires2fa = true
+            this.totpSecret = loginResponse.totpSecret
+          } else {
+            this.isSigningIn = false
+            this.errors.accountNumber = 'No account found'
+          }
+        }
+      }, 2000)
+    },
+    async verify2fa() {
+      // Check form is valid.
+      if (!this.totpToken) {
+        this.errors.totpToken = 'Please enter the code from your device'
+      } else {
+        this.errors.totpToken = ''
+      }
+
+      const body = {
+        accountNumber: this.accountNumber,
+        totpSecret: this.totpSecret,
+        totpToken: this.totpToken
+      }
+
+      // The action sets the userAccount in state, so we can check for
+      // this.user and redirect to the account.
+      await this['auth/verifyToken'](body)
 
       setTimeout(() => {
         if (this.user) {
           this.$router.push('/')
         } else {
           this.isSigningIn = false
-          this.errors.accountNumber = 'No account found'
+          this.errors.totpToken = 'Invalid 2FA token'
         }
       }, 2000)
     },

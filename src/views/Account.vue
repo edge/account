@@ -65,7 +65,7 @@ export default {
     return {
       twofactorUrl: '',
       twofactorQR: '',
-      accountNumber: '7552 0781 3520 4494',
+      accountNumber: '',
       copied: false
     }
   },

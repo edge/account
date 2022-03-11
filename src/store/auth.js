@@ -38,8 +38,12 @@ const actions = {
   async login({ commit }, id) {
     const userAccount = await getAccount(encodeURIComponent(id))
 
-    if (userAccount._id) {
-      await commit('setUser', userAccount)
+    if (userAccount.totp) {
+      return { requires2fa: true, totpSecret: userAccount.totpSecret }
+    } else {
+      if (userAccount._id) {
+        await commit('setUser', userAccount)
+      }
     }
   },
   async logout({ commit }) {
