@@ -12,12 +12,7 @@
             Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
         </div>
         <div class="relative inline-block lg:w-1/2 accountNumber">
-          <input
-            readonly
-            class="absolute opacity-0 focus:outline-none"
-            :value="accountNumber"
-          />
-          <span class="text-3xl">{{accountNumber}}</span>
+          <span class="text-3xl">{{user.accountNumber}}</span>
           <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
             <DuplicateIcon class="w-6 h-6" />  
           </button>
@@ -65,14 +60,13 @@ export default {
     return {
       twofactorUrl: '',
       twofactorQR: '',
-      accountNumber: '',
       copied: false
     }
   },
   methods: {
     async copyToClipboard () {
       this.copied = true
-      await navigator.clipboard.writeText(this.accountNumber)
+      await navigator.clipboard.writeText(this.user.accountNumber)
       
       setTimeout(() => {
         this.copied = false
@@ -84,7 +78,6 @@ export default {
     const { data: user, error, mutate } = useSWRV(() => '/accounts?id=' + (this.user ? this.user.accountNumber : 'XXX'), fetcher)
 
     setTimeout(() => {
-      // console.log('user', user)
       this.twofactorQR = user.value.twofactorQR
       this.twofactorUrl = user.value.twofactorUrl
     }, 1000)
