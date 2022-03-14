@@ -47,7 +47,6 @@
                 <input
                   id="twoFactorCode"
                   v-model="totpToken"
-                  verify2fa
                   label="Two-factor code"
                   type="text"
                   autocomplete="off"
