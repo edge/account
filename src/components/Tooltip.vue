@@ -42,7 +42,7 @@ export default {
     @apply opacity-100 visible;
   }
   .tooltip-box:hover .tooltip.top {
-    @apply -translate-y-8;
+    @apply -translate-y-2;
   }
 
   .tooltip-box:hover .tooltip.bottom {
@@ -50,7 +50,7 @@ export default {
   }
 
   .tooltip-box:hover .tooltip.right {
-    @apply translate-x-5;
+    @apply translate-x-2;
   }
 
   .tooltip-box:hover .tooltip.left {
@@ -60,7 +60,7 @@ export default {
   /* tooltip position */
   .tooltip {
     width: 200px;
-    @apply invisible p-10 text-xs absolute transform transition duration-200 text-white text-center shadow rounded opacity-0 z-10 bg-green;
+    @apply invisible p-4 text-xs absolute transform transition duration-200 text-white text-left shadow rounded opacity-0 z-10 bg-green;
   }
 
   .tooltip.wide {
@@ -101,7 +101,7 @@ export default {
   }
 
   .tooltip.right .text::after {
-    @apply top-1/2 left-0 transform -translate-y-1/2 -translate-x-10;
+    @apply top-1/2 left-0 transform -translate-y-1/2 -translate-x-2;
     border-color: transparent #0ecc5f transparent transparent;
   }
 

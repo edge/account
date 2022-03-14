@@ -91,7 +91,7 @@ export default {
 </script>
 <style scoped>
   .mainContent {
-    @apply relative flex-1;
+    @apply relative flex-1 pb-10;
   }
   .mainContent__inner {
     @apply p-3 md:p-5 lg:p-8 mt-7;

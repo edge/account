@@ -31,32 +31,58 @@
               <span class="errorMessage__text">{{errors.accountNumber}}</span>
             </div>
 
-            <div class="flex items-center" v-show="requires2fa"> 
-              <input
-                v-model="totpToken"
-                verify2fa
-                label="Two-factor code"
-                type="text"
-                autocomplete="off"
-                class="flex-1 w-full px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
-                placeholder="Enter your authentication code"
-              />
-              <span class="flex-1 order-1 text-red lg:order-2" v-if="errors.totpToken">{{errors.totpToken}}</span>
+            <div v-show="requires2fa">
+              <div class="relative input-group"> 
+                <div class="flex items-center space-x-1">
+                  <label for="twoFactorCode" class="label">Verification Code</label>
+                  <Tooltip
+                    class="icon-grey"
+                    position="right"
+                    :wide="true"
+                    theme="light"
+                    text="Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Sed posuere consectetur est at lobortis.">
+                    <InformationCircleIcon class="w-4 h-4 text-gray-400" />
+                  </Tooltip>
+                </div>
+                <input
+                  id="twoFactorCode"
+                  v-model="totpToken"
+                  verify2fa
+                  label="Two-factor code"
+                  type="text"
+                  autocomplete="off"
+                  class="flex-1 input input--floating"
+                  placeholder="Enter your authentication code"
+                />
+                <span class="absolute top-0 right-0 flex-1 text-xs text-red" v-if="errors.totpToken">{{errors.totpToken}}</span>
+              </div>
               <button
-                class="order-2 rounded-l-none button button--success lg:order-1"
+                class="w-full mt-6 button button--success"
                 @click.prevent="verify2fa"
-                :disabled="errors.totpToken || !totpToken"
+                :disabled="isVerifying"
               >
-                Verify
+                {{ isVerifying ? 'Verifying' : 'Verify' }}
+                <svg v-show="isVerifying" class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <line x1="12" y1="6" x2="12" y2="3" />
+                  <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
+                  <line x1="18" y1="12" x2="21" y2="12" />
+                  <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
+                  <line x1="12" y1="18" x2="12" y2="21" />
+                  <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
+                  <line x1="6" y1="12" x2="3" y2="12" />
+                  <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
+                </svg>
               </button>
             </div>
 
             <!-- buttons -->
-            <div class="flex flex-col">
+            <div class="flex flex-col" :class="requires2fa ? 'transform -translate-y-4' : ''">
               <button
                 @click.prevent="signIn()"
-                class="button button--success"
+                class="mb-2 button button--success"
                 :disabled="isSigningIn || errors.accountNumber"
+                v-show="!requires2fa"
               >
                 <span v-if="isSigningIn">Signing in</span>
                 <span v-else>Sign in</span>
@@ -74,7 +100,7 @@
                   </svg>
                 </span>
               </button>
-              <a href="#" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">I lost my account number</a>
+              <a href="#" class="w-full text-sm text-center text-gray-500 underline hover:text-green">I lost my account number</a>
               <div class="flex items-center w-full my-6 space-x-2">
                 <div class="flex-1 h-px bg-gray-400" />
                 <span class="inline-block tracking-wider text-black">OR</span>
@@ -157,8 +183,10 @@
 
 <script>
 import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
+import { InformationCircleIcon } from '@heroicons/vue/solid'
 import Logo from '@/components/Logo'
 import SideNavigation from '@/components/SideNavigation'
+import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
 import { mapActions, mapGetters } from 'vuex'
 import { generateAccountNumber } from '../utils/api'
@@ -171,8 +199,10 @@ export default {
   components: {
     DuplicateIcon,
     ExclamationIcon,
+    InformationCircleIcon,
     Logo,
     SideNavigation,
+    Tooltip,
     UserMenu,
   },
   data() {
@@ -185,6 +215,7 @@ export default {
       },
       isCreatingAccount: false,
       isSigningIn: false,
+      isVerifying: false,
       requires2fa: false,
       totpSecret: null,
       totpToken: null
@@ -239,9 +270,11 @@ export default {
       }, 2000)
     },
     async verify2fa() {
+      this.isVerifying  = true
       // Check form is valid.
       if (!this.totpToken) {
         this.errors.totpToken = 'Please enter the code from your device'
+        this.isVerifying  = false
       } else {
         this.errors.totpToken = ''
       }
@@ -257,6 +290,7 @@ export default {
       await this['auth/verifyToken'](body)
 
       setTimeout(() => {
+        this.isVerifying  = false
         if (this.user) {
           this.$router.push('/')
         } else {
