@@ -89,7 +89,7 @@
           <div class="flex items-center space-x-2.5">
             <span class="text-lg">{{this.current.cpu}} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{this.current.ram}}GB RAM</span>
+            <span class="text-lg">{{formatValue(this.current.ram)}} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
             <span class="text-lg">{{this.current.ssd}}GB SSD</span>
           </div>
@@ -104,7 +104,7 @@
           <div class="flex items-center space-x-2.5">
             <span class="text-lg">{{cpuValue}} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ramValue}}GB RAM</span>
+            <span class="text-lg">{{formatValue(ramValue)}} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
             <span class="text-lg">{{storageValue}}GB SSD</span>
           </div>
