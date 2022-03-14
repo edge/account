@@ -25,6 +25,9 @@
         </div>
         <h4 class="w-full pb-2 mt-10 mb-8 font-medium border-b border-gray-400">Setup 2FA</h4>
         <GoogleAuthEnable :user=user :twofactorQR=twofactorQR :twofactorUrl=twofactorUrl />
+        
+        <h4 class="w-full pb-2 mt-10 mb-8 font-medium border-b border-gray-400">Add recovery email</h4>
+        <RecoveryEmail :user=user />
       </div>
     </main>
   </div>
@@ -33,6 +36,7 @@
 <script>
 import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import { DuplicateIcon } from '@heroicons/vue/outline'
+import RecoveryEmail from "@/components/account/RecoveryEmail"
 import SideNavigation from "@/components/SideNavigation"
 import TopNavigation from "@/components/TopNavigation"
 
@@ -48,6 +52,7 @@ export default {
   components: {
     DuplicateIcon,
     GoogleAuthEnable,
+    RecoveryEmail,
     SideNavigation,
     TopNavigation
   },

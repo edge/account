@@ -192,10 +192,17 @@ const startStopHost = async (id, action) => {
 const handleTwoFactor = async data => {
   const url = `${ACCOUNT_ENDPOINT}`
 
+  return fetchData(url, { method: 'post' }, data)
+}
+
+const updateAccount = async data => {
+  const url = `${ACCOUNT_ENDPOINT}`
+  
   const payload = {
+    action: 'update',
     ...data
   }
-
+  
   return fetchData(url, { method: 'post' }, payload)
 }
 
@@ -243,5 +250,6 @@ export {
   handleTwoFactor,
   removeIpAddress,
   resizeHost,
-  startStopHost
+  startStopHost,
+  updateAccount
 }

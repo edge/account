@@ -1,7 +1,8 @@
 import {
   createAccount,
   getAccount, 
-  handleTwoFactor
+  handleTwoFactor,
+  updateAccount
 } from '../utils/api'
 
 const state = {
@@ -48,6 +49,11 @@ const actions = {
   },
   async logout({ commit }) {
     commit('LogOut', null)
+  },
+  async update({ commit }, payload) {
+    const response = await updateAccount(payload)
+
+    await commit('setUser', response)
   },
   async verifyToken({ commit }, payload) {
     payload.action = 'verify'
