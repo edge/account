@@ -1,6 +1,9 @@
 <template>
   <RadioGroup v-model="selected">
     <RadioGroupLabel class="sr-only">OperatingSystem</RadioGroupLabel>
+
+    <div v-if="operatingSystems === undefined">loading...</div>
+
     <div class="box__grid">
       <RadioGroupOption
         as="template"
@@ -68,7 +71,9 @@ export default {
   },
   data() {
     return {
-      os: null
+      os: null,
+      operatingSystems: [],
+      selected: null
     }
   },
   methods: {
@@ -76,18 +81,20 @@ export default {
       this.$emit('os-changed', data)
     }
   },
-  setup() {
+  mounted() {
     const { data: operatingSystems, error } = useSWRV(() => '/os', fetcher)
 
-    const selected = ref({})
+    this.selected = ref(null)
+    this.operatingSystems = operatingSystems
 
-    if (operatingSystems && operatingSystems.value) {
-      selected.value = operatingSystems.value[0]
-    }
-
-    return {
-      selected,
-      operatingSystems
+    setTimeout(() => {
+      this.selected = operatingSystems && operatingSystems.value && operatingSystems.value[0]
+    }, 1000)
+  },
+  watch: {
+    selected(value) {
+      const { versions } = value
+      this.$emit('os-changed', versions[0].id)
     }
   }
 }
