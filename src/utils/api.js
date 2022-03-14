@@ -112,6 +112,20 @@ const createHost = async (user, data) => {
 }
 
 /**
+ * Calls the "server" API endpoint to delete a VM backup.
+ *
+ * @param {Number} backupId - the ID of the VM backup to delete
+ */
+const deleteBackup = async backup => {
+  const payload = {
+    action: 'deleteBackup',
+    backupId: backup.id
+  }
+
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
+}
+
+/**
  * Calls the "server" API endpoint to perform a VM delete operation.
  *
  * @param {Object} data - contains the id of the VM to delete.
@@ -172,6 +186,22 @@ const resizeHost = async (id, data) => {
     .then(response => {
       return Promise.resolve(response)
     })
+}
+
+/**
+ * Calls the "server" API endpoint to restore a VM from backup.
+ *
+ * @param {Number} id - the ID of the VM (as `serverId` in API schema)
+ * @param {Number} backup - the VM backup object
+ */
+const restoreBackup = async (id, backup) => {
+  const payload = {
+    action: 'restoreBackup',
+    id,
+    backupId: backup.id
+  }
+
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
 }
 
 /**
@@ -243,6 +273,7 @@ export {
   createAccount,
   createBackup,
   createHost,
+  deleteBackup,
   destroyHost,
   fetcher,
   generateAccountNumber,
@@ -250,6 +281,7 @@ export {
   handleTwoFactor,
   removeIpAddress,
   resizeHost,
+  restoreBackup,
   startStopHost,
   updateAccount
 }

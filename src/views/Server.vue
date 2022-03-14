@@ -277,6 +277,10 @@ export default {
         task.status = 'Restarting VM'
       }
       
+      if (data.type === 'host_restore') {
+        task.status = 'Restoring VM'
+      }
+      
       if (data.type === 'host_start') {
         task.status = 'Starting VM'
       }

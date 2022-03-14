@@ -1,5 +1,5 @@
 <template>
-  <Menu as='div' class="menu">
+  <Menu v-if="!activeTask" as='div' class="menu">
     <MenuButton class="menu__button">
       <span class="w-full truncate">More</span>
       <ChevronDownIcon class="w-6 h-6" />
@@ -8,6 +8,7 @@
       <div class="p-1">
         <MenuItem v-slot="{ active }">
           <button
+            @click.prevent="restoreBackup"
             :class="[
               'menu__item',
               active ? 'active' : ''
@@ -16,7 +17,7 @@
             Restore
           </button>
         </MenuItem>
-        <MenuItem v-slot="{ active }">
+        <!-- <MenuItem v-slot="{ active }">
           <button
             :class="[
               'menu__item',
@@ -25,9 +26,10 @@
           >
             Edit
           </button>
-        </MenuItem>
+        </MenuItem> -->
         <MenuItem v-slot="{ active }">
           <button
+          @click.prevent="deleteBackup"
             :class="[
               'menu__item menu__item--delete',
               active ? 'active' : ''
@@ -44,6 +46,7 @@
 <script>
   import {ChevronDownIcon} from "@heroicons/vue/solid"
   import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue"
+  
   export default {
     name: "UserMenu",
     components: {
@@ -52,6 +55,15 @@
       MenuButton,
       MenuItems,
       MenuItem,
+    },
+    props: ['activeTask', 'backup'],
+    methods: {
+      async deleteBackup() {
+        this.$emit('delete-backup', this.backup)
+      },
+      async restoreBackup() {
+        this.$emit('restore-backup', this.backup)
+      }
     }
   }
 </script>

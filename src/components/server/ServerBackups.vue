@@ -92,7 +92,7 @@
               </td>
               <td class="pr-0 tableBody__cell">
                 <div class="flex items-center justify-end">
-                  <BackupMenu />
+                  <BackupMenu :activeTask=activeTask :backup=item @delete-backup="deleteBackup" @restore-backup="restoreBackup" />
                 </div>
               </td>
             </tr>
@@ -126,7 +126,27 @@
             <div class="block w-1 h-1 bg-gray-300 rounded-full" />
             <span>{{ item.size }}</span>
           </div>
-          <button class="button button--extraSmall button--success">Restore</button>
+          <button
+            class="button button--extraSmall button--success"
+            @click.prevent="() => restore(item)"
+          >
+          <span v-if="isSaving">Restoring</span>
+            <span v-else-if="activeTask">{{activeTask.status}}</span>
+            <span v-else>Restore</span>
+            <span v-if="isSaving || activeTask">
+              <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <line x1="12" y1="6" x2="12" y2="3" />
+                <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
+                <line x1="18" y1="12" x2="21" y2="12" />
+                <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
+                <line x1="12" y1="18" x2="12" y2="21" />
+                <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
+                <line x1="6" y1="12" x2="3" y2="12" />
+                <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
+              </svg>
+            </span>
+          </button>
         </div>
       </div>
 
@@ -136,7 +156,7 @@
 
 <script>
 import BackupMenu from "@/components/server/BackupMenu"
-import { createBackup } from '../../utils/api'
+import { createBackup, deleteBackup, restoreBackup } from '../../utils/api'
 import {CalendarIcon, ClockIcon} from "@heroicons/vue/outline";
 
 export default {
@@ -156,6 +176,28 @@ export default {
     }
   },
   methods: {
+    async deleteBackup(backup) {
+      this.isSaving = true
+      
+      await deleteBackup(backup)
+      
+      this.polling = setInterval(() => {
+        if (!this.activeTask) {
+          this.isSaving = false
+        }
+      }, 5000)
+    },
+    async restoreBackup(backup) {
+      this.isSaving = true
+      
+      await restoreBackup(this.server.serverId, backup)
+      
+      this.polling = setInterval(() => {
+        if (!this.activeTask) {
+          this.isSaving = false
+        }
+      }, 5000)
+    },
     async save() {
       this.isSaving = true
       
