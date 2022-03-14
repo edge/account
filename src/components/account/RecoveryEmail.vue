@@ -2,13 +2,13 @@
   <div>
     <p class="text-gray-500">Add an email address to your account so that it may be recovered in the event that you lose your account number.</p>
 
-    <div class="flex items-center w-full py-5">
+    <div class="flex items-center w-full lg:w-1/2">
       <input
         v-model="email"
         label="Email address"
         type="email"
         autocomplete="off"
-        class="flex-1 w-full px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
+        class="flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
         placeholder="Enter your email address"
       />
       <button
