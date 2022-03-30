@@ -1,8 +1,6 @@
 <template>
   <div>
     <p class="text-gray-500">Add an email address to your account so that it may be recovered in the event that you lose your account number.</p>
-    
-    <p v-if="showFeedback" class="text-green-800 bg-green-100">Email updated successfully.</p>
 
     <div class="flex items-center w-full lg:w-1/2">
       <input
@@ -35,14 +33,22 @@
         </span>
       </button>
     </div>
-    <span class="flex-1 order-1 text-red lg:order-2" v-if="errors.email">{{errors.email}}</span>
+    <span class="flex-1 order-1 block mt-2 text-red lg:order-2" v-if="errors.email">{{errors.email}}</span>
+    <div v-if="showFeedback" class="flex items-center mt-2 space-x-1 text-green">
+      <CheckCircleIcon class="w-4 h-4" />
+      <span>Email updated successfully.</span>
+    </div>
   </div>
 </template>
 
 <script>
   import { mapActions } from 'vuex'
+  import { CheckCircleIcon } from '@heroicons/vue/outline'
 
   export default {
+    components: {
+      CheckCircleIcon
+    },
     props: ['user'],
     data() {
       return {
