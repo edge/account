@@ -7,7 +7,7 @@
       <div class="mainContent__inner">
         <h1>Account</h1>
         <div>
-          <h4 class="w-full pb-2 mt-10 mb-8 font-medium border-b border-gray-400">Your account number</h4>
+          <h4 class="w-full pb-2 mt-10 mb-6 font-medium border-b border-gray-400">Your account number</h4>
           <p class="text-gray-500">
             Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
         </div>
@@ -23,10 +23,10 @@
             Copied!
           </div>
         </div>
-        <h4 class="w-full pb-2 mt-10 mb-8 font-medium border-b border-gray-400">Setup 2FA</h4>
+        <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Setup 2FA</h4>
         <GoogleAuthEnable :user=user :twofactorQR=twofactorQR :twofactorUrl=twofactorUrl />
         
-        <h4 class="w-full pb-2 mt-10 mb-8 font-medium border-b border-gray-400">Add recovery email</h4>
+        <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Add recovery email</h4>
         <RecoveryEmail :user=user />
       </div>
     </main>
