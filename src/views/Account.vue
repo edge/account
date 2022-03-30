@@ -82,10 +82,16 @@ export default {
     this.loading = true
     const { data: user, error, mutate } = useSWRV(() => '/accounts?id=' + (this.user ? this.user.accountNumber : 'XXX'), fetcher)
 
-    setTimeout(() => {
+    this.polling = setInterval(() => {
+      mutate()
+
       this.twofactorQR = user.value.twofactorQR
       this.twofactorUrl = user.value.twofactorUrl
-    }, 1000)
+    }, 2000)
+  },
+  unmounted() {
+    clearInterval(this.polling)
+    this.polling = null
   }
 }
 </script>

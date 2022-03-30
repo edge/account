@@ -25,7 +25,7 @@
         showNav: false,
         mainNav: [
           {
-            link: "/",
+            link: "/servers",
             text: "Servers"
           }
           ,

@@ -256,7 +256,7 @@ export default {
 
       setTimeout(() => {
         if (this.user) {
-          this.$router.push('/')
+          this.$router.push('/servers')
         } else {
           if (loginResponse.requires2fa) {
             this.requires2fa = true

@@ -8,7 +8,7 @@
         <div class="mobileNavigation__menu">
           <Menu :mainNav="mainNav"/>
           <router-link
-            to="/deploy"
+            to="/servers/deploy"
           >
             <button class="w-full mt-5 button button--success">Deploy Server</button>
           </router-link>
@@ -32,7 +32,7 @@
         showNav: false,
         mainNav: [
           {
-            link: "/",
+            link: "/servers",
             text: "Servers"
           }
           ,

@@ -13,7 +13,7 @@
 
     <!-- user nav and deploy button - hidden on small screens -->
     <div class="topNavigation__right">
-      <router-link to="/deploy">
+      <router-link to="/servers/deploy">
         <button class="h-full button button--success">Deploy Server</button>
       </router-link>
       <UserMenu :user=user />
