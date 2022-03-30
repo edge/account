@@ -57,7 +57,8 @@
         </div>
       </div>
 
-      <div class="flex justify-center mt-2 space-x-4">
+      <div class="px-3 md:px-5 lg:px-8">
+        <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
         <button class="button button--success" @click="$router.push('/servers/deploy')">
           <ServerIcon class="w-5 h-5 mr-2"/>
           <span>Deploy your first server</span>
