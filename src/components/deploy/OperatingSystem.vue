@@ -93,8 +93,10 @@ export default {
   },
   watch: {
     selected(value) {
-      const { versions } = value
-      this.$emit('os-changed', versions[0].id)
+      if (value) {
+        const { versions } = value
+        this.$emit('os-changed', versions[0].id)
+      }
     }
   }
 }
