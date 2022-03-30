@@ -33,6 +33,7 @@
     "chart.js": "^3.7.0",
     "click-outside-vue3": "^4.0.1",
     "core-js": "^3.6.5",
+    "dayjs": "^1.11.0",
     "detect-browser": "^5.2.0",
     "dotenv": "^8.2.0",
     "elliptic": "^6.5.4",
