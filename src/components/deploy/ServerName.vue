@@ -15,6 +15,9 @@
 
 <script>
 
+import { fetcher } from '../../utils/api'
+import useSWRV from 'swrv'
+
 export default {
   name: 'ServerName',
   data () {
@@ -22,9 +25,19 @@ export default {
       hostname: ''
     }
   },
+  mounted() {
+    // Get a new, random hostname.
+    const { data } = useSWRV(() => '/servers?action=getHostname', fetcher)
+    
+    setTimeout(() => {
+      this.hostname = data && data.value && data.value.hostname
+    }, 1000)
+  },
   watch: {
     hostname(value) {
-      this.$emit('name-changed', value)
+      if (value) {
+        this.$emit('name-changed', value)
+      }
     }
   }
 }
