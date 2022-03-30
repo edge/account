@@ -3,11 +3,11 @@
     <div v-if="!user.totp">
       <div class="grid pb-10 lg:grid-cols-2">
         <div class="flex order-1 lg:justify-center lg:order-2">
-          <a :href="twofactorUrl" class="w-1/3 lg:w-auto">
-            <img class="w-full lg:w-60" :src="twofactorQR">
+          <a :href="twofactorUrl || user.twofactorUrl" class="w-1/3 lg:w-auto">
+            <img class="w-full lg:w-60" :src="twofactorQR || user.twofactorQR">
           </a>
         </div>
-        
+
         <div class="order-2 mt-5 text-gray-500 lg:mt-0 lg:order-1">
           <ol>
             <li>Install the Google Authenticator app for <a class="underline text-green" target="_blank" href="https://itunes.apple.com/au/app/google-authenticator/id388497605?mt=8">iPhone</a> or <a class="underline text-green" target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>.</li>
@@ -31,7 +31,7 @@
             <button
               class="order-2 rounded-l-none button button--success lg:order-1"
               @click="enable2fa"
-              :disabled="errors.totpToken || !totpToken"
+              :disabled="!totpToken"
             >Enable two-factor</button>
           </div>
         </div>
@@ -84,7 +84,13 @@
           totpSecret: this.user.totpSecretTemp
         }
 
-        await this['auth/enable2fa'](body)
+        const response = await this['auth/enable2fa'](body)
+
+        if (!response) {
+          this.errors.totpToken = 'Invalid code'
+        }
+
+        this.totpToken = ''
       }
     }
   }
