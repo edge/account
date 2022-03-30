@@ -2,10 +2,10 @@
   <div class="flex flex-col items-start space-y-5">
 
     <div v-if="this.server.state !== 'creating'" class="buttonGroup">
-      <button class="buttonGroup__button active">Today</button>
-      <button class="buttonGroup__button">This week</button>
-      <button class="buttonGroup__button">This month</button>
-      <button class="border-none buttonGroup__button">This year</button>
+      <button @click.prevent="getMetrics('day')" class="buttonGroup__button" :class="currentPeriod == 'day' ? 'active' : ''">Today</button>
+      <button @click.prevent="getMetrics('week')" class="buttonGroup__button" :class="currentPeriod == 'week' ? 'active' : ''">This week</button>
+      <button @click.prevent="getMetrics('month')" class="buttonGroup__button" :class="currentPeriod == 'month' ? 'active' : ''">This month</button>
+      <button @click.prevent="getMetrics('year')" class="border-none buttonGroup__button" :class="currentPeriod == 'year' ? 'active' : ''">This year</button>
     </div>
 
     <!-- if metrics don't exist -->
@@ -32,10 +32,12 @@
     <div v-else class="grid w-full grid-cols-1 gap-5">
 
       <div class="box">
-        <h4 :class="this.metrics.cpu_load && this.metrics.cpu_load[0] ? 'mb-8' : ''">CPU load</h4>
+        <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load && this.graphMetrics.cpu_load[0] ? 'mb-8' : ''">CPU load</h4>
         <Line
-          v-if="this.metrics.cpu_load[0]"
-          :data='removeEmptyPoints(this.metrics.cpu_load[0].datapoints)'
+          v-if="this.graphMetrics && this.graphMetrics.cpu_load[0]"
+          :key="componentKey"
+          :period="currentPeriod"
+          :data='removeEmptyPoints(this.graphMetrics.cpu_load[0].datapoints)'
           :minScale='0'
           :maxScale='100'
           :postpendValue="'%'"
@@ -44,10 +46,12 @@
       </div>
 
       <div class="box">
-        <h4 :class="this.metrics.cpu_load && this.metrics.cpu_load[0] ? 'mb-8' : ''">Memory usage</h4>
+        <h4 :class="this.graphMetrics && this.graphMetrics.mem_usage && this.graphMetrics.mem_usage[0] ? 'mb-8' : ''">Memory usage</h4>
         <Line
-          v-if="this.metrics.mem_usage[0]"
-          :data='formatDatapoints(removeEmptyPoints(this.metrics.mem_usage[0].datapoints))'
+          v-if="this.graphMetrics && this.graphMetrics.mem_usage[0]"
+          :key="componentKey"
+          :period="currentPeriod"
+          :data='formatDatapoints(removeEmptyPoints(this.graphMetrics.mem_usage[0].datapoints))'
           :maxScale="this.server.ram_mib"
           postpendValue="MB"
         />
@@ -55,10 +59,12 @@
       </div>
 
       <div class="box">
-        <h4 :class="this.metrics['df.root.used'] ? 'mb-8' : ''">Disk usage</h4>
+        <h4 :class="this.graphMetrics && this.graphMetrics['df.root.used'] ? 'mb-8' : ''">Disk usage</h4>
         <Line
-          v-if="this.metrics['df.root.used'][0]"
-          :data='formatDatapoints(removeEmptyPoints(this.metrics["df.root.used"][0].datapoints), "GB")'
+          v-if="this.graphMetrics && this.graphMetrics['df.root.used'][0]"
+          :key="componentKey"
+          :period="currentPeriod"
+          :data='formatDatapoints(removeEmptyPoints(this.graphMetrics["df.root.used"][0].datapoints), "GB")'
           :maxScale="this.server.disk_mib/1024"
           postpendValue="GB"
         />
@@ -68,18 +74,22 @@
       <div class="box">
         <h4 class="mb-8">Disk I/O</h4>
         <Line
-          v-if="this.metrics['iops'][0]"
-          :data='removeEmptyPoints(this.metrics["iops"][0].datapoints)'
+          v-if="this.graphMetrics && this.graphMetrics['iops'][0]"
+          :key="componentKey"
+          :period="currentPeriod"
+          :data='removeEmptyPoints(this.graphMetrics["iops"][0].datapoints)'
         />
       </div>
 
       <div class="box">
         <h4 class="mb-8">Net RX/TX</h4>
         <MultiLine
-          v-if="this.metrics['net_rx'][0]"
+          v-if="this.graphMetrics && this.graphMetrics['net_rx'][0]"
+          :key="componentKey"
+          :period="currentPeriod"
           :data='[
-            removeEmptyPoints(this.metrics["net_rx"][0].datapoints),
-            removeEmptyPoints(this.metrics["net_tx"][0].datapoints)
+            removeEmptyPoints(this.graphMetrics["net_rx"][0].datapoints),
+            removeEmptyPoints(this.graphMetrics["net_tx"][0].datapoints)
           ]'
           :labels="['RX', 'TX']"
         />
@@ -92,6 +102,7 @@
 <script>
 import Line from "@/components/charts/Line"
 import MultiLine from "@/components/charts/MultiLine"
+import { getMetrics } from '../../utils/api'
 
 export default {
   name: 'ServerOverview',
@@ -99,9 +110,23 @@ export default {
     metrics: Object,
     server: Object
   },
+  data() {
+    return {
+      componentKey: 0,
+      currentPeriod: 'day',
+      graphMetrics: null
+    }
+  },
   components: {
     Line,
     MultiLine
+  },
+  mounted() {
+    if (this.metrics && !this.graphMetrics) {
+      this.graphMetrics = {
+        ...this.metrics
+      }
+    }
   },
   methods: {
     formatDatapoints(data, sizeType = 'MB') {
@@ -115,8 +140,20 @@ export default {
 
       return data
     },
+    async getMetrics(period) {
+      this.currentPeriod = period
+      const metrics = await getMetrics(this.server.serverId, period)
+
+      this.graphMetrics = {
+        ...metrics
+      }
+
+      this.componentKey += 1
+    },
     removeEmptyPoints(data) {
       return data.filter(dp => dp[0])
+      // return data.map(dp => dp[0] || 0)
+      // return data
     }
   },
   watch: {

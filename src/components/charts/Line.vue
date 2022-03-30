@@ -1,31 +1,45 @@
 <template>
-  <LineChart :chartData="chartData" :options="options" />
+  <LineChart v-if="chartData" :chartData="chartData" :options="options" />
 </template>
 
-<script> // Note without lang="ts"
-import { defineComponent } from 'vue'
-import { LineChart, useLineChart } from "vue-chart-3";
-import { Chart, registerables } from "chart.js";
+<script>
+import { LineChart } from "vue-chart-3"
+import { Chart, registerables } from "chart.js"
 
 Chart.register(...registerables)
 
-export default defineComponent({
+export default {
   name: 'Line',
   components: { LineChart },
   props: {
     data: Object,
     minScale: Number,
     maxScale: Number,
+    period: String,
     postpendValue: String
   },
-  setup(props) {
-    const data = JSON.parse(JSON.stringify(props.data))
-    let postpendValue = ''
-    if (props.postpendValue) { 
-      postpendValue = props.postpendValue
+  data() {
+    return {
+      chartData: null,
+      options: null
     }
-    const chartData = {
-      labels: data.map(point => new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})),
+  },
+  mounted() {
+    const data = JSON.parse(JSON.stringify(this.data))
+    let postpendValue = ''
+    
+    if (this.postpendValue) { 
+      postpendValue = this.postpendValue
+    }
+
+    this.chartData = {
+      labels: data.map(point => {
+        if (this.period === 'day') {
+          return new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})
+        } else {
+          return new Date(point[1] * 1000).toLocaleDateString('en-us', {})
+        }
+      }),
       datasets: [{
         data: data.map(point => point[0]),
         fill: false,
@@ -37,11 +51,12 @@ export default defineComponent({
         pointRadius: 0
       }]
     }
-    const options = {
+
+    this.options = {
       responsive: true,
       plugins: {
         legend: {
-          display: false,
+          display: false
         },
         tooltip: {
           intersect: false,
@@ -52,18 +67,16 @@ export default defineComponent({
       },
       scales: {
         y: {
-          suggestedMin: props.minScale,
-          suggestedMax: props.maxScale,
+          suggestedMin: this.minScale,
+          suggestedMax: this.maxScale,
           ticks: {
-            // Include a dollar sign in the ticks
             callback: function(value, index, ticks) {
                 return value + postpendValue
             }
           }
         }
-      },
+      }
     }
-    return { chartData, options }
-  },
-})
+  }
+}
 </script>

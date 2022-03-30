@@ -2,42 +2,50 @@
   <LineChart :chartData="chartData" :options="options" />
 </template>
 
-<script> // Note without lang="ts"
-import { defineComponent } from 'vue'
-import { LineChart, useLineChart } from "vue-chart-3";
+<script>
+import { LineChart } from "vue-chart-3";
 import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables)
 
-export default defineComponent({
+export default {
   name: 'MultiLine',
   components: { LineChart },
   props: {
     data: Object,
     minScale: Number,
     maxScale: Number,
+    period: String,
     postpendValue: String,
     labels: Array
   },
-  setup(props) {
-    const data = JSON.parse(JSON.stringify(props.data))
-    const labels = props.labels
+  data() {
+    return {
+      chartData: null,
+      options: null
+    }
+  },
+  mounted() {
+    const data = JSON.parse(JSON.stringify(this.data))
+    const labels = this.labels
     let postpendValue = ''
-    if (props.postpendValue) { 
-      postpendValue = props.postpendValue
+    if (this.postpendValue) { 
+      postpendValue = this.postpendValue
     }
     const borderColors = [
       'rgb(78,205,95)',
       'rgb(78,100,99)',
       'rgb(78,205,95)'
     ] 
-    // data.map((item, index) => (
-    //   console.log(
-    //     data[0].map(point => new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'}))
-    //   )
-    // ))
-    const chartData = {
-      labels: data[0].map(point => new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})),
+
+    this.chartData = {
+      labels: data[0].map(point => {
+        if (this.period === 'day') {
+          return new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})
+        } else {
+          return new Date(point[1] * 1000).toLocaleDateString('en-us', {})
+        }
+      }),
       datasets: data.map((item, index) => ({
         label: labels[index],
         data: item.map(point => point[0]),
@@ -51,7 +59,8 @@ export default defineComponent({
         pointRadius: 0
       }))
     }
-    const options = {
+    
+    this.options = {
       responsive: true,
       plugins: {
         legend: {
@@ -70,8 +79,8 @@ export default defineComponent({
       },
       scales: {
         y: {
-          suggestedMin: props.minScale,
-          suggestedMax: props.maxScale,
+          suggestedMin: this.minScale,
+          suggestedMax: this.maxScale,
           ticks: {
             // Include a dollar sign in the ticks
             callback: function(value, index, ticks) {
@@ -79,9 +88,8 @@ export default defineComponent({
             }
           }
         }
-      },
+      }
     }
-    return { chartData, options }
-  },
-})
+  }
+}
 </script>

@@ -142,12 +142,15 @@ const destroyHost = async id => {
   return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
 }
 
-// const getTask = async id => {
-//   return fetchData(`${SERVER_ENDPOINT}?action=task&taskId=${id}`, { method: 'get' })
-//     .then(response => {
-//       return response
-//     })
-// }
+const getMetrics = async (id, period) => {
+  const payload = {
+    action: 'metrics',
+    id,
+    period
+  }
+
+  return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
+}
 
 /**
  * Calls the "server" API endpoint to perform remove an IP address from the specified VM.
@@ -278,6 +281,7 @@ export {
   fetcher,
   generateAccountNumber,
   getAccount,
+  getMetrics,
   handleTwoFactor,
   removeIpAddress,
   resizeHost,

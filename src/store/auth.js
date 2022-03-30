@@ -21,6 +21,9 @@ const actions = {
     
     if (response && response.totp) {
       await commit('setUser', response)
+      return response.totp
+    } else if (response && response.results && response.results.length === 0) {
+      return false
     }
   },
   async disable2fa({ commit }, payload) {
@@ -54,6 +57,7 @@ const actions = {
     const response = await updateAccount(payload)
 
     await commit('setUser', response)
+    return response
   },
   async verifyToken({ commit }, payload) {
     payload.action = 'verify'
