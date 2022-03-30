@@ -1,6 +1,8 @@
 <template>
   <div>
     <p class="text-gray-500">Add an email address to your account so that it may be recovered in the event that you lose your account number.</p>
+    
+    <p v-if="showFeedback" class="text-green-800 bg-green-100">Email updated successfully.</p>
 
     <div class="flex items-center w-full lg:w-1/2">
       <input
@@ -46,7 +48,8 @@
       return {
         email: null,
         errors: {},
-        isSaving: false
+        isSaving: false,
+        showFeedback: false
       }
     },
     mounted() {
@@ -81,10 +84,14 @@
             email: this.email   
           }
 
-          await this['auth/update'](body)
+          const response = await this['auth/update'](body)
           
           setTimeout(() => {
             this.isSaving = false
+            this.showFeedback = true
+            setTimeout(() => {
+              this.showFeedback = false
+            }, 2000)
           }, 2000)
         }
       }
