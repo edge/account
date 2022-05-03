@@ -6,10 +6,10 @@
 
         <form class="">
           <p class="pr-5 text-lg">
-            <span v-if="activePanel === 'signIn'">Welcome back. Enter your account number to sign into the Edge Network.</span>  
+            <span v-if="activePanel === 'signIn'">Welcome back. Enter your account number to sign into the Edge Network.</span>
             <span v-else>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</span>
           </p>
-         
+
           <!-- SIGN IN PANEL -->
           <div v-if="activePanel === 'signIn'" class="signIn__form">
             <!-- input group -->
@@ -26,13 +26,13 @@
             </div>
 
             <!-- error message  -->
-            <div class="flex items-center errorMessage" v-show="errors.accountNumber"> 
+            <div class="flex items-center errorMessage" v-show="errors.accountNumber">
               <ExclamationIcon class="w-3.5 h-3.5" />
               <span class="errorMessage__text">{{errors.accountNumber}}</span>
             </div>
 
             <div v-show="requires2fa">
-              <div class="relative input-group"> 
+              <div class="relative input-group">
                 <div class="flex items-center space-x-1">
                   <label for="twoFactorCode" class="label">Verification Code</label>
                   <Tooltip
@@ -61,17 +61,9 @@
                 :disabled="isVerifying"
               >
                 {{ isVerifying ? 'Verifying' : 'Verify' }}
-                <svg v-show="isVerifying" class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <line x1="12" y1="6" x2="12" y2="3" />
-                  <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-                  <line x1="18" y1="12" x2="21" y2="12" />
-                  <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-                  <line x1="12" y1="18" x2="12" y2="21" />
-                  <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-                  <line x1="6" y1="12" x2="3" y2="12" />
-                  <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-                </svg>
+                <span v-if="isVerifying">
+                  <LoadingSpinner />
+                </span>
               </button>
             </div>
 
@@ -86,17 +78,7 @@
                 <span v-if="isSigningIn">Signing in</span>
                 <span v-else>Sign in</span>
                 <span v-if="isSigningIn">
-                  <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <line x1="12" y1="6" x2="12" y2="3" />
-                    <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-                    <line x1="18" y1="12" x2="21" y2="12" />
-                    <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-                    <line x1="12" y1="18" x2="12" y2="21" />
-                    <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-                    <line x1="6" y1="12" x2="3" y2="12" />
-                    <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-                  </svg>
+                  <LoadingSpinner />
                 </span>
               </button>
               <a href="#" class="w-full text-sm text-center text-gray-500 underline hover:text-green">I lost my account number</a>
@@ -113,17 +95,7 @@
                 <span v-if="isCreatingAccount">Creating your account</span>
                 <span v-else>Create new account</span>
                 <span v-if="isCreatingAccount">
-                  <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <line x1="12" y1="6" x2="12" y2="3" />
-                    <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-                    <line x1="18" y1="12" x2="21" y2="12" />
-                    <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-                    <line x1="12" y1="18" x2="12" y2="21" />
-                    <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-                    <line x1="6" y1="12" x2="3" y2="12" />
-                    <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-                  </svg>
+                  <LoadingSpinner />
                 </span>
               </button>
             </div>
@@ -155,7 +127,6 @@
             <!-- buttons -->
             <div class="mt-8">
               <button
-                
                 class="w-full mb-2 button button--solid"
               >
                 <router-link to='/account'>Set up recovery email</router-link>
@@ -183,6 +154,7 @@
 <script>
 import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import SideNavigation from '@/components/SideNavigation'
 import Tooltip from '@/components/Tooltip'
@@ -199,6 +171,7 @@ export default {
     DuplicateIcon,
     ExclamationIcon,
     InformationCircleIcon,
+    LoadingSpinner,
     Logo,
     SideNavigation,
     Tooltip,
@@ -238,11 +211,11 @@ export default {
     async generateAccount() {
       this.isCreatingAccount = true
       const newAccountNumber = await generateAccountNumber()
-      
+
       setTimeout(async () => {
         this.accountNumber = newAccountNumber.accountNumber
         await this['auth/register'](this.accountNumber)
-        this.activePanel = 'createAccount'      
+        this.activePanel = 'createAccount'
         this.isCreatingAccount = false
       }, 2000)
     },
@@ -298,7 +271,7 @@ export default {
         }
       }, 2000)
     },
-    validateAccountNumber(value) {    
+    validateAccountNumber(value) {
       const regex = /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/
 
       if (regex.test(value)) {
@@ -306,6 +279,11 @@ export default {
       } else {
         this.errors['accountNumber'] = 'Your account number is 16 digits'
       }
+    }
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
     }
   },
   watch: {
