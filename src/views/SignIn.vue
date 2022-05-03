@@ -30,6 +30,10 @@
               <ExclamationIcon class="w-3.5 h-3.5" />
               <span class="errorMessage__text">{{error.$message}}</span>
             </div>
+            <div v-if="errors.accountNumber" class="flex items-center errorMessage">
+              <ExclamationIcon class="w-3.5 h-3.5" />
+              <span class="errorMessage__text">{{errors.accountNumber}}</span>
+            </div>
 
             <div v-show="requires2fa">
               <div class="relative input-group">
@@ -207,7 +211,7 @@ export default {
       user: 'auth/StateUser'
     }),
     canSignIn() {
-      return !this.v$.$invalid
+      return !this.v$.$invalid && !this.errors.accountNumber
     }
   },
   methods: {
@@ -242,6 +246,12 @@ export default {
       const loginResponse = await this['auth/login'](this.accountNumber)
 
       setTimeout(() => {
+        // TEMPORARY - handle unauthorised log in attempt
+        if (!loginResponse) {
+          this.isSigningIn = false
+          this.errors.accountNumber = 'No account found'
+        } else
+
         if (this.user) {
           this.$router.push('/servers')
         } else {
@@ -289,6 +299,12 @@ export default {
   setup() {
     return {
       v$: useVuelidate()
+    }
+  },
+  watch: {
+    accountNumber() {
+      // reset account number error (i.e. invalid account) when input is changed
+      this.errors.accountNumber = ''
     }
   }
 }
