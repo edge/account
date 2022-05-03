@@ -3,15 +3,17 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 import { createRouter, createWebHistory } from 'vue-router'
-import Account from '@/views/Account'
 import Dashboard from '@/views/Dashboard'
-import Deploy from '@/views/Deploy'
-import Index from '@/views/Index'
 import NotFound from '@/views/404'
-import Server from '@/views/Server'
-import Servers from '@/views/Servers'
 import SignIn from '@/views/SignIn'
 import Vnc from '@/views/Vnc'
+
+import Account from '@/views/dashboard/Account'
+import Deploy from '@/views/dashboard/Deploy'
+import Index from '@/views/dashboard/Index'
+import Server from '@/views/dashboard/Server'
+import Servers from '@/views/dashboard/Servers'
+
 import store from '../store'
 
 const routes = [

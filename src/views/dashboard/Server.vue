@@ -196,9 +196,9 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 
 import { useRoute } from 'vue-router'
 import useSWRV from 'swrv'
-import { fetcher } from '../utils/api'
+import { fetcher } from '../../utils/api'
 import { mapActions } from 'vuex'
-import { startStopHost } from '../utils/api'
+import { startStopHost } from '../../utils/api'
 
 export default {
   name: 'Server',

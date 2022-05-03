@@ -1,5 +1,29 @@
 <template>
-  <div class="mainContent__inner">
+  <!-- if no servers yet created -->
+  <div v-if="servers && servers.length === 0" class="flex flex-col justify-center flex-1 w-full max-w-lg mx-auto my-auto text-center">
+    <div class="pt-0 border-opacity-50 rounded-md border-green">
+      <span class="inline-block px-5 uppercase bg-gray-200 text-green loose">Your new account number!</span>
+      <h1 class="mt-1">{{user && user.accountNumber}}</h1>
+    </div>
+    <p class="mt-1 text-gray-500">Write down your account number. It’s all you need to access the Edge Network. No email, no username.</p>
+    <div class="flex justify-center mt-2 space-x-4">
+      <router-link
+        v-if="user && !user.totp"
+        to="/account"
+        class="button button--outline-success text-green hover:text-white"
+      >
+        <ShieldCheckIcon class="w-5 h-5 mr-2"/>
+        <span>Setup 2FA</span>
+      </router-link>
+      <button class="button button--success" @click="$router.push('/servers/deploy')">
+        <ServerIcon class="w-5 h-5 mr-2"/>
+        <span>Deploy your first server</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- if servers exist -->
+  <div v-if="servers && servers.length > 0" class="mainContent__inner">
     <h1>Edge Servers</h1>
 
     <ul v-if="servers" role="list" class="serverList">
@@ -51,14 +75,6 @@
       </svg>
     </div>
   </div>
-
-  <div class="px-3 md:px-5 lg:px-8">
-    <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
-    <button class="button button--success" @click="$router.push('/servers/deploy')">
-      <ServerIcon class="w-5 h-5 mr-2"/>
-      <span>Deploy your first server</span>
-    </button>
-  </div>
 </template>
 
 <script>
@@ -66,7 +82,7 @@ import CentOsIcon from '@/components/icons/Centos'
 import UbuntuIcon from '@/components/icons/Ubuntu'
 import { CloudUploadIcon, ServerIcon, ShieldCheckIcon } from '@heroicons/vue/outline'
 
-import { fetcher } from '../utils/api'
+import { fetcher } from '../../utils/api'
 import { mapGetters } from 'vuex'
 import useSWRV from 'swrv'
 

@@ -92,7 +92,7 @@ import ServerSpecs from '@/components/deploy/ServerSpecs'
 import ServerName from '@/components/deploy/ServerName'
 import Toggle from '@vueform/toggle'
 import { mapGetters, mapActions } from 'vuex'
-import { createHost } from '../utils/api'
+import { createHost } from '../../utils/api'
 
 export default {
   name: 'Deploy',

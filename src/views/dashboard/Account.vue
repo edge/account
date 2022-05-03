@@ -31,7 +31,7 @@ import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import RecoveryEmail from "@/components/account/RecoveryEmail"
 
-import { fetcher } from '../utils/api'
+import { fetcher } from '../../utils/api'
 import { mapGetters } from 'vuex'
 import useSWRV from 'swrv'
 
