@@ -30,8 +30,6 @@
 import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import RecoveryEmail from "@/components/account/RecoveryEmail"
-import SideNavigation from "@/components/SideNavigation"
-import TopNavigation from "@/components/TopNavigation"
 
 import { fetcher } from '../utils/api'
 import { mapGetters } from 'vuex'
@@ -45,9 +43,7 @@ export default {
   components: {
     DuplicateIcon,
     GoogleAuthEnable,
-    RecoveryEmail,
-    SideNavigation,
-    TopNavigation
+    RecoveryEmail
   },
   computed: {
     ...mapGetters({
@@ -89,13 +85,6 @@ export default {
 }
 </script>
 <style scoped>
-  .mainContent {
-    @apply relative flex-1 pb-10;
-  }
-  .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-7;
-  }
-
   /* standard cell */
   .serverList__cell {
     @apply text-gray-500 text-sm lg:w-1/3 truncate;

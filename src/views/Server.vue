@@ -191,8 +191,6 @@ import ServerNetworking from "@/components/server/ServerNetworking"
 import ServerOverview from "@/components/server/ServerOverview"
 import ServerResize from "@/components/server/ServerResize"
 import ServerStatus from "@/components/server/ServerStatus"
-import SideNavigation from "@/components/SideNavigation"
-import TopNavigation from "@/components/TopNavigation"
 import UbuntuIcon from '@/components/icons/Ubuntu'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 
@@ -232,13 +230,11 @@ export default {
     ServerOverview,
     ServerResize,
     ServerStatus,
-    SideNavigation,
     TabGroup,
     TabList,
     Tab,
     TabPanels,
     TabPanel,
-    TopNavigation,
     UbuntuIcon
   },
   methods: {
@@ -337,13 +333,6 @@ export default {
 }
 </script>
 <style scoped>
-  .mainContent {
-    @apply relative flex-1;
-  }
-  .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-7;
-  }
-
   /* crumbs */
   .crumbs {
     @apply flex space-x-2 mb-2 items-center;

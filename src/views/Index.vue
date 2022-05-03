@@ -79,8 +79,6 @@
 
 <script>
 import CentOsIcon from '@/components/icons/Centos'
-import SideNavigation from "@/components/SideNavigation"
-import TopNavigation from "@/components/TopNavigation"
 import UbuntuIcon from '@/components/icons/Ubuntu'
 import { CloudUploadIcon, ServerIcon, ShieldCheckIcon } from '@heroicons/vue/outline'
 
@@ -98,8 +96,6 @@ export default {
     CloudUploadIcon,
     ServerIcon,
     ShieldCheckIcon,
-    SideNavigation,
-    TopNavigation,
     UbuntuIcon
   },
   computed: {
@@ -122,13 +118,6 @@ export default {
 }
 </script>
 <style scoped>
-  .mainContent {
-    @apply relative flex-1;
-  }
-  .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-7;
-  }
-
   /* the list */
   .serverList {
     @apply mt-5 lg:mt-5 space-y-2;

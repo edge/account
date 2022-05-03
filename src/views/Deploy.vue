@@ -90,9 +90,7 @@ import OperatingSystem from '@/components/deploy/OperatingSystem'
 import Password from '@/components/deploy/Password'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 import ServerName from '@/components/deploy/ServerName'
-import SideNavigation from "@/components/SideNavigation"
 import Toggle from '@vueform/toggle'
-import TopNavigation from "@/components/TopNavigation"
 import { mapGetters, mapActions } from 'vuex'
 import { createHost } from '../utils/api'
 
@@ -108,9 +106,7 @@ export default {
     Password,
     ServerName,
     ServerSpecs,
-    SideNavigation,
-    Toggle,
-    TopNavigation,
+    Toggle
   },
   data() {
     return {
@@ -214,12 +210,6 @@ export default {
 </script>
 <style src="@vueform/toggle/themes/default.css"></style>
 <style scoped>
-  .mainContent {
-    @apply relative flex-1;
-  }
-  .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-7;
-  }
   .box {
     @apply w-full p-6 bg-white rounded-lg;
   }
