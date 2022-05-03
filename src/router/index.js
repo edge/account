@@ -3,58 +3,63 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 import { createRouter, createWebHistory } from 'vue-router'
-import Account from '@/views/Account'
-import Deploy from '@/views/Deploy'
-import Index from '@/views/Index'
+import Dashboard from '@/views/Dashboard'
 import NotFound from '@/views/404'
-import Server from '@/views/Server'
-import Servers from '@/views/Servers'
 import SignIn from '@/views/SignIn'
 import Vnc from '@/views/Vnc'
+
+import Account from '@/views/dashboard/Account'
+import Deploy from '@/views/dashboard/Deploy'
+import Index from '@/views/dashboard/Index'
+import Server from '@/views/dashboard/Server'
+import Servers from '@/views/dashboard/Servers'
+
 import store from '../store'
 
 const routes = [
   {
-    path: '/account',
-    name: 'Account',
-    component: Account,
-    meta: {requiresAuth: true}
-  },
-  {
     path: '/',
-    name: 'Index',
-    component: Index,
-    meta: {requiresAuth: true}
-  },
-  {
-    path: '/servers',
-    name: 'Servers',
-    component: Servers,
-    meta: {requiresAuth: true}
-  },
-  {
-    path: '/servers/deploy',
-    name: 'Deploy',
-    component: Deploy,
-    meta: {requiresAuth: true}
+    name: 'Dashboard',
+    component: Dashboard,
+    meta: {requiresAuth: true},
+    children: [
+      {
+        path: '',
+        name: 'Index',
+        component: Index
+      },
+      {
+        path: 'account',
+        name: 'Account',
+        component: Account
+      },
+      {
+        path: 'servers',
+        name: 'Servers',
+        component: Servers
+      },
+      {
+        path: 'servers/deploy',
+        name: 'Deploy',
+        component: Deploy
+      },
+      {
+        path: 'server/:id',
+        name: 'Server',
+        component: Server
+      },
+      {
+        path: 'server/:id/vnc',
+        name: 'VNC',
+        component: Vnc
+      }
+    ]
   },
   {
     path: '/signIn',
     name: 'Sign In',
     component: SignIn,
     meta: { guest: true }
-  },
-  {
-    path: '/server/:id',
-    name: 'Server',
-    component: Server,
-    meta: {requiresAuth: true}
-  },
-  {
-    path: '/server/:id/vnc',
-    name: 'VNC',
-    component: Vnc,
-    meta: {requiresAuth: true}
   },
   { path: '/:catchAll(.*)', component: NotFound }
 ]
@@ -70,7 +75,6 @@ router.beforeEach((to, from, next) => {
       next()
       return
     }
-    
     next('/signin')
   } else {
     next()
@@ -78,7 +82,7 @@ router.beforeEach((to, from, next) => {
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.guest)) {
+  if (to.matched.some(record => record.meta.guest)) {
     if (store.getters['auth/isAuthenticated']) {
       next('/')
       return

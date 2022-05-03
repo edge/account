@@ -1,35 +1,28 @@
 <template>
-  <div class="flex w-full min-h-screen">
-    <SideNavigation />
-    <main class="flex flex-col mainContent">
-      <TopNavigation />
-
-      <div class="mainContent__inner">
-        <h1>Account</h1>
-        <div>
-          <h4 class="w-full pb-2 mt-10 mb-6 font-medium border-b border-gray-400">Your account number</h4>
-          <p class="text-gray-500">
-            Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
-        </div>
-        <div class="relative inline-block lg:w-1/2 accountNumber">
-          <span class="text-3xl">{{user.accountNumber}}</span>
-          <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
-            <DuplicateIcon class="w-6 h-6" />  
-          </button>
-          <div
-            class="copied"
-            :class="this.copied ? 'visible' : ''"
-          >
-            Copied!
-          </div>
-        </div>
-        <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Setup 2FA</h4>
-        <GoogleAuthEnable :user=user :twofactorQR=twofactorQR :twofactorUrl=twofactorUrl />
-        
-        <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Add recovery email</h4>
-        <RecoveryEmail :user=user />
+  <div class="mainContent__inner">
+    <h1>Account</h1>
+    <div>
+      <h4 class="w-full pb-2 mt-10 mb-6 font-medium border-b border-gray-400">Your account number</h4>
+      <p class="text-gray-500">
+        Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
+    </div>
+    <div class="relative inline-block lg:w-1/2 accountNumber">
+      <span class="text-3xl">{{user.accountNumber}}</span>
+      <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
+        <DuplicateIcon class="w-6 h-6" />  
+      </button>
+      <div
+        class="copied"
+        :class="this.copied ? 'visible' : ''"
+      >
+        Copied!
       </div>
-    </main>
+    </div>
+    <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Setup 2FA</h4>
+    <GoogleAuthEnable :user=user :twofactorQR=twofactorQR :twofactorUrl=twofactorUrl />
+    
+    <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Add recovery email</h4>
+    <RecoveryEmail :user=user />
   </div>
 </template>
 
@@ -37,10 +30,8 @@
 import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import RecoveryEmail from "@/components/account/RecoveryEmail"
-import SideNavigation from "@/components/SideNavigation"
-import TopNavigation from "@/components/TopNavigation"
 
-import { fetcher } from '../utils/api'
+import { fetcher } from '../../utils/api'
 import { mapGetters } from 'vuex'
 import useSWRV from 'swrv'
 
@@ -52,9 +43,7 @@ export default {
   components: {
     DuplicateIcon,
     GoogleAuthEnable,
-    RecoveryEmail,
-    SideNavigation,
-    TopNavigation
+    RecoveryEmail
   },
   computed: {
     ...mapGetters({
@@ -96,13 +85,6 @@ export default {
 }
 </script>
 <style scoped>
-  .mainContent {
-    @apply relative flex-1 pb-10;
-  }
-  .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-7;
-  }
-
   /* standard cell */
   .serverList__cell {
     @apply text-gray-500 text-sm lg:w-1/3 truncate;
