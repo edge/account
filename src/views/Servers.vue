@@ -1,70 +1,63 @@
 <template>
-  <div class="flex w-full min-h-screen">
-    <SideNavigation />
-    <main class="flex flex-col mainContent">
-      <TopNavigation />
+  <div class="mainContent__inner">
+    <h1>Edge Servers</h1>
 
-      <div class="mainContent__inner">
-        <h1>Edge Servers</h1>
-
-        <ul v-if="servers" role="list" class="serverList">
-          <li
-            v-for="server in servers" :key="server.name"
-            class="serverList__item"
-            :class="[server.status]"
-          >
-            <span class="serverList__status" :class="[server.status]" />
-            
-            <div class="serverList__main">
-              <router-link class="serverList__name" :to="'/server/'+ server.id">
-                {{ server.hostname }}
-              </router-link>
-              <div class="serverList__stats">
-                <span>{{ server.cpu }}</span>
-                <span class="text-gray-400">/</span>
-                <span>{{ server.storage }} disk</span>
-                <span class="text-gray-400">/</span>
-                <span>{{ server.memory }} RAM</span>
-              </div>
-            </div>
-            <div class="flex items-center flex-shrink-0 mt-3 space-x-5 lg:space-x-0 lg:flex-1 lg:mt-0 lg:justify-between">
-              <div class="flex items-center space-x-1 lg:justify-center serverList__cell">
-                <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <CentOsIcon v-if="server.os === 'centos'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <span>{{`${server.os.charAt(0).toUpperCase()}${server.os.substring(1)}`}} {{ server.osVersion }}</span>
-              </div>
-              <span class="lg:text-center serverList__cell">{{ server.ip }}</span>
-              <div class="flex items-center lg:justify-end serverList__cell">
-                {{ server.region.name }}
-                <img :src=server.region.flagIcon[0].url width="25" class="ml-2 rounded-sm" />
-              </div>
-            </div>
-          </li>
-        </ul>
-        <div v-else class="flex items-center">
-          <span>Loading servers</span>
-          <svg class="w-4 ml-1 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <line x1="12" y1="6" x2="12" y2="3" />
-            <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-            <line x1="18" y1="12" x2="21" y2="12" />
-            <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-            <line x1="12" y1="18" x2="12" y2="21" />
-            <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-            <line x1="6" y1="12" x2="3" y2="12" />
-            <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-          </svg>
+    <ul v-if="servers" role="list" class="serverList">
+      <li
+        v-for="server in servers" :key="server.name"
+        class="serverList__item"
+        :class="[server.status]"
+      >
+        <span class="serverList__status" :class="[server.status]" />
+        
+        <div class="serverList__main">
+          <router-link class="serverList__name" :to="'/server/'+ server.id">
+            {{ server.hostname }}
+          </router-link>
+          <div class="serverList__stats">
+            <span>{{ server.cpu }}</span>
+            <span class="text-gray-400">/</span>
+            <span>{{ server.storage }} disk</span>
+            <span class="text-gray-400">/</span>
+            <span>{{ server.memory }} RAM</span>
+          </div>
         </div>
-      </div>
+        <div class="flex items-center flex-shrink-0 mt-3 space-x-5 lg:space-x-0 lg:flex-1 lg:mt-0 lg:justify-between">
+          <div class="flex items-center space-x-1 lg:justify-center serverList__cell">
+            <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
+            <CentOsIcon v-if="server.os === 'centos'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
+            <span>{{`${server.os.charAt(0).toUpperCase()}${server.os.substring(1)}`}} {{ server.osVersion }}</span>
+          </div>
+          <span class="lg:text-center serverList__cell">{{ server.ip }}</span>
+          <div class="flex items-center lg:justify-end serverList__cell">
+            {{ server.region.name }}
+            <img :src=server.region.flagIcon[0].url width="25" class="ml-2 rounded-sm" />
+          </div>
+        </div>
+      </li>
+    </ul>
+    <div v-else class="flex items-center">
+      <span>Loading servers</span>
+      <svg class="w-4 ml-1 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <line x1="12" y1="6" x2="12" y2="3" />
+        <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
+        <line x1="18" y1="12" x2="21" y2="12" />
+        <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
+        <line x1="12" y1="18" x2="12" y2="21" />
+        <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
+        <line x1="6" y1="12" x2="3" y2="12" />
+        <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
+      </svg>
+    </div>
+  </div>
 
-      <div class="px-3 md:px-5 lg:px-8">
-        <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
-        <button class="button button--success" @click="$router.push('/servers/deploy')">
-          <ServerIcon class="w-5 h-5 mr-2"/>
-          <span>Deploy your first server</span>
-        </button>
-      </div>
-    </main>
+  <div class="px-3 md:px-5 lg:px-8">
+    <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
+    <button class="button button--success" @click="$router.push('/servers/deploy')">
+      <ServerIcon class="w-5 h-5 mr-2"/>
+      <span>Deploy your first server</span>
+    </button>
   </div>
 </template>
 
