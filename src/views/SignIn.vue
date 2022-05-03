@@ -20,15 +20,15 @@
                 id="accountNumber"
                 class="input input--floating"
                 v-mask="'#### #### #### ####'"
-                v-model="accountNumber"
+                v-model="v$.accountNumber.$model"
                 placeholder="1234 5678 9012 3456"
               />
             </div>
 
             <!-- error message  -->
-            <div class="flex items-center errorMessage" v-show="errors.accountNumber">
+            <div class="flex items-center errorMessage" v-for="error of v$.accountNumber.$errors" :key="error.$uid">
               <ExclamationIcon class="w-3.5 h-3.5" />
-              <span class="errorMessage__text">{{errors.accountNumber}}</span>
+              <span class="errorMessage__text">{{error.$message}}</span>
             </div>
 
             <div v-show="requires2fa">
@@ -72,7 +72,7 @@
               <button
                 @click.prevent="signIn()"
                 class="mb-2 button button--success"
-                :disabled="isSigningIn || errors.accountNumber"
+                :disabled="isSigningIn || !canSignIn"
                 v-show="!requires2fa"
               >
                 <span v-if="isSigningIn">Signing in</span>
@@ -112,7 +112,7 @@
               />
               <span class="text-3xl">{{accountNumber}}</span>
               <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
-                <DuplicateIcon class="w-6 h-6" />  
+                <DuplicateIcon class="w-6 h-6" />
               </button>
               <div
                 class="copied"
@@ -152,6 +152,7 @@
 </template>
 
 <script>
+import * as validation from '../utils/validation'
 import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -161,6 +162,7 @@ import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
 import { mapActions, mapGetters } from 'vuex'
 import { generateAccountNumber } from '../utils/api'
+import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'Sign In',
@@ -193,17 +195,27 @@ export default {
       totpToken: null
     }
   },
+  validations() {
+    return {
+      accountNumber: [
+        validation.accountNumber
+     ]
+    }
+  },
   computed: {
     ...mapGetters({
       user: 'auth/StateUser'
-    })
+    }),
+    canSignIn() {
+      return !this.v$.$invalid
+    }
   },
   methods: {
     ...mapActions(['auth/login', 'auth/register', 'auth/verifyToken']),
     async copyToClipboard () {
       this.copied = true
       await navigator.clipboard.writeText(this.accountNumber)
-      
+
       setTimeout(() => {
         this.copied = false
       }, 2000)
@@ -223,6 +235,8 @@ export default {
       this.$router.push('/')
     },
     async signIn() {
+      if (!await this.v$.$validate()) return
+
       this.isSigningIn = true
 
       const loginResponse = await this['auth/login'](this.accountNumber)
@@ -270,25 +284,11 @@ export default {
           this.errors.totpToken = 'Invalid 2FA token'
         }
       }, 2000)
-    },
-    validateAccountNumber(value) {
-      const regex = /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/
-
-      if (regex.test(value)) {
-        this.errors['accountNumber'] = null
-      } else {
-        this.errors['accountNumber'] = 'Your account number is 16 digits'
-      }
     }
   },
   setup() {
     return {
       v$: useVuelidate()
-    }
-  },
-  watch: {
-    accountNumber(value) {
-      this.validateAccountNumber(value)
     }
   }
 }
