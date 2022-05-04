@@ -222,7 +222,7 @@ export default {
 
       setTimeout(() => {
         this.copied = false
-      }, 2000)
+      }, 1000)
     },
     async generateAccount() {
       this.isCreatingAccount = true
@@ -233,7 +233,7 @@ export default {
         await this['auth/register'](this.accountNumber)
         this.activePanel = 'createAccount'
         this.isCreatingAccount = false
-      }, 2000)
+      }, 1000)
     },
     async finish() {
       this.$router.push('/')
@@ -246,15 +246,17 @@ export default {
       const loginResponse = await this['auth/login'](this.accountNumber)
 
       setTimeout(() => {
-        // TEMPORARY - handle unauthorised log in attempt
-        if (!loginResponse) {
-          this.isSigningIn = false
-          this.errors.accountNumber = 'No account found'
-        } else
-
         if (this.user) {
           this.$router.push('/servers')
-        } else {
+        }
+
+        // TEMPORARY - handle unauthorised log in attempt
+        else if (!loginResponse) {
+          this.isSigningIn = false
+          this.errors.accountNumber = 'No account found'
+        }
+
+        else {
           if (loginResponse.requires2fa) {
             this.requires2fa = true
             this.totpSecret = loginResponse.totpSecret
@@ -263,7 +265,7 @@ export default {
             this.errors.accountNumber = 'No account found'
           }
         }
-      }, 2000)
+      }, 1000)
     },
     async verify2fa() {
       this.isVerifying  = true
