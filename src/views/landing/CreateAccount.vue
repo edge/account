@@ -73,10 +73,8 @@
                 <span>Add Recovery Email</span>
               </button>
             </div>
-            <!-- buttons -->
-            <div>
-              <button @click.prevent="step = 3" class="w-full text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
-            </div>
+            <!-- skip step button -->
+            <button @click.prevent="step = 3" class="w-full text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
           </div>
         </div>
 
@@ -87,11 +85,29 @@
           </div>
 
           <div class="step-content" v-show="step === 3">
-            <span class="text-md self-center mt-3">SOME CONTENT WILL GO HERE</span>
-            <!-- buttons -->
-            <div class="mt-8">
-              <button @click.prevent="finish" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
+            <div class="grid grid-cols-3 grid-rows-2 gap-3 my-4">
+              <span class="credit-item">
+                <CurrencyDollarIcon class="h-16 text-green" />
+              </span>
+              <span class="credit-item">
+                <CurrencyDollarIcon class="h-16 text-green" />
+              </span>
+              <span class="credit-item">
+                <CurrencyDollarIcon class="h-16 text-green" />
+              </span>
+              <span class="credit-item">
+                <CurrencyDollarIcon class="h-16 text-green" />
+              </span>
+              <span class="credit-item">
+                <CurrencyDollarIcon class="h-16 text-green" />
+              </span>
+              <span class="credit-item">
+                <CurrencyDollarIcon class="h-16 text-green" />
+              </span>
             </div>
+
+            <!-- skip step button -->
+            <button @click.prevent="finish" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
           </div>
         </div>
 
@@ -322,5 +338,9 @@ export default {
     content: " ";
     @apply absolute w-2 h-full bg-green rounded-b;
     left: -40px;
+  }
+
+  .credit-item {
+    @apply flex border-2 border-gray rounded items-center justify-center cursor-pointer hover:border-green;
   }
 </style>
