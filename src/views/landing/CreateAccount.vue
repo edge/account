@@ -1,63 +1,125 @@
 <template>
-  <div class="signIn__content">
+  <div class="landingPage__content">
     <Logo/>
 
-    <form class="">
+    <div>
       <p class="pr-5 text-lg">
         <span>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</span>
       </p>
 
-      <div class="flex flex-col mt-6">
-        <span class="text-xs font-medium tracking-wider uppercase text-green">My new account number:</span>
-        <div class="accountNumber">
-          <input
-            readonly
-            class="absolute opacity-0 focus:outline-none"
-            :value="accountNumber"
-          />
-          <span class="text-3xl">{{accountNumber}}</span>
-          <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
-            <DuplicateIcon class="w-6 h-6" />
-          </button>
-          <div
-            class="copied"
-            :class="copied ? 'visible' : ''"
-          >
-            Copied!
+      <div>
+        <div class="step">
+          <div class="step-title">
+            <KeyIcon class="step-icon" />
+            <span>Create an account</span>
+          </div>
+
+          <div class="step-content">
+            <!-- generate account button -->
+            <div class="my-4" v-show="!isAccountGenerated && !isGeneratingAccount">
+              <button
+                @click.prevent="generateAccount"
+                class="w-full button button--solid button--success"
+                :disabled="isGeneratingAccount"
+              >
+                <span>Generate Account</span>
+              </button>
+            </div>
+
+            <div class="accountNumber" v-show="isAccountGenerated || isGeneratingAccount">
+              <span class="text-2xl text-green monospace">{{formattedAccountNumber}}</span>
+              <button v-show="isAccountGenerated" @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
+                <DuplicateIcon class="w-6 h-6" />
+              </button>
+              <div
+                class="copied"
+                :class="copied ? 'visible' : ''"
+              >
+                Copied!
+              </div>
+            </div>
+
+            <div class="mt-3" v-show="isGeneratingAccount">
+              <span class="text-gray-500">Generating your account number.</span>
+            </div>
+
+            <div class="mt-3 flex flex-col" v-show="isAccountGenerated">
+              <span class="font-medium text-black">Write down your account number!</span>
+              <span class="mt-1 text-gray-500">It’s all you need to access the Edge Network. No email, no username. Just anonymity.</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="step" :class="step < 2 ? 'inactive' : ''" >
+          <div class="step-title" @click="changeStep(2)">
+            <FingerPrintIcon class="step-icon"/>
+            <span>Secure your account</span>
+          </div>
+
+          <div class="step-content" v-show="step === 2">
+            <!-- generate account button -->
+            <div class="my-4">
+              <button
+                @click.prevent="generateAccount"
+                class="my-2 w-full button button--solid"
+              >
+                <span>Enable Two-factor Authentication (2FA)</span>
+              </button>
+              <button
+                @click.prevent="generateAccount"
+                class="my-2 w-full button button--solid"
+              >
+                <span>Add Recovery Email</span>
+              </button>
+            </div>
+            <!-- buttons -->
+            <div>
+              <button @click.prevent="step = 3" class="w-full text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
+            </div>
           </div>
         </div>
-        <span class="mt-6 font-medium text-black">Write down your account number!</span>
-        <span class="mt-1 text-gray-500">It’s all you need to access the Edge Network. No email, no username. Just anonymity.</span>
 
-        <!-- buttons -->
-        <div class="mt-8">
-          <button
-            class="w-full mb-2 button button--solid"
-          >
-            <router-link to='/account'>Set up recovery email</router-link>
-          </button>
-          <button
-            @click.prevent="finish()"
-            class="w-full button button--solid button--success"
-            :disabled="isCreatingAccount"
-          >
-            <span>Go to my account</span>
-          </button>
-          <button @click.prevent="this.activePanel = 'signIn'" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">I already have an account</button>
+        <div class="step" :class="step < 3 ? 'inactive' : ''" >
+          <div class="step-title" @click="changeStep(3)">
+            <CurrencyDollarIcon class="step-icon" />
+            <span>Add credit to your account</span>
+          </div>
+
+          <div class="step-content" v-show="step === 3">
+            <span class="text-md self-center mt-3">SOME CONTENT WILL GO HERE</span>
+            <!-- buttons -->
+            <div class="mt-8">
+              <button @click.prevent="finish" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="step" >
+          <!-- buttons -->
+          <div class="mt-6">
+            <button
+              v-if="step > 1"
+              @click.prevent="finish"
+              class="w-full button button--solid button--success"
+            >
+              <span>Go directly to my account</span>
+            </button>
+            <button v-else @click.prevent="finish" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">I already have an account</button>
+          </div>
         </div>
       </div>
-    </form>
+    </div>
 
   </div>
 </template>
 
 <script>
 import * as validation from '../../utils/validation'
-import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
+import { CurrencyDollarIcon, DuplicateIcon, FingerPrintIcon, ExclamationIcon, KeyIcon } from '@heroicons/vue/outline'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
-import SideNavigation from '@/components/SideNavigation'
 import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
 import { mapActions, mapGetters } from 'vuex'
@@ -70,12 +132,14 @@ export default {
     return 'Edge Account Portal » Sign In'
   },
   components: {
+    CurrencyDollarIcon,
     DuplicateIcon,
     ExclamationIcon,
+    FingerPrintIcon,
     InformationCircleIcon,
+    KeyIcon,
     LoadingSpinner,
     Logo,
-    SideNavigation,
     Tooltip,
     UserMenu,
   },
@@ -87,10 +151,10 @@ export default {
       errors: {
         accountNumber: ''
       },
-      isCreatingAccount: false,
-      isSigningIn: false,
+      isGeneratingAccount: false,
       isVerifying: false,
       requires2fa: false,
+      step: 1,
       totpSecret: null,
       totpToken: null
     }
@@ -106,13 +170,25 @@ export default {
     ...mapGetters({
       user: 'auth/StateUser'
     }),
-    canSignIn() {
-      return !this.v$.$invalid && !this.errors.accountNumber
+    isAccountGenerated() {
+      return this.accountNumber && !this.isGeneratingAccount
+    },
+    formattedAccountNumber() {
+      // TEMPORARY, UNTIL API IS UPDATED
+      if (this.accountNumber.length > 16) return this.accountNumber
+
+      // add space every 4 characters
+      return this.accountNumber.toString().replace(/.{4}/g, '$& ')
     }
   },
   methods: {
     ...mapActions(['auth/login', 'auth/register', 'auth/verifyToken']),
+    changeStep (newStep) {
+      if (!this.isAccountGenerated) return
+      this.step = newStep
+    },
     async copyToClipboard () {
+      if (this.isGeneratingAccount || !this.accountNumber) return
       this.copied = true
       await navigator.clipboard.writeText(this.accountNumber)
 
@@ -121,47 +197,33 @@ export default {
       }, 1000)
     },
     async generateAccount() {
-      this.isCreatingAccount = true
+      this.isGeneratingAccount = true
+
       const newAccountNumber = await generateAccountNumber()
 
+      this.accountNumber = this.generateRandomAccountNumber()
+      const numGeneratorId = setInterval(() => {
+        this.accountNumber = this.generateRandomAccountNumber()
+      }, 200)
+
       setTimeout(async () => {
-        this.accountNumber = newAccountNumber.accountNumber
-        await this['auth/register'](this.accountNumber)
-        this.activePanel = 'createAccount'
-        this.isCreatingAccount = false
-      }, 1000)
+        clearInterval(numGeneratorId)
+        // this.accountNumber = newAccountNumber.accountNumber
+        // await this['auth/register'](this.accountNumber)
+
+        // TEMPORARY, UNTIL API IS UPDATED
+        this.accountNumber = "0142 9991 9226 0627"
+        await this['auth/login']("0142 9991 9226 0627")
+
+        this.isGeneratingAccount = false
+        this.step = 2
+      }, 5000)
+    },
+    generateRandomAccountNumber() {
+      return Math.floor(Math.random() * 1e16)
     },
     async finish() {
       this.$router.push('/')
-    },
-    async signIn() {
-      if (!await this.v$.$validate()) return
-
-      this.isSigningIn = true
-
-      const loginResponse = await this['auth/login'](this.accountNumber)
-
-      setTimeout(() => {
-        if (this.user) {
-          this.$router.push('/servers')
-        }
-
-        // TEMPORARY - handle unauthorised log in attempt
-        else if (!loginResponse) {
-          this.isSigningIn = false
-          this.errors.accountNumber = 'No account found'
-        }
-
-        else {
-          if (loginResponse.requires2fa) {
-            this.requires2fa = true
-            this.totpSecret = loginResponse.totpSecret
-          } else {
-            this.isSigningIn = false
-            this.errors.accountNumber = 'No account found'
-          }
-        }
-      }, 1000)
     },
     async verify2fa() {
       this.isVerifying  = true
@@ -208,23 +270,8 @@ export default {
 }
 </script>
 <style scoped>
-  .signIn {
-    @apply flex w-screen h-screen bg-white;
-  }
-  .signIn__left {
-    @apply flex justify-center w-full h-full px-5 lg:w-1/2;
-  }
-  .signIn__right {
-    @apply hidden w-1/2 h-full lg:block;
-  }
-  .signIn__content {
-    @apply flex flex-col w-full my-auto space-y-8 py-10 sm:max-w-md;
-  }
-  .signIn__form {
-    @apply flex flex-col space-y-6;
-  }
   .accountNumber {
-    @apply flex items-center justify-between relative p-3 mt-2 bg-gray-100 border border-gray-300;
+    @apply flex items-center justify-between relative py-3 pr-3;
   }
   .copied {
     @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
@@ -232,5 +279,48 @@ export default {
   }
   .copied.visible {
     @apply opacity-100;
+  }
+
+  .step {
+    @apply flex flex-col mb-6;
+  }
+
+  .step-title {
+    @apply relative flex flex-row items-center text-lg cursor-pointer;
+    z-index: 1;
+  }
+
+  .step-title::before {
+    content: " ";
+    @apply absolute transform w-2 h-full bg-green rounded-b;
+    left: 16px;
+    top: 10px;
+    z-index: 0;
+  }
+
+  .step-icon {
+    @apply w-10 border-2 rounded-3xl p-1 border-green bg-green text-white mr-3;
+    z-index: 1;
+  }
+
+  .step.inactive .step-title {
+    @apply pb-4 mb-2;
+  }
+  .step.inactive .step-title::before {
+    @apply bg-gray
+  }
+  .step.inactive .step-icon {
+    @apply bg-gray border-gray;
+    z-index: 1;
+  }
+
+  .step-content {
+    @apply relative flex flex-col ml-14 max-h-full;
+  }
+
+  .step-content::before {
+    content: " ";
+    @apply absolute w-2 h-full bg-green rounded-b;
+    left: -40px;
   }
 </style>

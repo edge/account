@@ -36,14 +36,4 @@ export default {
   .landingPage__form {
     @apply flex flex-col space-y-6;
   }
-  .accountNumber {
-    @apply flex items-center justify-between relative p-3 mt-2 bg-gray-100 border border-gray-300;
-  }
-  .copied {
-    @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
-    @apply transition-opacity duration-200 ease-in;
-  }
-  .copied.visible {
-    @apply opacity-100;
-  }
 </style>
