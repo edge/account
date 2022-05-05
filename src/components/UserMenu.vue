@@ -69,6 +69,7 @@
       },
       async logout() {
         await this.$store.commit('logout')
+        localStorage.removeItem('session')
         this.$router.push('/signin')
       }
     }

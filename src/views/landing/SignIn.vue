@@ -102,6 +102,7 @@
 </template>
 
 <script>
+import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
@@ -111,7 +112,7 @@ import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
 import useVuelidate from '@vuelidate/core'
 
-import { createSession, getAccount } from '@/utils/account-utils'
+const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 
 export default {
   name: 'SignIn',
@@ -164,9 +165,9 @@ export default {
       this.isSigningIn = true
 
       try {
-        const session = await createSession(this.accountNumber)
+        const session = await utils.sessions.createSession(ACCOUNT_API_URL, this.accountNumber)
         if (session._key) {
-          const account = await getAccount(session.account, session._key)
+          const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session.account, session._key)
           this.$store.commit('setAccount', account)
           this.$store.commit('setSession', session)
 

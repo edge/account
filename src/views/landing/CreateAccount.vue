@@ -150,13 +150,21 @@
 </template>
 
 <script>
-import { CurrencyDollarIcon, DuplicateIcon, FingerPrintIcon, ExclamationIcon, KeyIcon } from '@heroicons/vue/outline'
+import * as utils from '../../account-utils/index'
+import {
+  CurrencyDollarIcon,
+  DuplicateIcon,
+  ExclamationIcon,
+  FingerPrintIcon,
+  KeyIcon
+} from '@heroicons/vue/outline'
 import { CreditCardIcon, InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
-import { createAccount } from '@/utils/account-utils'
+
+const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 
 export default {
   name: 'CreateAccount',
@@ -223,7 +231,7 @@ export default {
 
       setTimeout(async () => {
         try {
-          const res = await createAccount()
+          const res = await utils.accounts.createAccount(ACCOUNT_API_URL)
           // finish number generator on newly generated account number and dispatch to store
           clearInterval(numGeneratorId)
           this.accountNumber = res.account._key
