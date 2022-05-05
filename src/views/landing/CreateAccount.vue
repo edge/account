@@ -107,7 +107,7 @@
             </div>
 
             <!-- skip step button -->
-            <button @click.prevent="finish" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
+            <button @click.prevent="goToAccount" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
           </div>
         </div>
 
@@ -116,12 +116,15 @@
           <div class="mt-6">
             <button
               v-if="step > 1"
-              @click.prevent="finish"
+              @click.prevent="goToAccount"
               class="w-full button button--solid button--success"
             >
               <span>Go directly to my account</span>
             </button>
-            <button v-else @click.prevent="finish" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">I already have an account</button>
+            <router-link v-else
+              :to="{ name: 'Sign In' }"
+              class="w-full block mt-2 text-sm text-center text-gray-500 underline hover:text-green"
+            >I already have an account</router-link>
           </div>
         </div>
       </div>
@@ -138,14 +141,15 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
-import { mapActions, mapGetters } from 'vuex'
-import { generateAccountNumber } from '../../utils/api'
+import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
+
+import { createAccount } from '@/utils/account-utils'
 
 export default {
   name: 'Sign In',
   title() {
-    return 'Edge Account Portal » Sign In'
+    return 'Edge Account Portal » Create Account'
   },
   components: {
     CurrencyDollarIcon,
@@ -162,7 +166,6 @@ export default {
   data() {
     return {
       accountNumber: '',
-      activePanel: 'signIn',
       copied: false,
       errors: {
         accountNumber: ''
@@ -183,22 +186,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      user: 'auth/StateUser'
-    }),
+    ...mapState(['account', 'session']),
     isAccountGenerated() {
       return this.accountNumber && !this.isGeneratingAccount
     },
     formattedAccountNumber() {
-      // TEMPORARY, UNTIL API IS UPDATED
-      if (this.accountNumber.length > 16) return this.accountNumber
-
       // add space every 4 characters
       return this.accountNumber.toString().replace(/.{4}/g, '$& ')
     }
   },
   methods: {
-    ...mapActions(['auth/login', 'auth/register', 'auth/verifyToken']),
     changeStep (newStep) {
       if (!this.isAccountGenerated) return
       this.step = newStep
@@ -213,32 +210,29 @@ export default {
       }, 1000)
     },
     async generateAccount() {
+      const res = await createAccount()
+
       this.isGeneratingAccount = true
-
-      const newAccountNumber = await generateAccountNumber()
-
       this.accountNumber = this.generateRandomAccountNumber()
       const numGeneratorId = setInterval(() => {
         this.accountNumber = this.generateRandomAccountNumber()
       }, 200)
 
       setTimeout(async () => {
+        // finish number generator on newly generated account number and dispatch to store
         clearInterval(numGeneratorId)
-        // this.accountNumber = newAccountNumber.accountNumber
-        // await this['auth/register'](this.accountNumber)
-
-        // TEMPORARY, UNTIL API IS UPDATED
-        this.accountNumber = "0142 9991 9226 0627"
-        await this['auth/login']("0142 9991 9226 0627")
+        this.accountNumber = res.account._key
+        this.$store.commit('setAccount', res.account)
+        this.$store.commit('setSession', res.session)
 
         this.isGeneratingAccount = false
         this.step = 2
-      }, 5000)
+      }, 3000)
     },
     generateRandomAccountNumber() {
       return Math.floor(Math.random() * 1e16)
     },
-    async finish() {
+    async goToAccount() {
       this.$router.push('/')
     },
     async verify2fa() {

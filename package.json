@@ -14,7 +14,7 @@
     "build": "vue-cli-service build",
     "dev": "vue-cli-service --port 8000 serve",
     "start": "node server/index.js",
-    "testnet": "VUE_APP_ACCOUNT_API_URL=https://api.account.test.network npm run dev"
+    "testnet": "VUE_APP_ACCOUNT_API_URL=http://localhost:8419 npm run dev"
   },
   "main": "server/index.js",
   "dependencies": {
@@ -42,6 +42,7 @@
     "morgan": "^1.10.0",
     "path": "^0.12.7",
     "ramda": "^0.27.1",
+    "superagent": "^7.1.3",
     "swrv": "^1.0.0-beta.8",
     "v-mask": "^2.3.0",
     "vue": "^3.0.11",

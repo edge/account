@@ -13,4 +13,4 @@ const accountNumberRegexp = /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/
 /**
  * XE address validator.
  */
-export const accountNumber = helpers.withMessage('Your account number is 16 digits', v => accountNumberRegexp.test(v))
+export const accountNumberInput = helpers.withMessage('Your account number is 16 digits', v => accountNumberRegexp.test(v))

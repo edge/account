@@ -16,18 +16,18 @@
             id="accountNumber"
             class="input input--floating"
             v-mask="'#### #### #### ####'"
-            v-model="v$.accountNumber.$model"
+            v-model="v$.accountNumberInput.$model"
             placeholder="1234 5678 9012 3456"
           />
         </div>
         <!-- error message  -->
-        <div class="flex items-center errorMessage" v-for="error of v$.accountNumber.$errors" :key="error.$uid">
+        <div class="flex items-center errorMessage" v-for="error of v$.accountNumberInput.$errors" :key="error.$uid">
           <ExclamationIcon class="w-3.5 h-3.5" />
           <span class="errorMessage__text">{{error.$message}}</span>
         </div>
-        <div v-if="errors.accountNumber" class="flex items-center errorMessage">
+        <div v-if="errors.accountNumberInput" class="flex items-center errorMessage">
           <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{errors.accountNumber}}</span>
+          <span class="errorMessage__text">{{errors.accountNumberInput}}</span>
         </div>
 
         <div v-show="requires2fa">
@@ -109,8 +109,9 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
-import { mapActions, mapGetters } from 'vuex'
 import useVuelidate from '@vuelidate/core'
+
+import { createSession, getAccount } from '@/utils/account-utils'
 
 export default {
   name: 'Sign In',
@@ -127,9 +128,9 @@ export default {
   },
   data() {
     return {
-      accountNumber: '',
+      accountNumberInput: '',
       errors: {
-        accountNumber: ''
+        accountNumberInput: ''
       },
       isSigningIn: false,
       isVerifying: false,
@@ -140,21 +141,20 @@ export default {
   },
   validations() {
     return {
-      accountNumber: [
-        validation.accountNumber
+      accountNumberInput: [
+        validation.accountNumberInput
      ]
     }
   },
   computed: {
-    ...mapGetters({
-      user: 'auth/StateUser'
-    }),
+    accountNumber() {
+      return this.accountNumberInput.split(' ').join('')
+    },
     canSignIn() {
-      return !this.v$.$invalid && !this.errors.accountNumber
+      return !this.v$.$invalid && !this.errors.accountNumberInput
     }
   },
   methods: {
-    ...mapActions(['auth/login', 'auth/register', 'auth/verifyToken']),
     goToCreateAccount () {
       this.$router.push({ name: 'Create Account' })
     },
@@ -163,10 +163,33 @@ export default {
 
       this.isSigningIn = true
 
-      const loginResponse = await this['auth/login'](this.accountNumber)
+      try {
+        const session = await createSession(this.accountNumber)
 
-      setTimeout(() => {
-        if (this.user) {
+        setTimeout(async () => {
+          if (session._key) {
+            const account = await getAccount(session.account, session._key)
+            this.$store.commit('setAccount', account)
+            this.$store.commit('setSession', session)
+
+            this.$router.push('/servers')
+          }
+        }, 1000)
+      } catch (error) {
+        setTimeout(() => {
+          this.isSigningIn = false
+          this.errors.accountNumberInput = 'No account found'
+        }, 1000)
+      }
+
+      const session = await createSession(this.accountNumber)
+
+      setTimeout(async () => {
+        if (session._key) {
+          const account = await getAccount(session.account, session._key)
+          this.$store.commit('setAccount', account)
+          this.$store.commit('setSession', session)
+
           this.$router.push('/servers')
         }
 
@@ -224,9 +247,9 @@ export default {
     }
   },
   watch: {
-    accountNumber() {
+    accountNumberInput() {
       // reset account number error (i.e. invalid account) when input is changed
-      this.errors.accountNumber = ''
+      this.errors.accountNumberInput = ''
     }
   }
 }
