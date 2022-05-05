@@ -12,7 +12,7 @@ const store = createStore({
     session: null
   },
   mutations: {
-    reset(state) {
+    logout(state) {
       state.account = null
       state.session = null
     },

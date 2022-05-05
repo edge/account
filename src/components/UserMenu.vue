@@ -1,7 +1,7 @@
 <template>
-  <Menu as='div' class="menu" v-if="user">
+  <Menu as='div' class="menu" v-if="account">
     <MenuButton class="menu__button">
-      <span class="w-full truncate">{{user.accountNumber}}</span>
+      <span class="w-full truncate">{{ formattedAccountNumber }}</span>
       <ChevronDownIcon class="w-5 h-5 text-gray-400" />
     </MenuButton>
     <MenuItems class="menu__items">
@@ -46,6 +46,8 @@
 <script>
   import {ChevronDownIcon} from "@heroicons/vue/solid"
   import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue"
+  import { mapState } from 'vuex'
+
   export default {
     name: "UserMenu",
     components: {
@@ -55,13 +57,18 @@
       MenuItems,
       MenuItem,
     },
-    props: ['user'],
+    computed: {
+      ...mapState(['account']),
+      formattedAccountNumber() {
+        return this.account._key.replace(/.{4}/g, '$& ')
+      }
+    },
     methods: {
       navigate(path) {
         this.$router.push(path)
       },
       async logout() {
-        await this.$store.dispatch('auth/logout')
+        await this.$store.commit('logout')
         this.$router.push('/signin')
       }
     }

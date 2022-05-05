@@ -16,7 +16,7 @@
       <router-link to="/servers/deploy">
         <button class="h-full button button--success">Deploy Server</button>
       </router-link>
-      <UserMenu :user=user />
+      <UserMenu />
     </div>
     <MobileNavigation />
   </div>
@@ -28,7 +28,7 @@
   import MobileNavigation from '@/components/MobileNavigation'
   import Search from '@/components/Search'
   import UserMenu from '@/components/UserMenu'
-  import { mapGetters } from 'vuex'
+  import { mapState } from 'vuex'
 
   export default {
     name: "TopNavigation",
@@ -51,9 +51,7 @@
       UserMenu
     },
     computed: {
-      ...mapGetters({
-        user: 'auth/StateUser'
-      })
+      ...mapState(['account', 'session']),
     },
     methods: {
       bodyScrollLock () {
