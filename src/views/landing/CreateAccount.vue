@@ -24,11 +24,21 @@
               >
                 <span>Generate Account</span>
               </button>
+
+              <!-- error message  -->
+              <div v-if="errors.accountNumber" class="flex items-center errorMessage mt-2">
+                <ExclamationIcon class="w-3.5 h-3.5" />
+                <span class="errorMessage__text">{{ errors.accountNumber }}</span>
+              </div>
             </div>
 
             <div class="accountNumber" v-show="isAccountGenerated || isGeneratingAccount">
-              <span class="text-2xl text-green monospace">{{formattedAccountNumber}}</span>
-              <button v-show="isAccountGenerated" @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
+              <span class="text-2xl text-green monospace">{{ formattedAccountNumber }}</span>
+              <button
+                v-show="isAccountGenerated"
+                @click.prevent="copyToClipboard"
+                class="text-gray-400 hover:text-green"
+              >
                 <DuplicateIcon class="w-6 h-6" />
               </button>
               <div
@@ -87,22 +97,28 @@
           <div class="step-content" v-show="step === 3">
             <div class="grid grid-cols-3 grid-rows-2 gap-3 my-4">
               <span class="credit-item">
-                <CurrencyDollarIcon class="h-16 text-green" />
+                <CurrencyDollarIcon class="credit-item-icon" />
+                <span class="text-sm">XE</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="h-16 text-green" />
+                <CurrencyDollarIcon class="credit-item-icon" />
+                <span class="text-sm">EDGE</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="h-16 text-green" />
+                <CreditCardIcon class="credit-item-icon" />
+                <span class="text-sm">Credit/Debit</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="h-16 text-green" />
+                <CurrencyDollarIcon class="credit-item-icon" />
+                <span class="text-sm">BTC</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="h-16 text-green" />
+                <CurrencyDollarIcon class="credit-item-icon" />
+                <span class="text-sm">ETH</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="h-16 text-green" />
+                <CurrencyDollarIcon class="credit-item-icon" />
+                <span class="text-sm">xHaven</span>
               </span>
             </div>
 
@@ -134,24 +150,21 @@
 </template>
 
 <script>
-import * as validation from '../../utils/validation'
 import { CurrencyDollarIcon, DuplicateIcon, FingerPrintIcon, ExclamationIcon, KeyIcon } from '@heroicons/vue/outline'
-import { InformationCircleIcon } from '@heroicons/vue/solid'
+import { CreditCardIcon, InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
-import { mapState } from 'vuex'
-import useVuelidate from '@vuelidate/core'
-
 import { createAccount } from '@/utils/account-utils'
 
 export default {
-  name: 'Sign In',
+  name: 'CreateAccount',
   title() {
     return 'Edge Account Portal » Create Account'
   },
   components: {
+    CreditCardIcon,
     CurrencyDollarIcon,
     DuplicateIcon,
     ExclamationIcon,
@@ -178,15 +191,7 @@ export default {
       totpToken: null
     }
   },
-  validations() {
-    return {
-      accountNumber: [
-        validation.accountNumber
-     ]
-    }
-  },
   computed: {
-    ...mapState(['account', 'session']),
     isAccountGenerated() {
       return this.accountNumber && !this.isGeneratingAccount
     },
@@ -201,33 +206,40 @@ export default {
       this.step = newStep
     },
     async copyToClipboard () {
-      if (this.isGeneratingAccount || !this.accountNumber) return
-      this.copied = true
       await navigator.clipboard.writeText(this.accountNumber)
+      this.copied = true
 
       setTimeout(() => {
         this.copied = false
       }, 1000)
     },
     async generateAccount() {
-      const res = await createAccount()
-
       this.isGeneratingAccount = true
+      this.errors.accountNumber = ''
       this.accountNumber = this.generateRandomAccountNumber()
       const numGeneratorId = setInterval(() => {
         this.accountNumber = this.generateRandomAccountNumber()
-      }, 200)
+      }, 100)
 
       setTimeout(async () => {
-        // finish number generator on newly generated account number and dispatch to store
-        clearInterval(numGeneratorId)
-        this.accountNumber = res.account._key
-        this.$store.commit('setAccount', res.account)
-        this.$store.commit('setSession', res.session)
+        try {
+          const res = await createAccount()
+          // finish number generator on newly generated account number and dispatch to store
+          clearInterval(numGeneratorId)
+          this.accountNumber = res.account._key
+          this.$store.commit('setAccount', res.account)
+          this.$store.commit('setSession', res.session)
 
-        this.isGeneratingAccount = false
-        this.step = 2
-      }, 3000)
+          this.isGeneratingAccount = false
+          this.changeStep(2)
+        }
+        catch (error) {
+          clearInterval(numGeneratorId)
+          this.isGeneratingAccount = false
+          this.accountNumber = ''
+          this.errors.accountNumber = 'Oops, something went wrong. Please try again.'
+        }
+      }, 1000)
     },
     generateRandomAccountNumber() {
       return Math.floor(Math.random() * 1e16)
@@ -264,17 +276,6 @@ export default {
           this.errors.totpToken = 'Invalid 2FA token'
         }
       }, 2000)
-    }
-  },
-  setup() {
-    return {
-      v$: useVuelidate()
-    }
-  },
-  watch: {
-    accountNumber() {
-      // reset account number error (i.e. invalid account) when input is changed
-      this.errors.accountNumber = ''
     }
   }
 }
@@ -335,6 +336,10 @@ export default {
   }
 
   .credit-item {
-    @apply flex border-2 border-gray rounded items-center justify-center cursor-pointer hover:border-green;
+    @apply flex flex-col border-2 border-gray rounded-md items-center justify-center cursor-pointer hover:border-green text-gray hover:text-green;
+  }
+
+  .credit-item-icon {
+    @apply h-10;
   }
 </style>

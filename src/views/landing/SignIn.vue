@@ -114,7 +114,7 @@ import useVuelidate from '@vuelidate/core'
 import { createSession, getAccount } from '@/utils/account-utils'
 
 export default {
-  name: 'Sign In',
+  name: 'SignIn',
   title() {
     return 'Edge Account Portal » Sign In'
   },
@@ -165,26 +165,6 @@ export default {
 
       try {
         const session = await createSession(this.accountNumber)
-
-        setTimeout(async () => {
-          if (session._key) {
-            const account = await getAccount(session.account, session._key)
-            this.$store.commit('setAccount', account)
-            this.$store.commit('setSession', session)
-
-            this.$router.push('/servers')
-          }
-        }, 1000)
-      } catch (error) {
-        setTimeout(() => {
-          this.isSigningIn = false
-          this.errors.accountNumberInput = 'No account found'
-        }, 1000)
-      }
-
-      const session = await createSession(this.accountNumber)
-
-      setTimeout(async () => {
         if (session._key) {
           const account = await getAccount(session.account, session._key)
           this.$store.commit('setAccount', account)
@@ -192,23 +172,11 @@ export default {
 
           this.$router.push('/servers')
         }
-
-        // TEMPORARY - handle unauthorised log in attempt
-        else if (!loginResponse) {
-          this.isSigningIn = false
-          this.errors.accountNumber = 'No account found'
-        }
-
-        else {
-          if (loginResponse.requires2fa) {
-            this.requires2fa = true
-            this.totpSecret = loginResponse.totpSecret
-          } else {
-            this.isSigningIn = false
-            this.errors.accountNumber = 'No account found'
-          }
-        }
-      }, 1000)
+      } catch (error) {
+        this.isSigningIn = false
+        this.errors.accountNumberInput = 'No account found'
+      }
+      this.isSigningIn = false
     },
     async verify2fa() {
       this.isVerifying  = true
