@@ -1,19 +1,19 @@
 <template>
-  <div v-show="step === 1">
+  <div v-show="step === 1" class="my-2">
     <p class="text-gray-500">Add an email address to your account so that it may be recovered in the event that you lose your account number.</p>
 
-    <div class="flex items-center w-full rounded-md" :class="wide ? '' : 'border border-gray'">
+    <div class="flex items-center w-full">
       <input
         v-model="v$.email.$model"
         label="Email address"
         type="email"
         autocomplete="off"
-        class="overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none"
-        :class="wide ? 'text-lg' : 'text-md'"
+        class="overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
+        :class="fullScreen ? 'text-lg' : 'border border-gray border-r-0'"
         placeholder="Enter your email address"
       />
       <button
-        class="order-2 rounded-l-none text-sm button button--success lg:order-1"
+        class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
         @click.prevent="addEmail"
         :disabled="this.v$.email.$invalid"
       >
@@ -37,23 +37,23 @@
     </div>
   </div>
 
-  <div v-show="step === 2">
+  <div v-show="step === 2" class="my-2">
     <p class="text-gray-500">Not quite there yet. Check your emails for a verification email and enter the confirmation code below.</p>
 
-    <div class="flex items-center w-full rounded-md" :class="wide ? '' : 'border border-gray'">
+    <div class="flex items-center w-full">
       <input
         v-model="v$.confirmationCode.$model"
         label="Confirmation code"
         autocomplete="off"
-        class="overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none text-center focus:outline-none"
-        :class="wide ? 'text-lg' : 'text-md'"
+        class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none "
+        :class="fullScreen ? '' : 'border border-gray border-r-0'"
         v-mask="'# # # # # #'"
         placeholder="1 2 3 4 5 6"
       />
       <button
-        class="order-2 rounded-l-none text-sm button button--success lg:order-1"
+        class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
         @click.prevent="confirmEmail"
-        :disabled="v$.confirmationCode.invalid"
+        :disabled="v$.confirmationCode.$invalid"
       >
         <span v-if="isSaving"><LoadingSpinner /></span>
         <span v-else>Confirm</span>
@@ -117,7 +117,7 @@ export default {
       ]
     }
   },
-  props: ['wide'],
+  props: ['fullScreen'],
   computed: {
     ...mapState(['account', 'session'])
   },
@@ -133,9 +133,9 @@ export default {
 
         const res = await utils.accounts.enableRecovery(
           ACCOUNT_API_URL,
+          this.session._key,
           this.account._key,
-          this.email,
-          this.session._key
+          this.email
         )
         console.log(res)
 

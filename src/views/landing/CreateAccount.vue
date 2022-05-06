@@ -1,5 +1,5 @@
 <template>
-  <div class="landingPage__content">
+  <div class="landingPage__content mt-14">
     <Logo/>
 
     <div>
@@ -67,7 +67,7 @@
             <span>Secure your account</span>
           </div>
 
-          <div class="step-content" v-show="step === 2">
+          <div class="step-content" v-if="step === 2">
             <div class="my-4">
               <button
                 @click.prevent="toggle2fa"
@@ -82,7 +82,7 @@
 
               <div v-show="show2fa">
                 <div class="input-group mt-2">
-                  <!-- <GoogleAuthEnable /> -->
+                  <GoogleAuthEnable />
                 </div>
               </div>
             </div>
@@ -122,14 +122,14 @@
             <span>Add credit to your account</span>
           </div>
 
-          <div class="step-content" v-show="step === 3">
+          <div class="step-content" v-if="step === 3">
             <div class="grid grid-cols-3 grid-rows-2 gap-3 my-4">
               <span class="credit-item">
-                <CurrencyDollarIcon class="credit-item-icon" />
+                <CubeTransparentIcon class="credit-item-icon" />
                 <span class="text-sm">XE</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="credit-item-icon" />
+                <CurrencyYenIcon class="credit-item-icon" />
                 <span class="text-sm">EDGE</span>
               </span>
               <span class="credit-item">
@@ -137,15 +137,15 @@
                 <span class="text-sm">Credit/Debit</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="credit-item-icon" />
+                <CurrencyBangladeshiIcon class="credit-item-icon" />
                 <span class="text-sm">BTC</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="credit-item-icon" />
+                <CurrencyEuroIcon class="credit-item-icon" />
                 <span class="text-sm">ETH</span>
               </span>
               <span class="credit-item">
-                <CurrencyDollarIcon class="credit-item-icon" />
+                <CurrencyRupeeIcon class="credit-item-icon" />
                 <span class="text-sm">xHaven</span>
               </span>
             </div>
@@ -190,7 +190,15 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   CreditCardIcon,
-  InformationCircleIcon
+
+  // temporary icons for add credit section
+  CubeTransparentIcon,
+  CurrencyBangladeshiIcon,
+  CurrencyEuroIcon,
+  CurrencyRupeeIcon,
+  CurrencyYenIcon,
+
+  InformationCircleIcon,
 } from '@heroicons/vue/solid'
 import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -211,6 +219,14 @@ export default {
     ChevronRightIcon,
     CreditCardIcon,
     CurrencyDollarIcon,
+
+    // temporary icons for add credit section
+    CurrencyBangladeshiIcon,
+    CurrencyEuroIcon,
+    CurrencyRupeeIcon,
+    CurrencyYenIcon,
+    CubeTransparentIcon,
+
     DuplicateIcon,
     ExclamationIcon,
     FingerPrintIcon,
@@ -393,7 +409,7 @@ export default {
   }
 
   .credit-item {
-    @apply flex flex-col border-2 border-gray rounded-md items-center justify-center cursor-pointer hover:border-green text-gray hover:text-green;
+    @apply flex flex-col border border-gray rounded-md p-1 items-center justify-center cursor-pointer hover:border-green text-gray hover:text-green;
   }
 
   .credit-item-icon {

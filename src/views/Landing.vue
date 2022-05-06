@@ -25,15 +25,15 @@ export default {
     @apply flex w-screen h-screen bg-white;
   }
   .landingPage__left {
-    @apply flex justify-center w-full h-full px-5 lg:w-1/2;
+    @apply flex justify-center items-start w-full h-full px-5 lg:w-1/2;
   }
   .landingPage__right {
-    @apply hidden w-1/2 h-full lg:block;
+    @apply hidden w-1/2 h-full lg:block fixed right-0;
   }
   .landingPage__content {
     @apply flex flex-col w-full my-auto space-y-8 py-10 sm:max-w-md;
   }
   .landingPage__form {
-    @apply flex flex-col space-y-6;
+    @apply flex flex-col;
   }
 </style>

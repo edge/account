@@ -14,18 +14,18 @@
           <label for="accountNumber" class="label">Account number</label>
           <input
             id="accountNumber"
-            class="input input--floating"
+            class="border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg focus:outline-none"
             v-mask="'#### #### #### ####'"
             v-model="v$.accountNumberInput.$model"
             placeholder="1234 5678 9012 3456"
           />
         </div>
         <!-- error message  -->
-        <div class="flex items-center errorMessage" v-for="error of v$.accountNumberInput.$errors" :key="error.$uid">
+        <div class="flex items-center errorMessage mt-2" v-for="error of v$.accountNumberInput.$errors" :key="error.$uid">
           <ExclamationIcon class="w-3.5 h-3.5" />
           <span class="errorMessage__text">{{ error.$message }}</span>
         </div>
-        <div v-if="errors.accountNumberInput" class="flex items-center errorMessage">
+        <div v-if="errors.accountNumberInput" class="flex items-center errorMessage mt-2">
           <ExclamationIcon class="w-3.5 h-3.5" />
           <span class="errorMessage__text">{{ errors.accountNumberInput }}</span>
         </div>
@@ -67,7 +67,7 @@
         </div>
 
         <!-- buttons -->
-        <div class="flex flex-col" :class="requires2fa ? 'transform -translate-y-4' : ''">
+        <div class="flex flex-col mt-6" :class="requires2fa ? 'transform -translate-y-4' : ''">
           <button
             @click.prevent="signIn"
             class="mb-2 button button--success"
@@ -167,7 +167,7 @@ export default {
       try {
         const session = await utils.sessions.createSession(ACCOUNT_API_URL, this.accountNumber)
         if (session._key) {
-          const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session.account, session._key)
+          const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key, session.account)
           this.$store.commit('setAccount', account)
           this.$store.commit('setSession', session)
 

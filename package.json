@@ -13,11 +13,13 @@
   "scripts": {
     "build": "vue-cli-service build",
     "dev": "vue-cli-service --port 8000 serve",
+    "dev:local": "VUE_APP_ACCOUNT_API_URL=http://localhost:8419 npm run dev",
     "start": "node server/index.js",
     "testnet": "VUE_APP_ACCOUNT_API_URL=https://api.account.test.network npm run dev"
   },
   "main": "server/index.js",
   "dependencies": {
+    "@chenfengyuan/vue-qrcode": "^2.0.0",
     "@edge/wallet-utils": "0.13.0",
     "@headlessui/vue": "^1.4.2",
     "@heroicons/vue": "^1.0.1",

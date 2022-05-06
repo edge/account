@@ -61,7 +61,6 @@ export default {
     async copyToClipboard () {
       this.copied = true
       await navigator.clipboard.writeText(this.user.accountNumber)
-      
       setTimeout(() => {
         this.copied = false
       }, 2000)
