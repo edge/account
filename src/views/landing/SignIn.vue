@@ -23,11 +23,11 @@
         <!-- error message  -->
         <div class="flex items-center errorMessage" v-for="error of v$.accountNumberInput.$errors" :key="error.$uid">
           <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{error.$message}}</span>
+          <span class="errorMessage__text">{{ error.$message }}</span>
         </div>
         <div v-if="errors.accountNumberInput" class="flex items-center errorMessage">
           <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{errors.accountNumberInput}}</span>
+          <span class="errorMessage__text">{{ errors.accountNumberInput }}</span>
         </div>
 
         <div v-show="requires2fa">

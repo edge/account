@@ -68,23 +68,51 @@
           </div>
 
           <div class="step-content" v-show="step === 2">
-            <!-- generate account button -->
             <div class="my-4">
               <button
-                @click.prevent="generateAccount"
-                class="my-2 w-full button button--solid"
+                @click.prevent="toggle2fa"
+                class="w-full button button--solid"
               >
                 <span>Enable Two-factor Authentication (2FA)</span>
+                <div class="absolute right-3">
+                  <ChevronDownIcon v-if="show2fa" class="chevron-icon" />
+                  <ChevronRightIcon v-else class="chevron-icon" />
+                </div>
               </button>
+
+              <div v-show="show2fa">
+                <div class="input-group mt-2">
+                  <!-- <GoogleAuthEnable /> -->
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
               <button
-                @click.prevent="generateAccount"
-                class="my-2 w-full button button--solid"
+                @click.prevent="toggleRecovery"
+                class="w-full button button--solid"
               >
                 <span>Add Recovery Email</span>
+                <div class="absolute right-3">
+                  <ChevronDownIcon v-if="showRecovery" class="chevron-icon" />
+                  <ChevronRightIcon v-else class="chevron-icon" />
+                </div>
               </button>
+
+              <div v-show="showRecovery">
+                <div class="input-group mt-2">
+                  <RecoveryEmail />
+                </div>
+              </div>
             </div>
+
             <!-- skip step button -->
-            <button @click.prevent="step = 3" class="w-full text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
+            <button
+              @click.prevent="step = 3"
+              class="w-full text-sm text-center text-gray-500 underline hover:text-green"
+            >
+              Skip for now
+            </button>
           </div>
         </div>
 
@@ -158,9 +186,16 @@ import {
   FingerPrintIcon,
   KeyIcon
 } from '@heroicons/vue/outline'
-import { CreditCardIcon, InformationCircleIcon } from '@heroicons/vue/solid'
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  CreditCardIcon,
+  InformationCircleIcon
+} from '@heroicons/vue/solid'
+import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
+import RecoveryEmail from "@/components/account/RecoveryEmail"
 import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
 
@@ -172,15 +207,19 @@ export default {
     return 'Edge Account Portal » Create Account'
   },
   components: {
+    ChevronDownIcon,
+    ChevronRightIcon,
     CreditCardIcon,
     CurrencyDollarIcon,
     DuplicateIcon,
     ExclamationIcon,
     FingerPrintIcon,
+    GoogleAuthEnable,
     InformationCircleIcon,
     KeyIcon,
     LoadingSpinner,
     Logo,
+    RecoveryEmail,
     Tooltip,
     UserMenu,
   },
@@ -194,6 +233,8 @@ export default {
       isGeneratingAccount: false,
       isVerifying: false,
       requires2fa: false,
+      show2fa: false,
+      showRecovery: false,
       step: 1,
       totpSecret: null,
       totpToken: null
@@ -254,6 +295,14 @@ export default {
     },
     async goToAccount() {
       this.$router.push('/')
+    },
+    toggle2fa() {
+      this.show2fa = !this.show2fa
+      if (this.show2fa) this.showRecovery = false
+    },
+    toggleRecovery() {
+      this.showRecovery = !this.showRecovery
+      if(this.showRecovery) this.show2fa = false
     },
     async verify2fa() {
       this.isVerifying  = true
@@ -349,5 +398,9 @@ export default {
 
   .credit-item-icon {
     @apply h-10;
+  }
+
+  .chevron-icon {
+    @apply h-4 text-white;
   }
 </style>
