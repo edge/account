@@ -100,7 +100,6 @@ export default {
       ],
       confirmationCode: [
         validation.confirmationCode,
-        validation.required
       ]
     }
   },
@@ -121,17 +120,18 @@ export default {
       if (!this.v$.email.invalid) {
         this.isLoading = true
 
-        const res = await utils.accounts.enableRecovery(
-          ACCOUNT_API_URL,
-          this.session._key,
-          this.email
-        )
-
-        setTimeout(() => {
+        try {
+          await utils.accounts.enableRecovery(
+            ACCOUNT_API_URL,
+            this.session._key,
+            this.email
+          )
           this.isLoading = false
-
           this.step = 2
-        }, 2000)
+        } catch (error) {
+          this.errors.email = 'Oops, something went wrong. Please try again.'
+          this.isLoading = false
+        }
       }
     },
     async verifyRecovery() {
@@ -148,6 +148,15 @@ export default {
   setup() {
     return {
       v$: useVuelidate()
+    }
+  },
+  watch: {
+    confirmationCode() {
+      // reset confirmation code error (i.e. invalid) when input is changed
+      this.errors.confirmationCode = ''
+    },
+    email() {
+      this.errors.email = ''
     }
   }
 }

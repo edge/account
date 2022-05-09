@@ -4,7 +4,7 @@
       class="my-2"
       :class="fullScreen ? 'grid lg:grid-cols-2' : ''"
     >
-      <div v-if="!enabled" class="order-2 mt-5 text-gray-500 lg:mt-0 lg:order-1">
+      <div class="order-2 mt-5 text-gray-500 lg:mt-0 lg:order-1">
         <ol>
           <li>Install the Google Authenticator app for <a class="underline text-green" target="_blank" href="https://itunes.apple.com/au/app/google-authenticator/id388497605?mt=8">iPhone</a> or <a class="underline text-green" target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>.</li>
           <li>Scan the QR code.
@@ -49,13 +49,6 @@
           <ExclamationIcon class="w-3.5 h-3.5" />
           <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
         </div>
-      </div>
-
-      <div v-else class="flex items-center">
-        <div>
-          <CheckCircleIcon class="w-5 text-green" />
-        </div>
-        <span class="ml-2">Two-factor authentication successfully enabled</span>
       </div>
     </div>
 
