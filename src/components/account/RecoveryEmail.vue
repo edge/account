@@ -1,7 +1,6 @@
 <template>
   <div v-show="step === 1" class="my-2">
     <p class="text-gray-500">Add an email address to your account so that it may be recovered in the event that you lose your account number.</p>
-
     <div class="flex items-center w-full">
       <input
         v-model="v$.email.$model"
@@ -14,10 +13,10 @@
       />
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
-        @click.prevent="addEmail"
+        @click.prevent="enableRecovery"
         :disabled="this.v$.email.$invalid"
       >
-        <span v-if="isSaving"><LoadingSpinner /></span>
+        <span class="p-0.5" v-if="isLoading"><LoadingSpinner /></span>
         <span v-else>Add</span>
       </button>
     </div>
@@ -30,16 +29,10 @@
       <ExclamationIcon class="w-3.5 h-3.5" />
       <span class="errorMessage__text">{{ errors.email }}</span>
     </div>
-
-    <div v-if="showFeedback" class="flex items-center mt-2 space-x-1 text-green">
-      <CheckCircleIcon class="w-4 h-4" />
-      <span>Confirmation email sent.</span>
-    </div>
   </div>
 
   <div v-show="step === 2" class="my-2">
     <p class="text-gray-500">Not quite there yet. Check your emails for a verification email and enter the confirmation code below.</p>
-
     <div class="flex items-center w-full">
       <input
         v-model="v$.confirmationCode.$model"
@@ -52,10 +45,10 @@
       />
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
-        @click.prevent="confirmEmail"
+        @click.prevent="verifyRecovery"
         :disabled="v$.confirmationCode.$invalid"
       >
-        <span v-if="isSaving"><LoadingSpinner /></span>
+        <span class="p-0.5" v-if="isLoading"><LoadingSpinner /></span>
         <span v-else>Confirm</span>
       </button>
     </div>
@@ -67,11 +60,6 @@
     <div v-if="errors.email" class="flex items-center errorMessage mt-1">
       <ExclamationIcon class="w-3.5 h-3.5" />
       <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
-    </div>
-
-    <div v-if="showFeedback" class="flex items-center mt-2 space-x-1 text-green">
-      <CheckCircleIcon class="w-4 h-4" />
-      <span>Recovery email updated successfully.</span>
     </div>
   </div>
 </template>
@@ -100,9 +88,8 @@ export default {
         confirmationCode: '',
         email: ''
       },
-      isSaving: false,
-      showFeedback: false,
-      step: 1
+      isLoading: false,
+      step: 1,
     }
   },
   validations() {
@@ -119,7 +106,10 @@ export default {
   },
   props: ['fullScreen'],
   computed: {
-    ...mapState(['account', 'session'])
+    ...mapState(['account', 'session']),
+    recoverySecret() {
+      return this.confirmationCode.split(' ').join('')
+    }
   },
   mounted() {
     if (this.account && this.account.email) {
@@ -127,58 +117,32 @@ export default {
     }
   },
   methods: {
-    async addEmail() {
+    async enableRecovery() {
       if (!this.v$.email.invalid) {
-        this.isSaving = true
+        this.isLoading = true
 
         const res = await utils.accounts.enableRecovery(
           ACCOUNT_API_URL,
           this.session._key,
-          this.account._key,
           this.email
         )
-        console.log(res)
 
         setTimeout(() => {
-          this.isSaving = false
-          this.showFeedback = true
+          this.isLoading = false
 
           this.step = 2
-
-          setTimeout(() => {
-            this.showFeedback = false
-          }, 2000)
         }, 2000)
       }
     },
-    async confirmEmail() {
-      if (!this.v$.email.invalid) {
-        this.isSaving = true
-
-        const res = await utils.accounts.verifyRecovery(
-          ACCOUNT_API_URL,
-          this.account._key,
-          this.confirmationCode.split(' ').join(''),
-          this.session._key
-        )
-        console.log(res)
-
-        // const body = {
-        //   accountNumber: this.account._key,
-        //   email: this.email
-        // }
-
-        setTimeout(() => {
-          this.isSaving = false
-          this.showFeedback = true
-
-          this.step = 2
-
-          setTimeout(() => {
-            this.showFeedback = false
-          }, 2000)
-        }, 2000)
+    async verifyRecovery() {
+      this.isLoading = true
+      try {
+        await utils.accounts.verifyRecovery(ACCOUNT_API_URL, this.session._key, this.account._key, this.recoverySecret)
+        this.confirmEnabled()
+      } catch (error) {
+        this.errors.confirmationCode = 'Unable to verify confirmation code'
       }
+      this.isLoading = false
     }
   },
   setup() {

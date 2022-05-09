@@ -2,14 +2,11 @@
   <div class="landingPage__content">
     <Logo/>
 
-    <form class="">
-      <p class="pr-5 text-lg">
+    <div class="" v-if="!requires2fa" >
+      <p class="pr-5 text-lg mb-2">
         <span>Welcome back. Enter your account number to sign into the Edge Network.</span>
       </p>
-
       <div class="landingPage__form">
-        <!-- input group -->
-        <!-- apply input-group__error class for error styles -->
         <div class="input-group">
           <label for="accountNumber" class="label">Account number</label>
           <input
@@ -30,51 +27,15 @@
           <span class="errorMessage__text">{{ errors.accountNumberInput }}</span>
         </div>
 
-        <div v-show="requires2fa">
-          <div class="relative input-group">
-            <div class="flex items-center space-x-1">
-              <label for="twoFactorCode" class="label">Verification Code</label>
-              <Tooltip
-                class="icon-grey"
-                position="right"
-                :wide="true"
-                theme="light"
-                text="Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Sed posuere consectetur est at lobortis.">
-                <InformationCircleIcon class="w-4 h-4 text-gray-400" />
-              </Tooltip>
-            </div>
-            <input
-              id="twoFactorCode"
-              v-model="totpToken"
-              label="Two-factor code"
-              type="text"
-              autocomplete="off"
-              class="flex-1 input input--floating"
-              placeholder="Enter your authentication code"
-            />
-            <span class="absolute top-0 right-0 flex-1 text-xs text-red" v-if="errors.totpToken">{{errors.totpToken}}</span>
-          </div>
-          <button
-            class="w-full mt-6 button button--success"
-            @click.prevent="verify2fa"
-            :disabled="isVerifying"
-          >
-            {{ isVerifying ? 'Verifying' : 'Verify' }}
-            <span v-if="isVerifying">
-              <LoadingSpinner />
-            </span>
-          </button>
-        </div>
-
         <!-- buttons -->
         <div class="flex flex-col mt-6" :class="requires2fa ? 'transform -translate-y-4' : ''">
           <button
             @click.prevent="signIn"
             class="mb-2 button button--success"
-            :disabled="isSigningIn || !canSignIn"
+            :disabled="isLoading || !canSignIn"
             v-show="!requires2fa"
           >
-            <div v-if="isSigningIn" class="flex flex-row">
+            <div v-if="isLoading" class="flex flex-row">
               <span>Signing in</span>
               <span><LoadingSpinner /></span>
             </div>
@@ -96,8 +57,52 @@
             <span>Create new account</span>
           </button>
         </div>
+
       </div>
-    </form>
+    </div>
+
+    <div class="flex flex-col" v-else>
+      <span class="text-lg mb-2">Authenticate your account.</span>
+      <span class="text-gray">Please enter the 6-digit code from your two factor authentication app:</span>
+
+      <div class="landingPage__form mt-4">
+        <div class="input-group">
+          <input
+            v-model="v$.confirmationCode.$model"
+            label="Confirmation code"
+            autocomplete="off"
+            class="border border-gray  text-center text-lg flex-1 px-3 py-2 rounded-md focus:outline-none "
+            v-mask="'# # # # # #'"
+            placeholder="1 2 3 4 5 6"
+          />
+        </div>
+        <!-- error message  -->
+        <div class="flex items-center errorMessage mt-2" v-for="error of v$.confirmationCode.$errors" :key="error.$uid">
+          <ExclamationIcon class="w-3.5 h-3.5" />
+          <span class="errorMessage__text">{{ error.$message }}</span>
+        </div>
+        <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-2">
+          <ExclamationIcon class="w-3.5 h-3.5" />
+          <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
+        </div>
+
+        <div class="flex flex-col mt-6">
+          <button
+            @click.prevent="signIn"
+            class="button button--success my-4"
+            :disabled="!canVerify"
+            >
+            <span>Verify my account</span>
+          </button>
+          <button
+            @click.prevent="returnToSignIn"
+            class="button button--solid"
+            >
+            <span>Cancel</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -130,21 +135,23 @@ export default {
   data() {
     return {
       accountNumberInput: '',
+      confirmationCode: null,
       errors: {
-        accountNumberInput: ''
+        accountNumberInput: '',
+        confirmationCode: ''
       },
-      isSigningIn: false,
-      isVerifying: false,
-      requires2fa: false,
-      totpSecret: null,
-      totpToken: null
+      isLoading: false,
+      requires2fa: false
     }
   },
   validations() {
     return {
       accountNumberInput: [
         validation.accountNumberInput
-     ]
+      ],
+      confirmationCode: [
+        validation.confirmationCode
+      ]
     }
   },
   computed: {
@@ -152,62 +159,46 @@ export default {
       return this.accountNumberInput.split(' ').join('')
     },
     canSignIn() {
-      return !this.v$.$invalid && !this.errors.accountNumberInput
+      return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput
+    },
+    canVerify() {
+      return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode
+    },
+    otpSecret() {
+      return this.confirmationCode ? this.confirmationCode.split(' ').join('') : null
     }
   },
   methods: {
     goToCreateAccount () {
       this.$router.push({ name: 'Create Account' })
     },
+    returnToSignIn() {
+      this.accountNumberInput = ''
+      this.confirmationCode = ''
+      this.requires2fa = false
+    },
     async signIn() {
-      if (!await this.v$.$validate()) return
+      if (!await this.v$.accountNumberInput.$validate()) return
 
-      this.isSigningIn = true
+      this.isLoading = true
 
       try {
-        const session = await utils.sessions.createSession(ACCOUNT_API_URL, this.accountNumber)
+        const session = await utils.sessions.createSession(ACCOUNT_API_URL, this.accountNumber, this.otpSecret)
         if (session._key) {
-          const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key, session.account)
+          const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
           this.$store.commit('setAccount', account)
           this.$store.commit('setSession', session)
 
           this.$router.push('/servers')
         }
       } catch (error) {
-        this.isSigningIn = false
-        this.errors.accountNumberInput = 'No account found'
-      }
-      this.isSigningIn = false
-    },
-    async verify2fa() {
-      this.isVerifying  = true
-      // Check form is valid.
-      if (!this.totpToken) {
-        this.errors.totpToken = 'Please enter the code from your device'
-        this.isVerifying  = false
-      } else {
-        this.errors.totpToken = ''
-      }
-
-      const body = {
-        accountNumber: this.accountNumber,
-        totpSecret: this.totpSecret,
-        totpToken: this.totpToken
-      }
-
-      // The action sets the userAccount in state, so we can check for
-      // this.user and redirect to the account.
-      await this['auth/verifyToken'](body)
-
-      setTimeout(() => {
-        this.isVerifying  = false
-        if (this.user) {
-          this.$router.push('/')
-        } else {
-          this.isSigningIn = false
-          this.errors.totpToken = 'Invalid 2FA token'
+        if (this.requires2fa) this.errors.confirmationCode = 'Verification code invalid'
+        if (error.response) {
+          if (error.response && error.response.status === 401) this.requires2fa = true
+          else this.errors.accountNumberInput = 'No account found'
         }
-      }, 2000)
+      }
+      this.isLoading = false
     }
   },
   setup() {
@@ -219,6 +210,10 @@ export default {
     accountNumberInput() {
       // reset account number error (i.e. invalid account) when input is changed
       this.errors.accountNumberInput = ''
+    },
+    confirmationCode() {
+      // reset account number error (i.e. invalid account) when input is changed
+      this.errors.confirmationCode = ''
     }
   }
 }

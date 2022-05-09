@@ -70,7 +70,7 @@
           <div class="step-content" v-if="step === 2">
             <div class="my-4">
               <button
-                @click.prevent="toggle2fa"
+                @click.prevent="toggleShow2fa"
                 class="w-full button button--solid"
               >
                 <span>Enable Two-factor Authentication (2FA)</span>
@@ -79,17 +79,21 @@
                   <ChevronRightIcon v-else class="chevron-icon" />
                 </div>
               </button>
-
               <div v-show="show2fa">
                 <div class="input-group mt-2">
-                  <GoogleAuthEnable />
+                  <GoogleAuthEnable v-if="!is2faEnabled" :confirmEnabled="onEnable2fa" />
+                  <div v-else class="my-4 flex items-center">
+                    <div>
+                      <CheckCircleIcon class="w-5 text-green" />
+                    </div>
+                    <span class="ml-2">Two-factor authentication successfully enabled</span>
+                  </div>
                 </div>
               </div>
             </div>
-
             <div class="mb-4">
               <button
-                @click.prevent="toggleRecovery"
+                @click.prevent="toggleShowRecovery"
                 class="w-full button button--solid"
               >
                 <span>Add Recovery Email</span>
@@ -98,14 +102,18 @@
                   <ChevronRightIcon v-else class="chevron-icon" />
                 </div>
               </button>
-
               <div v-show="showRecovery">
                 <div class="input-group mt-2">
-                  <RecoveryEmail />
+                  <RecoveryEmail v-if="!isRecoveryEnabled" :confirmEnabled="onEnableRecovery" />
+                  <div v-else class="my-2 flex items-center">
+                    <div>
+                      <CheckCircleIcon class="w-5 text-green" />
+                    </div>
+                    <span class="ml-2">Recovery email successfully added</span>
+                  </div>
                 </div>
               </div>
             </div>
-
             <!-- skip step button -->
             <button
               @click.prevent="step = 3"
@@ -113,6 +121,24 @@
             >
               Skip for now
             </button>
+          </div>
+          <div class="step-content" v-else-if="step > 2">
+            <div class="my-4">
+              <div class="flex items-center mb-4">
+                <div>
+                  <CheckCircleIcon v-if="is2faEnabled" class="w-5 text-green" />
+                  <MinusCircleIcon v-else class="w-5 text-gray" />
+                </div>
+                <span class="ml-2">Two-factor authentication {{ is2faEnabled ? 'successfully' : 'not' }} enabled</span>
+              </div>
+              <div class="flex items-center">
+                <div>
+                  <CheckCircleIcon v-if="isRecoveryEnabled" class="w-5 text-green" />
+                  <MinusCircleIcon v-else class="w-5 text-gray" />
+                </div>
+                <span class="ml-2">Recovery email {{ isRecoveryEnabled ? 'successfully' : 'not' }} added</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -122,7 +148,7 @@
             <span>Add credit to your account</span>
           </div>
 
-          <div class="step-content" v-if="step === 3">
+          <div class="step-content" v-if="step === 3 || isAccountSecured">
             <div class="grid grid-cols-3 grid-rows-2 gap-3 my-4">
               <span class="credit-item">
                 <CubeTransparentIcon class="credit-item-icon" />
@@ -155,7 +181,7 @@
           </div>
         </div>
 
-        <div class="step" >
+        <div >
           <!-- buttons -->
           <div class="mt-6">
             <button
@@ -184,9 +210,11 @@ import {
   DuplicateIcon,
   ExclamationIcon,
   FingerPrintIcon,
-  KeyIcon
+  KeyIcon,
+  MinusCircleIcon
 } from '@heroicons/vue/outline'
 import {
+  CheckCircleIcon,
   ChevronDownIcon,
   ChevronRightIcon,
   CreditCardIcon,
@@ -215,6 +243,7 @@ export default {
     return 'Edge Account Portal » Create Account'
   },
   components: {
+    CheckCircleIcon,
     ChevronDownIcon,
     ChevronRightIcon,
     CreditCardIcon,
@@ -235,6 +264,7 @@ export default {
     KeyIcon,
     LoadingSpinner,
     Logo,
+    MinusCircleIcon,
     RecoveryEmail,
     Tooltip,
     UserMenu,
@@ -248,7 +278,8 @@ export default {
       },
       isGeneratingAccount: false,
       isVerifying: false,
-      requires2fa: false,
+      is2faEnabled: false,
+      isRecoveryEnabled: false,
       show2fa: false,
       showRecovery: false,
       step: 1,
@@ -259,6 +290,9 @@ export default {
   computed: {
     isAccountGenerated() {
       return this.accountNumber && !this.isGeneratingAccount
+    },
+    isAccountSecured() {
+      return this.is2faEnabled && this.isRecoveryEnabled
     },
     formattedAccountNumber() {
       // add space every 4 characters
@@ -312,43 +346,19 @@ export default {
     async goToAccount() {
       this.$router.push('/')
     },
-    toggle2fa() {
+    onEnable2fa() {
+      this.is2faEnabled = true
+    },
+    onEnableRecovery() {
+      this.isRecoveryEnabled = true
+    },
+    toggleShow2fa() {
       this.show2fa = !this.show2fa
       if (this.show2fa) this.showRecovery = false
     },
-    toggleRecovery() {
+    toggleShowRecovery() {
       this.showRecovery = !this.showRecovery
       if(this.showRecovery) this.show2fa = false
-    },
-    async verify2fa() {
-      this.isVerifying  = true
-      // Check form is valid.
-      if (!this.totpToken) {
-        this.errors.totpToken = 'Please enter the code from your device'
-        this.isVerifying  = false
-      } else {
-        this.errors.totpToken = ''
-      }
-
-      const body = {
-        accountNumber: this.accountNumber,
-        totpSecret: this.totpSecret,
-        totpToken: this.totpToken
-      }
-
-      // The action sets the userAccount in state, so we can check for
-      // this.user and redirect to the account.
-      await this['auth/verifyToken'](body)
-
-      setTimeout(() => {
-        this.isVerifying  = false
-        if (this.user) {
-          this.$router.push('/')
-        } else {
-          this.isSigningIn = false
-          this.errors.totpToken = 'Invalid 2FA token'
-        }
-      }, 2000)
     }
   }
 }

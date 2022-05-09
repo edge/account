@@ -24,4 +24,4 @@ export const accountNumberInput = helpers.withMessage('Your account number is 16
  * 6-digit confirmation code validator.
  */
 const confCodeRegexp = /^\d{1}\s\d{1}\s\d{1}\s\d{1}\s\d{1}\s\d{1}$/
- export const confirmationCode = helpers.withMessage('The confirmation code is 6 digis', v => confCodeRegexp.test(v))
+ export const confirmationCode = helpers.withMessage('The confirmation code is 6 digits', v => confCodeRegexp.test(v))
