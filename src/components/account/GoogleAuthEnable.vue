@@ -101,8 +101,7 @@ export default {
   validations() {
     return {
       confirmationCode: [
-        validation.confirmationCode,
-        validation.required
+        validation.confirmationCode
       ]
     }
   },

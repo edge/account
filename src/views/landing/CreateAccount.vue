@@ -124,14 +124,14 @@
           </div>
           <div class="step-content" v-else-if="step > 2">
             <div class="my-4">
-              <div class="flex items-center mb-4">
+              <div @click="changeStep(2)" class="cursor-pointer flex items-center mb-4">
                 <div>
                   <ShieldCheckIcon v-if="is2faEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
                 <span class="ml-2">Two-factor authentication {{ is2faEnabled ? 'successfully' : 'not' }} enabled</span>
               </div>
-              <div class="flex items-center">
+              <div @click="changeStep(2)" class="cursor-pointer flex items-center">
                 <div>
                   <ShieldCheckIcon v-if="isRecoveryEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />

@@ -124,7 +124,6 @@ export default {
         this.resetErrors()
         this.focusNext(e)
         if (this.confirmationCode.length === 6) {
-          console.log('submitting')
           this.submitOnComplete()
         }
       }, 1)
