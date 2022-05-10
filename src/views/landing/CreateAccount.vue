@@ -283,8 +283,6 @@ export default {
       show2fa: false,
       showRecovery: false,
       step: 1,
-      totpSecret: null,
-      totpToken: null
     }
   },
   computed: {

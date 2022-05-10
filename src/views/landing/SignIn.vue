@@ -15,6 +15,7 @@
             v-mask="'#### #### #### ####'"
             v-model="v$.accountNumberInput.$model"
             placeholder="1234 5678 9012 3456"
+            @keypress="signInOnEnter"
           />
         </div>
         <!-- error message  -->
@@ -135,7 +136,7 @@ export default {
   data() {
     return {
       accountNumberInput: '',
-      confirmationCode: null,
+      confirmationCode: '',
       errors: {
         accountNumberInput: '',
         confirmationCode: ''
@@ -178,7 +179,7 @@ export default {
       this.requires2fa = false
     },
     async signIn() {
-      if (!await this.v$.accountNumberInput.$validate()) return
+      if (this.v$.accountNumberInput.$invalid) return
 
       this.isLoading = true
 
@@ -201,6 +202,11 @@ export default {
       setTimeout(() => {
         this.isLoading = false
       }, 1000)
+    },
+    signInOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.signIn()
     }
   },
   setup() {

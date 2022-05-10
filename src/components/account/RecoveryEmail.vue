@@ -10,6 +10,7 @@
         class="overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
         :class="fullScreen ? 'text-lg' : 'border border-gray border-r-0'"
         placeholder="Enter your email address"
+        @keypress="enableOnEnter"
       />
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
@@ -51,6 +52,7 @@
         :class="fullScreen ? '' : 'border border-gray border-r-0'"
         v-mask="'# # # # # #'"
         placeholder="1 2 3 4 5 6"
+        @keypress="verifyOnEnter"
       />
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
@@ -129,29 +131,39 @@ export default {
     }
   },
   methods: {
+    enableOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.enableRecovery()
+    },
     async enableRecovery() {
-      if (!this.v$.email.invalid) {
-        this.isLoading = true
+      if (this.v$.email.$invalid) return
+      this.isLoading = true
 
-        try {
-          await utils.accounts.enableRecovery(
-            ACCOUNT_API_URL,
-            this.session._key,
-            this.email
-          )
-          setTimeout(() => {
-            this.isLoading = false
-            this.step = 2
-          }, 1000)
-        } catch (error) {
-          this.errors.email = 'Oops, something went wrong. Please try again.'
-          setTimeout(() => {
-            this.isLoading = false
-          }, 1000)
-        }
+      try {
+        await utils.accounts.enableRecovery(
+          ACCOUNT_API_URL,
+          this.session._key,
+          this.email
+        )
+        setTimeout(() => {
+          this.isLoading = false
+          this.step = 2
+        }, 1000)
+      } catch (error) {
+        this.errors.email = 'Oops, something went wrong. Please try again.'
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1000)
       }
     },
+    verifyOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.verifyRecovery()
+    },
     async verifyRecovery() {
+      if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
       try {
         await utils.accounts.verifyRecovery(ACCOUNT_API_URL, this.session._key, this.account._key, this.recoverySecret)

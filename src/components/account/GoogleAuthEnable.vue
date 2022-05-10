@@ -31,6 +31,7 @@
             :class="fullScreen ? '' : 'border border-gray border-r-0'"
             v-mask="'# # # # # #'"
             placeholder="1 2 3 4 5 6"
+            @keypress="verifyOnEnter"
           />
           <button
             class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
@@ -117,6 +118,7 @@ export default {
       this.totpAuthUrl = res.url
     },
     async verify2fa() {
+      if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
       try {
         await utils.accounts.verify2fa(ACCOUNT_API_URL, this.session._key, this.otpSecret)
@@ -128,6 +130,11 @@ export default {
           this.isLoading = false
         }, 1000)
       }
+    },
+    verifyOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.verify2fa()
     }
   },
   mounted() {
