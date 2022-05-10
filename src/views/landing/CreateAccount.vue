@@ -84,7 +84,7 @@
                   <GoogleAuthEnable v-if="!is2faEnabled" :confirmEnabled="onEnable2fa" />
                   <div v-else class="my-4 flex items-center">
                     <div>
-                      <CheckCircleIcon class="w-5 text-green" />
+                      <ShieldCheckIcon class="w-5 text-green" />
                     </div>
                     <span class="ml-2">Two-factor authentication successfully enabled</span>
                   </div>
@@ -107,7 +107,7 @@
                   <RecoveryEmail v-if="!isRecoveryEnabled" :confirmEnabled="onEnableRecovery" />
                   <div v-else class="my-2 flex items-center">
                     <div>
-                      <CheckCircleIcon class="w-5 text-green" />
+                      <ShieldCheckIcon class="w-5 text-green" />
                     </div>
                     <span class="ml-2">Recovery email successfully added</span>
                   </div>
@@ -126,15 +126,15 @@
             <div class="my-4">
               <div class="flex items-center mb-4">
                 <div>
-                  <CheckCircleIcon v-if="is2faEnabled" class="w-5 text-green" />
-                  <MinusCircleIcon v-else class="w-5 text-gray" />
+                  <ShieldCheckIcon v-if="is2faEnabled" class="w-5 text-green" />
+                  <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
                 <span class="ml-2">Two-factor authentication {{ is2faEnabled ? 'successfully' : 'not' }} enabled</span>
               </div>
               <div class="flex items-center">
                 <div>
-                  <CheckCircleIcon v-if="isRecoveryEnabled" class="w-5 text-green" />
-                  <MinusCircleIcon v-else class="w-5 text-gray" />
+                  <ShieldCheckIcon v-if="isRecoveryEnabled" class="w-5 text-green" />
+                  <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
                 <span class="ml-2">Recovery email {{ isRecoveryEnabled ? 'successfully' : 'not' }} added</span>
               </div>
@@ -211,10 +211,9 @@ import {
   ExclamationIcon,
   FingerPrintIcon,
   KeyIcon,
-  MinusCircleIcon
+  ShieldExclamationIcon
 } from '@heroicons/vue/outline'
 import {
-  CheckCircleIcon,
   ChevronDownIcon,
   ChevronRightIcon,
   CreditCardIcon,
@@ -227,6 +226,7 @@ import {
   CurrencyYenIcon,
 
   InformationCircleIcon,
+  ShieldCheckIcon
 } from '@heroicons/vue/solid'
 import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -243,7 +243,6 @@ export default {
     return 'Edge Account Portal » Create Account'
   },
   components: {
-    CheckCircleIcon,
     ChevronDownIcon,
     ChevronRightIcon,
     CreditCardIcon,
@@ -264,7 +263,8 @@ export default {
     KeyIcon,
     LoadingSpinner,
     Logo,
-    MinusCircleIcon,
+    ShieldCheckIcon,
+    ShieldExclamationIcon,
     RecoveryEmail,
     Tooltip,
     UserMenu,

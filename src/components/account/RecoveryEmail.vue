@@ -14,9 +14,12 @@
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
         @click.prevent="enableRecovery"
-        :disabled="this.v$.email.$invalid"
+        :disabled="this.v$.email.$invalid || isLoading"
       >
-        <span class="p-0.5" v-if="isLoading"><LoadingSpinner /></span>
+        <div v-if="isLoading" class="flex flex-row">
+          <span>Sending Email</span>
+          <span><LoadingSpinner /></span>
+        </div>
         <span v-else>Add</span>
       </button>
     </div>
@@ -32,7 +35,13 @@
   </div>
 
   <div v-show="step === 2" class="my-2">
-    <p class="text-gray-500">Not quite there yet. Check your emails for a verification email and enter the confirmation code below.</p>
+    <div class="flex mb-2 items-center">
+      <div>
+        <BadgeCheckIcon class="h-5 text-green" />
+      </div>
+      <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
+    </div>
+    <p class="text-gray-500">Not quite there yet. Check your emails and enter the confirmation code below to verify your recovery email address.</p>
     <div class="flex items-center w-full">
       <input
         v-model="v$.confirmationCode.$model"
@@ -46,10 +55,13 @@
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
         @click.prevent="verifyRecovery"
-        :disabled="v$.confirmationCode.$invalid"
+        :disabled="v$.confirmationCode.$invalid || isLoading"
       >
-        <span class="p-0.5" v-if="isLoading"><LoadingSpinner /></span>
-        <span v-else>Confirm</span>
+        <div v-if="isLoading" class="flex flex-row items-center">
+          <span>Verifying</span>
+          <span><LoadingSpinner /></span>
+        </div>
+        <span v-else>Verify Email</span>
       </button>
     </div>
     <!-- error message  -->
@@ -57,7 +69,7 @@
       <ExclamationIcon class="w-3.5 h-3.5" />
       <span class="errorMessage__text">{{ error.$message }}</span>
     </div>
-    <div v-if="errors.email" class="flex items-center errorMessage mt-1">
+    <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-1">
       <ExclamationIcon class="w-3.5 h-3.5" />
       <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
     </div>
@@ -68,7 +80,8 @@
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { CheckCircleIcon, ExclamationIcon } from '@heroicons/vue/outline'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 
@@ -76,7 +89,7 @@ const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 
 export default {
   components: {
-    CheckCircleIcon,
+    BadgeCheckIcon,
     ExclamationIcon,
     LoadingSpinner
   },
@@ -126,11 +139,15 @@ export default {
             this.session._key,
             this.email
           )
-          this.isLoading = false
-          this.step = 2
+          setTimeout(() => {
+            this.isLoading = false
+            this.step = 2
+          }, 1000)
         } catch (error) {
           this.errors.email = 'Oops, something went wrong. Please try again.'
-          this.isLoading = false
+          setTimeout(() => {
+            this.isLoading = false
+          }, 1000)
         }
       }
     },
@@ -139,10 +156,13 @@ export default {
       try {
         await utils.accounts.verifyRecovery(ACCOUNT_API_URL, this.session._key, this.account._key, this.recoverySecret)
         this.confirmEnabled()
+        this.isLoading = false
       } catch (error) {
         this.errors.confirmationCode = 'Unable to verify confirmation code'
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1000)
       }
-      this.isLoading = false
     }
   },
   setup() {

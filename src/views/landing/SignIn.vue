@@ -198,7 +198,9 @@ export default {
           else this.errors.accountNumberInput = 'No account found'
         }
       }
-      this.isLoading = false
+      setTimeout(() => {
+        this.isLoading = false
+      }, 1000)
     }
   },
   setup() {

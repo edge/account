@@ -35,9 +35,13 @@
           <button
             class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
             @click="verify2fa"
-            :disabled="v$.confirmationCode.$invalid"
+            :disabled="v$.confirmationCode.$invalid || isLoading"
           >
-            Enable 2FA
+            <div v-if="isLoading" class="flex flex-row items-center">
+              <span>Verifying</span>
+              <span><LoadingSpinner /></span>
+            </div>
+            <span v-else >Enable 2FA</span>
           </button>
         </div>
         <!-- error message  -->
@@ -69,6 +73,7 @@ import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import { CheckCircleIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import useVuelidate from '@vuelidate/core'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 
@@ -79,6 +84,7 @@ export default {
   components: {
     CheckCircleIcon,
     ExclamationIcon,
+    LoadingSpinner,
     VueQrcode
   },
   data() {
@@ -87,6 +93,7 @@ export default {
       errors: {
         confirmationCode: ''
       },
+      isLoading: false,
       totpAuthUrl: null,
     }
   },
@@ -110,14 +117,17 @@ export default {
       this.totpAuthUrl = res.url
     },
     async verify2fa() {
-      this.verifying = true
+      this.isLoading = true
       try {
         await utils.accounts.verify2fa(ACCOUNT_API_URL, this.session._key, this.otpSecret)
         this.confirmEnabled()
+        this.isLoading = false
       } catch (error) {
         this.errors.confirmationCode = 'Unable to verify confirmation code'
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1000)
       }
-      this.verifying = false
     }
   },
   mounted() {
