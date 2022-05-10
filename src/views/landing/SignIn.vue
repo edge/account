@@ -165,6 +165,8 @@ export default {
           const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
           this.$store.commit('setAccount', account)
           this.$store.commit('setSession', session)
+          this.$store.commit('setIsAuthed', true)
+          localStorage.setItem('session', session._key)
 
           this.$router.push('/servers')
         }

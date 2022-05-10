@@ -17,6 +17,8 @@ import Servers from '@/views/dashboard/Servers'
 import SignIn from '@/views/landing/SignIn'
 import CreateAccount from '@/views/landing/CreateAccount'
 
+import * as utils from '../account-utils/index'
+
 import store from '../store'
 
 const routes = [
@@ -84,21 +86,39 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
+const confirmSessionKey = async () => {
+  const sessionKey = localStorage.getItem('session')
+  try {
+    const session = await utils.sessions.getSession(ACCOUNT_API_URL, sessionKey)
+    if (session._key) {
+      const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
+      await store.commit('setAccount', account)
+      await store.commit('setSession', session)
+      await store.commit('setIsAuthed', true)
+      return true
+    }
+  } catch (error) {
+    return false
+  }
+}
+
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (store.state.session) {
+    if (store.state.isAuthed || await confirmSessionKey()) {
       next()
       return
     }
     next('/signin')
-  } else {
+  }
+  else {
     next()
   }
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.guest)) {
-    if (store.state.session) {
+    if (store.state.isAuthed || await confirmSessionKey()) {
       next('/')
       return
     }

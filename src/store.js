@@ -9,15 +9,20 @@ import { createStore } from 'vuex'
 const store = createStore({
   state: {
     account: null,
+    isAuthed: false,
     session: null
   },
   mutations: {
     logout(state) {
       state.account = null
+      state.isAuthed = false
       state.session = null
     },
     setAccount(state, account) {
       state.account = account
+    },
+    setIsAuthed(state, isAuthed) {
+      state.isAuthed = isAuthed
     },
     setSession(state, session) {
       state.session = session
