@@ -1,9 +1,8 @@
 <template>
   <div class="landingPage__content">
-    <Logo/>
-
     <div class="" v-if="!requires2fa" >
-      <p class="pr-5 text-lg mb-2">
+      <Logo class="mb-6" />
+      <p class="pr-5 text-lg mb-6">
         <span>Welcome back. Enter your account number to sign into the Edge Network.</span>
       </p>
       <div class="landingPage__form">
@@ -63,41 +62,21 @@
     </div>
 
     <div class="flex flex-col" v-else>
-      <span class="text-lg mb-2">Authenticate your account.</span>
-      <span class="text-gray">Please enter the 6-digit code from your two factor authentication app:</span>
-
-      <div class="landingPage__form mt-4">
-        <div class="input-group">
-          <input
-            v-model="v$.confirmationCode.$model"
-            label="Confirmation code"
-            autocomplete="off"
-            class="border border-gray  text-center text-lg flex-1 px-3 py-2 rounded-md focus:outline-none "
-            v-mask="'# # # # # #'"
-            placeholder="1 2 3 4 5 6"
-          />
+      <div class="flex flex-col items-center">
+        <div>
+          <ShieldExclamationIcon class="h-20 text-green" />
         </div>
-        <!-- error message  -->
-        <div class="flex items-center errorMessage mt-2" v-for="error of v$.confirmationCode.$errors" :key="error.$uid">
-          <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{ error.$message }}</span>
-        </div>
-        <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-2">
-          <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
-        </div>
-
+        <span class="text-lg mb-2">Authenticate your account.</span>
+        <span class="text-center text-gray mb-2">Please enter the 6-digit code from your two-factor authentication app</span>
+        <AuthCodeInput
+          :error="errors.otpSecret"
+          :onComplete="onUpdateOtp"
+          :resetErrors="() => errors.otpSecret = ''"
+        />
         <div class="flex flex-col mt-6">
           <button
-            @click.prevent="signIn"
-            class="button button--success my-4"
-            :disabled="!canVerify"
-            >
-            <span>Verify my account</span>
-          </button>
-          <button
             @click.prevent="returnToSignIn"
-            class="button button--solid"
+            class="button button--success"
             >
             <span>Cancel</span>
           </button>
@@ -110,8 +89,9 @@
 <script>
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
-import { ExclamationIcon } from '@heroicons/vue/outline'
+import { ExclamationIcon, ShieldExclamationIcon } from '@heroicons/vue/outline'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
+import AuthCodeInput from '@/components/AuthCodeInput'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import Tooltip from '@/components/Tooltip'
@@ -126,22 +106,24 @@ export default {
     return 'Edge Account Portal » Sign In'
   },
   components: {
+    AuthCodeInput,
     ExclamationIcon,
     InformationCircleIcon,
     LoadingSpinner,
     Logo,
+    ShieldExclamationIcon,
     Tooltip,
     UserMenu
   },
   data() {
     return {
       accountNumberInput: '',
-      confirmationCode: '',
       errors: {
         accountNumberInput: '',
-        confirmationCode: ''
+        otpSecret: ''
       },
       isLoading: false,
+      otpSecret: '',
       requires2fa: false
     }
   },
@@ -149,9 +131,6 @@ export default {
     return {
       accountNumberInput: [
         validation.accountNumberInput
-      ],
-      confirmationCode: [
-        validation.confirmationCode
       ]
     }
   },
@@ -161,21 +140,18 @@ export default {
     },
     canSignIn() {
       return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput
-    },
-    canVerify() {
-      return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode
-    },
-    otpSecret() {
-      return this.confirmationCode ? this.confirmationCode.split(' ').join('') : null
     }
   },
   methods: {
     goToCreateAccount () {
       this.$router.push({ name: 'Create Account' })
     },
+    onUpdateOtp(newCode) {
+      this.otpSecret = newCode
+      this.signIn()
+    },
     returnToSignIn() {
-      this.accountNumberInput = ''
-      this.confirmationCode = ''
+      this.otpSecret = ''
       this.requires2fa = false
     },
     async signIn() {
@@ -193,9 +169,12 @@ export default {
           this.$router.push('/servers')
         }
       } catch (error) {
-        if (this.requires2fa) this.errors.confirmationCode = 'Verification code invalid'
+        if (this.requires2fa) this.errors.otpSecret = 'Verification code invalid'
         if (error.response) {
-          if (error.response && error.response.status === 401) this.requires2fa = true
+          if (error.response && error.response.status === 401) {
+            this.requires2fa = true
+            this.isLoading = false
+          }
           else this.errors.accountNumberInput = 'No account found'
         }
       }
@@ -218,10 +197,6 @@ export default {
     accountNumberInput() {
       // reset account number error (i.e. invalid account) when input is changed
       this.errors.accountNumberInput = ''
-    },
-    confirmationCode() {
-      // reset account number error (i.e. invalid account) when input is changed
-      this.errors.confirmationCode = ''
     }
   }
 }
