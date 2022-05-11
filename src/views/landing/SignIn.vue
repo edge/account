@@ -69,6 +69,7 @@
           <ShieldExclamationIcon class="h-20 text-green mb-4" />
         </div>
         <span class="text-lg mb-2">Authenticate your account.</span>
+        <span class="text-gray mb-2">Please enter the 6-digit code from your two-factor authentication app</span>
         <AuthCodeInput
           :error="errors.otpSecret"
           :isAuthed="is2faAuthed"

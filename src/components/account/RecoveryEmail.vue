@@ -46,6 +46,10 @@
       </div>
       <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
     </div>
+    <!-- back to change recovery email button -->
+    <div class="mb-2">
+      <button @click.prevent="returnToEnable" class="text-sm text-gray-500 underline hover:text-green">Change recovery email address</button>
+    </div>
     <!-- instructions -->
     <p class="text-gray-500">Not quite there yet. Check your emails and enter the confirmation code below to verify your recovery email address.</p>
     <!-- confirmation code and button -->
@@ -159,16 +163,18 @@ export default {
           this.email
         )
         await this.updateAccount()
-        setTimeout(() => {
-          this.isLoading = false
-          this.step = 2
-        }, 1000)
+        this.isLoading = false
+        this.step = 2
       } catch (error) {
         this.errors.email = 'Oops, something went wrong. Please try again.'
         setTimeout(() => {
           this.isLoading = false
         }, 1000)
       }
+    },
+    returnToEnable() {
+      this.email = ''
+      this.step = 1
     },
     async updateAccount() {
       const account = await utils.accounts.getAccount(ACCOUNT_API_URL, this.session._key)

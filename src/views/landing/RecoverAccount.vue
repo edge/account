@@ -1,10 +1,9 @@
 <template>
   <div class="landingPage__content">
-    <div>
-      <Logo class="mb-6" />
-      <p class="pr-5 text-lg mb-6">
-        <span>Recover your account.</span>
-      </p>
+    <Logo />
+    <!-- request recovery email step -->
+    <div v-show="step === 1">
+      <p class="text-lg">Recover your account.</p>
       <p class="text-gray-500">Enter your email address below and we'll send you an email with a recovery code.</p>
       <p class="text-gray-500">If you never enabled a recovery email for your account, well daaammnn, there's nothing we can do. Sorry bud!</p>
       <div class="input-field flex w-full">
@@ -15,7 +14,7 @@
           autocomplete="off"
           class="border border-gray flex-1 px-3 py-2 text-lg rounded-md focus:outline-none"
           placeholder="Enter your email address"
-          @keypress="requestEmailOnEnter"
+          @keypress="requestOnEnter"
         />
       </div>
       <!-- error message  -->
@@ -38,7 +37,7 @@
             <span>Sending Email</span>
             <span><LoadingSpinner /></span>
           </div>
-          <span v-else>Recover Account</span>
+          <span v-else>Send Recovery Email</span>
         </button>
         <button
           @click.prevent="returnToSignIn"
@@ -48,13 +47,78 @@
         </button>
       </div>
     </div>
+
+    <!-- confirm code step -->
+    <div v-show="step === 2">
+      <p class="text-lg">Recover your account.</p>
+      <!-- email sent message -->
+      <div class="flex mb-2 items-center">
+        <div>
+          <BadgeCheckIcon class="h-5 text-green" />
+        </div>
+        <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
+      </div>
+      <p class="text-gray-500">Check your emails - we've sent you a code which you can enter below to recover your account number.</p>
+      <!-- resend email button and feedback -->
+      <p v-show="emailCooldown === 0" class="text-gray-500 mb-0.5">Haven't received the email? <button @click="reRequestEmail" class="underline hover:text-green">Click here</button> to resend it.</p>
+      <!-- confirmation code and button -->
+      <div class="mt-4">
+        <AuthCodeInput
+          :error="errors.recoveryCode"
+          :isAuthed="isRecovered"
+          :onComplete="onUpdateRecoveryCode"
+          :resetErrors="() => errors.recoveryCode = ''"
+        />
+      </div>
+      <!-- return to sign in button -->
+      <div class="flex flex-col mt-6">
+        <button
+          @click.prevent="returnToSignIn"
+          class="button button--solid"
+          >
+          <span>Cancel</span>
+        </button>
+      </div>
+    </div>
+    <!-- display account number step -->
+    <div v-show="step === 3">
+      <p class="text-lg">Recover your account.</p>
+      <!-- account number display -->
+      <label class="label">Account number:</label>
+      <div class="account-number-wrapper">
+        <span class="account-number monospace">{{ formattedAccountNumber }}</span>
+        <!-- copy to clipboard button -->
+        <button
+          @click.prevent="copyToClipboard"
+          class="text-gray-400 hover:text-green"
+        >
+          <DuplicateIcon class="w-6 h-6" />
+        </button>
+        <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
+      </div>
+      <!-- remember account number warning -->
+      <div class="mt-3 flex flex-col">
+        <span class="font-medium text-black">Write down your account number!</span>
+        <span class="mt-1 text-gray-500">It’s all you need to access the Edge Network. No email, no username. Just anonymity.</span>
+      </div>
+      <!-- return to sign in button -->
+      <div class="flex flex-col mt-6">
+        <button
+          @click.prevent="returnToSignIn"
+          class="button button--solid"
+          >
+          <span>Return to Sign In</span>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
-import { ExclamationIcon } from '@heroicons/vue/outline'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
+import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
@@ -69,19 +133,26 @@ export default {
   },
   components: {
     AuthCodeInput,
+    BadgeCheckIcon,
+    DuplicateIcon,
     ExclamationIcon,
     LoadingSpinner,
     Logo,
   },
   data() {
     return {
+      accountNumber: '',
+      copied: false,
       email: '',
+      emailCooldown: 0,
       errors: {
         email: '',
-        otpSecret: ''
+        recoveryCode: ''
       },
+      iEmailCooldown: null,
       isLoading: false,
-      otpSecret: '',
+      isRecovered: false,
+      step: 1
     }
   },
   validations() {
@@ -93,28 +164,87 @@ export default {
     }
   },
   computed: {
-    accountNumber() {
-      return this.accountNumberInput.split(' ').join('')
-    },
     canSignIn() {
       return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput
+    },
+    emailCooldownError() {
+      return `Please wait ${this.emailCooldown}s before re-requesting a recovery email`
+    },
+    formattedAccountNumber() {
+      // add space every 4 characters
+      return this.accountNumber.toString().replace(/.{4}/g, '$& ')
     }
   },
   methods: {
-    onUpdateOtp(newCode) {
-      this.otpSecret = newCode
-      this.signIn()
+    async copyToClipboard () {
+      await navigator.clipboard.writeText(this.accountNumber)
+      this.copied = true
+
+      setTimeout(() => {
+        this.copied = false
+      }, 1000)
+    },
+    onUpdateRecoveryCode(newCode) {
+      this.recoveryCode = newCode
+      this.verifyCode()
     },
     returnToSignIn() {
       this.$router.push({ name: 'Sign In' })
     },
-    requestEmail() {
+    async reRequestEmail() {
+      this.showEmailCooldownError = false
 
+      if (this.emailCooldown > 0) {
+        this.showEmailCooldownError = true
+        return
+      }
+      try {
+        await this.requestEmail()
+        this.showRecoveryEmailResent = true
+        setTimeout(() => {
+          this.showRecoveryEmailResent = false
+        }, 5000);
+      } catch (error) {
+        this.errors.email = 'Oops, something went wrong. Please try again.'
+      }
     },
-    requestEmailOnEnter(event) {
+    async requestEmail() {
+      if (this.v$.email.$invalid) return
+      this.isLoading = true
+      try {
+        // recover account route doesn't yet exist
+        // await utils.accounts.recoverAccount(ACCOUNT_API_URL, this.email)
+        // set 15s email cooldown timer
+        this.emailCooldown = 15
+        this.iEmailCooldown = setInterval(() => {
+          this.emailCooldown = this.emailCooldown - 1
+          if (this.emailCooldown === 0) clearInterval(this.iEmailCooldown)
+        }, 1000)
+
+        this.isLoading = false
+        this.step = 2
+      } catch (error) {
+        this.errors.email = "We don't appear to have an account with this email address."
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1000)
+      }
+    },
+    requestOnEnter(event) {
       if (event.charCode !== 13) return
       event.preventDefault()
-      this.sendEmail()
+      this.requestEmail()
+    },
+    async verifyCode() {
+      try {
+        // verify recovery code route doesn't yet exist
+        // await utils.accounts.verifyRecoveryCode(ACCOUNT_API_URL, this.email, this.recoveryCode)
+        this.isRecovered = true
+        this.step = 3
+        this.accountNumber = '1234567890123456'
+      } catch (error) {
+        this.errors.recoveryCode = 'Recovery code invalid'
+      }
     }
   },
   setup() {
@@ -125,6 +255,21 @@ export default {
 }
 </script>
 <style scoped>
+.account-number-wrapper {
+  @apply flex items-center justify-between relative py-3 pr-3;
+}
+.account-number {
+  @apply text-2xl text-green;
+}
+
+.copied {
+  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+  @apply transition-opacity duration-200 ease-in;
+}
+.copied.visible {
+  @apply opacity-100;
+}
+
 @media (max-width: 275px) {
   .account-number {
     @apply text-sm p-3;

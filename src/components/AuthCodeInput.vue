@@ -1,5 +1,4 @@
 <template>
-  <span class="text-gray mb-2">Please enter the 6-digit code from your two-factor authentication app</span>
   <form class="wrapper" ref="authForm" :class="isAuthed ? 'authed' : ''">
     <input
       class="auth-number"
