@@ -146,6 +146,7 @@ export default {
           this.session._key,
           this.email
         )
+        await this.updateAccount()
         setTimeout(() => {
           this.isLoading = false
           this.step = 2
@@ -157,6 +158,10 @@ export default {
         }, 1000)
       }
     },
+    async updateAccount() {
+      const account = await utils.accounts.getAccount(ACCOUNT_API_URL, this.session._key)
+      this.$store.commit('setAccount', account)
+    },
     verifyOnEnter(event) {
       if (event.charCode !== 13) return
       event.preventDefault()
@@ -166,7 +171,12 @@ export default {
       if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
       try {
-        await utils.accounts.verifyRecovery(ACCOUNT_API_URL, this.session._key, this.account._key, this.recoverySecret)
+        await utils.accounts.verifyRecovery(
+          ACCOUNT_API_URL,
+          this.session._key,
+          this.recoverySecret
+        )
+        await this.updateAccount()
         this.confirmEnabled()
         this.isLoading = false
       } catch (error) {

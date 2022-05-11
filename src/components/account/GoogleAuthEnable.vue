@@ -116,13 +116,19 @@ export default {
       const res = await utils.accounts.enable2fa(ACCOUNT_API_URL, this.session._key)
       this.totpAuthUrl = res.url
     },
+    async updateAccount() {
+      const account = await utils.accounts.getAccount(ACCOUNT_API_URL, this.session._key)
+      this.$store.commit('setAccount', account)
+    },
     async verify2fa() {
       if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
       try {
         await utils.accounts.verify2fa(ACCOUNT_API_URL, this.session._key, this.otpSecret)
+        await this.updateAccount()
         this.confirmEnabled()
         this.isLoading = false
+
       } catch (error) {
         setTimeout(() => {
           this.confirmationCode = ''
