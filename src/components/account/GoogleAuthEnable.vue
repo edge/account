@@ -21,7 +21,7 @@
           <li>Enter the verification code provided by Google Authenticator and click 'Enable two-factor'.</li>
           <li>You can disable two-factor at any time.</li>
         </ol>
-
+        <!-- confirmation code input and button-->
         <div class="input-field flex items-center w-full">
           <input
             v-model="v$.confirmationCode.$model"
@@ -34,9 +34,9 @@
             @keypress="verifyOnEnter"
           />
           <button
-            class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
+            class="rounded-l-none text-sm py-3 button button--success"
             @click="verify2fa"
-            :disabled="v$.confirmationCode.$invalid || isLoading"
+            :disabled="!canVerify"
           >
             <div v-if="isLoading" class="flex flex-row items-center">
               <span>Verifying</span>
@@ -107,6 +107,9 @@ export default {
   },
   computed: {
     ...mapState(['account', 'session']),
+    canVerify() {
+      return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode && !this.isLoading
+    },
     otpSecret() {
       return this.confirmationCode.split(' ').join('')
     }
@@ -131,7 +134,6 @@ export default {
 
       } catch (error) {
         setTimeout(() => {
-          this.confirmationCode = ''
           this.errors.confirmationCode = 'Verification code invalid'
           this.isLoading = false
         }, 1000)

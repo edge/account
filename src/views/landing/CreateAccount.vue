@@ -1,5 +1,8 @@
 <template>
-  <div class="landingPage__content" :class="isAccountGenerated ? 'mt-14' : ''">
+  <div
+    class="landingPage__content"
+    :class="isAccountGenerated ? 'sm:mt-14' : ''"
+  >
     <Logo/>
 
     <div>
@@ -8,6 +11,7 @@
       </p>
 
       <div>
+        <!-- Generate account number step -->
         <div class="step">
           <div class="step-title">
             <KeyIcon class="step-icon" />
@@ -16,7 +20,7 @@
 
           <div class="step-content">
             <!-- generate account button -->
-            <div class="my-4" v-show="!isAccountGenerated && !isGeneratingAccount">
+            <div v-if="!isAccountGenerated && !isGeneratingAccount" class="my-4">
               <button
                 @click.prevent="generateAccount"
                 class="w-full button button--solid button--success"
@@ -24,16 +28,16 @@
               >
                 <span>Generate Account</span>
               </button>
-
               <!-- error message  -->
               <div v-if="errors.accountNumber" class="flex items-center errorMessage mt-2">
                 <ExclamationIcon class="w-3.5 h-3.5" />
                 <span class="errorMessage__text">{{ errors.accountNumber }}</span>
               </div>
             </div>
-
-            <div class="account-number-wrapper" v-show="isAccountGenerated || isGeneratingAccount">
-              <span class="account-number text-2xl text-green monospace">{{ formattedAccountNumber }}</span>
+            <!-- account number display -->
+            <div v-else class="account-number-wrapper">
+              <span class="account-number monospace">{{ formattedAccountNumber }}</span>
+              <!-- copy to clipboard button -->
               <button
                 v-show="isAccountGenerated"
                 @click.prevent="copyToClipboard"
@@ -41,33 +45,29 @@
               >
                 <DuplicateIcon class="w-6 h-6" />
               </button>
-              <div
-                class="copied"
-                :class="copied ? 'visible' : ''"
-              >
-                Copied!
-              </div>
+              <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
             </div>
-
+            <!-- generating account message -->
             <div class="mt-3" v-show="isGeneratingAccount">
               <span class="text-gray-500">Generating your account number.</span>
             </div>
-
+            <!-- remember account number warning -->
             <div class="mt-3 flex flex-col" v-show="isAccountGenerated">
               <span class="font-medium text-black">Write down your account number!</span>
               <span class="mt-1 text-gray-500">It’s all you need to access the Edge Network. No email, no username. Just anonymity.</span>
             </div>
           </div>
-
         </div>
 
+        <!-- Secure account step -->
         <div class="step" :class="step < 2 ? 'inactive' : ''" >
           <div class="step-title" @click="changeStep(2)">
             <FingerPrintIcon class="step-icon"/>
             <span>Secure your account</span>
           </div>
 
-          <div class="step-content" v-if="step === 2">
+          <div class="step-content" v-if="step === 2 && !isAccountSecured">
+            <!-- 2fa section -->
             <div class="my-4">
               <button
                 @click.prevent="toggleShow2fa"
@@ -91,6 +91,7 @@
                 </div>
               </div>
             </div>
+            <!-- recovery email section -->
             <div class="mb-4">
               <button
                 @click.prevent="toggleShowRecovery"
@@ -122,6 +123,7 @@
               Skip for now
             </button>
           </div>
+          <!-- when moving past secure account section, still display whether recovery/2fa has been enabled -->
           <div class="step-content" v-else-if="step > 2">
             <div class="my-4">
               <div @click="toggleShow2fa" class="cursor-pointer flex items-center mb-4">
@@ -142,12 +144,14 @@
           </div>
         </div>
 
+        <!-- add credit to account step -->
         <div class="step" :class="step < 3 ? 'inactive' : ''" >
           <div class="step-title" @click="changeStep(3)">
             <CurrencyDollarIcon class="step-icon" />
             <span>Add credit to your account</span>
           </div>
 
+          <!-- credit icons -->
           <div class="step-content" v-if="step === 3 || isAccountSecured">
             <div class="credit-items-grid">
               <span class="credit-item">
@@ -175,14 +179,13 @@
                 <span class="text-sm">xHaven</span>
               </span>
             </div>
-
             <!-- skip step button -->
             <button @click.prevent="goToAccount" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
           </div>
         </div>
 
+        <!-- go direct to account / back to sign in buttons -->
         <div >
-          <!-- buttons -->
           <div class="mt-6">
             <button
               v-if="step > 1"
@@ -199,7 +202,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -225,15 +227,12 @@ import {
   CurrencyRupeeIcon,
   CurrencyYenIcon,
 
-  InformationCircleIcon,
   ShieldCheckIcon
 } from '@heroicons/vue/solid'
 import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import RecoveryEmail from "@/components/account/RecoveryEmail"
-import Tooltip from '@/components/Tooltip'
-import UserMenu from '@/components/UserMenu'
 
 const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 
@@ -259,15 +258,12 @@ export default {
     ExclamationIcon,
     FingerPrintIcon,
     GoogleAuthEnable,
-    InformationCircleIcon,
     KeyIcon,
     LoadingSpinner,
     Logo,
     ShieldCheckIcon,
     ShieldExclamationIcon,
-    RecoveryEmail,
-    Tooltip,
-    UserMenu,
+    RecoveryEmail
   },
   data() {
     return {
@@ -381,6 +377,10 @@ export default {
 .account-number-wrapper {
   @apply flex items-center justify-between relative py-3 pr-3;
 }
+.account-number {
+  @apply text-2xl text-green;
+}
+
 .copied {
   @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
   @apply transition-opacity duration-200 ease-in;
@@ -392,12 +392,10 @@ export default {
 .step {
   @apply flex flex-col mb-6;
 }
-
 .step-title {
   @apply relative flex flex-row items-center text-lg cursor-pointer;
   z-index: 1;
 }
-
 .step-title::before {
   content: " ";
   @apply absolute transform w-2 h-full bg-green rounded-b;
@@ -405,12 +403,10 @@ export default {
   top: 10px;
   z-index: 0;
 }
-
 .step-icon {
   @apply w-10 border-2 rounded-3xl p-1 border-green bg-green text-white mr-3;
   z-index: 1;
 }
-
 .step.inactive .step-title {
   @apply pb-4 mb-2;
 }
@@ -421,31 +417,26 @@ export default {
   @apply bg-gray border-gray;
   z-index: 1;
 }
-
 .step-content {
   @apply relative flex flex-col ml-14 max-h-full;
 }
-
 .step-content::before {
   content: " ";
   @apply absolute w-2 h-full bg-green rounded-b;
   left: -40px;
 }
+.chevron-icon {
+  @apply h-4 text-white;
+}
 
 .credit-items-grid {
   @apply grid grid-cols-3 grid-rows-2 gap-3 my-4
 }
-
 .credit-item {
   @apply flex flex-col border border-gray rounded-md p-1 items-center justify-center cursor-pointer hover:border-green text-gray hover:text-green;
 }
-
 .credit-item-icon {
   @apply h-10;
-}
-
-.chevron-icon {
-  @apply h-4 text-white;
 }
 
 @media (max-width: 410px) {

@@ -1,6 +1,8 @@
 <template>
+  <!-- add recovery email address step -->
   <div v-show="step === 1" class="my-2">
     <p class="text-gray-500">Add an email address to your account so that it may be recovered in the event that you lose your account number.</p>
+    <!-- email input and button -->
     <div class="input-field flex items-center w-full">
       <input
         v-model="v$.email.$model"
@@ -8,14 +10,14 @@
         type="email"
         autocomplete="off"
         class="overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
-        :class="fullScreen ? 'text-lg' : 'border border-gray border-r-0'"
+        :class="fullScreen ? '' : 'border border-gray border-r-0'"
         placeholder="Enter your email address"
         @keypress="enableOnEnter"
       />
       <button
-        class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
+        class="rounded-l-none text-sm py-3 button button--success"
         @click.prevent="enableRecovery"
-        :disabled="this.v$.email.$invalid || isLoading"
+        :disabled="!canEnable"
       >
         <div v-if="isLoading" class="flex flex-row">
           <span>Sending Email</span>
@@ -35,14 +37,18 @@
     </div>
   </div>
 
+  <!-- verify recovery email step -->
   <div v-show="step === 2" class="my-2">
+    <!-- email sent message -->
     <div class="flex mb-2 items-center">
       <div>
         <BadgeCheckIcon class="h-5 text-green" />
       </div>
       <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
     </div>
+    <!-- instructions -->
     <p class="text-gray-500">Not quite there yet. Check your emails and enter the confirmation code below to verify your recovery email address.</p>
+    <!-- confirmation code and button -->
     <div class="input-field flex items-center w-full">
       <input
         v-model="v$.confirmationCode.$model"
@@ -57,7 +63,7 @@
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
         @click.prevent="verifyRecovery"
-        :disabled="v$.confirmationCode.$invalid || isLoading"
+        :disabled="!canVerify"
       >
         <div v-if="isLoading" class="flex flex-row items-center">
           <span>Verifying</span>
@@ -97,8 +103,8 @@ export default {
   },
   data() {
     return {
-      confirmationCode: null,
-      email: null,
+      confirmationCode: '',
+      email: '',
       errors: {
         confirmationCode: '',
         email: ''
@@ -121,6 +127,12 @@ export default {
   props: ['fullScreen'],
   computed: {
     ...mapState(['account', 'session']),
+    canEnable() {
+      return !this.v$.email.$invalid && !this.errors.email && !this.isLoading
+    },
+    canVerify() {
+      return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode && !this.isLoading
+    },
     recoverySecret() {
       return this.confirmationCode.split(' ').join('')
     }
@@ -181,7 +193,6 @@ export default {
         this.isLoading = false
       } catch (error) {
         setTimeout(() => {
-          this.confirmationCode = ''
           this.errors.confirmationCode = 'Verification code invalid'
           this.isLoading = false
         }, 1000)

@@ -1,11 +1,13 @@
 <template>
   <div class="landingPage__content">
-    <div class="" v-if="!requires2fa" >
+    <!-- sign in with account number -->
+    <div v-if="!requires2fa" >
       <Logo class="mb-6" />
       <p class="pr-5 text-lg mb-6">
         <span>Welcome back. Enter your account number to sign into the Edge Network.</span>
       </p>
       <div class="landingPage__form">
+        <!-- account number input -->
         <div class="input-group">
           <label for="accountNumber" class="label">Account number</label>
           <input
@@ -26,13 +28,13 @@
           <ExclamationIcon class="w-3.5 h-3.5" />
           <span class="errorMessage__text">{{ errors.accountNumberInput }}</span>
         </div>
-
         <!-- buttons -->
         <div class="flex flex-col mt-6">
+          <!-- sign in -->
           <button
             @click.prevent="signIn"
             class="mb-2 button button--success"
-            :disabled="isLoading || !canSignIn"
+            :disabled="!canSignIn"
             v-show="!requires2fa"
           >
             <div v-if="isLoading" class="flex flex-row">
@@ -41,15 +43,15 @@
             </div>
             <span v-else>Sign in</span>
           </button>
-
+          <!-- lost account -->
           <router-link :to="{ name: 'Recover Account' }" class="w-full text-sm text-center text-gray-500 underline hover:text-green">I lost my account number</router-link>
-
+          <!-- divider -->
           <div class="flex items-center w-full my-6 space-x-2">
             <div class="flex-1 h-px bg-gray-400" />
             <span class="inline-block tracking-wider text-black">OR</span>
             <div class="flex-1 h-px bg-gray-400" />
           </div>
-
+          <!-- create account -->
           <button
             @click.prevent="goToCreateAccount"
             class="button button--solid"
@@ -57,17 +59,16 @@
             <span>Create new account</span>
           </button>
         </div>
-
       </div>
     </div>
 
+    <!-- 2fa check -->
     <div v-else class="flex flex-col">
       <div class="flex flex-col">
         <div>
           <ShieldExclamationIcon class="h-20 text-green mb-4" />
         </div>
         <span class="text-lg mb-2">Authenticate your account.</span>
-
         <AuthCodeInput
           :error="errors.otpSecret"
           :isAuthed="is2faAuthed"
@@ -91,12 +92,9 @@
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import { ExclamationIcon, ShieldExclamationIcon } from '@heroicons/vue/outline'
-import { InformationCircleIcon } from '@heroicons/vue/solid'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
-import Tooltip from '@/components/Tooltip'
-import UserMenu from '@/components/UserMenu'
 import useVuelidate from '@vuelidate/core'
 
 const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
@@ -109,12 +107,9 @@ export default {
   components: {
     AuthCodeInput,
     ExclamationIcon,
-    InformationCircleIcon,
     LoadingSpinner,
     Logo,
     ShieldExclamationIcon,
-    Tooltip,
-    UserMenu
   },
   data() {
     return {
@@ -141,7 +136,7 @@ export default {
       return this.accountNumberInput.split(' ').join('')
     },
     canSignIn() {
-      return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput
+      return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput && !this.isLoading
     }
   },
   methods: {

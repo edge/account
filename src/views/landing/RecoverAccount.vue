@@ -7,7 +7,7 @@
       </p>
       <p class="text-gray-500">Enter your email address below and we'll send you an email with a recovery code.</p>
       <p class="text-gray-500">If you never enabled a recovery email for your account, well daaammnn, there's nothing we can do. Sorry bud!</p>
-      <div class="input-field flex items-center w-full">
+      <div class="input-field flex w-full">
         <input
           v-model="v$.email.$model"
           label="Email address"
@@ -15,7 +15,7 @@
           autocomplete="off"
           class="border border-gray flex-1 px-3 py-2 text-lg rounded-md focus:outline-none"
           placeholder="Enter your email address"
-          @keypress="enableOnEnter"
+          @keypress="requestEmailOnEnter"
         />
       </div>
       <!-- error message  -->
@@ -27,11 +27,11 @@
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ errors.email }}</span>
       </div>
-      <!-- button -->
+      <!-- buttons -->
       <div class="flex flex-col mt-6">
         <button
           class="text-sm button button--success mb-2"
-          @click.prevent="enableRecovery"
+          @click.prevent="requestEmail"
           :disabled="this.v$.email.$invalid || isLoading"
         >
           <div v-if="isLoading" class="flex flex-row">
@@ -54,31 +54,24 @@
 <script>
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
-import { ExclamationIcon, ShieldExclamationIcon } from '@heroicons/vue/outline'
-import { InformationCircleIcon } from '@heroicons/vue/solid'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
-import Tooltip from '@/components/Tooltip'
-import UserMenu from '@/components/UserMenu'
 import useVuelidate from '@vuelidate/core'
 
 const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 
 export default {
-  name: 'SignIn',
+  name: 'RecoverAccount',
   title() {
-    return 'Edge Account Portal » Sign In'
+    return 'Edge Account Portal » Recover Account'
   },
   components: {
     AuthCodeInput,
     ExclamationIcon,
-    InformationCircleIcon,
     LoadingSpinner,
     Logo,
-    ShieldExclamationIcon,
-    Tooltip,
-    UserMenu
   },
   data() {
     return {
@@ -115,43 +108,13 @@ export default {
     returnToSignIn() {
       this.$router.push({ name: 'Sign In' })
     },
-    async signIn() {
-      if (this.v$.accountNumberInput.$invalid) return
+    requestEmail() {
 
-      this.isLoading = true
-
-      try {
-        const session = await utils.sessions.createSession(ACCOUNT_API_URL, this.accountNumber, this.otpSecret)
-        if (session._key) {
-          const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
-          this.is2faAuthed = true
-          this.$store.commit('setAccount', account)
-          this.$store.commit('setSession', session)
-          this.$store.commit('setIsAuthed', true)
-          localStorage.setItem('session', session._key)
-
-          setTimeout(() => {
-            this.$router.push('/servers')
-          }, 800);
-        }
-      } catch (error) {
-        if (this.requires2fa) this.errors.otpSecret = 'Verification code invalid'
-        if (error.response) {
-          if (error.response && error.response.status === 401) {
-            this.requires2fa = true
-            this.isLoading = false
-          }
-          else this.errors.accountNumberInput = 'No account found'
-        }
-      }
-      setTimeout(() => {
-        this.isLoading = false
-      }, 1000)
     },
-    signInOnEnter(event) {
+    requestEmailOnEnter(event) {
       if (event.charCode !== 13) return
       event.preventDefault()
-      this.signIn()
+      this.sendEmail()
     }
   },
   setup() {
