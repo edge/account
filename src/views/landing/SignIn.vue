@@ -10,7 +10,7 @@
           <label for="accountNumber" class="label">Account number</label>
           <input
             id="accountNumber"
-            class="border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg focus:outline-none"
+            class="account-number border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg focus:outline-none"
             v-mask="'#### #### #### ####'"
             v-model="v$.accountNumberInput.$model"
             placeholder="1234 5678 9012 3456"
@@ -209,14 +209,9 @@ export default {
 }
 </script>
 <style scoped>
-  .accountNumber {
-    @apply flex items-center justify-between relative p-3 mt-2 bg-gray-100 border border-gray-300;
+@media (max-width: 275px) {
+  .account-number {
+    @apply text-sm p-3;
   }
-  .copied {
-    @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
-    @apply transition-opacity duration-200 ease-in;
-  }
-  .copied.visible {
-    @apply opacity-100;
-  }
+}
 </style>

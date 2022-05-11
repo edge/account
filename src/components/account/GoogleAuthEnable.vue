@@ -22,7 +22,7 @@
           <li>You can disable two-factor at any time.</li>
         </ol>
 
-        <div class="flex items-center w-full">
+        <div class="input-field flex items-center w-full">
           <input
             v-model="v$.confirmationCode.$model"
             label="Confirmation code"
@@ -124,8 +124,9 @@ export default {
         this.confirmEnabled()
         this.isLoading = false
       } catch (error) {
-        this.errors.confirmationCode = 'Unable to verify confirmation code'
         setTimeout(() => {
+          this.confirmationCode = ''
+          this.errors.confirmationCode = 'Verification code invalid'
           this.isLoading = false
         }, 1000)
       }
@@ -156,5 +157,24 @@ export default {
 <style scoped>
 .qrcode {
   @apply flex justify-center items-center mt-2;
+}
+
+@media (max-width: 400px) {
+  /* split input and button into two rows */
+  .input-field {
+    @apply flex-col;
+  }
+
+  .input-field input {
+    @apply w-full border-r rounded-r-md mb-2;
+  }
+
+  .input-field .button {
+    @apply w-full rounded-l-md;
+  }
+
+  .qrcode {
+    @apply justify-start items-start;
+  }
 }
 </style>

@@ -32,8 +32,8 @@
               </div>
             </div>
 
-            <div class="accountNumber" v-show="isAccountGenerated || isGeneratingAccount">
-              <span class="text-2xl text-green monospace">{{ formattedAccountNumber }}</span>
+            <div class="account-number-wrapper" v-show="isAccountGenerated || isGeneratingAccount">
+              <span class="account-number text-2xl text-green monospace">{{ formattedAccountNumber }}</span>
               <button
                 v-show="isAccountGenerated"
                 @click.prevent="copyToClipboard"
@@ -149,7 +149,7 @@
           </div>
 
           <div class="step-content" v-if="step === 3 || isAccountSecured">
-            <div class="grid grid-cols-3 grid-rows-2 gap-3 my-4">
+            <div class="credit-items-grid">
               <span class="credit-item">
                 <CubeTransparentIcon class="credit-item-icon" />
                 <span class="text-sm">XE</span>
@@ -364,69 +364,91 @@ export default {
 }
 </script>
 <style scoped>
-  .accountNumber {
-    @apply flex items-center justify-between relative py-3 pr-3;
-  }
-  .copied {
-    @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
-    @apply transition-opacity duration-200 ease-in;
-  }
-  .copied.visible {
-    @apply opacity-100;
+.account-number-wrapper {
+  @apply flex items-center justify-between relative py-3 pr-3;
+}
+.copied {
+  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+  @apply transition-opacity duration-200 ease-in;
+}
+.copied.visible {
+  @apply opacity-100;
+}
+
+.step {
+  @apply flex flex-col mb-6;
+}
+
+.step-title {
+  @apply relative flex flex-row items-center text-lg cursor-pointer;
+  z-index: 1;
+}
+
+.step-title::before {
+  content: " ";
+  @apply absolute transform w-2 h-full bg-green rounded-b;
+  left: 16px;
+  top: 10px;
+  z-index: 0;
+}
+
+.step-icon {
+  @apply w-10 border-2 rounded-3xl p-1 border-green bg-green text-white mr-3;
+  z-index: 1;
+}
+
+.step.inactive .step-title {
+  @apply pb-4 mb-2;
+}
+.step.inactive .step-title::before {
+  @apply bg-gray
+}
+.step.inactive .step-icon {
+  @apply bg-gray border-gray;
+  z-index: 1;
+}
+
+.step-content {
+  @apply relative flex flex-col ml-14 max-h-full;
+}
+
+.step-content::before {
+  content: " ";
+  @apply absolute w-2 h-full bg-green rounded-b;
+  left: -40px;
+}
+
+.credit-items-grid {
+  @apply grid grid-cols-3 grid-rows-2 gap-3 my-4
+}
+
+.credit-item {
+  @apply flex flex-col border border-gray rounded-md p-1 items-center justify-center cursor-pointer hover:border-green text-gray hover:text-green;
+}
+
+.credit-item-icon {
+  @apply h-10;
+}
+
+.chevron-icon {
+  @apply h-4 text-white;
+}
+
+@media (max-width: 410px) {
+  /* break account number into two equal rows */
+  .account-number {
+    @apply text-3xl;
+    width: 200px;
   }
 
-  .step {
-    @apply flex flex-col mb-6;
+  .credit-items-grid {
+    @apply grid-cols-2 grid-rows-3;
   }
+}
 
-  .step-title {
-    @apply relative flex flex-row items-center text-lg cursor-pointer;
-    z-index: 1;
+@media (max-width: 325px) {
+  .credit-items-grid {
+    @apply grid-cols-1 grid-rows-6;
   }
-
-  .step-title::before {
-    content: " ";
-    @apply absolute transform w-2 h-full bg-green rounded-b;
-    left: 16px;
-    top: 10px;
-    z-index: 0;
-  }
-
-  .step-icon {
-    @apply w-10 border-2 rounded-3xl p-1 border-green bg-green text-white mr-3;
-    z-index: 1;
-  }
-
-  .step.inactive .step-title {
-    @apply pb-4 mb-2;
-  }
-  .step.inactive .step-title::before {
-    @apply bg-gray
-  }
-  .step.inactive .step-icon {
-    @apply bg-gray border-gray;
-    z-index: 1;
-  }
-
-  .step-content {
-    @apply relative flex flex-col ml-14 max-h-full;
-  }
-
-  .step-content::before {
-    content: " ";
-    @apply absolute w-2 h-full bg-green rounded-b;
-    left: -40px;
-  }
-
-  .credit-item {
-    @apply flex flex-col border border-gray rounded-md p-1 items-center justify-center cursor-pointer hover:border-green text-gray hover:text-green;
-  }
-
-  .credit-item-icon {
-    @apply h-10;
-  }
-
-  .chevron-icon {
-    @apply h-4 text-white;
-  }
+}
 </style>
