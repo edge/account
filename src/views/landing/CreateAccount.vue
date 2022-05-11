@@ -1,5 +1,5 @@
 <template>
-  <div class="landingPage__content mt-14">
+  <div class="landingPage__content" :class="isAccountGenerated ? 'mt-14' : ''">
     <Logo/>
 
     <div>
@@ -124,19 +124,19 @@
           </div>
           <div class="step-content" v-else-if="step > 2">
             <div class="my-4">
-              <div @click="changeStep(2)" class="cursor-pointer flex items-center mb-4">
+              <div @click="toggleShow2fa" class="cursor-pointer flex items-center mb-4">
                 <div>
                   <ShieldCheckIcon v-if="is2faEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
-                <span class="ml-2">Two-factor authentication {{ is2faEnabled ? 'successfully' : 'not' }} enabled</span>
+                <span class="ml-2 hover:text-green">Two-factor authentication {{ is2faEnabled ? 'successfully' : 'not' }} enabled</span>
               </div>
-              <div @click="changeStep(2)" class="cursor-pointer flex items-center">
+              <div @click="toggleShowRecovery" class="cursor-pointer flex items-center">
                 <div>
                   <ShieldCheckIcon v-if="isRecoveryEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
-                <span class="ml-2">Recovery email {{ isRecoveryEnabled ? 'successfully' : 'not' }} added</span>
+                <span class="ml-2 hover:text-green">Recovery email {{ isRecoveryEnabled ? 'successfully' : 'not' }} added</span>
               </div>
             </div>
           </div>
@@ -353,12 +353,26 @@ export default {
       this.isRecoveryEnabled = true
     },
     toggleShow2fa() {
-      this.show2fa = !this.show2fa
-      if (this.show2fa) this.showRecovery = false
+      if (this.step !== 2) {
+        this.step = 2
+        this.show2fa = true
+        this.showRecovery = false
+      }
+      else {
+        this.show2fa = !this.show2fa
+        if (this.show2fa) this.showRecovery = false
+      }
     },
     toggleShowRecovery() {
-      this.showRecovery = !this.showRecovery
-      if(this.showRecovery) this.show2fa = false
+      if (this.step !== 2) {
+        this.step = 2
+        this.showRecovery = true
+        this.show2fa = false
+      }
+      else {
+        this.showRecovery = !this.showRecovery
+        if(this.showRecovery) this.show2fa = false
+      }
     }
   }
 }
