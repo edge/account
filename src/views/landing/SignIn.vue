@@ -62,14 +62,15 @@
     </div>
 
     <div class="flex flex-col" v-else>
-      <div class="flex flex-col items-center">
+      <div class="flex flex-col">
         <div>
-          <ShieldExclamationIcon class="h-20 text-green" />
+          <ShieldExclamationIcon class="h-20 text-green mb-4" />
         </div>
         <span class="text-lg mb-2">Authenticate your account.</span>
-        <span class="text-center text-gray mb-2">Please enter the 6-digit code from your two-factor authentication app</span>
+
         <AuthCodeInput
           :error="errors.otpSecret"
+          :isAuthed="is2faAuthed"
           :onComplete="onUpdateOtp"
           :resetErrors="() => errors.otpSecret = ''"
         />
@@ -122,6 +123,7 @@ export default {
         accountNumberInput: '',
         otpSecret: ''
       },
+      is2faAuthed: false,
       isLoading: false,
       otpSecret: '',
       requires2fa: false
@@ -163,12 +165,15 @@ export default {
         const session = await utils.sessions.createSession(ACCOUNT_API_URL, this.accountNumber, this.otpSecret)
         if (session._key) {
           const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
+          this.is2faAuthed = true
           this.$store.commit('setAccount', account)
           this.$store.commit('setSession', session)
           this.$store.commit('setIsAuthed', true)
           localStorage.setItem('session', session._key)
 
-          this.$router.push('/servers')
+          setTimeout(() => {
+            this.$router.push('/servers')
+          }, 800);
         }
       } catch (error) {
         if (this.requires2fa) this.errors.otpSecret = 'Verification code invalid'
