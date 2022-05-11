@@ -326,6 +326,8 @@ export default {
           this.accountNumber = res.account._key
           this.$store.commit('setAccount', res.account)
           this.$store.commit('setSession', res.session)
+          this.$store.commit('setIsAuthed', true)
+          localStorage.setItem('session', res.session._key)
 
           this.isGeneratingAccount = false
           this.changeStep(2)
