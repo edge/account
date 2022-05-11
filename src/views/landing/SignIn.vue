@@ -28,7 +28,7 @@
         </div>
 
         <!-- buttons -->
-        <div class="flex flex-col mt-6" :class="requires2fa ? 'transform -translate-y-4' : ''">
+        <div class="flex flex-col mt-6">
           <button
             @click.prevent="signIn"
             class="mb-2 button button--success"
@@ -42,7 +42,7 @@
             <span v-else>Sign in</span>
           </button>
 
-          <a href="#" class="w-full text-sm text-center text-gray-500 underline hover:text-green">I lost my account number</a>
+          <router-link :to="{ name: 'Recover Account' }" class="w-full text-sm text-center text-gray-500 underline hover:text-green">I lost my account number</router-link>
 
           <div class="flex items-center w-full my-6 space-x-2">
             <div class="flex-1 h-px bg-gray-400" />
@@ -61,7 +61,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col" v-else>
+    <div v-else class="flex flex-col">
       <div class="flex flex-col">
         <div>
           <ShieldExclamationIcon class="h-20 text-green mb-4" />
@@ -153,6 +153,7 @@ export default {
       this.signIn()
     },
     returnToSignIn() {
+      this.errors.accountNumberInput = ''
       this.otpSecret = ''
       this.requires2fa = false
     },

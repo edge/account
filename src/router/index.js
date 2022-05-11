@@ -16,6 +16,7 @@ import Servers from '@/views/dashboard/Servers'
 
 import SignIn from '@/views/landing/SignIn'
 import CreateAccount from '@/views/landing/CreateAccount'
+import RecoverAccount from '@/views/landing/RecoverAccount'
 
 import * as utils from '../account-utils/index'
 
@@ -76,6 +77,11 @@ const routes = [
         name: 'Create Account',
         component: CreateAccount,
       },
+      {
+        path: 'recover-account',
+        name: 'Recover Account',
+        component: RecoverAccount,
+      }
     ]
   },
   { path: '/:catchAll(.*)', component: NotFound }
