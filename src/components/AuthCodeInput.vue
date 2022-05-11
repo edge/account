@@ -10,6 +10,7 @@
       placeholder="·"
       ref="1"
       autocomplete="off"
+      :disabled="submitting"
     />
     <input
       class="auth-number"
@@ -20,6 +21,7 @@
       placeholder="·"
       ref="2"
       autocomplete="off"
+      :disabled="submitting"
     />
     <input
       class="auth-number"
@@ -30,6 +32,7 @@
       placeholder="·"
       ref="3"
       autocomplete="off"
+      :disabled="submitting"
     />
     <input
       class="auth-number"
@@ -40,6 +43,7 @@
       placeholder="·"
       ref="4"
       autocomplete="off"
+      :disabled="submitting"
     />
     <input
       class="auth-number"
@@ -50,6 +54,7 @@
       placeholder="·"
       ref="5"
       autocomplete="off"
+      :disabled="submitting"
     />
     <input
       class="auth-number last"
@@ -60,6 +65,7 @@
       placeholder="·"
       ref="6"
       autocomplete="off"
+      :disabled="submitting"
     />
   </form>
   <div v-if="error" class="flex items-center errorMessage mt-2">
@@ -149,8 +155,10 @@ export default {
       this.input6 = newInput
     },
     async submitForm() {
+      this.submitting = true
       if (this.confirmationCode.length < 6) return
       await this.onComplete(this.confirmationCode)
+      this.submitting = false
     }
   },
   mounted() {
@@ -176,7 +184,7 @@ export default {
 }
 
 .auth-number {
-  @apply border-2 border-gray rounded-md text-gray text-3xl h-14;
+  @apply border-2 border-gray-700 rounded-md text-gray-700 text-3xl h-14;
   width: 15%;
   max-width: 70px;
   text-align: center;
@@ -188,6 +196,10 @@ export default {
   outline: 0;
   box-shadow: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+.auth-number[disabled] {
+  @apply border-gray text-gray;
 }
 
 .wrapper.authed .auth-number {
