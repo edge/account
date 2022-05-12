@@ -11,10 +11,10 @@
 </template>
 
 <script>
-  export default {
-    name: "CentOsIcon",
-    props: ['className'],
-  }
+export default {
+  name: 'CentOsIcon',
+  props: ['className']
+}
 </script>
 
 <style scoped>

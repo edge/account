@@ -4,7 +4,7 @@
 
     <div class="grid items-start grid-cols-12 mt-5 space-x-10 lg:mt-5">
       <form class="flex flex-col col-span-12 pb-20 space-y-5">
-        
+
         <!-- network region -->
         <div class="box">
           <h4>Network region</h4>
@@ -91,7 +91,7 @@ import Password from '@/components/deploy/Password'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 import ServerName from '@/components/deploy/ServerName'
 import Toggle from '@vueform/toggle'
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { createHost } from '../../utils/api'
 
 export default {
@@ -119,7 +119,7 @@ export default {
         'cpu',
         'ram',
         'ssd',
-        'os',
+        'os'
       ],
       calculatedCost: 0,
       selectedRegion: null,
@@ -148,7 +148,7 @@ export default {
       if (this.selectedRegion) {
         const { ramCostPerGb, ssdCostPerGb, cpuCostPer } = this.selectedRegion
 
-        this.calculatedCost = 
+        this.calculatedCost =
           (ramCostPerGb * this.serverSettings.ram / 1024) +
           (ssdCostPerGb * this.serverSettings.ssd / 1024) +
           (cpuCostPer * this.serverSettings.cpu)
@@ -164,9 +164,7 @@ export default {
       this.$router.push({ name: 'Server', params: { id: serverId } })
     },
     isFormSubmittable() {
-      return !this.isSaving && this.required.every(key => {
-        return this.serverSettings[key] !== null
-      })
+      return !this.isSaving && this.required.every(key => this.serverSettings[key] !== null)
     },
     toggleBackups () {
       // this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
@@ -187,16 +185,18 @@ export default {
         this.setServerError({ property: inputType, value: '' })
 
         this.calculateCost()
-      } else {
+      }
+      else {
         this.setServerError({ property: inputType, value: this.validationMessages[inputType] })
       }
     },
     validate(inputType, value) {
       const regex = this.validationRules[inputType]
 
-      if (!regex) {        
+      if (!regex) {
         return true
-      } else {      
+      }
+      else {
         return regex.test(value)
 
       }

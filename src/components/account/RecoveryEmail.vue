@@ -1,112 +1,256 @@
 <template>
   <div>
-    <p class="text-gray-500">Add an email address to your account so that it may be recovered in the event that you lose your account number.</p>
-
-    <div class="flex items-center w-full lg:w-1/2">
-      <input
-        v-model="email"
-        label="Email address"
-        type="email"
-        autocomplete="off"
-        class="flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
-        placeholder="Enter your email address"
-      />
-      <button
-        class="order-2 rounded-l-none button button--success lg:order-1"
-        @click.prevent="update"
-        :disabled="!email || errors.email"
-      >
-        <span v-if="isSaving">Updating</span>
-        <span v-else>Update</span>
-        <span v-if="isSaving">
-          <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <line x1="12" y1="6" x2="12" y2="3" />
-            <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-            <line x1="18" y1="12" x2="21" y2="12" />
-            <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-            <line x1="12" y1="18" x2="12" y2="21" />
-            <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-            <line x1="6" y1="12" x2="3" y2="12" />
-            <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-          </svg>
-        </span>
-      </button>
+    <!-- add recovery email address step -->
+    <div v-show="step === 1" class="my-2">
+      <p class="text-gray-500">
+        Add an email address to your account so that it may be recovered in the event that you lose your account number.
+      </p>
+      <!-- email input and button -->
+      <div class="input-field flex items-center w-full">
+        <input
+          v-model="v$.email.$model"
+          label="Email address"
+          type="email"
+          autocomplete="off"
+          class="overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
+          :class="fullScreen ? '' : 'border border-gray border-r-0'"
+          placeholder="Enter your email address"
+          @keypress="enableOnEnter"
+        />
+        <button
+          class="rounded-l-none text-sm py-3 button button--success"
+          @click.prevent="enableRecovery"
+          :disabled="!canEnable"
+        >
+          <div v-if="isLoading" class="flex flex-row">
+            <span>Sending Email</span>
+            <span><LoadingSpinner /></span>
+          </div>
+          <span v-else>Add</span>
+        </button>
+      </div>
+      <!-- error message  -->
+      <div class="flex items-center errorMessage mt-2" v-for="error of v$.email.$errors" :key="error.$uid">
+        <ExclamationIcon class="w-3.5 h-3.5" />
+        <span class="errorMessage__text">{{ error.$message }}</span>
+      </div>
+      <div v-if="errors.email" class="flex items-center errorMessage mt-1">
+        <ExclamationIcon class="w-3.5 h-3.5" />
+        <span class="errorMessage__text">{{ errors.email }}</span>
+      </div>
     </div>
-    <span class="flex-1 order-1 block mt-2 text-red lg:order-2" v-if="errors.email">{{errors.email}}</span>
-    <div v-if="showFeedback" class="flex items-center mt-2 space-x-1 text-green">
-      <CheckCircleIcon class="w-4 h-4" />
-      <span>Email updated successfully.</span>
+    <!-- verify recovery email step -->
+    <div v-show="step === 2" class="my-2">
+      <!-- email sent message -->
+      <div class="flex mb-2 items-center">
+        <div>
+          <BadgeCheckIcon class="h-5 text-green" />
+        </div>
+        <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
+      </div>
+      <!-- back to change recovery email button -->
+      <div class="mb-2">
+        <button
+          @click.prevent="returnToEnable"
+          class="text-sm text-gray-500 underline hover:text-green"
+        >
+          Change recovery email address
+        </button>
+      </div>
+      <!-- instructions -->
+      <p class="text-gray-500">
+        Not quite there yet.
+        Check your emails and enter the confirmation code below to verify your recovery email address.
+      </p>
+      <!-- confirmation code and button -->
+      <div class="input-field flex items-center w-full">
+        <input
+          v-model="v$.confirmationCode.$model"
+          label="Confirmation code"
+          autocomplete="off"
+          class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none "
+          :class="fullScreen ? '' : 'border border-gray border-r-0'"
+          v-mask="'# # # # # #'"
+          placeholder="1 2 3 4 5 6"
+          @keypress="verifyOnEnter"
+        />
+        <button
+          class="order-2 rounded-l-none text-sm py-3 button button--success py-2 lg:order-1"
+          @click.prevent="verifyRecovery"
+          :disabled="!canVerify"
+        >
+          <div v-if="isLoading" class="flex flex-row items-center">
+            <span>Verifying</span>
+            <span><LoadingSpinner /></span>
+          </div>
+          <span v-else>Verify Email</span>
+        </button>
+      </div>
+      <!-- error message  -->
+      <div class="flex items-center errorMessage mt-2" v-for="error of v$.confirmationCode.$errors" :key="error.$uid">
+        <ExclamationIcon class="w-3.5 h-3.5" />
+        <span class="errorMessage__text">{{ error.$message }}</span>
+      </div>
+      <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-1">
+        <ExclamationIcon class="w-3.5 h-3.5" />
+        <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapActions } from 'vuex'
-  import { CheckCircleIcon } from '@heroicons/vue/outline'
+/* global process */
 
-  export default {
-    components: {
-      CheckCircleIcon
-    },
-    props: ['user'],
-    data() {
-      return {
-        email: null,
-        errors: {},
-        isSaving: false,
-        showFeedback: false
-      }
-    },
-    mounted() {
-      if (this.user && this.user.email) {
-        this.email = this.user.email
-      }
-    },
-    methods: {
-      ...mapActions(['auth/update']),
-      isEmailValid() {
-        const pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
-        this.errors.email = null
-        
-        if (!this.email) {
-          this.errors.email = 'Please enter your email address'
-          return false
-        }
-        
-        if (pattern.test(this.email)) {
-          return true
-        } else {
-          this.errors.email = 'Please enter a valid email address'
-          return false
-        }
+import * as utils from '../../account-utils/index'
+import * as validation from '../../utils/validation'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
+import { ExclamationIcon } from '@heroicons/vue/outline'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import { mapState } from 'vuex'
+import useVuelidate from '@vuelidate/core'
+
+export default {
+  components: {
+    BadgeCheckIcon,
+    ExclamationIcon,
+    LoadingSpinner
+  },
+  data() {
+    return {
+      confirmationCode: '',
+      email: '',
+      errors: {
+        confirmationCode: '',
+        email: ''
       },
-      async update() {
-        if (this.isEmailValid()) {
-          this.isSaving = true
-          
-          const body = {
-            accountNumber: this.user.accountNumber,
-            email: this.email   
-          }
+      isLoading: false,
+      step: 1
+    }
+  },
+  validations() {
+    return {
+      email: [
+        validation.email,
+        validation.required
+      ],
+      confirmationCode: [
+        validation.confirmationCode
+      ]
+    }
+  },
+  props: ['fullScreen'],
+  computed: {
+    ...mapState(['account', 'session']),
+    canEnable() {
+      return !this.v$.email.$invalid && !this.errors.email && !this.isLoading
+    },
+    canVerify() {
+      return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode && !this.isLoading
+    },
+    recoverySecret() {
+      return this.confirmationCode.split(' ').join('')
+    }
+  },
+  mounted() {
+    if (this.account && this.account.email) {
+      this.email = this.account.email
+    }
+  },
+  methods: {
+    enableOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.enableRecovery()
+    },
+    async enableRecovery() {
+      if (this.v$.email.$invalid) return
+      this.isLoading = true
 
-          const response = await this['auth/update'](body)
-          
-          setTimeout(() => {
-            this.isSaving = false
-            this.showFeedback = true
-            setTimeout(() => {
-              this.showFeedback = false
-            }, 2000)
-          }, 2000)
-        }
+      try {
+        await utils.accounts.enableRecovery(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.email
+        )
+        await this.updateAccount()
+        this.isLoading = false
+        this.step = 2
+      }
+      catch (error) {
+        this.errors.email = 'Oops, something went wrong. Please try again.'
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1000)
       }
     },
-    watch: {
-      email(value) {
-        this.isEmailValid()
+    returnToEnable() {
+      this.email = ''
+      this.step = 1
+    },
+    async updateAccount() {
+      const account = await utils.accounts.getAccount(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.$store.commit('setAccount', account)
+    },
+    verifyOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.verifyRecovery()
+    },
+    async verifyRecovery() {
+      if (this.v$.confirmationCode.$invalid) return
+      this.isLoading = true
+      try {
+        await utils.accounts.verifyRecovery(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.recoverySecret
+        )
+        await this.updateAccount()
+        this.confirmEnabled()
+        this.isLoading = false
+      }
+      catch (error) {
+        setTimeout(() => {
+          this.errors.confirmationCode = 'Verification code invalid'
+          this.isLoading = false
+        }, 1000)
       }
     }
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
+  },
+  watch: {
+    confirmationCode() {
+      // reset confirmation code error (i.e. invalid) when input is changed
+      this.errors.confirmationCode = ''
+    },
+    email() {
+      this.errors.email = ''
+    }
+  }
+}
+</script>
+
+<style scoped>
+@media (max-width: 450px) {
+  /* split input and button into two rows */
+  .input-field {
+    @apply flex-col;
   }
 
-</script>
+  .input-field input {
+    @apply w-full border-r rounded-r-md mb-2 text-md;
+  }
+
+  .input-field .button {
+    @apply w-full rounded-l-md;
+  }
+}
+</style>

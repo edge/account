@@ -41,7 +41,7 @@ import { ArrowRightIcon, SearchIcon } from '@heroicons/vue/solid'
 // import { search } from '../utils/api'
 
 export default {
-  name: "Search",
+  name: 'Search',
   components: {
     ArrowRightIcon,
     SearchIcon
@@ -68,11 +68,11 @@ export default {
   methods: {
     async search () {
       this.isSearching = true
-    
-      // const result = await search(this.searchInput)  
+
+      // const result = await search(this.searchInput)
 
       // const { address, blocks, transactions } = result
-      
+
       // Edge case - resets searching flag in case the search was
       // performed from the same page.
       // if (
@@ -82,7 +82,7 @@ export default {
       // ) {
       //   this.isSearching = false
       // }
-      
+
       // if (address) {
       //   this.$router.push(`/wallet/${address}`)
       // } else if (blocks && blocks[0]) {

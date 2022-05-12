@@ -9,7 +9,7 @@
     <div class="relative inline-block lg:w-1/2 accountNumber">
       <span class="text-3xl">{{user.accountNumber}}</span>
       <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
-        <DuplicateIcon class="w-6 h-6" />  
+        <DuplicateIcon class="w-6 h-6" />
       </button>
       <div
         class="copied"
@@ -20,16 +20,16 @@
     </div>
     <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Setup 2FA</h4>
     <GoogleAuthEnable :user=user :twofactorQR=twofactorQR :twofactorUrl=twofactorUrl />
-    
+
     <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Add recovery email</h4>
     <RecoveryEmail :user=user />
   </div>
 </template>
 
 <script>
-import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
+import GoogleAuthEnable from '@/components/account/GoogleAuthEnable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
-import RecoveryEmail from "@/components/account/RecoveryEmail"
+import RecoveryEmail from '@/components/account/RecoveryEmail'
 
 import { fetcher } from '../../utils/api'
 import { mapGetters } from 'vuex'
@@ -61,7 +61,6 @@ export default {
     async copyToClipboard () {
       this.copied = true
       await navigator.clipboard.writeText(this.user.accountNumber)
-      
       setTimeout(() => {
         this.copied = false
       }, 2000)

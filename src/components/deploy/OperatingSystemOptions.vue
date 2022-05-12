@@ -38,35 +38,35 @@
 </template>
 
 <script>
-  import { ChevronDownIcon, CheckIcon } from "@heroicons/vue/solid"
-  import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption, } from "@headlessui/vue"
-  import { ref } from 'vue'
+import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/solid'
+import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
+import { ref } from 'vue'
 
-  export default {
-    name: "OperatingSystemOptions",
-    components: {
-      CheckIcon,
-      ChevronDownIcon,
-      Listbox,
-      ListboxLabel,
-      ListboxButton,
-      ListboxOptions,
-      ListboxOption,
-    },
-    methods: {
-      emitSelected(data) {
-        this.$emit('os-changed', data)
-      }
-    },
-    props: ['versions'],
-    setup(props) {
-      const selectedVersion = ref(props.versions[0])
+export default {
+  name: 'OperatingSystemOptions',
+  components: {
+    CheckIcon,
+    ChevronDownIcon,
+    Listbox,
+    ListboxLabel,
+    ListboxButton,
+    ListboxOptions,
+    ListboxOption
+  },
+  methods: {
+    emitSelected(data) {
+      this.$emit('os-changed', data)
+    }
+  },
+  props: ['versions'],
+  setup(props) {
+    const selectedVersion = ref(props.versions[0])
 
-      return {
-        selectedVersion
-      }
+    return {
+      selectedVersion
     }
   }
+}
 </script>
 <style scoped>
   /* button */

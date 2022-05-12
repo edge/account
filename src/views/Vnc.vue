@@ -3,7 +3,7 @@
     <div id="noVNC_status_bar" class="noVNC_status_normal">
       <div id="noVNC_status">{{status}}</div>
     </div>
-    <div id="view"></div>  
+    <div id="view"></div>
   </div>
 </template>
 
@@ -44,7 +44,7 @@ export default {
 
       const url = `wss://api.vm.edge.network/gosockify/ws?token=${settings.server}%3A${settings.port}`
       this.rfb = new RFB(this.$el, url, { credentials: { password: settings.password } })
-      
+
       this.rfb.addEventListener('connect', this.connected)
       this.rfb.addEventListener('desktopname', this.updateDektopName)
     })

@@ -12,13 +12,9 @@ const SERVER_ENDPOINT = `${ACCOUNT_API_URL}/servers`
  * @param {String} url - a relative URL for an fetching data from an API endpoint, e.g. `/servers`
  * @returns {Object}
  */
-const fetcher = url => {
-  return fetch(`${ACCOUNT_API_URL}${url}`)
-    .then(response => response.json())
-    .then(results => {
-      return Promise.resolve(results)
-    })
-}
+const fetcher = url => fetch(`${ACCOUNT_API_URL}${url}`)
+  .then(response => response.json())
+  .then(results => Promise.resolve(results))
 
 /**
  * Calls the "server" API endpoint to perform add an IP address to the specified VM.
@@ -186,9 +182,7 @@ const resizeHost = async (id, data) => {
   }
 
   return fetchData(SERVER_ENDPOINT, { method: 'post' }, payload)
-    .then(response => {
-      return Promise.resolve(response)
-    })
+    .then(response => Promise.resolve(response))
 }
 
 /**
@@ -230,12 +224,12 @@ const handleTwoFactor = async data => {
 
 const updateAccount = async data => {
   const url = `${ACCOUNT_ENDPOINT}`
-  
+
   const payload = {
     action: 'update',
     ...data
   }
-  
+
   return fetchData(url, { method: 'post' }, payload)
 }
 
@@ -263,12 +257,10 @@ const fetchData = (url, options = {}, payload) => {
 
       return res.json()
     })
-    .catch(() => {
-      return {
-        results: [],
-        metadata: {}
-      }
-    })
+    .catch(() => ({
+      results: [],
+      metadata: {}
+    }))
 }
 
 export {

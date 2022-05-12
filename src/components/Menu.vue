@@ -19,8 +19,8 @@
 
 <script>
 export default {
-  name: "Menu",
-  props: ["mainNav"],
+  name: 'Menu',
+  props: ['mainNav'],
   data: function () {
     return {
       location: null

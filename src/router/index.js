@@ -1,11 +1,11 @@
-// Copyright (C) 2021 Edge Network Technologies Limited
+// Copyright (C) 2022 Edge Network Technologies Limited
 // Use of this source code is governed by a GNU GPL-style license
 // that can be found in the LICENSE.md file. All rights reserved.
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard'
+import Landing from '@/views/Landing'
 import NotFound from '@/views/404'
-import SignIn from '@/views/SignIn'
 import Vnc from '@/views/Vnc'
 
 import Account from '@/views/dashboard/Account'
@@ -13,6 +13,12 @@ import Deploy from '@/views/dashboard/Deploy'
 import Index from '@/views/dashboard/Index'
 import Server from '@/views/dashboard/Server'
 import Servers from '@/views/dashboard/Servers'
+
+import SignIn from '@/views/landing/SignIn'
+import CreateAccount from '@/views/landing/CreateAccount'
+import RecoverAccount from '@/views/landing/RecoverAccount'
+
+import * as utils from '../account-utils/index'
 
 import store from '../store'
 
@@ -56,10 +62,27 @@ const routes = [
     ]
   },
   {
-    path: '/signIn',
-    name: 'Sign In',
-    component: SignIn,
-    meta: { guest: true }
+    path: '/signin',
+    name: 'Landing',
+    component: Landing,
+    meta: { guest: true },
+    children: [
+      {
+        path: '',
+        name: 'Sign In',
+        component: SignIn
+      },
+      {
+        path: 'create-account',
+        name: 'Create Account',
+        component: CreateAccount
+      },
+      {
+        path: 'recover-account',
+        name: 'Recover Account',
+        component: RecoverAccount
+      }
+    ]
   },
   { path: '/:catchAll(.*)', component: NotFound }
 ]
@@ -69,26 +92,46 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
+const confirmSessionKey = async () => {
+  const sessionKey = localStorage.getItem('session')
+  try {
+    const session = await utils.sessions.getSession(ACCOUNT_API_URL, sessionKey)
+    if (session._key) {
+      const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
+      await store.commit('setAccount', account)
+      await store.commit('setSession', session)
+      await store.commit('setIsAuthed', true)
+      return true
+    }
+  }
+  catch (error) {
+    return false
+  }
+}
+
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (store.getters['auth/isAuthenticated']) {
+    if (store.state.isAuthed || await confirmSessionKey()) {
       next()
       return
     }
     next('/signin')
-  } else {
+  }
+  else {
     next()
   }
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.guest)) {
-    if (store.getters['auth/isAuthenticated']) {
+    if (store.state.isAuthed || await confirmSessionKey()) {
       next('/')
       return
     }
     next()
-  } else {
+  }
+  else {
     next()
   }
 })

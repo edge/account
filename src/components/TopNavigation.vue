@@ -16,66 +16,65 @@
       <router-link to="/servers/deploy">
         <button class="h-full button button--success">Deploy Server</button>
       </router-link>
-      <UserMenu :user=user />
+      <UserMenu />
     </div>
     <MobileNavigation />
   </div>
 </template>
 
 <script>
-  import Logo from '@/components/Logo'
-  import BurgerButton from '@/components/BurgerButton'
-  import MobileNavigation from '@/components/MobileNavigation'
-  import Search from '@/components/Search'
-  import UserMenu from '@/components/UserMenu'
-  import { mapGetters } from 'vuex'
+import Logo from '@/components/Logo'
+import BurgerButton from '@/components/BurgerButton'
+import MobileNavigation from '@/components/MobileNavigation'
+import Search from '@/components/Search'
+import UserMenu from '@/components/UserMenu'
+import { mapState } from 'vuex'
 
-  export default {
-    name: "TopNavigation",
-    data: function () {
-      return {
-        showNav: false,
-        mainNav: [
-          {
-            link: "/",
-            text: "Index"
-          }
-        ]
-      }
-    },
-    components: {
-      Logo,
-      MobileNavigation,
-      BurgerButton,
-      Search,
-      UserMenu
-    },
-    computed: {
-      ...mapGetters({
-        user: 'auth/StateUser'
-      })
-    },
-    methods: {
-      bodyScrollLock () {
-        const targetElement = document.querySelector('#menu')
-        
-        if (this.showNav) {
-          bodyScrollLock.disableBodyScroll(targetElement)
-        } else {
-          bodyScrollLock.enableBodyScroll(targetElement)
+export default {
+  name: 'TopNavigation',
+  data: function () {
+    return {
+      showNav: false,
+      mainNav: [
+        {
+          link: '/',
+          text: 'Index'
         }
-      },
-      isLoggedIn: function() {
-        return this.$store.getters['auth/isAuthenticated']
+      ]
+    }
+  },
+  components: {
+    Logo,
+    MobileNavigation,
+    BurgerButton,
+    Search,
+    UserMenu
+  },
+  computed: {
+    ...mapState(['account', 'session'])
+  },
+  methods: {
+    bodyScrollLock () {
+      const targetElement = document.querySelector('#menu')
+
+      if (this.showNav) {
+        bodyScrollLock.disableBodyScroll(targetElement)
+      }
+      else {
+        bodyScrollLock.enableBodyScroll(targetElement)
       }
     },
-    watch: {
-      $route () {
-        this.showNav = false
-      },
-      showNav: 'bodyScrollLock'
+    isLoggedIn: function() {
+      return this.$store.getters['auth/isAuthenticated']
     }
+  },
+  watch: {
+    $route () {
+      this.showNav = false
+    },
+    showNav: 'bodyScrollLock'
   }
+}
 </script>
 <style scoped>
   .topNavigation {

@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import {DuplicateIcon} from "@heroicons/vue/outline";
+import {DuplicateIcon} from '@heroicons/vue/outline'
 
 export default {
   name: 'ServerConsole',

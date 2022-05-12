@@ -32,10 +32,10 @@
 </template>
 
 <script>
-import {ChevronLeftIcon, ChevronRightIcon} from "@heroicons/vue/solid";
+import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
 
 export default {
-  name: "Pagination",
+  name: 'Pagination',
   components: {ChevronRightIcon, ChevronLeftIcon},
   props: ['baseRoute', 'currentPage', 'totalPages']
 }

@@ -1,98 +1,190 @@
 <template>
   <div>
-    <div v-if="!user.totp">
-      <div class="grid pb-10 lg:grid-cols-2">
-        <div class="flex order-1 lg:justify-center lg:order-2">
-          <a :href="twofactorUrl || user.twofactorUrl" class="w-1/3 lg:w-auto">
-            <img class="w-full lg:w-60" :src="twofactorQR || user.twofactorQR">
-          </a>
+    <div
+      class="my-2"
+      :class="fullScreen ? 'grid lg:grid-cols-2' : ''"
+    >
+      <div class="order-2 mt-5 text-gray-500 lg:mt-0 lg:order-1">
+        <ol>
+          <li>Install the Google Authenticator app for
+          <a class="underline text-green" target="_blank"
+          href="https://itunes.apple.com/au/app/google-authenticator/id388497605?mt=8">iPhone</a>
+           or
+          <a class="underline text-green" target="_blank"
+          href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>.</li>
+          <li>Scan the QR code.
+            <figure v-show="totpAuthUrl" class="qrcode">
+              <VueQrcode
+                :value="totpAuthUrl"
+                :options="{
+                  margin: 1,
+                  width: fullScreen ? 300 : 150
+                }"
+              />
+            </figure>
+          </li>
+          <li>Enter the verification code provided by Google Authenticator and click 'Enable two-factor'.</li>
+          <li>You can disable two-factor at any time.</li>
+        </ol>
+        <!-- confirmation code input and button-->
+        <div class="input-field flex items-center w-full">
+          <input
+            v-model="v$.confirmationCode.$model"
+            label="Confirmation code"
+            autocomplete="off"
+            class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none "
+            :class="fullScreen ? '' : 'border border-gray border-r-0'"
+            v-mask="'# # # # # #'"
+            placeholder="1 2 3 4 5 6"
+            @keypress="verifyOnEnter"
+          />
+          <button
+            class="rounded-l-none text-sm py-3 button button--success"
+            @click="verify2FA"
+            :disabled="!canVerify"
+          >
+            <div v-if="isLoading" class="flex flex-row items-center">
+              <span>Verifying</span>
+              <span><LoadingSpinner /></span>
+            </div>
+            <span v-else >Enable 2FA</span>
+          </button>
         </div>
-
-        <div class="order-2 mt-5 text-gray-500 lg:mt-0 lg:order-1">
-          <ol>
-            <li>Install the Google Authenticator app for <a class="underline text-green" target="_blank" href="https://itunes.apple.com/au/app/google-authenticator/id388497605?mt=8">iPhone</a> or <a class="underline text-green" target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>.</li>
-            <li>Scan the QR code on this page.</li>
-            <!-- <li>Save the single-use backup codes in case you lose access to your device. Note, you will still need your username and password.</li> -->
-            <li>Enter the verification code provided by Google Authenticator and click 'Enable two-factor'.</li>
-            <li>You can disable two-factor at any time.</li>
-          </ol>
-
-          <span class="flex-1 order-1 text-red lg:order-2" v-if="errors.totpToken">{{errors.totpToken}}</span>
-
-          <div class="flex items-center w-full py-5">
-            <input
-              v-model="totpToken"
-              label="Two-factor code"
-              type="text"
-              autocomplete="off"
-              class="flex-1 w-full px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none"
-              placeholder="Enter your authentication code"
-            />
-            <button
-              class="order-2 rounded-l-none button button--success lg:order-1"
-              @click="enable2fa"
-              :disabled="!totpToken"
-            >Enable two-factor</button>
-          </div>
+        <!-- error message  -->
+        <div class="flex items-center errorMessage mt-2" v-for="error of v$.confirmationCode.$errors" :key="error.$uid">
+          <ExclamationIcon class="w-3.5 h-3.5" />
+          <span class="errorMessage__text">{{ error.$message }}</span>
         </div>
-      </div>
-    </div>
-
-    <div v-else>
-      <div class="">
-        <p class="text-gray-500">Donec sed odio dui. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum.</p>
-        <button
-          class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1"
-          @click="disable2fa"
-        >Disable two-factor</button>
+        <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-2">
+          <ExclamationIcon class="w-3.5 h-3.5" />
+          <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapActions } from 'vuex'
+/* global process */
 
-  export default {
-    props: ['user', 'twofactorQR', 'twofactorUrl'],
-    data() {
-      return {
-        errors: {},
-        totpToken: ''
+import * as utils from '../../account-utils/index'
+import * as validation from '../../utils/validation'
+import { ExclamationIcon } from '@heroicons/vue/outline'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import VueQrcode from '@chenfengyuan/vue-qrcode'
+import { mapState } from 'vuex'
+import useVuelidate from '@vuelidate/core'
+
+export default {
+  props: ['confirmEnabled', 'fullScreen'],
+  components: {
+    ExclamationIcon,
+    LoadingSpinner,
+    VueQrcode
+  },
+  data() {
+    return {
+      confirmationCode: null,
+      errors: {
+        confirmationCode: ''
+      },
+      isLoading: false,
+      totpAuthUrl: null
+    }
+  },
+  validations() {
+    return {
+      confirmationCode: [
+        validation.confirmationCode
+      ]
+    }
+  },
+  computed: {
+    ...mapState(['account', 'session']),
+    canVerify() {
+      return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode && !this.isLoading
+    },
+    otpSecret() {
+      return this.confirmationCode.split(' ').join('')
+    }
+  },
+  methods: {
+    async enable2FA() {
+      const res = await utils.accounts.enable2FA(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.totpAuthUrl = res.url
+    },
+    async updateAccount() {
+      const account = await utils.accounts.getAccount(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
+      this.$store.commit('setAccount', account)
+    },
+    async verify2FA() {
+      if (this.v$.confirmationCode.$invalid) return
+      this.isLoading = true
+      try {
+        await utils.accounts.verify2FA(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.otpSecret
+        )
+        await this.updateAccount()
+        this.confirmEnabled()
+        this.isLoading = false
+
+      }
+      catch (error) {
+        setTimeout(() => {
+          this.errors.confirmationCode = 'Verification code invalid'
+          this.isLoading = false
+        }, 1000)
       }
     },
-    methods: {
-      ...mapActions(['auth/enable2fa', 'auth/disable2fa']),
-      async disable2fa() {
-        const body = {
-          accountNumber: this.user.accountNumber
-        }
-
-        await this['auth/disable2fa'](body)
-      },
-      async enable2fa() {
-        // Check form is valid.
-        if (!this.totpToken) {
-          this.errors.totpToken = 'Please enter the code from your device'
-        } else {
-          this.errors.totpToken = ''
-        }
-
-        const body = {
-          accountNumber: this.user.accountNumber,
-          totpToken: this.totpToken,
-          totpSecret: this.user.totpSecretTemp
-        }
-
-        const response = await this['auth/enable2fa'](body)
-
-        if (!response) {
-          this.errors.totpToken = 'Invalid code'
-        }
-
-        this.totpToken = ''
-      }
+    verifyOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.verify2FA()
+    }
+  },
+  mounted() {
+    this.enable2FA()
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
+  },
+  watch: {
+    confirmationCode() {
+      // reset confirmation code error (i.e. invalid) when input is changed
+      this.errors.confirmationCode = ''
     }
   }
-
+}
 </script>
+
+<style scoped>
+.qrcode {
+  @apply flex justify-center items-center mt-2;
+}
+
+@media (max-width: 400px) {
+  /* split input and button into two rows */
+  .input-field {
+    @apply flex-col;
+  }
+
+  .input-field input {
+    @apply w-full border-r rounded-r-md mb-2;
+  }
+
+  .input-field .button {
+    @apply w-full rounded-l-md;
+  }
+
+  .qrcode {
+    @apply justify-start items-start;
+  }
+}
+</style>

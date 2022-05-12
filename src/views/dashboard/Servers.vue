@@ -9,7 +9,7 @@
         :class="[server.status]"
       >
         <span class="serverList__status" :class="[server.status]" />
-        
+
         <div class="serverList__main">
           <router-link class="serverList__name" :to="'/server/'+ server.id">
             {{ server.hostname }}
@@ -95,7 +95,7 @@ export default {
   methods: {
   },
   mounted() {
-    const { data, error } = useSWRV(() => `/servers?userId=${this.user ? this.user._id : "XX"}`, fetcher)
+    const { data, error } = useSWRV(() => `/servers?userId=${this.user ? this.user._id : 'XX'}`, fetcher)
 
     this.servers = data
   }

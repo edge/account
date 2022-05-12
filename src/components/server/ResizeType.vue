@@ -53,9 +53,9 @@
 <script>
 import {
   RadioGroup,
-  RadioGroupLabel,
   RadioGroupDescription,
-  RadioGroupOption,
+  RadioGroupLabel,
+  RadioGroupOption
 } from '@headlessui/vue'
 
 export default {
@@ -65,11 +65,11 @@ export default {
     RadioGroup,
     RadioGroupLabel,
     RadioGroupDescription,
-    RadioGroupOption,
+    RadioGroupOption
   },
   data() {
     return {
-      selectedResizeType: null,
+      selectedResizeType: null
     }
   },
   mounted() {

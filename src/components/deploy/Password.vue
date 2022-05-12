@@ -56,7 +56,7 @@ export default {
     async copyToClipboard () {
       this.copying = true
       await navigator.clipboard.writeText(this.password)
-      
+
       setTimeout(() => {
         this.copying = false
       }, 2000)

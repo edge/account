@@ -6,15 +6,15 @@
 </template>
 
 <script>
-  import {RefreshIcon} from "@heroicons/vue/solid"
+import {RefreshIcon} from '@heroicons/vue/solid'
 
-  export default {
-    name: "ActiveTask",
-    components: {RefreshIcon},
-    props: {
-      task: Object
-    },
+export default {
+  name: 'ActiveTask',
+  components: {RefreshIcon},
+  props: {
+    task: Object
   }
+}
 </script>
 
 <style scoped>

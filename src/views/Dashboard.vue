@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import SideNavigation from "@/components/SideNavigation"
-import TopNavigation from "@/components/TopNavigation"
+import SideNavigation from '@/components/SideNavigation'
+import TopNavigation from '@/components/TopNavigation'
 
 export default {
   name: 'Dashboard',
