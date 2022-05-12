@@ -4,7 +4,9 @@
       <router-view />
     </div>
     <div class="landingPage__right">
-      <img class="object-cover w-full h-full" src="https://images.unsplash.com/photo-1614777735430-7b46df56b404?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=664&q=80" />
+      <!-- eslint-disable-next-line max-len -->
+      <img src="https://images.unsplash.com/photo-1614777735430-7b46df56b404?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=664&q=80"
+      class="object-cover w-full h-full"/>
     </div>
   </div>
 </template>

@@ -57,9 +57,17 @@
         </div>
         <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
       </div>
-      <p class="text-gray-500">Check your emails - we've sent you a code which you can enter below to recover your account number.</p>
+      <p class="text-gray-500">
+        Check your emails - we've sent you a code which you can enter below to recover your account number.
+      </p>
       <!-- resend email button and feedback -->
-      <p v-show="emailCooldown === 0" class="text-gray-500 mb-0.5">Haven't received the email? <button @click="reRequestEmail" class="underline hover:text-green">Click here</button> to resend it.</p>
+      <p
+        v-show="emailCooldown === 0"
+        class="text-gray-500 mb-0.5"
+      >
+        <!-- eslint-disable-next-line max-len -->
+        Haven't received the email? <span @click="reRequestEmail" class="underline cursor-pointer hover:text-green">Click here</span> to resend it.
+      </p>
       <!-- confirmation code and button -->
       <div class="mt-4">
         <AuthCodeInput
@@ -98,7 +106,9 @@
       <!-- remember account number warning -->
       <div class="mt-3 flex flex-col">
         <span class="font-medium text-black">Write down your account number!</span>
-        <span class="mt-1 text-gray-500">It’s all you need to access the Edge Network. No email, no username. Just anonymity.</span>
+        <span class="mt-1 text-gray-500">
+          It’s all you need to access the Edge Network. No email, no username. Just anonymity.
+        </span>
       </div>
       <!-- return to sign in button -->
       <div class="flex flex-col mt-6">
@@ -114,14 +124,14 @@
 </template>
 
 <script>
-import * as utils from '../../account-utils/index'
+// import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
-import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import AuthCodeInput from '@/components/AuthCodeInput'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import useVuelidate from '@vuelidate/core'
+import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'RecoverAccount',

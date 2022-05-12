@@ -54,7 +54,9 @@
             <!-- remember account number warning -->
             <div class="mt-3 flex flex-col" v-show="isAccountGenerated">
               <span class="font-medium text-black">Write down your account number!</span>
-              <span class="mt-1 text-gray-500">It’s all you need to access the Edge Network. No email, no username. Just anonymity.</span>
+              <span class="mt-1 text-gray-500">
+                It’s all you need to access the Edge Network. No email, no username. Just anonymity.
+              </span>
             </div>
           </div>
         </div>
@@ -131,14 +133,18 @@
                   <ShieldCheckIcon v-if="is2FAEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
-                <span class="ml-2 hover:text-green">Two-factor authentication {{ is2FAEnabled ? 'successfully' : 'not' }} enabled</span>
+                <span class="ml-2 hover:text-green">
+                  Two-factor authentication {{ is2FAEnabled ? 'successfully' : 'not' }} enabled
+                </span>
               </div>
               <div @click="toggleShowRecovery" class="cursor-pointer flex items-center">
                 <div>
                   <ShieldCheckIcon v-if="isRecoveryEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
-                <span class="ml-2 hover:text-green">Recovery email {{ isRecoveryEnabled ? 'successfully' : 'not' }} added</span>
+                <span class="ml-2 hover:text-green">
+                  Recovery email {{ isRecoveryEnabled ? 'successfully' : 'not' }} added
+                </span>
               </div>
             </div>
           </div>
@@ -180,7 +186,12 @@
               </span>
             </div>
             <!-- skip step button -->
-            <button @click.prevent="goToAccount" class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green">Skip for now</button>
+            <button
+              @click.prevent="goToAccount"
+              class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green"
+            >
+              Skip for now
+            </button>
           </div>
         </div>
 
@@ -206,15 +217,12 @@
 </template>
 
 <script>
+/* global process */
+
 import * as utils from '../../account-utils/index'
-import {
-  CurrencyDollarIcon,
-  DuplicateIcon,
-  ExclamationIcon,
-  FingerPrintIcon,
-  KeyIcon,
-  ShieldExclamationIcon
-} from '@heroicons/vue/outline'
+import GoogleAuthEnable from '@/components/account/GoogleAuthEnable'
+import Logo from '@/components/Logo'
+import RecoveryEmail from '@/components/account/RecoveryEmail'
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -229,10 +237,14 @@ import {
 
   ShieldCheckIcon
 } from '@heroicons/vue/solid'
-import GoogleAuthEnable from '@/components/account/GoogleAuthEnable'
-import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import Logo from '@/components/Logo'
-import RecoveryEmail from '@/components/account/RecoveryEmail'
+import {
+  CurrencyDollarIcon,
+  DuplicateIcon,
+  ExclamationIcon,
+  FingerPrintIcon,
+  KeyIcon,
+  ShieldExclamationIcon
+} from '@heroicons/vue/outline'
 
 export default {
   name: 'CreateAccount',
@@ -257,7 +269,6 @@ export default {
     FingerPrintIcon,
     GoogleAuthEnable,
     KeyIcon,
-    LoadingSpinner,
     Logo,
     ShieldCheckIcon,
     ShieldExclamationIcon,

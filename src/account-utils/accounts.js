@@ -2,7 +2,7 @@
 // Use of this source code is governed by a GNU GPL-style license
 // that can be found in the LICENSE.md file. All rights reserved.
 
-const superagent = require('superagent')
+import superagent from 'superagent'
 
 export const createAccount = async (host) => {
   const url = `${host}/account`

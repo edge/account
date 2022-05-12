@@ -20,7 +20,10 @@
           />
         </div>
         <!-- error message  -->
-        <div class="flex items-center errorMessage mt-2" v-for="error of v$.accountNumberInput.$errors" :key="error.$uid">
+        <div class="flex items-center errorMessage mt-2"
+          v-for="error of v$.accountNumberInput.$errors"
+          :key="error.$uid"
+        >
           <ExclamationIcon class="w-3.5 h-3.5" />
           <span class="errorMessage__text">{{ error.$message }}</span>
         </div>
@@ -44,7 +47,11 @@
             <span v-else>Sign in</span>
           </button>
           <!-- lost account -->
-          <router-link :to="{ name: 'Recover Account' }" class="w-full text-sm text-center text-gray-500 underline hover:text-green">I lost my account number</router-link>
+          <router-link :to="{ name: 'Recover Account' }"
+            class="w-full text-sm text-center text-gray-500 underline hover:text-green"
+          >
+            I lost my account number
+          </router-link>
           <!-- divider -->
           <div class="flex items-center w-full my-6 space-x-2">
             <div class="flex-1 h-px bg-gray-400" />
@@ -90,13 +97,15 @@
 </template>
 
 <script>
+/* global process */
+
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
-import { ExclamationIcon, ShieldExclamationIcon } from '@heroicons/vue/outline'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import useVuelidate from '@vuelidate/core'
+import { ExclamationIcon, ShieldExclamationIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'SignIn',

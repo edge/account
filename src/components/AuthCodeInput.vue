@@ -1,75 +1,77 @@
 <template>
-  <form class="wrapper" ref="authForm" :class="isCodeValid ? 'authed' : ''">
-    <input
-      class="auth-number"
-      v-model="input1"
-      v-mask="'#'"
-      @click="focusOnFirstEmpty"
-      @keydown="onKeyDown"
-      placeholder="·"
-      ref="1"
-      autocomplete="off"
-      :disabled="submitting"
-    />
-    <input
-      class="auth-number"
-      v-model="input2"
-      v-mask="'#'"
-      @click="focusOnFirstEmpty"
-      @keydown="onKeyDown"
-      placeholder="·"
-      ref="2"
-      autocomplete="off"
-      :disabled="submitting"
-    />
-    <input
-      class="auth-number"
-      v-model="input3"
-      v-mask="'#'"
-      @click="focusOnFirstEmpty"
-      @keydown="onKeyDown"
-      placeholder="·"
-      ref="3"
-      autocomplete="off"
-      :disabled="submitting"
-    />
-    <input
-      class="auth-number"
-      v-model="input4"
-      v-mask="'#'"
-      @click="focusOnFirstEmpty"
-      @keydown="onKeyDown"
-      placeholder="·"
-      ref="4"
-      autocomplete="off"
-      :disabled="submitting"
-    />
-    <input
-      class="auth-number"
-      v-model="input5"
-      v-mask="'#'"
-      @click="focusOnFirstEmpty"
-      @keydown="onKeyDown"
-      placeholder="·"
-      ref="5"
-      autocomplete="off"
-      :disabled="submitting"
-    />
-    <input
-      class="auth-number last"
-      v-model="input6"
-      v-mask="'#'"
-      @click="focusOnFirstEmpty"
-      @keydown="onKeyDown"
-      placeholder="·"
-      ref="6"
-      autocomplete="off"
-      :disabled="submitting"
-    />
-  </form>
-  <div v-if="error" class="flex items-center errorMessage mt-2">
-    <ExclamationIcon class="w-3.5 h-3.5" />
-    <span class="errorMessage__text">{{ error }}</span>
+  <div>
+    <form class="wrapper" ref="authForm" :class="isCodeValid ? 'authed' : ''">
+      <input
+        class="auth-number"
+        v-model="input1"
+        v-mask="'#'"
+        @click="focusOnFirstEmpty"
+        @keydown="onKeyDown"
+        placeholder="·"
+        ref="1"
+        autocomplete="off"
+        :disabled="submitting"
+      />
+      <input
+        class="auth-number"
+        v-model="input2"
+        v-mask="'#'"
+        @click="focusOnFirstEmpty"
+        @keydown="onKeyDown"
+        placeholder="·"
+        ref="2"
+        autocomplete="off"
+        :disabled="submitting"
+      />
+      <input
+        class="auth-number"
+        v-model="input3"
+        v-mask="'#'"
+        @click="focusOnFirstEmpty"
+        @keydown="onKeyDown"
+        placeholder="·"
+        ref="3"
+        autocomplete="off"
+        :disabled="submitting"
+      />
+      <input
+        class="auth-number"
+        v-model="input4"
+        v-mask="'#'"
+        @click="focusOnFirstEmpty"
+        @keydown="onKeyDown"
+        placeholder="·"
+        ref="4"
+        autocomplete="off"
+        :disabled="submitting"
+      />
+      <input
+        class="auth-number"
+        v-model="input5"
+        v-mask="'#'"
+        @click="focusOnFirstEmpty"
+        @keydown="onKeyDown"
+        placeholder="·"
+        ref="5"
+        autocomplete="off"
+        :disabled="submitting"
+      />
+      <input
+        class="auth-number last"
+        v-model="input6"
+        v-mask="'#'"
+        @click="focusOnFirstEmpty"
+        @keydown="onKeyDown"
+        placeholder="·"
+        ref="6"
+        autocomplete="off"
+        :disabled="submitting"
+      />
+    </form>
+    <div v-if="error" class="flex items-center errorMessage mt-2">
+      <ExclamationIcon class="w-3.5 h-3.5" />
+      <span class="errorMessage__text">{{ error }}</span>
+    </div>
   </div>
 </template>
 

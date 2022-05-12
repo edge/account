@@ -6,7 +6,12 @@
     >
       <div class="order-2 mt-5 text-gray-500 lg:mt-0 lg:order-1">
         <ol>
-          <li>Install the Google Authenticator app for <a class="underline text-green" target="_blank" href="https://itunes.apple.com/au/app/google-authenticator/id388497605?mt=8">iPhone</a> or <a class="underline text-green" target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>.</li>
+          <li>Install the Google Authenticator app for
+          <a class="underline text-green" target="_blank"
+          href="https://itunes.apple.com/au/app/google-authenticator/id388497605?mt=8">iPhone</a>
+           or
+          <a class="underline text-green" target="_blank"
+          href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>.</li>
           <li>Scan the QR code.
             <figure v-show="totpAuthUrl" class="qrcode">
               <VueQrcode
@@ -60,18 +65,19 @@
 </template>
 
 <script>
+/* global process */
+
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
-import { CheckCircleIcon, ExclamationIcon } from '@heroicons/vue/outline'
-import { mapState } from 'vuex'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import useVuelidate from '@vuelidate/core'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
+import { mapState } from 'vuex'
+import useVuelidate from '@vuelidate/core'
 
 export default {
   props: ['confirmEnabled', 'fullScreen'],
   components: {
-    CheckCircleIcon,
     ExclamationIcon,
     LoadingSpinner,
     VueQrcode
