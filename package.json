@@ -14,6 +14,8 @@
     "build": "vue-cli-service build",
     "dev": "vue-cli-service --port 8000 serve",
     "dev:local": "VUE_APP_ACCOUNT_API_URL=http://localhost:8419 npm run dev",
+    "lint": "eslint src",
+    "lint:fix": "eslint --fix src",
     "start": "node server/index.js",
     "testnet": "VUE_APP_ACCOUNT_API_URL=https://api.account.test.network npm run dev"
   },
@@ -62,6 +64,7 @@
     "@vue/compiler-sfc": "^3.0.0",
     "autoprefixer": "^9.8.8",
     "eslint": "^8.15.0",
+    "eslint-plugin-vue": "^8.7.1",
     "lodash": "^4.17.21",
     "nodemon": "^2.0.7",
     "postcss": "^7.0.39",
