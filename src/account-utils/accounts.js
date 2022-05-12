@@ -10,40 +10,40 @@ export const createAccount = async (host) => {
   return response.body
 }
 
-export const enable2fa = async (host, sessionId) => {
+export const enable2FA = async (host, sessionId) => {
   const url = `${host}/account/2fa`
   const response = await superagent.post(url)
-  .set({ 'Authorization': `Bearer ${sessionId}` })
+    .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
 export const enableRecovery = async (host, sessionId, emailAddress) => {
   const url = `${host}/account/recovery`
   const response = await superagent.post(url)
-  .send({ address: emailAddress })
   .set({ 'Authorization': `Bearer ${sessionId}` })
+  .send({ address: emailAddress })
   return response.body
 }
 
 export const getAccount = async (host, sessionId) => {
   const url = `${host}/account`
   const response = await superagent.get(url)
-  .set({ 'Authorization': `Bearer ${sessionId}` })
+    .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
-export const verify2fa = async (host, sessionId, otp) => {
+export const verify2FA = async (host, sessionId, otp) => {
   const url = `${host}/account/2fa`
   const response = await superagent.put(url)
-  .send({ otp })
-  .set({ 'Authorization': `Bearer ${sessionId}` })
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ otp })
   return response.body
 }
 
 export const verifyRecovery = async (host, sessionId, secret) => {
   const url = `${host}/account/recovery`
   const response = await superagent.put(url)
-  .send({ secret: secret })
   .set({ 'Authorization': `Bearer ${sessionId}` })
+  .send({ secret: secret })
   return response.body
 }

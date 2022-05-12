@@ -97,8 +97,6 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 
-const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
-
 export default {
   components: {
     BadgeCheckIcon,
@@ -158,7 +156,7 @@ export default {
 
       try {
         await utils.accounts.enableRecovery(
-          ACCOUNT_API_URL,
+          process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.email
         )
@@ -177,7 +175,10 @@ export default {
       this.step = 1
     },
     async updateAccount() {
-      const account = await utils.accounts.getAccount(ACCOUNT_API_URL, this.session._key)
+      const account = await utils.accounts.getAccount(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
       this.$store.commit('setAccount', account)
     },
     verifyOnEnter(event) {
@@ -190,7 +191,7 @@ export default {
       this.isLoading = true
       try {
         await utils.accounts.verifyRecovery(
-          ACCOUNT_API_URL,
+          process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.recoverySecret
         )

@@ -1,7 +1,7 @@
 <template>
   <div class="landingPage__content">
     <!-- sign in with account number -->
-    <div v-if="!requires2fa" >
+    <div v-if="!requires2FA" >
       <Logo class="mb-6" />
       <p class="pr-5 text-lg mb-6">
         <span>Welcome back. Enter your account number to sign into the Edge Network.</span>
@@ -35,7 +35,7 @@
             @click.prevent="signIn"
             class="mb-2 button button--success"
             :disabled="!canSignIn"
-            v-show="!requires2fa"
+            v-show="!requires2FA"
           >
             <div v-if="isLoading" class="flex flex-row">
               <span>Signing in</span>
@@ -72,9 +72,9 @@
         <span class="text-gray mb-2">Please enter the 6-digit code from your two-factor authentication app</span>
         <AuthCodeInput
           :error="errors.otpSecret"
-          :isAuthed="is2faAuthed"
+          :isCodeValid="is2FACodeValid"
           :onComplete="onUpdateOtp"
-          :resetErrors="() => errors.otpSecret = ''"
+          :resetErrors="resetOtpErrors"
         />
         <div class="flex flex-col mt-6">
           <button
@@ -98,8 +98,6 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import useVuelidate from '@vuelidate/core'
 
-const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
-
 export default {
   name: 'SignIn',
   title() {
@@ -119,10 +117,10 @@ export default {
         accountNumberInput: '',
         otpSecret: ''
       },
-      is2faAuthed: false,
+      is2FACodeValid: false,
       isLoading: false,
       otpSecret: '',
-      requires2fa: false
+      requires2FA: false
     }
   },
   validations() {
@@ -148,10 +146,13 @@ export default {
       this.otpSecret = newCode
       this.signIn()
     },
+    resetOtpErrors() {
+      this.errors.otpSecret = ''
+    },
     returnToSignIn() {
       this.errors.accountNumberInput = ''
       this.otpSecret = ''
-      this.requires2fa = false
+      this.requires2FA = false
     },
     async signIn() {
       if (this.v$.accountNumberInput.$invalid) return
@@ -159,10 +160,17 @@ export default {
       this.isLoading = true
 
       try {
-        const session = await utils.sessions.createSession(ACCOUNT_API_URL, this.accountNumber, this.otpSecret)
+        const session = await utils.sessions.createSession(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.accountNumber,
+          this.otpSecret
+        )
         if (session._key) {
-          const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
-          this.is2faAuthed = true
+          const account = await utils.accounts.getAccount(
+            process.env.VUE_APP_ACCOUNT_API_URL,
+            session._key
+          )
+          this.is2FACodeValid = true
           this.$store.commit('setAccount', account)
           this.$store.commit('setSession', session)
           this.$store.commit('setIsAuthed', true)
@@ -173,10 +181,10 @@ export default {
           }, 800);
         }
       } catch (error) {
-        if (this.requires2fa) this.errors.otpSecret = 'Verification code invalid'
+        if (this.requires2FA) this.errors.otpSecret = 'Verification code invalid'
         if (error.response) {
           if (error.response && error.response.status === 401) {
-            this.requires2fa = true
+            this.requires2FA = true
             this.isLoading = false
           }
           else this.errors.accountNumberInput = 'No account found'

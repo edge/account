@@ -35,7 +35,7 @@
           />
           <button
             class="rounded-l-none text-sm py-3 button button--success"
-            @click="verify2fa"
+            @click="verify2FA"
             :disabled="!canVerify"
           >
             <div v-if="isLoading" class="flex flex-row items-center">
@@ -56,16 +56,6 @@
         </div>
       </div>
     </div>
-
-    <!-- <div v-else>
-      <div class="">
-        <p class="text-gray-500">Donec sed odio dui. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum.</p>
-        <button
-          class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1"
-          @click="disable2fa"
-        >Disable 2FA</button>
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -77,8 +67,6 @@ import { mapState } from 'vuex'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import useVuelidate from '@vuelidate/core'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-
-const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 
 export default {
   props: ['confirmEnabled', 'fullScreen'],
@@ -115,19 +103,26 @@ export default {
     }
   },
   methods: {
-    async enable2fa() {
-      const res = await utils.accounts.enable2fa(ACCOUNT_API_URL, this.session._key)
+    async enable2FA() {
+      const res = await utils.accounts.enable2FA(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
       this.totpAuthUrl = res.url
     },
     async updateAccount() {
-      const account = await utils.accounts.getAccount(ACCOUNT_API_URL, this.session._key)
+      const account = await utils.accounts.getAccount(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
       this.$store.commit('setAccount', account)
     },
-    async verify2fa() {
+    async verify2FA() {
       if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
       try {
-        await utils.accounts.verify2fa(ACCOUNT_API_URL, this.session._key, this.otpSecret)
+        await utils.accounts.verify2FA(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.otpSecret
+        )
         await this.updateAccount()
         this.confirmEnabled()
         this.isLoading = false
@@ -142,11 +137,11 @@ export default {
     verifyOnEnter(event) {
       if (event.charCode !== 13) return
       event.preventDefault()
-      this.verify2fa()
+      this.verify2FA()
     }
   },
   mounted() {
-    this.enable2fa()
+    this.enable2FA()
   },
   setup() {
     return {

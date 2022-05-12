@@ -5,7 +5,6 @@
     <div v-show="step === 1">
       <p class="text-lg">Recover your account.</p>
       <p class="text-gray-500">Enter your email address below and we'll send you an email with a recovery code.</p>
-      <p class="text-gray-500">If you never enabled a recovery email for your account, well daaammnn, there's nothing we can do. Sorry bud!</p>
       <div class="input-field flex w-full">
         <input
           v-model="v$.email.$model"
@@ -65,9 +64,9 @@
       <div class="mt-4">
         <AuthCodeInput
           :error="errors.recoveryCode"
-          :isAuthed="isRecovered"
+          :isCodeValid="isRecoveryCodeValid"
           :onComplete="onUpdateRecoveryCode"
-          :resetErrors="() => errors.recoveryCode = ''"
+          :resetErrors="resetRecoveryCodeError"
         />
       </div>
       <!-- return to sign in button -->
@@ -124,8 +123,6 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import useVuelidate from '@vuelidate/core'
 
-const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
-
 export default {
   name: 'RecoverAccount',
   title() {
@@ -151,7 +148,7 @@ export default {
       },
       iEmailCooldown: null,
       isLoading: false,
-      isRecovered: false,
+      isRecoveryCodeValid: false,
       step: 1
     }
   },
@@ -188,6 +185,9 @@ export default {
       this.recoveryCode = newCode
       this.verifyCode()
     },
+    resetRecoveryCodeError() {
+      this.errors.recoveryCode = ''
+    },
     returnToSignIn() {
       this.$router.push({ name: 'Sign In' })
     },
@@ -213,7 +213,7 @@ export default {
       this.isLoading = true
       try {
         // recover account route doesn't yet exist
-        // await utils.accounts.recoverAccount(ACCOUNT_API_URL, this.email)
+        // await utils.accounts.recoverAccount(process.env.VUE_APP_ACCOUNT_API_URL, this.email)
         // set 15s email cooldown timer
         this.emailCooldown = 15
         this.iEmailCooldown = setInterval(() => {
@@ -238,8 +238,8 @@ export default {
     async verifyCode() {
       try {
         // verify recovery code route doesn't yet exist
-        // await utils.accounts.verifyRecoveryCode(ACCOUNT_API_URL, this.email, this.recoveryCode)
-        this.isRecovered = true
+        // await utils.accounts.verifyRecoveryCode(process.env.VUE_APP_ACCOUNT_API_URL, this.email, this.recoveryCode)
+        this.isRecoveryCodeValid = true
         this.step = 3
         this.accountNumber = '1234567890123456'
       } catch (error) {

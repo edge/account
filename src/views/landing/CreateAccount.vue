@@ -70,18 +70,18 @@
             <!-- 2fa section -->
             <div class="my-4">
               <button
-                @click.prevent="toggleShow2fa"
+                @click.prevent="toggleShow2FA"
                 class="w-full button button--solid"
               >
                 <span>Enable Two-factor Authentication (2FA)</span>
                 <div class="absolute right-3">
-                  <ChevronDownIcon v-if="show2fa" class="chevron-icon" />
+                  <ChevronDownIcon v-if="show2FA" class="chevron-icon" />
                   <ChevronRightIcon v-else class="chevron-icon" />
                 </div>
               </button>
-              <div v-show="show2fa">
+              <div v-show="show2FA">
                 <div class="input-group mt-2">
-                  <GoogleAuthEnable v-if="!is2faEnabled" :confirmEnabled="onEnable2fa" />
+                  <GoogleAuthEnable v-if="!is2FAEnabled" :confirmEnabled="onEnable2FA" />
                   <div v-else class="my-4 flex items-center">
                     <div>
                       <ShieldCheckIcon class="w-5 text-green" />
@@ -126,12 +126,12 @@
           <!-- when moving past secure account section, still display whether recovery/2fa has been enabled -->
           <div class="step-content" v-else-if="step > 2">
             <div class="my-4">
-              <div @click="toggleShow2fa" class="cursor-pointer flex items-center mb-4">
+              <div @click="toggleShow2FA" class="cursor-pointer flex items-center mb-4">
                 <div>
-                  <ShieldCheckIcon v-if="is2faEnabled" class="w-5 text-green" />
+                  <ShieldCheckIcon v-if="is2FAEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
-                <span class="ml-2 hover:text-green">Two-factor authentication {{ is2faEnabled ? 'successfully' : 'not' }} enabled</span>
+                <span class="ml-2 hover:text-green">Two-factor authentication {{ is2FAEnabled ? 'successfully' : 'not' }} enabled</span>
               </div>
               <div @click="toggleShowRecovery" class="cursor-pointer flex items-center">
                 <div>
@@ -234,8 +234,6 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import RecoveryEmail from "@/components/account/RecoveryEmail"
 
-const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
-
 export default {
   name: 'CreateAccount',
   title() {
@@ -274,9 +272,9 @@ export default {
       },
       isGeneratingAccount: false,
       isVerifying: false,
-      is2faEnabled: false,
+      is2FAEnabled: false,
       isRecoveryEnabled: false,
-      show2fa: false,
+      show2FA: false,
       showRecovery: false,
       step: 1,
     }
@@ -286,7 +284,7 @@ export default {
       return this.accountNumber && !this.isGeneratingAccount
     },
     isAccountSecured() {
-      return this.is2faEnabled && this.isRecoveryEnabled
+      return this.is2FAEnabled && this.isRecoveryEnabled
     },
     formattedAccountNumber() {
       // add space every 4 characters
@@ -316,7 +314,7 @@ export default {
 
       setTimeout(async () => {
         try {
-          const res = await utils.accounts.createAccount(ACCOUNT_API_URL)
+          const res = await utils.accounts.createAccount(process.env.VUE_APP_ACCOUNT_API_URL)
           // finish number generator on newly generated account number and dispatch to store
           clearInterval(numGeneratorId)
           this.accountNumber = res.account._key
@@ -342,32 +340,32 @@ export default {
     async goToAccount() {
       this.$router.push('/')
     },
-    onEnable2fa() {
-      this.is2faEnabled = true
+    onEnable2FA() {
+      this.is2FAEnabled = true
     },
     onEnableRecovery() {
       this.isRecoveryEnabled = true
     },
-    toggleShow2fa() {
+    toggleShow2FA() {
       if (this.step !== 2) {
         this.step = 2
-        this.show2fa = true
+        this.show2FA = true
         this.showRecovery = false
       }
       else {
-        this.show2fa = !this.show2fa
-        if (this.show2fa) this.showRecovery = false
+        this.show2FA = !this.show2FA
+        if (this.show2FA) this.showRecovery = false
       }
     },
     toggleShowRecovery() {
       if (this.step !== 2) {
         this.step = 2
         this.showRecovery = true
-        this.show2fa = false
+        this.show2FA = false
       }
       else {
         this.showRecovery = !this.showRecovery
-        if(this.showRecovery) this.show2fa = false
+        if(this.showRecovery) this.show2FA = false
       }
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <form class="wrapper" ref="authForm" :class="isAuthed ? 'authed' : ''">
+  <form class="wrapper" ref="authForm" :class="isCodeValid ? 'authed' : ''">
     <input
       class="auth-number"
       v-model="input1"
@@ -78,7 +78,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'AuthCodeInput',
-  props: ['error', 'isAuthed', 'onComplete', 'resetErrors'],
+  props: ['error', 'isCodeValid', 'onComplete', 'resetErrors'],
   components: {
     ExclamationIcon
   },
