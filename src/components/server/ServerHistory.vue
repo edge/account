@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import {CalendarIcon, ClockIcon, UserIcon} from "@heroicons/vue/outline";
+import {CalendarIcon, ClockIcon, UserIcon} from '@heroicons/vue/outline'
 export default {
   name: 'ServerResize',
   components: {

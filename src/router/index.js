@@ -70,17 +70,17 @@ const routes = [
       {
         path: '',
         name: 'Sign In',
-        component: SignIn,
+        component: SignIn
       },
       {
         path: 'create-account',
         name: 'Create Account',
-        component: CreateAccount,
+        component: CreateAccount
       },
       {
         path: 'recover-account',
         name: 'Recover Account',
-        component: RecoverAccount,
+        component: RecoverAccount
       }
     ]
   },
@@ -104,7 +104,8 @@ const confirmSessionKey = async () => {
       await store.commit('setIsAuthed', true)
       return true
     }
-  } catch (error) {
+  }
+  catch (error) {
     return false
   }
 }
@@ -129,7 +130,8 @@ router.beforeEach(async (to, from, next) => {
       return
     }
     next()
-  } else {
+  }
+  else {
     next()
   }
 })

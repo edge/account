@@ -21,59 +21,59 @@
 </template>
 
 <script>
-  import Menu from "@/components/Menu";
-  import NavigationTools from "@/components/NavigationTools";
-  import Search from "@/components/Search";
+import Menu from '@/components/Menu'
+import NavigationTools from '@/components/NavigationTools'
+import Search from '@/components/Search'
 
-  export default {
-    name: "MobileNavigation",
-    data: function () {
-      return {
-        showNav: false,
-        mainNav: [
-          {
-            link: "/servers",
-            text: "Servers"
-          }
-          ,
-          {
-            link: "/storage",
-            text: "Storage"
-          },
-          {
-            link: "/content-deliver",
-            text: "Content Delivery",
-            disabled: true
-          },
-          {
-            link: "/databases",
-            text: "Databases",
-            disabled: true
-          },
-          {
-            link: "/domains",
-            text: "Domains",
-            disabled: true
-          },
-          {
-            link: "/shield",
-            text: "Shield",
-            disabled: true
-          }
-        ]
-      }
-    },
-    components: {
-      Menu,
-      NavigationTools,
-      Search
+export default {
+  name: 'MobileNavigation',
+  data: function () {
+    return {
+      showNav: false,
+      mainNav: [
+        {
+          link: '/servers',
+          text: 'Servers'
+        }
+        ,
+        {
+          link: '/storage',
+          text: 'Storage'
+        },
+        {
+          link: '/content-deliver',
+          text: 'Content Delivery',
+          disabled: true
+        },
+        {
+          link: '/databases',
+          text: 'Databases',
+          disabled: true
+        },
+        {
+          link: '/domains',
+          text: 'Domains',
+          disabled: true
+        },
+        {
+          link: '/shield',
+          text: 'Shield',
+          disabled: true
+        }
+      ]
     }
+  },
+  components: {
+    Menu,
+    NavigationTools,
+    Search
   }
+}
 </script>
 <style scoped>
   .mobileNavigation {
     @apply fixed pointer-events-none opacity-0 right-0 w-full top-0 flex flex-col h-screen overflow-auto border-r border-gray-300;
-    @apply transition-all transform -translate-x-full duration-500; 
+    @apply transition-all transform -translate-x-full duration-500;
   }
   .menu-open .mobileNavigation {
     @apply opacity-100 translate-x-0;

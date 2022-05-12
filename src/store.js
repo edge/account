@@ -27,7 +27,7 @@ const store = createStore({
     setSession(state, session) {
       state.session = session
     }
-  },
+  }
 })
 
 export default store

@@ -1,6 +1,6 @@
 import {
   createAccount,
-  getAccount, 
+  getAccount,
   handleTwoFactor,
   updateAccount
 } from '../utils/api'
@@ -10,7 +10,7 @@ const state = {
 }
 
 const getters = {
-  isAuthenticated: state => !!state.user,    
+  isAuthenticated: state => !!state.user,
   StateUser: state => state.user
 }
 
@@ -18,18 +18,19 @@ const actions = {
   async enable2fa({ commit }, payload) {
     payload.action = 'enable2fa'
     const response = await handleTwoFactor(payload)
-    
+
     if (response && response.totp) {
       await commit('setUser', response)
       return response.totp
-    } else if (response && response.results && response.results.length === 0) {
+    }
+    else if (response && response.results && response.results.length === 0) {
       return false
     }
   },
   async disable2fa({ commit }, payload) {
     payload.action = 'disable2fa'
     const response = await handleTwoFactor(payload)
-   
+
     if (response && !response.totp) {
       await commit('setUser', response)
     }
@@ -44,10 +45,9 @@ const actions = {
 
     if (userAccount.totp) {
       return { requires2fa: true, totpSecret: userAccount.totpSecret }
-    } else {
-      if (userAccount._id) {
-        await commit('setUser', userAccount)
-      }
+    }
+    else if (userAccount._id) {
+      await commit('setUser', userAccount)
     }
   },
   async logout({ commit }) {

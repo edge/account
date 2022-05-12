@@ -229,10 +229,10 @@ import {
 
   ShieldCheckIcon
 } from '@heroicons/vue/solid'
-import GoogleAuthEnable from "@/components/account/GoogleAuthEnable"
+import GoogleAuthEnable from '@/components/account/GoogleAuthEnable'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
-import RecoveryEmail from "@/components/account/RecoveryEmail"
+import RecoveryEmail from '@/components/account/RecoveryEmail'
 
 export default {
   name: 'CreateAccount',
@@ -276,7 +276,7 @@ export default {
       isRecoveryEnabled: false,
       show2FA: false,
       showRecovery: false,
-      step: 1,
+      step: 1
     }
   },
   computed: {

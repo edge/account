@@ -134,7 +134,7 @@ export default {
     DuplicateIcon,
     ExclamationIcon,
     LoadingSpinner,
-    Logo,
+    Logo
   },
   data() {
     return {
@@ -203,8 +203,9 @@ export default {
         this.showRecoveryEmailResent = true
         setTimeout(() => {
           this.showRecoveryEmailResent = false
-        }, 5000);
-      } catch (error) {
+        }, 5000)
+      }
+      catch (error) {
         this.errors.email = 'Oops, something went wrong. Please try again.'
       }
     },
@@ -223,8 +224,9 @@ export default {
 
         this.isLoading = false
         this.step = 2
-      } catch (error) {
-        this.errors.email = "We don't appear to have an account with this email address."
+      }
+      catch (error) {
+        this.errors.email = 'We don\'t appear to have an account with this email address.'
         setTimeout(() => {
           this.isLoading = false
         }, 1000)
@@ -242,7 +244,8 @@ export default {
         this.isRecoveryCodeValid = true
         this.step = 3
         this.accountNumber = '1234567890123456'
-      } catch (error) {
+      }
+      catch (error) {
         this.errors.recoveryCode = 'Recovery code invalid'
       }
     }

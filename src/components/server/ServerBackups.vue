@@ -48,7 +48,7 @@
                 OS
               </th>
               <th scope="col" class="pr-0 tableHead__cell">
-                
+
               </th>
             </tr>
           </thead>
@@ -155,9 +155,9 @@
 </template>
 
 <script>
-import BackupMenu from "@/components/server/BackupMenu"
+import BackupMenu from '@/components/server/BackupMenu'
 import { createBackup, deleteBackup, restoreBackup } from '../../utils/api'
-import {CalendarIcon, ClockIcon} from "@heroicons/vue/outline";
+import {CalendarIcon, ClockIcon} from '@heroicons/vue/outline'
 
 export default {
   name: 'ServerBackups',
@@ -178,9 +178,9 @@ export default {
   methods: {
     async deleteBackup(backup) {
       this.isSaving = true
-      
+
       await deleteBackup(backup)
-      
+
       this.polling = setInterval(() => {
         if (!this.activeTask) {
           this.isSaving = false
@@ -189,9 +189,9 @@ export default {
     },
     async restoreBackup(backup) {
       this.isSaving = true
-      
+
       await restoreBackup(this.server.serverId, backup)
-      
+
       this.polling = setInterval(() => {
         if (!this.activeTask) {
           this.isSaving = false
@@ -200,7 +200,7 @@ export default {
     },
     async save() {
       this.isSaving = true
-      
+
       createBackup(this.server.serverId, { name: this.backupName, comment: '' })
 
       this.polling = setInterval(() => {

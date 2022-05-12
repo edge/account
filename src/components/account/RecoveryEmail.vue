@@ -112,7 +112,7 @@ export default {
         email: ''
       },
       isLoading: false,
-      step: 1,
+      step: 1
     }
   },
   validations() {
@@ -122,7 +122,7 @@ export default {
         validation.required
       ],
       confirmationCode: [
-        validation.confirmationCode,
+        validation.confirmationCode
       ]
     }
   },
@@ -163,7 +163,8 @@ export default {
         await this.updateAccount()
         this.isLoading = false
         this.step = 2
-      } catch (error) {
+      }
+      catch (error) {
         this.errors.email = 'Oops, something went wrong. Please try again.'
         setTimeout(() => {
           this.isLoading = false
@@ -198,7 +199,8 @@ export default {
         await this.updateAccount()
         this.confirmEnabled()
         this.isLoading = false
-      } catch (error) {
+      }
+      catch (error) {
         setTimeout(() => {
           this.errors.confirmationCode = 'Verification code invalid'
           this.isLoading = false

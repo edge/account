@@ -24,7 +24,7 @@
 
     <!-- overview -->
     <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4">
-      
+
       <div class="relative flex-1 overflow-hidden">
         <div class="specsGradient" />
         <div class="flex items-center justify-start space-x-2 overflow-auto">
@@ -117,7 +117,7 @@
             </Tab>
           </TabList>
           <TabPanels class="mt-5">
-            
+
             <!-- overview -->
             <TabPanel>
               <ServerOverview :server=server :metrics=server.metrics />
@@ -180,19 +180,19 @@
 </template>
 
 <script>
-import ActiveTask from "@/components/ActiveTask"
+import ActiveTask from '@/components/ActiveTask'
 import CentOsIcon from '@/components/icons/Centos'
-import Destroy from "@/components/server/Destroy"
-import Line from "@/components/charts/Line"
-import ServerBackups from "@/components/server/ServerBackups"
-import ServerConsole from "@/components/server/ServerConsole"
-import ServerHistory from "@/components/server/ServerHistory"
-import ServerNetworking from "@/components/server/ServerNetworking"
-import ServerOverview from "@/components/server/ServerOverview"
-import ServerResize from "@/components/server/ServerResize"
-import ServerStatus from "@/components/server/ServerStatus"
+import Destroy from '@/components/server/Destroy'
+import Line from '@/components/charts/Line'
+import ServerBackups from '@/components/server/ServerBackups'
+import ServerConsole from '@/components/server/ServerConsole'
+import ServerHistory from '@/components/server/ServerHistory'
+import ServerNetworking from '@/components/server/ServerNetworking'
+import ServerOverview from '@/components/server/ServerOverview'
+import ServerResize from '@/components/server/ServerResize'
+import ServerStatus from '@/components/server/ServerStatus'
 import UbuntuIcon from '@/components/icons/Ubuntu'
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 
 import { useRoute } from 'vue-router'
 import useSWRV from 'swrv'
@@ -247,11 +247,11 @@ export default {
       if (data.type === 'vm_backup') {
         task.status = 'Backing up VM'
       }
-      
+
       if (data.type === 'host_create') {
         task.status = 'Creating VM'
       }
-      
+
       if (data.type === 'host_delete') {
         task.status = 'Destroying VM'
       }
@@ -259,27 +259,27 @@ export default {
       if (data.type === 'host_change_params') {
         task.status = 'Changing VM parameters'
       }
-      
+
       if (data.type === 'host_restart') {
         task.status = 'Restarting VM'
       }
-      
+
       if (data.type === 'host_restore') {
         task.status = 'Restoring VM'
       }
-      
+
       if (data.type === 'host_start') {
         task.status = 'Starting VM'
       }
-      
+
       if (data.type === 'host_stop') {
         task.status = 'Stopping VM'
       }
-      
+
       if (data.type === 'ip_allocate') {
         task.status = 'Adding IP address'
       }
-      
+
       if (data.type === 'ip_delete') {
         task.status = 'Removing IP address'
       }
@@ -292,7 +292,8 @@ export default {
       if (this.server.status === 'active') {
         // Power off.
         await startStopHost(this.server.serverId, 'stop')
-      } else {
+      }
+      else {
         // Power on.
         await startStopHost(this.server.serverId, 'start')
       }
@@ -318,10 +319,11 @@ export default {
       if (this.server) {
         this.setVncSettings(this.server.vnc_settings)
       }
-      
+
       if (this.tasks[0]) {
         this.activeTask = this.formatActiveTask(this.tasks[0])
-      } else {
+      }
+      else {
         this.activeTask = null
       }
     }, 10000)

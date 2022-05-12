@@ -83,7 +83,7 @@ export default {
         confirmationCode: ''
       },
       isLoading: false,
-      totpAuthUrl: null,
+      totpAuthUrl: null
     }
   },
   validations() {
@@ -127,7 +127,8 @@ export default {
         this.confirmEnabled()
         this.isLoading = false
 
-      } catch (error) {
+      }
+      catch (error) {
         setTimeout(() => {
           this.errors.confirmationCode = 'Verification code invalid'
           this.isLoading = false

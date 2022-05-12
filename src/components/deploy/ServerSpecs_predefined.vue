@@ -62,12 +62,12 @@
 <script>
 import {
   RadioGroup,
-  RadioGroupLabel,
   RadioGroupDescription,
-  RadioGroupOption,
+  RadioGroupLabel,
+  RadioGroupOption
 } from '@headlessui/vue'
 
-import { ref, onUpdated } from 'vue'
+import { onUpdated, ref } from 'vue'
 import useSWRV from 'swrv'
 import { fetcher } from '../../utils/api'
 
@@ -78,7 +78,7 @@ export default {
     RadioGroup,
     RadioGroupLabel,
     RadioGroupDescription,
-    RadioGroupOption,
+    RadioGroupOption
   },
   data() {
     return {
@@ -101,7 +101,8 @@ export default {
           matchingPreset = this.presets.map(p => {
             if (p.ram === current.ram && p.cpu === current.cpu) {
               return p
-            } else {
+            }
+            else {
               return null
             }
           }).filter(Boolean)
@@ -112,7 +113,7 @@ export default {
             p.enabled = true
 
             console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-            
+
             // SSD cannot be downsized.
             // if (p.ssd < current.ssd) {
             if (resizeType && resizeType.id === 2 && p.ssd < current.ssd) {
@@ -123,16 +124,16 @@ export default {
 
         if (selectedSpecs) {
           this.selectedPreset = selectedSpecs
-        } else {
-          if (matchingPreset && matchingPreset[0]) {
-            this.selectedPreset = matchingPreset[0]
-          } else {      
-            this.selectedPreset = this.presets[0]
-          }
+        }
+        else if (matchingPreset && matchingPreset[0]) {
+          this.selectedPreset = matchingPreset[0]
+        }
+        else {
+          this.selectedPreset = this.presets[0]
         }
 
         console.log('this.selectedPreset',this. selectedPreset)
-      }      
+      }
     }
   },
   mounted() {
@@ -143,7 +144,7 @@ export default {
 
   },
   watch: {
-    presets(value) {     
+    presets(value) {
       this.update()
       // const { current, resizeType, selectedSpecs } = this
       // let matchingPreset
@@ -165,7 +166,7 @@ export default {
       //       p.enabled = true
 
       //       console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-            
+
       //       // SSD cannot be downsized.
       //       if (p.ssd < current.ssd) {
       //         p.enabled = false
@@ -178,7 +179,7 @@ export default {
       //   } else {
       //     if (matchingPreset && matchingPreset[0]) {
       //       this.selectedPreset = matchingPreset[0]
-      //     } else {      
+      //     } else {
       //       this.selectedPreset = this.presets[0]
       //     }
       //   }

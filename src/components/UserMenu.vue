@@ -44,36 +44,36 @@
 </template>
 
 <script>
-  import {ChevronDownIcon} from "@heroicons/vue/solid"
-  import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue"
-  import { mapState } from 'vuex'
+import {ChevronDownIcon} from '@heroicons/vue/solid'
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { mapState } from 'vuex'
 
-  export default {
-    name: "UserMenu",
-    components: {
-      ChevronDownIcon,
-      Menu,
-      MenuButton,
-      MenuItems,
-      MenuItem,
+export default {
+  name: 'UserMenu',
+  components: {
+    ChevronDownIcon,
+    Menu,
+    MenuButton,
+    MenuItems,
+    MenuItem
+  },
+  computed: {
+    ...mapState(['account']),
+    formattedAccountNumber() {
+      return this.account._key.replace(/.{4}/g, '$& ')
+    }
+  },
+  methods: {
+    navigate(path) {
+      this.$router.push(path)
     },
-    computed: {
-      ...mapState(['account']),
-      formattedAccountNumber() {
-        return this.account._key.replace(/.{4}/g, '$& ')
-      }
-    },
-    methods: {
-      navigate(path) {
-        this.$router.push(path)
-      },
-      async logout() {
-        await this.$store.commit('logout')
-        localStorage.removeItem('session')
-        this.$router.push('/signin')
-      }
+    async logout() {
+      await this.$store.commit('logout')
+      localStorage.removeItem('session')
+      this.$router.push('/signin')
     }
   }
+}
 </script>
 <style scoped>
   .menu {
@@ -92,6 +92,6 @@
     @apply group flex rounded items-center w-full px-2 py-2.5 text-sm text-gray-600;
   }
   .menu__item.active {
-   @apply bg-gray-100; 
+   @apply bg-gray-100;
   }
 </style>

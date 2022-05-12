@@ -50,11 +50,11 @@
 <script>
 import {
   RadioGroup,
-  RadioGroupLabel,
   RadioGroupDescription,
-  RadioGroupOption,
+  RadioGroupLabel,
+  RadioGroupOption
 } from '@headlessui/vue'
-import OperatingSystemOptions from "@/components/deploy/OperatingSystemOptions"
+import OperatingSystemOptions from '@/components/deploy/OperatingSystemOptions'
 
 import { ref } from 'vue'
 import useSWRV from 'swrv'

@@ -15,7 +15,7 @@ export default {
   name: 'LandingPage',
   data() {
     return {
-      accountNumber: '',
+      accountNumber: ''
     }
   }
 }

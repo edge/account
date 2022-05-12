@@ -52,9 +52,9 @@
 <script>
 import {
   RadioGroup,
-  RadioGroupLabel,
   RadioGroupDescription,
-  RadioGroupOption,
+  RadioGroupLabel,
+  RadioGroupOption
 } from '@headlessui/vue'
 
 import { CheckIcon } from '@heroicons/vue/outline'
@@ -69,7 +69,7 @@ export default {
     RadioGroup,
     RadioGroupLabel,
     RadioGroupDescription,
-    RadioGroupOption,
+    RadioGroupOption
   },
   data() {
     return {

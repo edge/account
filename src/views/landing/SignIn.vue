@@ -108,7 +108,7 @@ export default {
     ExclamationIcon,
     LoadingSpinner,
     Logo,
-    ShieldExclamationIcon,
+    ShieldExclamationIcon
   },
   data() {
     return {
@@ -178,9 +178,10 @@ export default {
 
           setTimeout(() => {
             this.$router.push('/servers')
-          }, 800);
+          }, 800)
         }
-      } catch (error) {
+      }
+      catch (error) {
         if (this.requires2FA) this.errors.otpSecret = 'Verification code invalid'
         if (error.response) {
           if (error.response && error.response.status === 401) {

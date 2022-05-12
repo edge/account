@@ -28,7 +28,7 @@ export default {
   mounted() {
     // Get a new, random hostname.
     const { data } = useSWRV(() => '/servers?action=getHostname', fetcher)
-    
+
     setTimeout(() => {
       this.hostname = data && data.value && data.value.hostname
     }, 1000)

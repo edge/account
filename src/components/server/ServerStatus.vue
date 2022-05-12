@@ -22,41 +22,42 @@
 </template>
 
 <script>
-  import Modal from '@/components/Modal'
-  import { ref } from 'vue'
-  import { Switch } from '@headlessui/vue'
-  
-  export default {
-    name: "ServerStatus",
-    props: ['server', 'onToggleStatus'],
-    components: {
-      Modal,
-      Switch
-    },
-    data() {
-      return {
-        enabled: true
-      }
-    },
-    methods: {
-      toggleModal () {       
-        if (this.server.status === 'active') {
-          this.$refs.modal.open = true
-        } else {
-          this.toggleServer()
-        }
-      },
-      async toggleServer () {
-        await this.onToggleStatus()
-        this.$refs.modal.open = false
+import Modal from '@/components/Modal'
+import { ref } from 'vue'
+import { Switch } from '@headlessui/vue'
 
-        this.enabled = this.server.status !== 'active'
+export default {
+  name: 'ServerStatus',
+  props: ['server', 'onToggleStatus'],
+  components: {
+    Modal,
+    Switch
+  },
+  data() {
+    return {
+      enabled: true
+    }
+  },
+  methods: {
+    toggleModal () {
+      if (this.server.status === 'active') {
+        this.$refs.modal.open = true
+      }
+      else {
+        this.toggleServer()
       }
     },
-    mounted() {
-      this.enabled = this.server.status === 'active'
+    async toggleServer () {
+      await this.onToggleStatus()
+      this.$refs.modal.open = false
+
+      this.enabled = this.server.status !== 'active'
     }
+  },
+  mounted() {
+    this.enabled = this.server.status === 'active'
   }
+}
 </script>
 <style scoped>
   .switch {

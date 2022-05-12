@@ -6,5 +6,8 @@
   "ignorePatterns": [
     "src/tailwind/**/*.js",
     "/*.js"
-  ]
+  ],
+  "rules": {
+    "vue/multi-word-component-names": "off"
+  }
 }

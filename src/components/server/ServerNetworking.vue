@@ -19,7 +19,7 @@
               Domain
             </th>
             <th scope="col" class="tableHead__cell">
-              
+
             </th>
           </tr>
         </thead>
@@ -127,7 +127,7 @@
 
 <script>
 import { addIpAddress, removeIpAddress } from '../../utils/api'
-import {TrashIcon} from "@heroicons/vue/outline";
+import {TrashIcon} from '@heroicons/vue/outline'
 
 export default {
   name: 'ServerNetworking',
@@ -157,7 +157,7 @@ export default {
       this.isSaving = true
 
       await removeIpAddress(id)
-      
+
       this.polling = setInterval(() => {
         if (!this.activeTask) {
           this.isSaving = false
@@ -198,18 +198,18 @@ export default {
   dl {
       margin-bottom:50px;
   }
-  
+
   dl dt {
       background:#5f9be3;
       color:#fff;
-      float:left; 
-      font-weight:bold; 
-      margin-right:10px; 
-      padding:5px;  
+      float:left;
+      font-weight:bold;
+      margin-right:10px;
+      padding:5px;
   }
-  
+
   dl dd {
-      margin:2px 0; 
+      margin:2px 0;
       padding:5px 0;
   }
 </style>

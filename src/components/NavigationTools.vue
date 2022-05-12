@@ -13,11 +13,11 @@
 </template>
 
 <script>
-  import {SupportIcon} from "@heroicons/vue/outline";
-  export default {
-    name: "NavigationTools",
-    components: {SupportIcon}
-  }
+import {SupportIcon} from '@heroicons/vue/outline'
+export default {
+  name: 'NavigationTools',
+  components: {SupportIcon}
+}
 </script>
 
 <style scoped>

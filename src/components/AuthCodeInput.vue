@@ -171,7 +171,7 @@ export default {
       this.$refs.authForm.classList.toggle('error-shake')
       setTimeout(() => {
         this.$refs.authForm.classList.toggle('error-shake')
-      }, 200);
+      }, 200)
     }
   }
 }

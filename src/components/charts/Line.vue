@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import { LineChart } from "vue-chart-3"
-import { Chart, registerables } from "chart.js"
+import { LineChart } from 'vue-chart-3'
+import { Chart, registerables } from 'chart.js'
 
 Chart.register(...registerables)
 
@@ -27,8 +27,8 @@ export default {
   mounted() {
     const data = JSON.parse(JSON.stringify(this.data))
     let postpendValue = ''
-    
-    if (this.postpendValue) { 
+
+    if (this.postpendValue) {
       postpendValue = this.postpendValue
     }
 
@@ -36,7 +36,8 @@ export default {
       labels: data.map(point => {
         if (this.period === 'day') {
           return new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})
-        } else {
+        }
+        else {
           return new Date(point[1] * 1000).toLocaleDateString('en-us', {})
         }
       }),
@@ -71,7 +72,7 @@ export default {
           suggestedMax: this.maxScale,
           ticks: {
             callback: function(value, index, ticks) {
-                return value + postpendValue
+              return value + postpendValue
             }
           }
         }

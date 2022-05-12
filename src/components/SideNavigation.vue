@@ -13,68 +13,69 @@
 </template>
 
 <script>
-  import Logo from "@/components/Logo";
-  import Menu from "@/components/Menu";
-  import NavigationTools from "@/components/NavigationTools";
-  import BurgerButton from "@/components/BurgerButton";
+import Logo from '@/components/Logo'
+import Menu from '@/components/Menu'
+import NavigationTools from '@/components/NavigationTools'
+import BurgerButton from '@/components/BurgerButton'
 
-  export default {
-    name: "SideNavigation",
-    data: function () {
-      return {
-        showNav: false,
-        mainNav: [
-          {
-            link: "/servers",
-            text: "Servers"
-          }
-          ,
-          {
-            link: "/storage",
-            text: "Storage",
-            disabled: true
-          },
-          {
-            link: "/content-deliver",
-            text: "Content Delivery",
-            disabled: true
-          },
-          {
-            link: "/databases",
-            text: "Databases",
-            disabled: true
-          },
-          {
-            link: "/domains",
-            text: "Domains",
-            disabled: true
-          },
-          {
-            link: "/shield",
-            text: "Shield",
-            disabled: true
-          }
-        ]
-      }
-    },
-    methods: {
-      bodyScrollLock () {
-        const targetElement = document.querySelector('#menu')
-        
-        if (this.showNav) {
-          bodyScrollLock.disableBodyScroll(targetElement)
-        } else {
-          bodyScrollLock.enableBodyScroll(targetElement)
+export default {
+  name: 'SideNavigation',
+  data: function () {
+    return {
+      showNav: false,
+      mainNav: [
+        {
+          link: '/servers',
+          text: 'Servers'
         }
-      }
-    },
-    components: {
-      Logo,
-      Menu,
-      NavigationTools,
-      BurgerButton
+        ,
+        {
+          link: '/storage',
+          text: 'Storage',
+          disabled: true
+        },
+        {
+          link: '/content-deliver',
+          text: 'Content Delivery',
+          disabled: true
+        },
+        {
+          link: '/databases',
+          text: 'Databases',
+          disabled: true
+        },
+        {
+          link: '/domains',
+          text: 'Domains',
+          disabled: true
+        },
+        {
+          link: '/shield',
+          text: 'Shield',
+          disabled: true
+        }
+      ]
     }
+  },
+  methods: {
+    bodyScrollLock () {
+      const targetElement = document.querySelector('#menu')
+
+      if (this.showNav) {
+        bodyScrollLock.disableBodyScroll(targetElement)
+      }
+      else {
+        bodyScrollLock.enableBodyScroll(targetElement)
+      }
+    }
+  },
+  components: {
+    Logo,
+    Menu,
+    NavigationTools,
+    BurgerButton
   }
+}
 </script>
 <style scoped>
   .sideNavigation {

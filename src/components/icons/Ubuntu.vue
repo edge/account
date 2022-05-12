@@ -9,10 +9,10 @@
 </template>
 
 <script>
-  export default {
-    name: "UbuntuIcon",
-    props: ['className'],
-  }
+export default {
+  name: 'UbuntuIcon',
+  props: ['className']
+}
 </script>
 
 <style scoped>

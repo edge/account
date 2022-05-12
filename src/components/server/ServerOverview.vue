@@ -95,13 +95,13 @@
         />
       </div>
     </div>
-    
+
   </div>
 </template>
 
 <script>
-import Line from "@/components/charts/Line"
-import MultiLine from "@/components/charts/MultiLine"
+import Line from '@/components/charts/Line'
+import MultiLine from '@/components/charts/MultiLine'
 import { getMetrics } from '../../utils/api'
 
 export default {
@@ -131,7 +131,7 @@ export default {
   methods: {
     formatDatapoints(data, sizeType = 'MB') {
       const divisor = sizeType === 'MB' ? 1048576 : 1073741824
-      
+
       data.forEach(datapoint => {
         if (datapoint[0]) {
           datapoint[0] = datapoint[0]/divisor

@@ -3,11 +3,11 @@
     <h4>Resize your server</h4>
 
     <p class="mt-3 text-gray-500">You are currently on the <b>XX plan for $XX per month</b>. Select an option below to resize your server.</p>
-    
+
     <ResizeType :resizeTypes="resizeTypes" @resize-type-changed="captureResizeType" />
 
     <div class="w-full h-px my-10 bg-gray-300" />
-    
+
     <ServerSpecs
       :currentCost=currentCost
       :calculatedCost=newCost
@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import ServerSpecs from "@/components/deploy/ServerSpecs"
-import ResizeType from "@/components/server/ResizeType"
+import ServerSpecs from '@/components/deploy/ServerSpecs'
+import ResizeType from '@/components/server/ResizeType'
 import { resizeHost } from '../../utils/api'
 
 export default {
@@ -93,13 +93,13 @@ export default {
   methods: {
     calculateCosts() {
       const { ramCostPerGb, ssdCostPerGb, cpuCostPer } = this.server.region
-      
-      this.currentCost = 
+
+      this.currentCost =
         (ramCostPerGb * this.currentServerSpecs.ram) +
         (ssdCostPerGb * this.currentServerSpecs.ssd) +
         (cpuCostPer * this.currentServerSpecs.cpu)
-      
-      this.newCost = 
+
+      this.newCost =
         (ramCostPerGb * this.selectedResizeSpecs.ram / 1024) +
         (ssdCostPerGb * this.selectedResizeSpecs.ssd / 1024) +
         (cpuCostPer * this.selectedResizeSpecs.cpu)
@@ -120,7 +120,7 @@ export default {
     async save() {
       this.isSaving = true
       await this.resize()
-      
+
       this.polling = setInterval(() => {
         if (!this.activeTask) {
           this.isSaving = false
@@ -133,7 +133,7 @@ export default {
         diskId: this.server.disk_id,
         cpuNumber: this.selectedResizeSpecs.cpu,
         memSize: this.selectedResizeSpecs.ram
-      } 
+      }
 
       // Additional parameter for HDD resize.
       if (this.selectedResizeSpecs.ssd > this.currentServerSpecs.ssd) {

@@ -221,7 +221,7 @@ export default {
     //         p.enabled = true
 
     //         console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-            
+
     //         // SSD cannot be downsized.
     //         // if (p.ssd < current.ssd) {
     //         if (resizeType && resizeType.id === 2 && p.ssd < current.ssd) {
@@ -235,13 +235,13 @@ export default {
     //     } else {
     //       if (matchingPreset && matchingPreset[0]) {
     //         this.selectedPreset = matchingPreset[0]
-    //       } else {      
+    //       } else {
     //         this.selectedPreset = this.presets[0]
     //       }
     //     }
 
     //     console.log('this.selectedPreset',this. selectedPreset)
-    //   }      
+    //   }
     // }
   },
   mounted() {
@@ -255,7 +255,7 @@ export default {
     this.$refs.ssdSlider.setValue(this.storageValue.toString())
   },
   watch: {
-    presets(value) {     
+    presets(value) {
       this.update()
       // const { current, resizeType, selectedSpecs } = this
       // let matchingPreset
@@ -277,7 +277,7 @@ export default {
       //       p.enabled = true
 
       //       console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-            
+
       //       // SSD cannot be downsized.
       //       if (p.ssd < current.ssd) {
       //         p.enabled = false
@@ -290,7 +290,7 @@ export default {
       //   } else {
       //     if (matchingPreset && matchingPreset[0]) {
       //       this.selectedPreset = matchingPreset[0]
-      //     } else {      
+      //     } else {
       //       this.selectedPreset = this.presets[0]
       //     }
       //   }
@@ -315,7 +315,8 @@ export default {
     storageValue(value) {
       if (this.current && this.current.ssd > value) {
         this.storageValue = this.current.ssd
-      } else {
+      }
+      else {
         this.$emit('specs-changed', { spec: 'ssd', value: value * 1024 })
       }
     },
