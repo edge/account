@@ -50,30 +50,32 @@
         <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
       </svg>
     </div>
-  </div>
 
-  <div class="px-3 md:px-5 lg:px-8">
-    <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
-    <button class="button button--success" @click="$router.push('/servers/deploy')">
-      <ServerIcon class="w-5 h-5 mr-2"/>
-      <span>Deploy your first server</span>
-    </button>
+    <div class="">
+      <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
+      <button class="button button--success" @click="$router.push('/servers/deploy')">
+        <ServerIcon class="w-5 h-5 mr-2"/>
+        <span>Deploy your first server</span>
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../../account-utils/index'
+// import * as validation from '../../utils/validation'
 import CentOsIcon from '@/components/icons/Centos'
 import UbuntuIcon from '@/components/icons/Ubuntu'
+import { mapState } from 'vuex'
 import { CloudUploadIcon, ServerIcon, ShieldCheckIcon } from '@heroicons/vue/outline'
-
-import { fetcher } from '../../utils/api'
-import { mapGetters } from 'vuex'
-import useSWRV from 'swrv'
+// import useVuelidate from '@vuelidate/core'
 
 export default {
-  name: 'Index',
+  name: 'Servers',
   title() {
-    return 'Edge Account Portal » Index'
+    return 'Edge Account Portal » Servers'
   },
   components: {
     CentOsIcon,
@@ -83,9 +85,7 @@ export default {
     UbuntuIcon
   },
   computed: {
-    ...mapGetters({
-      user: 'auth/StateUser'
-    })
+    ...mapState(['account', 'session'])
   },
   data() {
     return {
@@ -93,11 +93,22 @@ export default {
     }
   },
   methods: {
+    async getServers() {
+      try {
+        const servers = await utils.servers.getServers(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key
+        )
+        this.servers = servers.result
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
+    }
   },
   mounted() {
-    const { data, error } = useSWRV(() => `/servers?userId=${this.user ? this.user._id : 'XX'}`, fetcher)
-
-    this.servers = data
+    this.getServers()
   }
 }
 </script>
