@@ -84,8 +84,8 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
-        this.regions = regions.result
-        this.selected = regions.result[0]
+        this.regions = regions.results
+        this.selected = regions.results[0]
       }
       catch (error) {
         // TODO - handle error
