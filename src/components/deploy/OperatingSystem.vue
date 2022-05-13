@@ -1,23 +1,20 @@
 <template>
-  <RadioGroup v-model="selected">
+  <RadioGroup v-model="selectedOS">
     <RadioGroupLabel class="sr-only">OperatingSystem</RadioGroupLabel>
 
-    <div v-if="operatingSystems === undefined">loading...</div>
+    <!-- <div v-if="osList === undefined">Loading...</div> -->
 
     <div class="box__grid">
       <RadioGroupOption
         as="template"
-        v-for="os in operatingSystems"
-        :key="os.name"
+        v-for="(versions, os) in osList"
+        :key="os"
         :value="os"
         v-slot="{ active, checked, disabled }"
-        :disabled="!os.enabled"
       >
         <div
           :class="[
-            active
-              ? 'active'
-              : '',
+            active ? 'active' : '',
             checked ? 'checked' : '',
             disabled ? 'disabled' : ''
           ]"
@@ -28,17 +25,18 @@
               as="div"
               class="optionTitle"
               :class="[
-                active
-                  ? 'active'
-                  : '',
+                active ? 'active' : '',
                 checked ? 'checked' : '',
                 disabled ? 'disabled' : ''
               ]"
             >
-              <h4>{{`${os.name.charAt(0).toUpperCase()}${os.name.substring(1)}`}}</h4>
+              <h4>{{ formatOsName(os) }}</h4>
             </RadioGroupLabel>
             <div class="w-full mt-2">
-              <OperatingSystemOptions :versions=os.versions @os-changed="emitSelectedOsVersion" />
+              <OperatingSystemOptions
+                :versions=versions
+                @os-changed="emitSelectedOsVersion"
+              />
             </div>
           </div>
         </div>
@@ -48,55 +46,81 @@
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../../account-utils/index'
+import OperatingSystemOptions from '@/components/deploy/OperatingSystemOptions'
+import { mapState } from 'vuex'
 import {
   RadioGroup,
-  RadioGroupDescription,
   RadioGroupLabel,
   RadioGroupOption
 } from '@headlessui/vue'
-import OperatingSystemOptions from '@/components/deploy/OperatingSystemOptions'
-
-import { ref } from 'vue'
-import useSWRV from 'swrv'
-import { fetcher } from '../../utils/api'
 
 export default {
   name: 'OperatingSystem',
   components: {
     RadioGroup,
     RadioGroupLabel,
-    RadioGroupDescription,
     RadioGroupOption,
     OperatingSystemOptions
   },
   data() {
     return {
       os: null,
-      operatingSystems: [],
-      selected: null
+      osVersionList: [],
+      osList: {},
+      selectedOS: null,
+      selectedVersion: {}
+    }
+  },
+  computed: {
+    ...mapState(['session']),
+    ubuntuList() {
+      return this.osList.filter(os => os.group === 'ubuntu')
+    },
+    centosList() {
+      return this.osList.filter(os => os.group === 'centos')
     }
   },
   methods: {
-    emitSelectedOsVersion(data) {
-      this.$emit('os-changed', data)
+    formatOsName(os) {
+      return os.slice(0,1).toUpperCase() + os.slice(1)
+    },
+    async updateOS() {
+      try {
+        const os = await utils.os.getOS(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key
+        )
+        this.osVersionList = os.results
+        this.osList = os.results.reduce((o, d) => {
+          if (!o[d.group]) {
+            o[d.group] = []
+            this.selectedVersion[d.group] = null
+          }
+          if (!this.selectedVersion[d.group]) this.selectedVersion[d.group] = d.id
+          o[d.group].push(d)
+          return o
+        }, {})
+        this.selectedOS = 'centos'
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
+    },
+    emitSelectedOsVersion(versionId) {
+      this.selectedVersion[this.selectedOS] = versionId
+      this.$emit('os-changed', versionId)
     }
   },
   mounted() {
-    const { data: operatingSystems, error } = useSWRV(() => '/os', fetcher)
-
-    this.selected = ref(null)
-    this.operatingSystems = operatingSystems
-
-    setTimeout(() => {
-      this.selected = operatingSystems && operatingSystems.value && operatingSystems.value[0]
-    }, 1000)
+    this.updateOS()
   },
   watch: {
-    selected(value) {
-      if (value) {
-        const { versions } = value
-        this.$emit('os-changed', versions[0].id)
-      }
+    selectedOS(os) {
+      this.$emit('os-changed', this.selectedVersion[os])
     }
   }
 }
