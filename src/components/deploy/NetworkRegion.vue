@@ -98,7 +98,7 @@ export default {
   },
   watch: {
     selected(region) {
-      this.$emit('region-changed', region._key)
+      this.$emit('region-changed', region)
     }
   }
 }

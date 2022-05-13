@@ -5,11 +5,15 @@
 import superagent from 'superagent'
 
 // create a new server
-export const createServer = async (host, sessionId, serverDetails) => {
+export const createServer = async (host, sessionId, accountId, serverOptions) => {
   const url = `${host}/servers`
+  const options = {
+    ...serverOptions,
+    account: accountId
+  }
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-  // .send({ serverDetails }) // TBC
+    .send({ options })
   return response.body
 }
 
@@ -30,10 +34,14 @@ export const getServers = async (host, sessionId) => {
 }
 
 // create a new server
-export const updateServer = async (host, sessionId, serverId, serverDetails) => {
+export const updateServer = async (host, sessionId, accountId, serverId, serverOptions) => {
   const url = `${host}/servers/${serverId}`
+  const options = {
+    ...serverOptions,
+    account: accountId
+  }
   const response = await superagent.put(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-  // .send({ serverDetails }) // TBC
+    .send({ options })
   return response.body
 }

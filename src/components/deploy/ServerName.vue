@@ -25,10 +25,8 @@ export default {
   },
   methods: {
     async getNewHostname() {
-      // await utils.servers.getHostname()
-
-      // temporary test code
-      this.hostname = 'testname'
+      // const hostname = await utils.servers.getHostname()
+      // this.hostname = hostname
     }
   },
   mounted() {

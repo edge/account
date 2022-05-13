@@ -45,7 +45,7 @@
           width="100%"
           contained=true
           tooltip="always"
-          :tooltip-formatter="formatValue"
+          :tooltip-formatter="formatRam"
           tooltipPlacement="top"
           :tooltip-style="styles.tooltip"
           :process-style="styles.process"
@@ -58,7 +58,6 @@
         <span class="box__title">Storage (GB)</span>
         <vue-slider
           v-model="storageValue"
-          @change="changed"
           ref="ssdSlider"
           dotSize=20
           width="100%"
@@ -87,65 +86,68 @@
         <div class="flex flex-col lg:items-center lg:flex-row">
           <div class="w-36 text-green">Current server:</div>
           <div class="flex items-center space-x-2.5">
-            <span class="text-lg">{{this.current.cpu}} vCPU</span>
+            <span class="text-lg">{{ current.cpu }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{formatValue(this.current.ram)}} RAM</span>
+            <span class="text-lg">{{ formatRam(current.ram) }} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{this.current.ssd}}GB SSD</span>
+            <span class="text-lg">{{ current.ssd }}GB SSD</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span><span class="text-lg">${{currentCost}}</span> per month</span>
+          <span><span class="text-lg">${{ currentCost }}</span> per month</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
         <div class="flex flex-col lg:items-center lg:flex-row">
           <div class="w-36 text-green">After resize:</div>
           <div class="flex items-center space-x-2.5">
-            <span class="text-lg">{{cpuValue}} vCPU</span>
+            <span class="text-lg">{{ cpuValue }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{formatValue(ramValue)}} RAM</span>
+            <span class="text-lg">{{ formatRam(ramValue) }} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{storageValue}}GB SSD</span>
+            <span class="text-lg">{{ storageValue }}GB SSD</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span><span class="text-lg font-medium">${{calculatedCost}}</span> per month</span>
+          <span><span class="text-lg font-medium">${{ calculatedCost }}</span> per month</span>
         </div>
       </div>
     </div>
 
     <!-- selected results shown on deploy screen -->
+    <!-- eslint-disable-next-line max-len -->
     <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 md:space-y-0 md:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Your server</span>
         <div class="flex items-center space-x-2.5">
-          <span class="text-lg">{{cpuValue}} vCPU</span>
+          <span class="text-lg">{{ cpuValue }} vCPU</span>
           <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{formatValue(ramValue)}} RAM</span>
+          <span class="text-lg">{{ formatRam(ramValue) }} RAM</span>
           <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{storageValue}}GB SSD</span>
+          <span class="text-lg">{{ storageValue }}GB SSD</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">
         <span class="text-green">Cost</span>
-        <span><span class="text-lg">${{calculatedCost}}</span> per month</span>
+        <span><span class="text-lg">${{ calculatedCost }}</span> per month</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {
-
-} from '@headlessui/vue'
-
-import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
+import VueSlider from 'vue-slider-component'
 
 export default {
   name: 'ServerSpecs',
-  props: ['calculatedCost', 'currentCost', 'current', 'resizeType', 'selectedSpecs'],
+  props: [
+    'calculatedCost',
+    'currentCost',
+    'current',
+    'resizeType',
+    'selectedSpecs'
+  ],
   components: {
     VueSlider
   },
@@ -153,9 +155,9 @@ export default {
     return {
       presets: null,
       selectedPreset: null,
-      cpuValue: '0',
-      ramValue: '0',
-      storageValue: '0',
+      cpuValue: null,
+      ramValue: null,
+      storageValue: null,
       ramOptions: [
         { value:'0.5', label:'512MB' },
         { value:'1', label:'1GB' },
@@ -183,17 +185,31 @@ export default {
       }
     }
   },
+  computed: {
+    formattedRam() {
+      if (this.current.ram < 1) {
+        return `${this.current.ram * 1024}MB`
+      }
+      return `${this.current.ram}GB`
+    },
+    spec() {
+      return {
+        cpus: this.cpuValue,
+        disk: this.storageValue * 1024,
+        ram: this.ramValue * 1024
+      }
+    }
+  },
   methods: {
-    changed(value) {
+    changeStorage(value) {
       if (this.current && value < this.current.ssd) {
         this.$refs.ssdSlider.setValue(this.current.ssd)
       }
     },
-    formatValue(value) {
+    formatRam(value) {
       if (value < 1) {
         return `${value * 1024}MB`
       }
-
       return `${value}GB`
     },
     updateParentResizeSpecs(data) {
@@ -245,14 +261,9 @@ export default {
     // }
   },
   mounted() {
-    this.cpuValue = this.current ? this.current.cpu : '1'
-    this.ramValue = this.current ? this.current.ram : '0.5'
-    this.storageValue = this.current ? this.current.ssd : '10'
-
-    console.log('this', this)
-
-    this.$refs.ramSlider.setValue(this.ramValue.toString())
-    this.$refs.ssdSlider.setValue(this.storageValue.toString())
+    this.cpuValue = this.current ? this.current.cpu : 1
+    this.ramValue = this.current ? this.current.ram : 0.5
+    this.storageValue = this.current ? this.current.ssd : 10
   },
   watch: {
     presets(value) {
@@ -306,19 +317,8 @@ export default {
         this.$refs.ssdSlider.setValue(this.current.ssd)
       }
     },
-    cpuValue(value) {
-      this.$emit('specs-changed', { spec: 'cpu', value })
-    },
-    ramValue(value) {
-      this.$emit('specs-changed', { spec: 'ram', value: value * 1024 })
-    },
-    storageValue(value) {
-      if (this.current && this.current.ssd > value) {
-        this.storageValue = this.current.ssd
-      }
-      else {
-        this.$emit('specs-changed', { spec: 'ssd', value: value * 1024 })
-      }
+    spec() {
+      this.$emit('specs-changed', this.spec)
     },
     selectedPreset(value) {
       // this.updateParentResizeSpecs(value)
