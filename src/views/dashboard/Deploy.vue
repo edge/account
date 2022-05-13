@@ -43,6 +43,15 @@
       <div class="box">
         <ServerName @name-changed="hostname => updateHostname(hostname)" />
         <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.hostname">{{ serverErrors.hostname }}</span>
+        <div class="flex flex-col">
+          <span
+            v-for="error in v$.serverOptions.settings.hostname.$errors"
+            :key="error.$uid"
+            class="flex-1 order-1 text-red md:order-2"
+          >
+            - {{ error.$message }}
+          </span>
+        </div>
 
         <Domain :hostname="serverOptions.settings.hostname" />
         <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.domain">{{ serverErrors.domain }}</span>
@@ -52,6 +61,15 @@
       <div class="box">
         <Password @password-changed="password => updatePassword(password)" />
         <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.password">{{ serverErrors.password }}</span>
+        <div class="flex flex-col">
+          <span
+            v-for="error in v$.serverOptions.password.$errors"
+            :key="error.$uid"
+            class="mt-2 flex-1 order-1 text-red md:order-2"
+          >
+            - {{ error.$message }}
+          </span>
+        </div>
       </div>
 
       <!-- deploy button & error message -->
@@ -74,6 +92,7 @@
 /* global process */
 
 import * as utils from '../../account-utils'
+import * as validation from '../../utils/validation'
 import Domain from '@/components/deploy/Domain'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import NetworkRegion from '@/components/deploy/NetworkRegion'
@@ -83,6 +102,7 @@ import ServerName from '@/components/deploy/ServerName'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 // import Toggle from '@vueform/toggle'
 import { mapState } from 'vuex'
+import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'Deploy',
@@ -102,16 +122,6 @@ export default {
   data() {
     return {
       isSaving: false,
-      required: [
-        'cluster',
-        'hostname',
-        'domain',
-        'password',
-        'cpu',
-        'ram',
-        'ssd',
-        'os'
-      ],
       selectedRegion: null,
       serverErrors: {},
       serverOptions: {
@@ -129,17 +139,30 @@ export default {
           disk: null,
           ram: null
         }
-      },
-      validationRules: {
-        domain: /^.{6,255}$/,
-        password: /^.{6,35}$/,
-        hostname: /^[a-zA-Z0-9]{1}[a-zA-Z0-9-_\.]{1,48}$/
-      },
-      validationMessages: {
-        domain: 'Maximum length is 255 characters',
-        password: 'Password must be between 6 and 35 characters',
-        // eslint-disable-next-line max-len
-        hostname: 'Hostname must contain only alphanumeric characters, underscores, and hyphens. The first character must be alphanumeric. Maximum length is 49.'
+      }
+    }
+  },
+  validations() {
+    return {
+      serverOptions: {
+        password: [validation.serverPassword],
+        region: [validation.required],
+        settings: {
+          hostname: [
+            validation.hostnameLength,
+            validation.hostnameChars,
+            validation.hostnameFirstChar
+          ],
+          os: {
+            id: [validation.required]
+          }
+        },
+        spec: {
+          cpus: [validation.required],
+          disk: [validation.required],
+          ram: [validation.required]
+        },
+        $autoDirty: true
       }
     }
   },
@@ -155,7 +178,7 @@ export default {
       return calculatedCost
     },
     canDeploy() {
-      return true
+      return !this.v$.serverOptions.$invalid || this.isSaving
     }
   },
   methods: {
@@ -251,6 +274,11 @@ export default {
         return regex.test(value)
 
       }
+    }
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
     }
   }
 }
