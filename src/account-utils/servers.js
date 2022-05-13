@@ -13,7 +13,7 @@ export const createServer = async (host, sessionId, accountId, serverOptions) =>
   }
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ options })
+    .send(options)
   return response.body
 }
 

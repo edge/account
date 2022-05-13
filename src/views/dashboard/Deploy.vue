@@ -63,7 +63,7 @@
         <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.password">{{ serverErrors.password }}</span>
         <div class="flex flex-col">
           <span
-            v-for="error in v$.serverOptions.password.$errors"
+            v-for="error in v$.serverOptions.settings.password.$errors"
             :key="error.$uid"
             class="mt-2 flex-1 order-1 text-red md:order-2"
           >
@@ -125,14 +125,14 @@ export default {
       selectedRegion: null,
       serverErrors: {},
       serverOptions: {
-        password: '',
         region: null,
         settings: {
           hostname: '',
           domain: '',
           os: {
             id: null
-          }
+          },
+          password: ''
         },
         spec: {
           cpus: null,
@@ -145,7 +145,6 @@ export default {
   validations() {
     return {
       serverOptions: {
-        password: [validation.serverPassword],
         region: [validation.required],
         settings: {
           hostname: [
@@ -155,7 +154,8 @@ export default {
           ],
           os: {
             id: [validation.required]
-          }
+          },
+          password: [validation.serverPassword]
         },
         spec: {
           cpus: [validation.required],
@@ -191,12 +191,14 @@ export default {
           this.account._key,
           this.serverOptions
         )
+        console.log(server)
         this.isSaving = false
         // Redirect to the new server page.
         // this.$router.push({ name: 'Server', params: { id: server._key } }
       }
       catch (error) {
         console.error(error)
+        console.log(error.response)
         this.isSaving = false
       }
     },
@@ -248,7 +250,10 @@ export default {
     updatePassword(password) {
       this.serverOptions = {
         ...this.serverOptions,
-        password
+        settings: {
+          ...this.serverOptions.settings,
+          password
+        }
       }
     },
     updateRegion(region) {
