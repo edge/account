@@ -191,10 +191,9 @@ export default {
           this.account._key,
           this.serverOptions
         )
-        console.log(server)
         this.isSaving = false
         // Redirect to the new server page.
-        // this.$router.push({ name: 'Server', params: { id: server._key } }
+        this.$router.push({ name: 'Server', params: { id: server._key }})
       }
       catch (error) {
         console.error(error)
@@ -204,27 +203,6 @@ export default {
     },
     toggleBackups () {
       // this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
-    },
-    storeSelection(inputType, value) {
-      if (this.validate(inputType, value)) {
-        if (inputType === 'cluster') {
-          this.selectedRegion = value
-          value = value.clusterId
-        }
-
-        // if (inputType === 'specs') {
-        //   inputType = value.spec
-        //   value = parseInt(value.value)
-        // }
-
-        // this.setServerProperty({ property: inputType, value: value.id || value })
-        // this.setServerError({ property: inputType, value: '' })
-
-        this.calculateCost()
-      }
-      else {
-        this.setServerError({ property: inputType, value: this.validationMessages[inputType] })
-      }
     },
     updateHostname(hostname) {
       this.serverOptions = {
