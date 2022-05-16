@@ -121,18 +121,27 @@ export default {
     },
     async resize () {
       if (!this.haveSpecsChanged) return
-      // Defaults for CPU & RAM only.
-      const resizeOptions = {
-        diskId: this.server.disk_id,
-        cpuNumber: this.selectedResizeSpecs.cpu,
-        memSize: this.selectedResizeSpecs.ram
+
+      const serverOptions = {
+        ...this.server,
+        region: this.server.region._key,
+        spec: this.newSpec
       }
 
-      // Additional parameter for HDD resize.
-      if (this.selectedResizeSpecs.ssd > this.currentServerSpecs.ssd) {
-        resizeOptions.hddSize = this.selectedResizeSpecs.ssd
+      try {
+        const response = await utils.servers.updateServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.server._key,
+          serverOptions
+        )
+        // TODO - handle successful response, waiting on API update
+        console.log(response)
       }
-      // const response = await resizeHost(this.server.serverId, resizeOptions)
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
     },
     updateNewSpec(newSpec) {
       this.newSpec = newSpec

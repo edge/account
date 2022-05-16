@@ -34,14 +34,10 @@ export const getServers = async (host, sessionId) => {
 }
 
 // create a new server
-export const updateServer = async (host, sessionId, accountId, serverId, serverOptions) => {
+export const updateServer = async (host, sessionId, serverId, serverOptions) => {
   const url = `${host}/servers/${serverId}`
-  const options = {
-    ...serverOptions,
-    account: accountId
-  }
   const response = await superagent.put(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ options })
+    .send(serverOptions)
   return response.body
 }
