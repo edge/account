@@ -55,6 +55,9 @@ export default {
     ...mapState(['account', 'session'])
   },
   methods: {
+    getServerRegion(regionId) {
+      return this.regions.find(region => region._key == regionId)
+    },
     formatDisk(disk) {
       if (disk < 1024) return `${disk} MB`
       return `${disk / 1024} GB`
@@ -65,9 +68,18 @@ export default {
     formatOSVersion(os) {
       return os.version
     },
-    getServerOS(osId) {
-      return this.osList.find(os => os.id === osId)
-
+    async updateRegions() {
+      try {
+        const regions = await utils.region.getRegions(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key
+        )
+        this.regions = regions.results
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
     },
     async updateServers() {
       this.loading = true
@@ -76,6 +88,10 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
+        await this.updateRegions()
+        servers.results.forEach(server => {
+          server.region = this.getServerRegion(server.region)
+        })
         this.servers = servers.results
       }
       catch (error) {

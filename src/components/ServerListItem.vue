@@ -33,10 +33,10 @@
           </span>
         </div>
         <!-- <span class="lg:text-center serverList__cell">{{ server.ip }}</span> -->
-        <!-- <div class="flex items-center lg:justify-end serverList__cell">
-          {{ region.name }}
-          <img :src=region.flagIcon[0].url width="25" class="ml-2 rounded-sm" />
-        </div> -->
+        <div class="flex items-center lg:justify-end serverList__cell">
+          {{ server.region.name }}
+          <!-- <img :src=server.region.flagIcon[0].url width="25" class="ml-2 rounded-sm" /> -->
+        </div>
       </div>
     </li>
 </template>
