@@ -85,7 +85,8 @@ export default {
           this.session._key
         )
         this.regions = regions.results
-        this.selected = regions.results[0]
+        // pre-select first active region
+        this.selected = regions.results.find(region => region.status === 'active')
       }
       catch (error) {
         // TODO - handle error
