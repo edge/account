@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="specs__grid">
+    <div class="specs__grid" :class="showStorage ? '' : 'hide-storage'">
       <div class="box">
         <span class="box__title">vCPU</span>
         <vue-slider
@@ -54,7 +54,7 @@
           :step-active-style="styles.activeStep"
         />
       </div>
-      <div class="box">
+      <div class="box" v-if="showStorage">
         <span class="box__title">Storage (GB)</span>
         <vue-slider
           v-model="storageValue"
@@ -86,11 +86,11 @@
         <div class="flex flex-col lg:items-center lg:flex-row">
           <div class="w-36 text-green">Current server:</div>
           <div class="flex items-center space-x-2.5">
-            <span class="text-lg">{{ current.cpu }} vCPU</span>
+            <span class="text-lg">{{ current.spec.cpus }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ formatRam(current.ram) }} RAM</span>
+            <span class="text-lg">{{ formatRam(current.spec.ram) }} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ current.ssd }}GB SSD</span>
+            <span class="text-lg">{{ current.spec.disk / 1024 }}GB SSD</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
@@ -153,8 +153,6 @@ export default {
   },
   data() {
     return {
-      presets: null,
-      selectedPreset: null,
       cpuValue: null,
       ramValue: null,
       storageValue: null,
@@ -192,6 +190,9 @@ export default {
       }
       return `${this.current.ram}GB`
     },
+    showStorage() {
+      return !this.resizeType || this.resizeType.id !== 1
+    },
     spec() {
       return {
         cpus: this.cpuValue,
@@ -201,11 +202,6 @@ export default {
     }
   },
   methods: {
-    changeStorage(value) {
-      if (this.current && value < this.current.ssd) {
-        this.$refs.ssdSlider.setValue(this.current.ssd)
-      }
-    },
     formatRam(value) {
       if (value < 1) {
         return `${value * 1024}MB`
@@ -215,113 +211,22 @@ export default {
     updateParentResizeSpecs(data) {
       this.$emit('specs-changed', data)
     }
-    // update() {
-    //   const { current, resizeType, selectedSpecs } = this
-    //   let matchingPreset
-
-    //   if (this.presets && this.presets.length) {
-    //     console.log('current , selectedSpecs', current , selectedSpecs)
-    //     // if (current && !selectedSpecs) {
-    //     if (current) {
-    //       matchingPreset = this.presets.map(p => {
-    //         if (p.ram === current.ram && p.cpu === current.cpu) {
-    //           return p
-    //         } else {
-    //           return null
-    //         }
-    //       }).filter(Boolean)
-
-
-    //       // Loop over presets and disable those that can't be used.
-    //       this.presets.forEach(p => {
-    //         p.enabled = true
-
-    //         console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-
-    //         // SSD cannot be downsized.
-    //         // if (p.ssd < current.ssd) {
-    //         if (resizeType && resizeType.id === 2 && p.ssd < current.ssd) {
-    //           p.enabled = false
-    //         }
-    //       })
-    //     }
-
-    //     if (selectedSpecs) {
-    //       this.selectedPreset = selectedSpecs
-    //     } else {
-    //       if (matchingPreset && matchingPreset[0]) {
-    //         this.selectedPreset = matchingPreset[0]
-    //       } else {
-    //         this.selectedPreset = this.presets[0]
-    //       }
-    //     }
-
-    //     console.log('this.selectedPreset',this. selectedPreset)
-    //   }
-    // }
   },
   mounted() {
-    this.cpuValue = this.current ? this.current.cpu : 1
-    this.ramValue = this.current ? this.current.ram : 0.5
-    this.storageValue = this.current ? this.current.ssd : 10
+    this.cpuValue = this.current ? this.current.spec.cpus : 1
+    this.ramValue = this.current ? this.current.spec.ram / 1024 : 0.5
+    this.storageValue = this.current ? this.current.spec.disk / 1024 : 10
   },
   watch: {
-    presets(value) {
-      this.update()
-      // const { current, resizeType, selectedSpecs } = this
-      // let matchingPreset
-
-      //   console.log('resizeType, current , selectedSpecs', resizeType, current , selectedSpecs)
-      // if (this.presets && this.presets.length) {
-      //   if (current && !selectedSpecs) {
-      //     matchingPreset = this.presets.map(p => {
-      //       if (p.ram === current.ram && p.cpu === current.cpu) {
-      //         return p
-      //       } else {
-      //         return null
-      //       }
-      //     }).filter(Boolean)
-
-
-      //     // Loop over presets and disable those that can't be used.
-      //     this.presets.forEach(p => {
-      //       p.enabled = true
-
-      //       console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-
-      //       // SSD cannot be downsized.
-      //       if (p.ssd < current.ssd) {
-      //         p.enabled = false
-      //       }
-      //     })
-      //   }
-
-      //   if (selectedSpecs) {
-      //     this.selectedPreset = selectedSpecs
-      //   } else {
-      //     if (matchingPreset && matchingPreset[0]) {
-      //       this.selectedPreset = matchingPreset[0]
-      //     } else {
-      //       this.selectedPreset = this.presets[0]
-      //     }
-      //   }
-      // }
-    },
-    resizeType(value) {
-      console.log('value', value)
-      // this.resizeType = value
-      // this.update()
-      if (this.resizeType.id === 2) {
-        // Set the ssd slider back to current.
-        this.storageValue = this.current.ssd
-        this.$refs.ssdSlider.setValue(this.current.ssd)
+    resizeType() {
+      if (this.resizeType.id === 1) {
+        // Set the storage slider back to current.
+        this.storageValue = this.current.spec.disk / 1024
+        this.$refs.ssdSlider.setValue(this.current.spec.disk / 1024)
       }
     },
     spec() {
       this.$emit('specs-changed', this.spec)
-    },
-    selectedPreset(value) {
-      // this.updateParentResizeSpecs(value)
     }
   }
 }
@@ -331,6 +236,10 @@ export default {
   .specs__grid {
     @apply mt-10 w-full grid grid-cols-1 gap-x-4 gap-y-10;
     @apply sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .specs__grid.hide-storage {
+    @apply xl:grid-cols-2;
   }
 
   /* radio option */
