@@ -2,7 +2,7 @@
   <div class="flex flex-col items-start space-y-5">
 
     <!-- if metrics exist -->
-    <div v-if="showMetrics" class="buttonGroup">
+    <div v-if="displayMetrics" class="buttonGroup">
       <button @click.prevent="getMetrics('day')"
         class="buttonGroup__button"
         :class="currentPeriod == 'day' ? 'active' : ''"
@@ -28,7 +28,7 @@
         This year
       </button>
     </div>
-    <div v-if="showMetrics" class="grid w-full grid-cols-1 gap-5">
+    <div v-if="displayMetrics" class="grid w-full grid-cols-1 gap-5">
       <div class="box">
         <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load && this.graphMetrics.cpu_load[0] ? 'mb-8' : ''">CPU load</h4>
         <Line
