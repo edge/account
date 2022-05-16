@@ -23,7 +23,6 @@
 
 <script>
 import Modal from '@/components/Modal'
-import { ref } from 'vue'
 import { Switch } from '@headlessui/vue'
 
 export default {

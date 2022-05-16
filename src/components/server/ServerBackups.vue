@@ -2,11 +2,18 @@
   <div class="flex flex-col pb-20 space-y-5">
     <div class="box">
       <h4>Create a backup</h4>
+      <!-- eslint-disable-next-line max-len -->
       <p class="mt-3 text-gray-500">A backup copy is a disk image of the virtual machine, which is used for recovery in case the original data are lost.</p>
+      <!-- eslint-disable-next-line max-len -->
       <div class="flex flex-col w-full p-4 mt-5 bg-gray-100 border-gray-300 rounded-lg lg:p-5 lg:space-x-4 lg:items-end lg:flex-row">
         <div class="flex-1 w-full lg:w-auto input-group">
           <label class="label">Backup name</label>
-          <input type="text" placeholder="Name your backup" :value=backupName class="bg-transparent input input--floating" />
+          <input
+            type="text"
+            placeholder="Name your backup"
+            :value=backupName
+            class="bg-transparent input input--floating"
+          />
         </div>
         <div class="relative">
           <button @click="save" :disabled="isSaving || activeTask" class="h-full mt-5 lg:mt-0 button button--success">
@@ -14,17 +21,7 @@
             <span v-else-if="activeTask">{{activeTask.status}}</span>
             <span v-else>Create backup</span>
             <span v-if="isSaving || activeTask">
-              <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <line x1="12" y1="6" x2="12" y2="3" />
-                <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-                <line x1="18" y1="12" x2="21" y2="12" />
-                <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-                <line x1="12" y1="18" x2="12" y2="21" />
-                <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-                <line x1="6" y1="12" x2="3" y2="12" />
-                <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-              </svg>
+              <LoadingSpinner />
             </span>
           </button>
         </div>
@@ -92,7 +89,12 @@
               </td>
               <td class="pr-0 tableBody__cell">
                 <div class="flex items-center justify-end">
-                  <BackupMenu :activeTask=activeTask :backup=item @delete-backup="deleteBackup" @restore-backup="restoreBackup" />
+                  <BackupMenu
+                    :activeTask=activeTask
+                    :backup=item
+                    @delete-backup="deleteBackup"
+                    @restore-backup="restoreBackup"
+                  />
                 </div>
               </td>
             </tr>
@@ -134,17 +136,7 @@
             <span v-else-if="activeTask">{{activeTask.status}}</span>
             <span v-else>Restore</span>
             <span v-if="isSaving || activeTask">
-              <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <line x1="12" y1="6" x2="12" y2="3" />
-                <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-                <line x1="18" y1="12" x2="21" y2="12" />
-                <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-                <line x1="12" y1="18" x2="12" y2="21" />
-                <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-                <line x1="6" y1="12" x2="3" y2="12" />
-                <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-              </svg>
+              <LoadingSpinner />
             </span>
           </button>
         </div>
@@ -156,20 +148,22 @@
 
 <script>
 import BackupMenu from '@/components/server/BackupMenu'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'
 import { createBackup, deleteBackup, restoreBackup } from '../../utils/api'
-import {CalendarIcon, ClockIcon} from '@heroicons/vue/outline'
 
 export default {
   name: 'ServerBackups',
   components: {
     BackupMenu,
     CalendarIcon,
-    ClockIcon
+    ClockIcon,
+    LoadingSpinner
   },
   props: ['activeTask','server'],
   data: function () {
     return {
-      backupName: `${this.server.hostname}-${new Date().getTime()}`,
+      backupName: `${this.server.settings.hostname}-${new Date().getTime()}`,
       backups: this.server.backups,
       isSaving: false,
       polling: null
