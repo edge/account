@@ -9,20 +9,15 @@
           width="100%"
           contained=true
           :min=1
-          :max=32
+          :max=16
           :marks="{
             '1': '1',
             '4': '4',
             '8': '8',
             '12': '12',
-            '16': '16',
-            '20': '20',
-            '24': '24',
-            '28': '28',
-            '32': '32'
+            '16': '16'
           }"
           adsorb
-          silent
           tooltip="always"
           :tooltip-formatter="'{value} vCPU'"
           tooltipPlacement="top"
@@ -44,6 +39,8 @@
           adsorb
           width="100%"
           contained=true
+          :min=0.5
+          :max=16
           tooltip="always"
           :tooltip-formatter="formatRam"
           tooltipPlacement="top"
@@ -207,9 +204,6 @@ export default {
         return `${value * 1024}MB`
       }
       return `${value}GB`
-    },
-    updateParentResizeSpecs(data) {
-      this.$emit('specs-changed', data)
     }
   },
   mounted() {
@@ -222,7 +216,6 @@ export default {
       if (this.resizeType.id === 1) {
         // Set the storage slider back to current.
         this.storageValue = this.current.spec.disk / 1024
-        this.$refs.ssdSlider.setValue(this.current.spec.disk / 1024)
       }
     },
     spec() {
