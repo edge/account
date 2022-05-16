@@ -116,7 +116,7 @@ export default {
     OperatingSystem,
     Password,
     ServerName,
-    ServerSpecs,
+    ServerSpecs
     // Toggle
   },
   data() {
@@ -170,11 +170,11 @@ export default {
     ...mapState(['account', 'session']),
     calculatedCost() {
       if (!this.selectedRegion) return 0
-      const { ram, ssd, cpu } = this.selectedRegion.cost
+      const { ram, disk, cpus } = this.selectedRegion.cost
       const calculatedCost =
       (ram * this.serverOptions.spec.ram / 1024) +
-      (ssd * this.serverOptions.spec.disk / 1024) +
-      (cpu * this.serverOptions.spec.cpus)
+      (disk * this.serverOptions.spec.disk / 1024) +
+      (cpus * this.serverOptions.spec.cpus)
       return calculatedCost
     },
     canDeploy() {
