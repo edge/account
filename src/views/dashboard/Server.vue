@@ -130,7 +130,7 @@
 
             <!-- resize -->
             <TabPanel>
-              <ServerResize :activeTask=activeTask :server=server />
+              <ServerResize :activeTask=activeTask :server=server :region="region" />
             </TabPanel>
 
             <!-- backups -->
@@ -196,8 +196,10 @@ export default {
   data: function () {
     return {
       activeTask: null,
+      iCheckServerStatus: null,
+      iServer: null,
       loading: false,
-      polling: null,
+      region: null,
       server: null,
       tasks: [],
       options: {
@@ -245,22 +247,14 @@ export default {
   },
   methods: {
     ...mapActions(['setVncSettings']),
-    async addRegionDetails(regionId) {
-      try {
-        const region = await utils.region.getRegion(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          regionId
-        )
-        this.server = {
-          ...this.server,
-          region
-        }
-      }
-      catch (error) {
-        // TODO - handle error
-        console.error(error)
-      }
+    async checkServerStatus() {
+      await this.updateServer()
+      // whilst server is in process of starting/stopping, check status every 0.5s
+      this.iCheckServerStatus = setInterval(async () => {
+        await this.updateServer()
+        // eslint-disable-next-line max-len
+        if (this.server.status !== 'stopping' && this.server.status !== 'starting') clearInterval(this.iCheckServerStatus)
+      }, 500)
     },
     formatActiveTask(data) {
       const task = {
@@ -313,13 +307,37 @@ export default {
     },
     async toggleServerStatus() {
       if (this.server.status === 'active') {
-        // Power off.
-        // await startStopHost(this.server.serverId, 'stop')
+        // power off
+        await this.stopServer()
       }
       else {
-        // Power on.
-        // await startStopHost(this.server.serverId, 'start')
+        // power on
+        await this.startServer()
       }
+    },
+    async startServer() {
+      await utils.servers.startServer(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.server._key
+      )
+      this.checkServerStatus()
+    },
+    async stopServer() {
+      await utils.servers.stopServer(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.server._key
+      )
+      this.checkServerStatus()
+    },
+    async updateRegion() {
+      const region = await utils.region.getRegion(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.server.region
+      )
+      this.region = region
     },
     async updateServer() {
       try {
@@ -329,7 +347,8 @@ export default {
           this.serverId
         )
         this.server = server
-        await this.addRegionDetails(server.region)
+        await this.updateRegion()
+        // await this.updateTasks()
       }
       catch (error) {
         // TODO - handle error
@@ -337,37 +356,21 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.loading = true
-    this.updateServer()
-    // this.tasks = tasks.value
-
-    // this.polling = setInterval(() => {
-    //   console.log('Mutating')
-    //   refetchServer()
-    //   refetchTasks()
-
-    //   this.server = server
-    //   this.tasks = tasks.value
-
-    //   if (this.server) {
-    //     this.setVncSettings(this.server.vnc_settings)
-    //   }
-
-    //   if (this.tasks[0]) {
-    //     this.activeTask = this.formatActiveTask(this.tasks[0])
-    //   }
-    //   else {
-    //     this.activeTask = null
-    //   }
-    // }, 10000)
+    await this.updateServer()
+    this.iServer = setInterval(() => {
+      this.updateServer()
+    }, 5 * 1000)
+    this.loading = false
   },
   unmounted() {
-    clearInterval(this.polling)
-    this.polling = null
+    clearInterval(this.iServer)
+    this.iServer = null
   }
 }
 </script>
+
 <style scoped>
   /* crumbs */
   .crumbs {

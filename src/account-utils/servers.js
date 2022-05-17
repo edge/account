@@ -33,6 +33,30 @@ export const getServers = async (host, sessionId) => {
   return response.body
 }
 
+// get server tasks
+export const getServerTasks = async (host, sessionId, serverId) => {
+  const url = `${host}/servers/${serverId}/tasks`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+// start a server
+export const startServer = async (host, sessionId, serverId) => {
+  const url = `${host}/servers/${serverId}/start`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+// stop a server
+export const stopServer = async (host, sessionId, serverId) => {
+  const url = `${host}/servers/${serverId}/stop`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // create a new server
 export const updateServer = async (host, sessionId, serverId, serverOptions) => {
   const url = `${host}/servers/${serverId}`

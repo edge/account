@@ -4,13 +4,16 @@
       @click="toggleModal"
       :class="enabled ? 'bg-green' : 'bg-gray-300'"
       class="switch"
+      :disabled="toggling"
     >
       <span class="sr-only">Use setting</span>
       <span
         class="label"
         :class="enabled ? 'justify-start text-white pl-3 md:pl-4' : 'justify-end text-gray-500 pr-2.5 md:pr-3.5'"
-        v-text="enabled ? 'ON' : 'OFF'"
-      ></span>
+      >
+        {{ toggling ? '' : enabled ? 'ON' : 'OFF' }}
+        <LoadingSpinner v-if="toggling" />
+      </span>
       <span
         aria-hidden="true"
         :class="enabled ? 'translate-x-9 md:translate-x-12' : 'translate-x-0'"
@@ -22,6 +25,7 @@
 </template>
 
 <script>
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Modal from '@/components/Modal'
 import { Switch } from '@headlessui/vue'
 
@@ -29,12 +33,20 @@ export default {
   name: 'ServerStatus',
   props: ['server', 'onToggleStatus'],
   components: {
+    LoadingSpinner,
     Modal,
     Switch
   },
   data() {
     return {
-      enabled: true
+    }
+  },
+  computed: {
+    enabled() {
+      return this.server.status === 'active' || this.server.status === 'stopping'
+    },
+    toggling() {
+      return this.server.status === 'starting' || this.server.status === 'stopping'
     }
   },
   methods: {
@@ -49,12 +61,9 @@ export default {
     async toggleServer () {
       await this.onToggleStatus()
       this.$refs.modal.open = false
-
-      this.enabled = this.server.status !== 'active'
     }
   },
   mounted() {
-    this.enabled = this.server.status === 'active'
   }
 }
 </script>
