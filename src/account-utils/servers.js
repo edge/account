@@ -41,8 +41,8 @@ export const getServers = async (host, sessionId) => {
   return response.body
 }
 
-// get server tasks by id
-export const getServerTasks = async (host, sessionId, serverId) => {
+// get server tasks by server id
+export const getTasks = async (host, sessionId, serverId) => {
   const url = `${host}/servers/${serverId}/tasks`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })

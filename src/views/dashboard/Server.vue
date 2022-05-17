@@ -145,7 +145,7 @@
 
             <!-- history -->
             <TabPanel>
-              <ServerHistory :data=server.history />
+              <ServerHistory :tasks=serverTasks />
             </TabPanel>
 
             <!-- destroy -->
@@ -201,7 +201,7 @@ export default {
       loading: false,
       region: null,
       server: null,
-      tasks: [],
+      serverTasks: [],
       options: {
         responsive: true,
         maintainAspectRatio: false
@@ -364,7 +364,21 @@ export default {
         )
         this.server = server
         await this.updateRegion()
-        // await this.updateTasks()
+        await this.updateTasks()
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
+    },
+    async updateTasks() {
+      try {
+        const tasks = await utils.servers.getTasks(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.serverTasks = tasks.results
       }
       catch (error) {
         // TODO - handle error
