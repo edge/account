@@ -16,17 +16,11 @@
 <script>
 export default {
   name: 'Domain',
-  data () {
-    return {
-      domain: ''
+  computed: {
+    domain() {
+      return this.hostname ? `${this.hostname}.edge.network` : ''
     }
   },
-  props: ['hostname'],
-  watch: {
-    hostname(value) {
-      this.domain = `${value || ''}.edge.network`
-      this.$emit('name-changed', this.domain)
-    }
-  }
+  props: ['hostname']
 }
 </script>

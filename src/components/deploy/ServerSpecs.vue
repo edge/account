@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="specs__grid">
+    <div class="specs__grid" :class="showStorage ? '' : 'hide-storage'">
       <div class="box">
         <span class="box__title">vCPU</span>
         <vue-slider
@@ -9,20 +9,15 @@
           width="100%"
           contained=true
           :min=1
-          :max=32
+          :max=16
           :marks="{
             '1': '1',
             '4': '4',
             '8': '8',
             '12': '12',
-            '16': '16',
-            '20': '20',
-            '24': '24',
-            '28': '28',
-            '32': '32'
+            '16': '16'
           }"
           adsorb
-          silent
           tooltip="always"
           :tooltip-formatter="'{value} vCPU'"
           tooltipPlacement="top"
@@ -44,8 +39,10 @@
           adsorb
           width="100%"
           contained=true
+          :min=0.5
+          :max=16
           tooltip="always"
-          :tooltip-formatter="formatValue"
+          :tooltip-formatter="formatRam"
           tooltipPlacement="top"
           :tooltip-style="styles.tooltip"
           :process-style="styles.process"
@@ -54,11 +51,10 @@
           :step-active-style="styles.activeStep"
         />
       </div>
-      <div class="box">
+      <div class="box" v-if="showStorage">
         <span class="box__title">Storage (GB)</span>
         <vue-slider
           v-model="storageValue"
-          @change="changed"
           ref="ssdSlider"
           dotSize=20
           width="100%"
@@ -87,75 +83,76 @@
         <div class="flex flex-col lg:items-center lg:flex-row">
           <div class="w-36 text-green">Current server:</div>
           <div class="flex items-center space-x-2.5">
-            <span class="text-lg">{{this.current.cpu}} vCPU</span>
+            <span class="text-lg">{{ current.spec.cpus }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{formatValue(this.current.ram)}} RAM</span>
+            <span class="text-lg">{{ formatRam(current.spec.ram) }} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{this.current.ssd}}GB SSD</span>
+            <span class="text-lg">{{ current.spec.disk / 1024 }}GB SSD</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span><span class="text-lg">${{currentCost}}</span> per month</span>
+          <span><span class="text-lg">${{ currentCost }}</span> per month</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
         <div class="flex flex-col lg:items-center lg:flex-row">
           <div class="w-36 text-green">After resize:</div>
           <div class="flex items-center space-x-2.5">
-            <span class="text-lg">{{cpuValue}} vCPU</span>
+            <span class="text-lg">{{ cpuValue }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{formatValue(ramValue)}} RAM</span>
+            <span class="text-lg">{{ formatRam(ramValue) }} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{storageValue}}GB SSD</span>
+            <span class="text-lg">{{ storageValue }}GB SSD</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span><span class="text-lg font-medium">${{calculatedCost}}</span> per month</span>
+          <span><span class="text-lg font-medium">${{ calculatedCost }}</span> per month</span>
         </div>
       </div>
     </div>
 
     <!-- selected results shown on deploy screen -->
+    <!-- eslint-disable-next-line max-len -->
     <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 md:space-y-0 md:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Your server</span>
         <div class="flex items-center space-x-2.5">
-          <span class="text-lg">{{cpuValue}} vCPU</span>
+          <span class="text-lg">{{ cpuValue }} vCPU</span>
           <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{formatValue(ramValue)}} RAM</span>
+          <span class="text-lg">{{ formatRam(ramValue) }} RAM</span>
           <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{storageValue}}GB SSD</span>
+          <span class="text-lg">{{ storageValue }}GB SSD</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">
         <span class="text-green">Cost</span>
-        <span><span class="text-lg">${{calculatedCost}}</span> per month</span>
+        <span><span class="text-lg">${{ calculatedCost }}</span> per month</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {
-
-} from '@headlessui/vue'
-
-import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
+import VueSlider from 'vue-slider-component'
 
 export default {
   name: 'ServerSpecs',
-  props: ['calculatedCost', 'currentCost', 'current', 'resizeType', 'selectedSpecs'],
+  props: [
+    'calculatedCost',
+    'currentCost',
+    'current',
+    'resizeType',
+    'selectedSpecs'
+  ],
   components: {
     VueSlider
   },
   data() {
     return {
-      presets: null,
-      selectedPreset: null,
-      cpuValue: '0',
-      ramValue: '0',
-      storageValue: '0',
+      cpuValue: null,
+      ramValue: null,
+      storageValue: null,
       ramOptions: [
         { value:'0.5', label:'512MB' },
         { value:'1', label:'1GB' },
@@ -183,145 +180,46 @@ export default {
       }
     }
   },
-  methods: {
-    changed(value) {
-      if (this.current && value < this.current.ssd) {
-        this.$refs.ssdSlider.setValue(this.current.ssd)
+  computed: {
+    formattedRam() {
+      if (this.current.ram < 1) {
+        return `${this.current.ram * 1024}MB`
       }
+      return `${this.current.ram}GB`
     },
-    formatValue(value) {
+    showStorage() {
+      return !this.resizeType || this.resizeType.id !== 1
+    },
+    spec() {
+      return {
+        cpus: this.cpuValue,
+        disk: this.storageValue * 1024,
+        ram: this.ramValue * 1024
+      }
+    }
+  },
+  methods: {
+    formatRam(value) {
       if (value < 1) {
         return `${value * 1024}MB`
       }
-
       return `${value}GB`
-    },
-    updateParentResizeSpecs(data) {
-      this.$emit('specs-changed', data)
     }
-    // update() {
-    //   const { current, resizeType, selectedSpecs } = this
-    //   let matchingPreset
-
-    //   if (this.presets && this.presets.length) {
-    //     console.log('current , selectedSpecs', current , selectedSpecs)
-    //     // if (current && !selectedSpecs) {
-    //     if (current) {
-    //       matchingPreset = this.presets.map(p => {
-    //         if (p.ram === current.ram && p.cpu === current.cpu) {
-    //           return p
-    //         } else {
-    //           return null
-    //         }
-    //       }).filter(Boolean)
-
-
-    //       // Loop over presets and disable those that can't be used.
-    //       this.presets.forEach(p => {
-    //         p.enabled = true
-
-    //         console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-
-    //         // SSD cannot be downsized.
-    //         // if (p.ssd < current.ssd) {
-    //         if (resizeType && resizeType.id === 2 && p.ssd < current.ssd) {
-    //           p.enabled = false
-    //         }
-    //       })
-    //     }
-
-    //     if (selectedSpecs) {
-    //       this.selectedPreset = selectedSpecs
-    //     } else {
-    //       if (matchingPreset && matchingPreset[0]) {
-    //         this.selectedPreset = matchingPreset[0]
-    //       } else {
-    //         this.selectedPreset = this.presets[0]
-    //       }
-    //     }
-
-    //     console.log('this.selectedPreset',this. selectedPreset)
-    //   }
-    // }
   },
   mounted() {
-    this.cpuValue = this.current ? this.current.cpu : '1'
-    this.ramValue = this.current ? this.current.ram : '0.5'
-    this.storageValue = this.current ? this.current.ssd : '10'
-
-    console.log('this', this)
-
-    this.$refs.ramSlider.setValue(this.ramValue.toString())
-    this.$refs.ssdSlider.setValue(this.storageValue.toString())
+    this.cpuValue = this.current ? this.current.spec.cpus : 1
+    this.ramValue = this.current ? this.current.spec.ram / 1024 : 0.5
+    this.storageValue = this.current ? this.current.spec.disk / 1024 : 10
   },
   watch: {
-    presets(value) {
-      this.update()
-      // const { current, resizeType, selectedSpecs } = this
-      // let matchingPreset
-
-      //   console.log('resizeType, current , selectedSpecs', resizeType, current , selectedSpecs)
-      // if (this.presets && this.presets.length) {
-      //   if (current && !selectedSpecs) {
-      //     matchingPreset = this.presets.map(p => {
-      //       if (p.ram === current.ram && p.cpu === current.cpu) {
-      //         return p
-      //       } else {
-      //         return null
-      //       }
-      //     }).filter(Boolean)
-
-
-      //     // Loop over presets and disable those that can't be used.
-      //     this.presets.forEach(p => {
-      //       p.enabled = true
-
-      //       console.log('resizeType, p.ssd, current.ssd', resizeType, p.ssd, current.ssd)
-
-      //       // SSD cannot be downsized.
-      //       if (p.ssd < current.ssd) {
-      //         p.enabled = false
-      //       }
-      //     })
-      //   }
-
-      //   if (selectedSpecs) {
-      //     this.selectedPreset = selectedSpecs
-      //   } else {
-      //     if (matchingPreset && matchingPreset[0]) {
-      //       this.selectedPreset = matchingPreset[0]
-      //     } else {
-      //       this.selectedPreset = this.presets[0]
-      //     }
-      //   }
-      // }
-    },
-    resizeType(value) {
-      console.log('value', value)
-      // this.resizeType = value
-      // this.update()
-      if (this.resizeType.id === 2) {
-        // Set the ssd slider back to current.
-        this.storageValue = this.current.ssd
-        this.$refs.ssdSlider.setValue(this.current.ssd)
+    resizeType() {
+      if (this.resizeType.id === 1) {
+        // Set the storage slider back to current.
+        this.storageValue = this.current.spec.disk / 1024
       }
     },
-    cpuValue(value) {
-      this.$emit('specs-changed', { spec: 'cpu', value })
-    },
-    ramValue(value) {
-      this.$emit('specs-changed', { spec: 'ram', value: value * 1024 })
-    },
-    storageValue(value) {
-      if (this.current && this.current.ssd > value) {
-        this.storageValue = this.current.ssd
-      }
-      else {
-        this.$emit('specs-changed', { spec: 'ssd', value: value * 1024 })
-      }
-    },
-    selectedPreset(value) {
-      // this.updateParentResizeSpecs(value)
+    spec() {
+      this.$emit('specs-changed', this.spec)
     }
   }
 }
@@ -331,6 +229,10 @@ export default {
   .specs__grid {
     @apply mt-10 w-full grid grid-cols-1 gap-x-4 gap-y-10;
     @apply sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .specs__grid.hide-storage {
+    @apply xl:grid-cols-2;
   }
 
   /* radio option */

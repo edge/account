@@ -13,7 +13,7 @@
     <!-- title -->
     <div class="flex flex-col items-start sm:space-x-4 sm:items-center sm:flex-row">
       <div class="relative">
-        <h1 class="mb-0 leading-none">{{server.hostname}}</h1>
+        <h1 class="mb-0 leading-none">{{server.settings.hostname}}</h1>
         <span
           class="absolute top-0 block w-2 h-2 rounded-full -right-1"
           :class="server.status === 'active' ? 'bg-green' : 'bg-gray-300'"
@@ -29,18 +29,18 @@
         <div class="specsGradient" />
         <div class="flex items-center justify-start space-x-2 overflow-auto">
           <div class="flex items-center flex-shrink-0 space-x-1 text-gray-900">
-            <UbuntuIcon v-if="server.os === 'ubuntu'" className="server-icon" />
-            <CentOsIcon v-if="server.os === 'centos'" className="server-icon" />
-            <span class="server-detail">{{server.os}} {{server.osVersion}}</span>
+            <UbuntuIcon v-if="formattedOSGroup === 'Ubuntu'" className="server-icon" />
+            <CentOsIcon v-if="formattedOSGroup === 'Centos'" className="server-icon" />
+            <span class="server-detail">{{ formattedOSGroup }} - {{ this.server.settings.os.version }}</span>
           </div>
+          <!-- <span class="text-gray-400 server-detail">/</span> -->
+          <!-- <span class="server-detail">{{ server.ip }}</span> -->
           <span class="text-gray-400 server-detail">/</span>
-          <span class="server-detail">{{server.ip}}</span>
+          <span class="server-detail">{{ server.spec.cpus }} vCPU</span>
           <span class="text-gray-400 server-detail">/</span>
-          <span class="server-detail">{{server.cpu}}</span>
+          <span class="server-detail">{{ formattedDisk }} Storage</span>
           <span class="text-gray-400 server-detail">/</span>
-          <span class="server-detail">{{server.storage}} storage</span>
-          <span class="text-gray-400 server-detail">/</span>
-          <span class="server-detail">{{server.memory}} RAM</span>
+          <span class="server-detail">{{ formattedRAM }} RAM</span>
         </div>
       </div>
 
@@ -130,7 +130,7 @@
 
             <!-- resize -->
             <TabPanel>
-              <ServerResize :activeTask=activeTask :server=server />
+              <ServerResize :activeTask=activeTask :server=server :region="region" />
             </TabPanel>
 
             <!-- backups -->
@@ -150,7 +150,7 @@
 
             <!-- destroy -->
             <TabPanel>
-              <Destroy :activeTask=activeTask :server=server />
+              <Destroy :activeTask=activeTask :server=server :onDeleteServer="deleteServer" />
             </TabPanel>
 
           </TabPanels>
@@ -164,26 +164,19 @@
   <div v-else class="mainContent__inner">
     <div class="flex items-center">
       <span>Loading server</span>
-      <svg class="w-4 ml-1 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-        <line x1="12" y1="6" x2="12" y2="3" />
-        <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-        <line x1="18" y1="12" x2="21" y2="12" />
-        <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-        <line x1="12" y1="18" x2="12" y2="21" />
-        <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-        <line x1="6" y1="12" x2="3" y2="12" />
-        <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-      </svg>
+      <LoadingSpinner />
     </div>
   </div>
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../../account-utils'
 import ActiveTask from '@/components/ActiveTask'
 import CentOsIcon from '@/components/icons/Centos'
 import Destroy from '@/components/server/Destroy'
-import Line from '@/components/charts/Line'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ServerBackups from '@/components/server/ServerBackups'
 import ServerConsole from '@/components/server/ServerConsole'
 import ServerHistory from '@/components/server/ServerHistory'
@@ -193,12 +186,7 @@ import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
 import UbuntuIcon from '@/components/icons/Ubuntu'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
-
-import { useRoute } from 'vue-router'
-import useSWRV from 'swrv'
-import { fetcher } from '../../utils/api'
-import { mapActions } from 'vuex'
-import { startStopHost } from '../../utils/api'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'Server',
@@ -208,8 +196,10 @@ export default {
   data: function () {
     return {
       activeTask: null,
+      iCheckServerStatus: null,
+      iServer: null,
       loading: false,
-      polling: null,
+      region: null,
       server: null,
       tasks: [],
       options: {
@@ -222,7 +212,7 @@ export default {
     ActiveTask,
     CentOsIcon,
     Destroy,
-    Line,
+    LoadingSpinner,
     ServerBackups,
     ServerConsole,
     ServerHistory,
@@ -237,8 +227,51 @@ export default {
     TabPanel,
     UbuntuIcon
   },
+  computed: {
+    ...mapState(['account', 'session']),
+    serverId() {
+      return this.$route.params.id
+    },
+    formattedDisk() {
+      return `${this.server.spec.disk / 1024} GB`
+    },
+    formattedOSGroup() {
+      const group = this.server.settings.os.group
+      return group.slice(0, 1).toUpperCase() + group.slice(1)
+    },
+    formattedRAM() {
+      const ram = this.server.spec.ram
+      if (ram < 1024) return `${ram} MB`
+      return `${ram / 1024} GB`
+    }
+  },
   methods: {
     ...mapActions(['setVncSettings']),
+    async checkServerStatus(statusList) {
+      const pendingStatusList = typeof statusList === 'string' ? [statusList] : statusList
+
+      await this.updateServer()
+      // whilst server is in process of starting/stopping, check status every 0.5s
+      this.iCheckServerStatus = setInterval(async () => {
+        await this.updateServer()
+        // eslint-disable-next-line max-len
+        if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
+      }, 500)
+    },
+    async deleteServer() {
+      try {
+        await utils.servers.deleteServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.server._key
+        )
+        this.checkServerStatus('deleting')
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
+    },
     formatActiveTask(data) {
       const task = {
         id: data.id
@@ -290,50 +323,70 @@ export default {
     },
     async toggleServerStatus() {
       if (this.server.status === 'active') {
-        // Power off.
-        await startStopHost(this.server.serverId, 'stop')
+        // power off
+        await this.stopServer()
       }
       else {
-        // Power on.
-        await startStopHost(this.server.serverId, 'start')
+        // power on
+        await this.startServer()
+      }
+    },
+    async startServer() {
+      await utils.servers.startServer(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.server._key
+      )
+      this.checkServerStatus(['stopping', 'starting'])
+    },
+    async stopServer() {
+      await utils.servers.stopServer(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.server._key
+      )
+      this.checkServerStatus(['stopping', 'starting'])
+    },
+    async updateRegion() {
+      const region = await utils.region.getRegion(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.server.region
+      )
+      this.region = region
+    },
+    async updateServer() {
+      try {
+        const server = await utils.servers.getServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.server = server
+        await this.updateRegion()
+        // await this.updateTasks()
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.loading = true
-    const route = useRoute()
-    const { data: server, error: serverFetchError, mutate: refetchServer } = useSWRV(() => '/servers?id=' + (route.params.id || this.server.id), fetcher)
-    const { data: tasks, error: taskFetchError, mutate: refetchTasks } = useSWRV(() => '/tasks?id=' + route.params.id, fetcher)
-
-    this.server = server
-    this.tasks = tasks.value
-
-    this.polling = setInterval(() => {
-      console.log('Mutating')
-      refetchServer()
-      refetchTasks()
-
-      this.server = server
-      this.tasks = tasks.value
-
-      if (this.server) {
-        this.setVncSettings(this.server.vnc_settings)
-      }
-
-      if (this.tasks[0]) {
-        this.activeTask = this.formatActiveTask(this.tasks[0])
-      }
-      else {
-        this.activeTask = null
-      }
-    }, 10000)
+    await this.updateServer()
+    this.iServer = setInterval(() => {
+      this.updateServer()
+    }, 5 * 1000)
+    this.loading = false
   },
   unmounted() {
-    clearInterval(this.polling)
-    this.polling = null
+    clearInterval(this.iServer)
+    this.iServer = null
   }
 }
 </script>
+
 <style scoped>
   /* crumbs */
   .crumbs {

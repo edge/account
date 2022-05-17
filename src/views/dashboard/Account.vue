@@ -3,37 +3,38 @@
     <h1>Account</h1>
     <div>
       <h4 class="w-full pb-2 mt-10 mb-6 font-medium border-b border-gray-400">Your account number</h4>
-      <p class="text-gray-500">
-        Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
+      <!-- eslint-disable-next-line max-len -->
+      <p class="text-gray-500">Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
     </div>
-    <div class="relative inline-block lg:w-1/2 accountNumber">
-      <span class="text-3xl">{{user.accountNumber}}</span>
-      <button @click.prevent="copyToClipboard" class="text-gray-400 hover:text-green">
+    <!-- account number display -->
+    <div class="account-number-wrapper">
+      <span class="account-number monospace">{{ formattedAccountNumber }}</span>
+      <!-- copy to clipboard button -->
+      <button
+        @click.prevent="copyToClipboard"
+        class="text-gray-400 hover:text-green"
+      >
         <DuplicateIcon class="w-6 h-6" />
       </button>
-      <div
-        class="copied"
-        :class="this.copied ? 'visible' : ''"
-      >
-        Copied!
-      </div>
+      <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
     </div>
     <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Setup 2FA</h4>
-    <GoogleAuthEnable :user=user :twofactorQR=twofactorQR :twofactorUrl=twofactorUrl />
+    <div>
+      <GoogleAuthEnable />
+    </div>
 
     <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Add recovery email</h4>
-    <RecoveryEmail :user=user />
+    <div>
+      <RecoveryEmail />
+    </div>
   </div>
 </template>
 
 <script>
-import GoogleAuthEnable from '@/components/account/GoogleAuthEnable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
+import GoogleAuthEnable from '@/components/account/GoogleAuthEnable'
 import RecoveryEmail from '@/components/account/RecoveryEmail'
-
-import { fetcher } from '../../utils/api'
-import { mapGetters } from 'vuex'
-import useSWRV from 'swrv'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Account',
@@ -46,9 +47,11 @@ export default {
     RecoveryEmail
   },
   computed: {
-    ...mapGetters({
-      user: 'auth/StateUser'
-    })
+    ...mapState(['account', 'session']),
+    formattedAccountNumber() {
+      // add space every 4 characters
+      return this.account._key.replace(/.{4}/g, '$& ')
+    }
   },
   data() {
     return {
@@ -60,43 +63,32 @@ export default {
   methods: {
     async copyToClipboard () {
       this.copied = true
-      await navigator.clipboard.writeText(this.user.accountNumber)
+      await navigator.clipboard.writeText(this.account._key)
       setTimeout(() => {
         this.copied = false
       }, 2000)
     }
-  },
-  mounted() {
-    this.loading = true
-    const { data: user, error, mutate } = useSWRV(() => '/accounts?id=' + (this.user ? this.user.accountNumber : 'XXX'), fetcher)
-
-    this.polling = setInterval(() => {
-      mutate()
-
-      this.twofactorQR = user.value.twofactorQR
-      this.twofactorUrl = user.value.twofactorUrl
-    }, 2000)
-  },
-  unmounted() {
-    clearInterval(this.polling)
-    this.polling = null
   }
 }
 </script>
 <style scoped>
-  /* standard cell */
-  .serverList__cell {
-    @apply text-gray-500 text-sm lg:w-1/3 truncate;
-  }
+/* standard cell */
+.serverList__cell {
+  @apply text-gray-500 text-sm lg:w-1/3 truncate;
+}
 
-  .accountNumber {
-    @apply flex items-center justify-between relative p-3 mt-2 bg-gray-100 border border-gray-300 inline-block;
-  }
-  .copied {
-    @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
-    @apply transition-opacity duration-200 ease-in;
-  }
-  .copied.visible {
-    @apply opacity-100;
-  }
+.account-number-wrapper {
+  @apply flex items-center justify-between relative py-3 pr-3 w-max;
+}
+.account-number {
+  @apply text-4xl text-green pr-4;
+}
+
+.copied {
+  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+  @apply transition-opacity duration-200 ease-in;
+}
+.copied.visible {
+  @apply opacity-100;
+}
 </style>

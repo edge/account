@@ -14,9 +14,7 @@
 </template>
 
 <script>
-
-import { fetcher } from '../../utils/api'
-import useSWRV from 'swrv'
+// import * as utils from '../../account-utils'
 
 export default {
   name: 'ServerName',
@@ -25,19 +23,19 @@ export default {
       hostname: ''
     }
   },
+  methods: {
+    async getNewHostname() {
+      // const hostname = await utils.servers.getHostname()
+      // this.hostname = hostname
+    }
+  },
   mounted() {
     // Get a new, random hostname.
-    const { data } = useSWRV(() => '/servers?action=getHostname', fetcher)
-
-    setTimeout(() => {
-      this.hostname = data && data.value && data.value.hostname
-    }, 1000)
+    this.getNewHostname()
   },
   watch: {
-    hostname(value) {
-      if (value) {
-        this.$emit('name-changed', value)
-      }
+    hostname(hostname) {
+      this.$emit('name-changed', hostname)
     }
   }
 }

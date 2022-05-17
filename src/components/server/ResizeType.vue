@@ -45,7 +45,8 @@
       </RadioGroupOption>
     </div>
     <span v-show="selectedResizeType && selectedResizeType.id === 2" class="block mt-4 text-red">
-      <span class="font-medium">Note:</span> Because your server's filesystem will be expanded, this resize is not reversible.
+      <span class="font-medium">Note:</span>
+      Because your server's filesystem will be expanded, this resize is not reversible.
     </span>
   </RadioGroup>
 </template>

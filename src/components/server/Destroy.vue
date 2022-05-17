@@ -1,60 +1,63 @@
 <template>
   <div class="flex flex-col pb-20 space-y-5">
     <div class="box">
+      <!-- server has been deleted -->
       <h4>Destroy server and backups</h4>
-      <p class="mt-3 mb-1 text-gray-500">This is irreversible. All server data and associated backups will be irretrievable.</p>
-      <p class="text-gray-500">Upon destruction, you will no longer be billed for this server.</p>
+      <div v-if="isDeleted">
+        <p class="mt-3 mb-1 text-gray-500">Your server and backups have been successfully deleted.</p>
+        <button
+          class="mt-5 button button--success"
+          @click.prevent="returnToServers"
+        >
+          <span>Return to Servers</span>
+        </button>
+      </div>
 
-      <button
-        class="mt-5 button button--error"
-        :disabled="isSaving || activeTask"
-        @click.prevent="save"
-      >
-        <span v-if="isSaving">Destroying</span>
-        <span v-else-if="activeTask">{{activeTask.status}}</span>
-        <span v-else>Destroy this server and backups</span>
-        <span v-if="isSaving || activeTask">
-          <svg class="w-4 ml-2 animate-spin" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-            <line x1="12" y1="6" x2="12" y2="3" />
-            <line x1="16.25" y1="7.75" x2="18.4" y2="5.6" />
-            <line x1="18" y1="12" x2="21" y2="12" />
-            <line x1="16.25" y1="16.25" x2="18.4" y2="18.4" />
-            <line x1="12" y1="18" x2="12" y2="21" />
-            <line x1="7.75" y1="16.25" x2="5.6" y2="18.4" />
-            <line x1="6" y1="12" x2="3" y2="12" />
-            <line x1="7.75" y1="7.75" x2="5.6" y2="5.6" />
-          </svg>
-        </span>
-      </button>
+      <!-- server not yet deleted -->
+      <div v-else>
+        <!-- eslint-disable-next-line max-len -->
+        <p class="mt-3 mb-1 text-gray-500">This is irreversible. All server data and associated backups will be irretrievable.</p>
+        <p class="text-gray-500">Upon destruction, you will no longer be billed for this server.</p>
+        <button
+          class="mt-5 button button--error"
+          :disabled="isDeleting || activeTask"
+          @click.prevent="deleteServer"
+        >
+          <span v-if="isDeleting">Destroying</span>
+          <span v-else-if="activeTask">{{ activeTask.status }}</span>
+          <span v-else>Destroy this server and backups</span>
+          <span v-if="isDeleting || activeTask">
+            <LoadingSpinner />
+          </span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { destroyHost } from '../../utils/api'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 
 export default {
   name: 'Destroy',
-  props: ['activeTask', 'server'],
-  data: function () {
-    return {
-      isSaving: false,
-      polling: null
+  props: ['activeTask', 'onDeleteServer', 'server'],
+  components: {
+    LoadingSpinner
+  },
+  computed: {
+    isDeleted() {
+      return this.server.status === 'deleted'
+    },
+    isDeleting() {
+      return this.server.status === 'deleting'
     }
   },
   methods: {
-    async save() {
-      this.isSaving = true
-
-      await destroyHost(this.server.serverId)
-
-      this.polling = setInterval(() => {
-        if (!this.activeTask) {
-          // this.$router.push('/')
-          this.isSaving = false
-        }
-      }, 5000)
+    async deleteServer() {
+      await this.onDeleteServer()
+    },
+    returnToServers() {
+      this.$router.push({ name: 'Servers' })
     }
   },
   watch: {

@@ -2,9 +2,9 @@
   <RadioGroup v-model="selected">
     <RadioGroupLabel class="sr-only">Network region</RadioGroupLabel>
 
-    <div v-if="regions === undefined">loading...</div>
+    <!-- <div v-if="loading">Loading...</div> -->
 
-    <div class="box__grid" v-if="regions">
+    <div class="box__grid">
       <RadioGroupOption
         as="template"
         v-for="region in regions"
@@ -15,9 +15,7 @@
       >
         <div
           :class="[
-            active
-              ? 'active'
-              : '',
+            active ? 'active' : '',
             checked ? 'checked' : '',
             disabled ? 'disabled' : ''
           ]"
@@ -26,9 +24,7 @@
           <div
             class="checkmark"
             :class="[
-              active
-                ? 'active'
-                : '',
+              active ? 'active' : '',
               checked ? 'checked' : ''
             ]"
           >
@@ -42,7 +38,7 @@
               <span>{{region.city}}</span>
             </RadioGroupDescription>
           </div>
-          <img :src='region.flagIcon && region.flagIcon[0] ? region.flagIcon[0].url : ""' width="40" class="rounded-sm" />
+          <!-- <img :src='region.flagIcon && region.flagIcon[0] ? region.flagIcon[0].url : ""' width="40" class="rounded-sm" /> -->
         </div>
       </RadioGroupOption>
     </div>
@@ -50,17 +46,17 @@
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../../account-utils/index'
+import { CheckIcon } from '@heroicons/vue/outline'
+import { mapState } from 'vuex'
 import {
   RadioGroup,
   RadioGroupDescription,
   RadioGroupLabel,
   RadioGroupOption
 } from '@headlessui/vue'
-
-import { CheckIcon } from '@heroicons/vue/outline'
-import { ref, watch } from 'vue'
-import useSWRV from 'swrv'
-import { fetcher } from '../../utils/api'
 
 export default {
   name: 'NetworkRegion',
@@ -73,25 +69,37 @@ export default {
   },
   data() {
     return {
+      loaded: false,
       regions: [],
       selected: null
     }
   },
+  computed: {
+    ...mapState(['session'])
+  },
   methods: {
+    async updateRegions() {
+      try {
+        const regions = await utils.region.getRegions(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key
+        )
+        this.regions = regions.results
+        // pre-select first active region
+        this.selected = regions.results.find(region => region.status === 'active')
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
+    }
   },
   mounted() {
-    const { data: regions, error } = useSWRV(() => '/regions', fetcher)
-
-    this.selected = ref(null)
-    this.regions = regions
-
-    setTimeout(() => {
-      this.selected = regions.value[0]
-    }, 1000)
+    this.updateRegions()
   },
   watch: {
-    selected(value) {
-      this.$emit('region-changed', value)
+    selected(region) {
+      this.$emit('region-changed', region)
     }
   }
 }
