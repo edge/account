@@ -46,7 +46,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'ServerResize',
-  props: ['activeTask', 'server'],
+  props: ['activeTask', 'region', 'server'],
   components: {
     LoadingSpinner,
     ResizeType,
@@ -87,10 +87,9 @@ export default {
   computed: {
     ...mapState(['account', 'session']),
     currentCost() {
-      const region = this.server.region
-      return (region.cost.ram * (this.currentSpec.ram / 1024)) +
-        (region.cost.disk * (this.currentSpec.disk / 1024)) +
-        (region.cost.cpus * this.currentSpec.cpus)
+      return (this.region.cost.ram * (this.currentSpec.ram / 1024)) +
+        (this.region.cost.disk * (this.currentSpec.disk / 1024)) +
+        (this.region.cost.cpus * this.currentSpec.cpus)
     },
     currentSpec() {
       return this.server.spec
@@ -99,10 +98,9 @@ export default {
       return JSON.stringify(this.currentSpec) !== JSON.stringify(this.newSpec)
     },
     newCost() {
-      const region = this.server.region
-      return (region.cost.ram * (this.newSpec.ram / 1024)) +
-        (region.cost.disk * (this.newSpec.disk / 1024)) +
-        (region.cost.cpus * this.newSpec.cpus)
+      return (this.region.cost.ram * (this.newSpec.ram / 1024)) +
+        (this.region.cost.disk * (this.newSpec.disk / 1024)) +
+        (this.region.cost.cpus * this.newSpec.cpus)
     }
   },
   mounted() {
@@ -148,7 +146,7 @@ export default {
     },
     updateResizeType(data) {
       this.selectedResizeType = data
-    },
+    }
   },
   watch: {
     activeTask(value) {
