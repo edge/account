@@ -150,7 +150,7 @@
 
             <!-- destroy -->
             <TabPanel>
-              <Destroy :activeTask=activeTask :server=server />
+              <Destroy :activeTask=activeTask :server=server :onDeleteServer="deleteServer" />
             </TabPanel>
 
           </TabPanels>
@@ -247,14 +247,30 @@ export default {
   },
   methods: {
     ...mapActions(['setVncSettings']),
-    async checkServerStatus() {
+    async checkServerStatus(statusList) {
+      const pendingStatusList = typeof statusList === 'string' ? [statusList] : statusList
+
       await this.updateServer()
       // whilst server is in process of starting/stopping, check status every 0.5s
       this.iCheckServerStatus = setInterval(async () => {
         await this.updateServer()
         // eslint-disable-next-line max-len
-        if (this.server.status !== 'stopping' && this.server.status !== 'starting') clearInterval(this.iCheckServerStatus)
+        if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
+    },
+    async deleteServer() {
+      try {
+        await utils.servers.deleteServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.server._key
+        )
+        this.checkServerStatus('deleting')
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
     },
     formatActiveTask(data) {
       const task = {
@@ -321,7 +337,7 @@ export default {
         this.session._key,
         this.server._key
       )
-      this.checkServerStatus()
+      this.checkServerStatus(['stopping', 'starting'])
     },
     async stopServer() {
       await utils.servers.stopServer(
@@ -329,7 +345,7 @@ export default {
         this.session._key,
         this.server._key
       )
-      this.checkServerStatus()
+      this.checkServerStatus(['stopping', 'starting'])
     },
     async updateRegion() {
       const region = await utils.region.getRegion(
