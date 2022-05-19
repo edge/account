@@ -130,7 +130,7 @@
 
             <!-- resize -->
             <TabPanel>
-              <ServerResize :activeTask=activeTask :server=server :region="region" />
+              <ServerResize :activeTask=activeTask :server=server :region=region />
             </TabPanel>
 
             <!-- backups -->
@@ -140,7 +140,12 @@
 
             <!-- network -->
             <TabPanel>
-              <ServerNetworking :activeTask=activeTask :server=server />
+              <ServerNetwork
+                :activeTask=activeTask
+                :addIP=addIPAddress
+                :deleteIP=deleteIPAddress
+                :server=server
+              />
             </TabPanel>
 
             <!-- history -->
@@ -150,7 +155,7 @@
 
             <!-- destroy -->
             <TabPanel>
-              <Destroy :activeTask=activeTask :server=server :onDeleteServer="deleteServer" />
+              <ServerDestroy :activeTask=activeTask :server=server :onDeleteServer=deleteServer />
             </TabPanel>
 
           </TabPanels>
@@ -175,12 +180,12 @@
 import * as utils from '../../account-utils'
 import ActiveTask from '@/components/ActiveTask'
 import CentOsIcon from '@/components/icons/Centos'
-import Destroy from '@/components/server/Destroy'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ServerBackups from '@/components/server/ServerBackups'
 import ServerConsole from '@/components/server/ServerConsole'
+import ServerDestroy from '@/components/server/ServerDestroy'
 import ServerHistory from '@/components/server/ServerHistory'
-import ServerNetworking from '@/components/server/ServerNetworking'
+import ServerNetwork from '@/components/server/ServerNetwork'
 import ServerOverview from '@/components/server/ServerOverview'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
@@ -211,12 +216,12 @@ export default {
   components: {
     ActiveTask,
     CentOsIcon,
-    Destroy,
+    ServerDestroy,
     LoadingSpinner,
     ServerBackups,
     ServerConsole,
     ServerHistory,
-    ServerNetworking,
+    ServerNetwork,
     ServerOverview,
     ServerResize,
     ServerStatus,
@@ -247,6 +252,19 @@ export default {
   },
   methods: {
     ...mapActions(['setVncSettings']),
+    async addIPAddress() {
+      try {
+        await utils.servers.addIPAddress(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.checkServerStatus('')
+      }
+      catch (error) {
+        console.error(error)
+      }
+    },
     async checkServerStatus(statusList) {
       const pendingStatusList = typeof statusList === 'string' ? [statusList] : statusList
 
@@ -258,12 +276,26 @@ export default {
         if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
     },
+    async deleteIPAddress(ip) {
+      try {
+        await utils.servers.deleteIPAddress(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId,
+          ip
+        )
+        this.checkServerStatus('')
+      }
+      catch (error) {
+        console.error(error)
+      }
+    },
     async deleteServer() {
       try {
         await utils.servers.deleteServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.server._key
+          this.serverId
         )
         this.checkServerStatus('deleting')
       }
@@ -335,7 +367,7 @@ export default {
       await utils.servers.startServer(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
-        this.server._key
+        this.serverId
       )
       this.checkServerStatus(['stopping', 'starting'])
     },
@@ -343,7 +375,7 @@ export default {
       await utils.servers.stopServer(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
-        this.server._key
+        this.serverId
       )
       this.checkServerStatus(['stopping', 'starting'])
     },

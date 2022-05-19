@@ -39,7 +39,7 @@
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 
 export default {
-  name: 'Destroy',
+  name: 'ServerDestroy',
   props: ['activeTask', 'onDeleteServer', 'server'],
   components: {
     LoadingSpinner
