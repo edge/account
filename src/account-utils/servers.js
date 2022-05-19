@@ -4,6 +4,14 @@
 
 import superagent from 'superagent'
 
+// add IP address to server
+export const addIPAddress = async (host, sessionId, serverId) => {
+  const url = `${host}/servers/${serverId}/ip`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // create a new server
 export const createServer = async (host, sessionId, accountId, serverOptions) => {
   const url = `${host}/servers`
@@ -14,6 +22,15 @@ export const createServer = async (host, sessionId, accountId, serverOptions) =>
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send(options)
+  return response.body
+}
+
+// delete specific IP address from server
+export const deleteIPAddress = async (host, sessionId, serverId, ip) => {
+  const url = `${host}/servers/${serverId}/ip`
+  const response = await superagent.delete(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ ip })
   return response.body
 }
 
