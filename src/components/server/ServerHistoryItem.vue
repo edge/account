@@ -61,7 +61,7 @@ tr {
 }
 
 .tableBody__cell {
-  @apply text-xs flex items-center;
+  @apply text-xs flex items-center text-gray-500;
 }
 
 .table__icon {
@@ -82,7 +82,7 @@ tr {
   }
 
   .task-action {
-    @apply text-gray-900;
+    @apply text-gray-500;
   }
 }
 </style>
