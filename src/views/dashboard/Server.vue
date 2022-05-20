@@ -137,14 +137,14 @@
             </TabPanel>
 
             <!-- network -->
-            <TabPanel>
+            <!-- <TabPanel>
               <ServerNetwork
                 :activeTask=activeTask
                 :addIP=addIPAddress
                 :deleteIP=deleteIPAddress
                 :server=server
               />
-            </TabPanel>
+            </TabPanel> -->
 
             <!-- history -->
             <TabPanel>
