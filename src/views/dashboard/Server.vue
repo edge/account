@@ -89,14 +89,14 @@
                 Backups
               </button>
             </Tab>
-            <Tab v-slot="{selected}">
+            <!-- <Tab v-slot="{selected}">
               <button
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
                 Network
               </button>
-            </Tab>
+            </Tab> -->
             <Tab v-slot="{selected}">
               <button
                 class="tab"
