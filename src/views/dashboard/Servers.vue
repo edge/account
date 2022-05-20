@@ -11,7 +11,8 @@
       <ServerListItem
         v-for="server in servers"
         :key="server._key"
-        :server="server"
+        :regions=regions
+        :server=server
       />
     </ul>
 
@@ -55,9 +56,6 @@ export default {
     ...mapState(['account', 'session'])
   },
   methods: {
-    getServerRegion(regionId) {
-      return this.regions.find(region => region._key == regionId)
-    },
     formatDisk(disk) {
       if (disk < 1024) return `${disk} MB`
       return `${disk / 1024} GB`
@@ -89,9 +87,6 @@ export default {
           this.session._key
         )
         await this.updateRegions()
-        servers.results.forEach(server => {
-          server.region = this.getServerRegion(server.region)
-        })
         this.servers = servers.results
       }
       catch (error) {
