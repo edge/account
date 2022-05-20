@@ -72,6 +72,7 @@
 <script>
 import CentOsIcon from '@/components/icons/Centos'
 import UbuntuIcon from '@/components/icons/Ubuntu'
+import moment from 'moment'
 
 export default {
   name: 'ServerListItem',
@@ -82,7 +83,8 @@ export default {
   props: ['server', 'regions'],
   computed: {
     created() {
-      return '3 months ago'
+      const created = moment(this.server.created).fromNow()
+      return created === 'a few seconds ago' ? 'Just now' : created
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
