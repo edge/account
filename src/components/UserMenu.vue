@@ -1,19 +1,29 @@
 <template>
   <Menu as='div' class="menu" v-if="account">
     <MenuButton class="menu__button">
-      <span class="w-full truncate">{{ formattedAccountNumber }}</span>
+      <span class="w-full truncate">Account</span>
       <ChevronDownIcon class="w-5 h-5 text-gray-400" />
     </MenuButton>
     <MenuItems class="menu__items">
-      <div class="p-1">
+      <div class="px-1 py-2.5">
+        <MenuItem >
+          <button
+            class="menu__item accountNumber"
+          >
+            <span class="text-xs uppercase text-gray-400">Account No.</span>
+            <span class="text-gray-400">{{ formattedAccountNumber }}</span>
+          </button>
+        </MenuItem>
+        <div class="divider"></div>
         <!-- <MenuItem v-slot="{ active }">
           <button
+            @click.prevent="() => navigate('/billing')"
             :class="[
               'menu__item',
               active ? 'active' : ''
             ]"
           >
-            Menu item
+            Billing
           </button>
         </MenuItem> -->
         <MenuItem v-slot="{ active }">
@@ -24,9 +34,10 @@
               active ? 'active' : ''
             ]"
           >
-            Account
+            Settings
           </button>
         </MenuItem>
+        <div class="divider"></div>
         <MenuItem v-slot="{ active }">
           <button
             @click.prevent="logout"
@@ -35,7 +46,7 @@
               active ? 'active' : ''
             ]"
           >
-            Log out
+            Sign out
           </button>
         </MenuItem>
       </div>
@@ -45,8 +56,8 @@
 
 <script>
 import {ChevronDownIcon} from '@heroicons/vue/solid'
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { mapState } from 'vuex'
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 
 export default {
   name: 'UserMenu',
@@ -91,7 +102,14 @@ export default {
   .menu__item {
     @apply group flex rounded items-center w-full px-2 py-2.5 text-sm text-gray-600;
   }
+  .menu__item.accountNumber {
+    @apply flex-col items-start
+  }
   .menu__item.active {
    @apply bg-gray-100;
+  }
+  .divider {
+    @apply w-full bg-gray-300 my-2.5 box-border;
+    height: 1px;
   }
 </style>
