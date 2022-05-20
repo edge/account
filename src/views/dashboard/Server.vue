@@ -29,12 +29,10 @@
         <div class="specsGradient" />
         <div class="flex items-center justify-start space-x-2 overflow-auto">
           <div class="flex items-center flex-shrink-0 space-x-1 text-gray-900">
-            <UbuntuIcon v-if="formattedOSGroup === 'Ubuntu'" className="server-icon" />
-            <CentOsIcon v-if="formattedOSGroup === 'Centos'" className="server-icon" />
-            <span class="server-detail">{{ formattedOSGroup }} - {{ this.server.settings.os.version }}</span>
+            <UbuntuIcon v-if="os.group === 'ubuntu'" className="server-icon" />
+            <CentOsIcon v-if="os.group === 'centos'" className="server-icon" />
+            <span class="server-detail">{{ os.version }}</span>
           </div>
-          <!-- <span class="text-gray-400 server-detail">/</span> -->
-          <!-- <span class="server-detail">{{ server.ip }}</span> -->
           <span class="text-gray-400 server-detail">/</span>
           <span class="server-detail">{{ server.spec.cpus }} vCPU</span>
           <span class="text-gray-400 server-detail">/</span>
@@ -240,14 +238,13 @@ export default {
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
     },
-    formattedOSGroup() {
-      const group = this.server.settings.os.group
-      return group.slice(0, 1).toUpperCase() + group.slice(1)
-    },
     formattedRAM() {
       const ram = this.server.spec.ram
       if (ram < 1024) return `${ram} MB`
       return `${ram / 1024} GB`
+    },
+    os() {
+      return this.server.settings.os
     }
   },
   methods: {
