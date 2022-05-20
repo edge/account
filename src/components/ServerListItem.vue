@@ -1,41 +1,69 @@
 <template>
     <li
+      @click=goToServer
       class="serverList__item"
-      :class="[server.status]"
+      :class="isActive ? 'active' : isInactive ? 'inactive' : ''"
     >
-      <span class="serverList__status" :class="[server.status]" />
-
-      <div class="serverList__main">
-        <router-link class="serverList__name" :to="'/server/'+ server._key">
-          {{ server.settings.hostname }}
-        </router-link>
+      <!-- server details -->
+      <div class="serverList__field details overflow-hidden">
+        <!-- server name -->
+        <span class="serverList__name">{{ server.settings.hostname }}</span>
+        <!-- ip address / domain name -->
+        <div class="ip__and__domain">
+          <span>{{ "placeholder" }}</span>
+          <span class="divider hidden"></span>
+          <div class="truncate" :data="server.settings.domain">{{ server.settings.domain }}</div>
+        </div>
+      </div>
+      <!-- server specs -->
+      <div class="serverList__field specs">
+        <!-- OS -->
+          <div class="serverList__header flex items-center">
+            <div class="mr-1">
+              <UbuntuIcon
+                v-if="os.group === 'ubuntu'"
+                className="w-5 h-5"
+              />
+              <CentOsIcon
+                v-if="os.group === 'centos'"
+                className="w-5 h-5"
+              />
+            </div>
+            <span>{{ os.version }}</span>
+          </div>
+        <!-- specs -->
         <div class="serverList__stats">
           <span>{{ server.spec.cpus }} vCPU</span>
-          <span class="text-gray-400">/</span>
+          <span class="divider"></span>
           <span>{{ formattedDisk }} Disk</span>
-          <span class="text-gray-400">/</span>
+          <span class="divider"></span>
           <span>{{ formattedRAM }} RAM</span>
         </div>
       </div>
-      <div class="flex items-center flex-shrink-0 mt-3 space-x-5 lg:space-x-0 lg:flex-1 lg:mt-0 lg:justify-between">
-        <div class="flex items-center space-x-1 lg:justify-center serverList__cell">
-          <UbuntuIcon
-            v-if="os.group === 'ubuntu'"
-            className="w-5 h-5 text-gray-400 flex-shrink-0"
-          />
-          <CentOsIcon
-            v-if="os.group === 'centos'"
-            className="w-5 h-5 text-gray-400 flex-shrink-0"
-          />
-          <span>
-            {{ osGroup }} -
-            {{ os.version }}
+      <!-- region -->
+      <div class="serverList__field zone">
+        <span class="serverList__header">Zone</span>
+        <span>{{ region.name }}</span>
+      </div>
+      <!-- created -->
+      <div class="serverList__field created">
+        <span class="serverList__header">Created</span>
+        <span>{{ created }}</span>
+      </div>
+      <!-- status dot -->
+      <div class="serverList__field status">
+        <span class="serverList__header">Status</span>
+        <div class="flex items-center">
+          <span class="serverList__statusDot" />
+          <span
+            class="capitalize"
+            :class="[
+              isActive ? 'text-green' : '',
+              isInactive ? 'text-red' : ''
+            ]"
+          >
+            {{ server.status }}
           </span>
-        </div>
-        <!-- <span class="lg:text-center serverList__cell">{{ server.ip }}</span> -->
-        <div class="flex items-center lg:justify-end serverList__cell">
-          {{ server.region.name }}
-          <!-- <img :src=server.region.flagIcon[0].url width="25" class="ml-2 rounded-sm" /> -->
         </div>
       </div>
     </li>
@@ -51,77 +79,157 @@ export default {
     CentOsIcon,
     UbuntuIcon
   },
-  data() {
-    return {
-      loading: false,
-      regions: [],
-      servers: []
-    }
-  },
-  props: ['server', 'regionList'],
+  props: ['server', 'regions'],
   computed: {
+    created() {
+      return 'placeholder'
+    },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
-    },
-    formattedOSName(os) {
-      return os.group.slice(0, 1).toUpperCase() + os.group.slice(1)
     },
     formattedRAM() {
       const ram = this.server.spec.ram
       if (ram < 1024) return `${ram} MB`
       return `${this.server.spec.disk / 1024} GB`
     },
-    // region() {
-    //   return this.regionList.find(os => os.id === this.server.settings.region.id)
-    // },
+    isActive() {
+      return this.server.status === 'active'
+    },
+    isInactive() {
+      return this.server.status === 'stopped' || this.server.status === 'crashed'
+    },
+    region() {
+      return this.regions.find(region => region._key === this.server.region)
+    },
     os() {
       return this.server.settings.os
-    },
-    osGroup() {
-      const group = this.os.group
-      return group.slice(0, 1) + group.slice(1)
+    }
+  },
+  methods: {
+    goToServer() {
+      this.$router.push(`/server/${this.server._key}`)
     }
   }
 }
 </script>
 <style scoped>
+/* list item */
+.serverList__item {
+  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-t-8 border-gray-400 rounded-md w-full p-5 pr-8;
+  @apply cursor-pointer transition-all duration-100;
+}
+.serverList__item.active {
+  @apply border-green;
+}
+.serverList__item.inactive {
+  @apply border-red;
+}
+
+/* list item content */
+.serverList__field {
+  @apply flex flex-col;
+}
+.serverList__header {
+  @apply text-md mr-2;
+}
+.ip__and__domain {
+  @apply text-sm flex flex-col overflow-hidden lg:text-xs
+}
+.zone, .created, .status {
+  @apply flex flex-row items-center;
+}
+.serverList__name {
+  @apply text-md text-green font-medium truncate;
+}
+.serverList__stats {
+  @apply flex space-x-1.5 text-sm lg:text-xs;
+}
+/* status dot */
+.serverList__statusDot {
+  @apply w-2.5 h-2.5 rounded-full mr-1 bg-gray-400;
+}
+.active .serverList__statusDot {
+  @apply bg-green;
+}
+.inactive .serverList__statusDot {
+  @apply bg-red;
+}
+.divider {
+  @apply h-full bg-gray-400;
+  width: 1px
+}
+
+/* tablet sized screens up to desktop */
+@media (min-width: 450px) {
   .serverList__item {
-    @apply relative flex flex-wrap flex-col lg:flex-row  lg:items-center justify-between bg-white rounded-md w-full p-5 lg:pr-12;
+    @apply grid-rows-3 gap-x-10;
+    grid-template-columns: auto;
   }
-  .serverList__item.active {
-    @apply border-green;
+  .serverList__header {
+    @apply mr-0;
   }
-  .serverList__item.inactive {
-    @apply border-red;
+  .details {
+    @apply col-span-2;
+  }
+  .ip__and__domain {
+    @apply flex-row space-x-1
+  }
+  .ip__and__domain.divider {
+    @apply block;
+  }
+  .zone, .created, .status {
+    @apply flex-col items-start;
+  }
+  .zone {
+    @apply col-start-2 row-start-2;
   }
 
-  /* status dot */
-  .serverList__status {
-    @apply w-2.5 h-2.5 rounded-full block absolute right-5;
-  }
-  .serverList__status.active {
-    @apply bg-green;
-  }
-  .serverList__status.inactive {
-    @apply bg-red;
+  .created {
+    @apply col-start-1 row-start-3;
   }
 
-  /* first col (multi line) */
-  .serverList__main {
-    @apply lg:w-1/4 text-gray-500 flex flex-col space-y-0.5 flex-shrink-0;
+  .status {
+    @apply col-start-2 row-start-3;
   }
-  .serverList__name {
-    @apply text-green text-base font-medium truncate w-full hover:underline;
+
+  .divider {
+    @apply block;
   }
-  .serverList__stats {
-    @apply flex space-x-1.5 text-xs flex-shrink-0;
+}
+
+@screen lg {
+  .serverList__item {
+    @apply flex justify-between border-l-8 border-t-0 gap-x-4;
   }
-  .serverList__stats span {
+  .details {
+    @apply col-span-1 flex-shrink;
+    flex-basis: 320px;
+  }
+  .specs {
     @apply flex-shrink-0;
+    flex-basis: 220px;
   }
+  .zone {
+    @apply col-start-3 row-start-1 flex-shrink-0;
+    flex-basis: 50px;
+  }
+  .created {
+    @apply col-start-4 row-start-1 flex-shrink-0;
+    flex-basis: 100px;
+  }
+  .status {
+    @apply col-start-5 row-start-1;
+    flex-basis: 100px;
+  }
+  /* zone and created fields are hidden on small desktop screens */
+  .zone, .created {
+    @apply hidden;
+  }
+}
 
-  /* standard cell */
-  .serverList__cell {
-    @apply text-gray-500 text-sm lg:w-1/3 truncate;
+@media (min-width: 1180px) {
+  .zone, .created {
+    @apply flex;
   }
+}
 </style>
