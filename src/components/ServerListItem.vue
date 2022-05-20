@@ -10,7 +10,7 @@
         <span class="serverList__name">{{ server.settings.hostname }}</span>
         <!-- ip address / domain name -->
         <div class="ip__and__domain">
-          <span>{{ "placeholder" }}</span>
+          <span>{{ server.network.ip[0] }}</span>
           <span class="divider hidden"></span>
           <div class="truncate" :data="server.settings.domain">{{ server.settings.domain }}</div>
         </div>
@@ -82,7 +82,7 @@ export default {
   props: ['server', 'regions'],
   computed: {
     created() {
-      return 'placeholder'
+      return '3 months ago'
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
@@ -139,7 +139,13 @@ export default {
   @apply flex flex-row items-center;
 }
 .serverList__name {
-  @apply text-md text-green font-medium truncate;
+  @apply text-md text-gray-500 truncate;
+}
+.active .serverList__name {
+  @apply text-green font-medium;
+}
+.inactive .serverList__name {
+  @apply text-red font-medium;
 }
 .serverList__stats {
   @apply flex space-x-1.5 text-sm lg:text-xs;
