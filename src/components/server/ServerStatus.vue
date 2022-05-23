@@ -25,13 +25,17 @@
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../../account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Modal from '@/components/Modal'
 import { Switch } from '@headlessui/vue'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ServerStatus',
-  props: ['server', 'onToggleStatus'],
+  props: ['activeTasks', 'server'],
   components: {
     LoadingSpinner,
     Modal,
@@ -42,14 +46,40 @@ export default {
     }
   },
   computed: {
+    ...mapState(['session']),
     enabled() {
-      return this.server.status === 'active' || this.server.status === 'stopping'
+      return this.stopping || this.server.status === 'active'
+    },
+    serverId() {
+      return this.$route.params.id
+    },
+    starting() {
+      return this.activeTasks.some(task => task.action === 'start')
+    },
+    stopping() {
+      return this.activeTasks.some(task => task.action === 'stop')
     },
     toggling() {
-      return this.server.status === 'starting' || this.server.status === 'stopping'
+      return this.starting || this.stopping
     }
   },
   methods: {
+    async startServer() {
+      const result = await utils.servers.startServer(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId
+      )
+      this.$store.commit('addTask', result.task)
+    },
+    async stopServer() {
+      const result = await utils.servers.stopServer(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId
+      )
+      this.$store.commit('addTask', result.task)
+    },
     toggleModal () {
       if (this.server.status === 'active') {
         this.$refs.modal.open = true
@@ -59,14 +89,18 @@ export default {
       }
     },
     async toggleServer () {
-      await this.onToggleStatus()
+      if (this.server.status === 'active') {
+        await this.stopServer()
+      }
+      else {
+        await this.startServer()
+      }
       this.$refs.modal.open = false
     }
-  },
-  mounted() {
   }
 }
 </script>
+
 <style scoped>
   .switch {
     @apply relative inline-flex flex-shrink-0 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-16 md:w-20 h-7 md:h-8 focus:outline-none;

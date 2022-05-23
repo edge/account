@@ -11,28 +11,43 @@
 <script>
 import SideNavigation from '@/components/SideNavigation'
 import TopNavigation from '@/components/TopNavigation'
+import { mapState } from 'vuex'
+
+const TASK_REFRESH_INTERVAL = 5 * 1000
 
 export default {
   name: 'Dashboard',
   title() {
     return 'Edge Account Portal » Server'
   },
-  data: function () {
-    return {
-      activeTask: null,
-      loading: false,
-      polling: null,
-      server: null,
-      tasks: [],
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
-    }
+  computed: {
+    ...mapState(['tasks'])
   },
   components: {
     SideNavigation,
     TopNavigation
+  },
+  methods: {
+    removeTask(task) {
+      // delay added to remove task to give server status a chance to catch up
+      setTimeout(() => {
+        this.$store.commit('deleteTask', task)
+      }, 500)
+    }
+  },
+  mounted() {
+    // poll all active tasks
+    setInterval(() => this.$store.dispatch('updateTasks'), TASK_REFRESH_INTERVAL)
+  },
+  watch: {
+    tasks() {
+      this.tasks.forEach(task => {
+        // remove any tasks that compelte from the store
+        if (task.status === 'complete') this.removeTask(task)
+        // TODO - handle failed and gone tasks
+        if (task.status === 'failed' || task.states === 'gone') console.log('FAILED TASK')
+      })
+    }
   }
 }
 </script>

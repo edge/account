@@ -2,25 +2,24 @@
 // Use of this source code is governed by a GNU GPL-style license
 // that can be found in the LICENSE.md file. All rights reserved.
 
-import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from '@/views/Dashboard'
-import Landing from '@/views/Landing'
-import NotFound from '@/views/404'
-import Vnc from '@/views/Vnc'
-
-import Account from '@/views/dashboard/Account'
-import Deploy from '@/views/dashboard/Deploy'
-import Index from '@/views/dashboard/Index'
-import Server from '@/views/dashboard/Server'
-import Servers from '@/views/dashboard/Servers'
-
-import SignIn from '@/views/landing/SignIn'
-import CreateAccount from '@/views/landing/CreateAccount'
-import RecoverAccount from '@/views/landing/RecoverAccount'
+/* global process */
 
 import * as utils from '../account-utils/index'
-
+import Account from '@/views/dashboard/Account'
+import CreateAccount from '@/views/landing/CreateAccount'
+import Dashboard from '@/views/Dashboard'
+import Deploy from '@/views/dashboard/Deploy'
+import Index from '@/views/dashboard/Index'
+import Landing from '@/views/Landing'
+import NotFound from '@/views/404'
+import RecoverAccount from '@/views/landing/RecoverAccount'
+import Server from '@/views/dashboard/Server'
+import Servers from '@/views/dashboard/Servers'
+import SignIn from '@/views/landing/SignIn'
+import Vnc from '@/views/Vnc'
 import store from '../store'
+import { createRouter, createWebHistory } from 'vue-router'
+
 
 const routes = [
   {

@@ -19,7 +19,7 @@
           :class="server.status === 'active' ? 'bg-green' : 'bg-gray-300'"
         />
       </div>
-      <ActiveTask :task=activeTask />
+      <!-- <ActiveTask :task=activeTask /> -->
     </div>
 
     <!-- overview -->
@@ -43,7 +43,10 @@
       </div>
 
       <div class="flex-shrink-0">
-        <ServerStatus :server="server" :onToggleStatus="toggleServerStatus" />
+        <ServerStatus
+          :activeTasks=activeTasks
+          :server=server
+        />
       </div>
 
     </div>
@@ -128,18 +131,18 @@
 
             <!-- resize -->
             <TabPanel>
-              <ServerResize :activeTask=activeTask :server=server :region=region />
+              <ServerResize :activeTasks=activeTasks :server=server :region=region />
             </TabPanel>
 
             <!-- backups -->
             <TabPanel>
-              <ServerBackups :activeTask=activeTask :server=server />
+              <ServerBackups :activeTasks=activeTasks :server=server />
             </TabPanel>
 
             <!-- network -->
             <!-- <TabPanel>
               <ServerNetwork
-                :activeTask=activeTask
+                :activeTasks=activeTasks
                 :addIP=addIPAddress
                 :deleteIP=deleteIPAddress
                 :server=server
@@ -153,7 +156,7 @@
 
             <!-- destroy -->
             <TabPanel>
-              <ServerDestroy :activeTask=activeTask :server=server :onDeleteServer=deleteServer />
+              <ServerDestroy :activeTasks=activeTasks :server=server :onDeleteServer=deleteServer />
             </TabPanel>
 
           </TabPanels>
@@ -176,14 +179,14 @@
 /* global process */
 
 import * as utils from '../../account-utils'
-import ActiveTask from '@/components/ActiveTask'
+// import ActiveTask from '@/components/ActiveTask'
 import CentOsIcon from '@/components/icons/Centos'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ServerBackups from '@/components/server/ServerBackups'
 import ServerConsole from '@/components/server/ServerConsole'
 import ServerDestroy from '@/components/server/ServerDestroy'
 import ServerHistory from '@/components/server/ServerHistory'
-import ServerNetwork from '@/components/server/ServerNetwork'
+// import ServerNetwork from '@/components/server/ServerNetwork'
 import ServerOverview from '@/components/server/ServerOverview'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
@@ -198,28 +201,22 @@ export default {
   },
   data: function () {
     return {
-      activeTask: null,
       iCheckServerStatus: null,
       iServer: null,
       loading: false,
       region: null,
-      server: null,
-      serverTasks: [],
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
+      server: null
     }
   },
   components: {
-    ActiveTask,
+    // ActiveTask,
     CentOsIcon,
     ServerDestroy,
     LoadingSpinner,
     ServerBackups,
     ServerConsole,
     ServerHistory,
-    ServerNetwork,
+    // ServerNetwork,
     ServerOverview,
     ServerResize,
     ServerStatus,
@@ -231,9 +228,9 @@ export default {
     UbuntuIcon
   },
   computed: {
-    ...mapState(['account', 'session']),
-    serverId() {
-      return this.$route.params.id
+    ...mapState(['account', 'session', 'tasks']),
+    activeTasks() {
+      return this.$store.getters.tasksByServerId(this.serverId)
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
@@ -245,23 +242,13 @@ export default {
     },
     os() {
       return this.server.settings.os
+    },
+    serverId() {
+      return this.$route.params.id
     }
   },
   methods: {
     ...mapActions(['setVncSettings']),
-    async addIPAddress() {
-      try {
-        await utils.servers.addIPAddress(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
-        this.checkServerStatus('')
-      }
-      catch (error) {
-        console.error(error)
-      }
-    },
     async checkServerStatus(statusList) {
       const pendingStatusList = typeof statusList === 'string' ? [statusList] : statusList
 
@@ -272,20 +259,6 @@ export default {
         // eslint-disable-next-line max-len
         if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
-    },
-    async deleteIPAddress(ip) {
-      try {
-        await utils.servers.deleteIPAddress(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId,
-          ip
-        )
-        this.checkServerStatus('')
-      }
-      catch (error) {
-        console.error(error)
-      }
     },
     async deleteServer() {
       try {
@@ -360,22 +333,6 @@ export default {
         await this.startServer()
       }
     },
-    async startServer() {
-      await utils.servers.startServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.checkServerStatus(['stopping', 'starting'])
-    },
-    async stopServer() {
-      await utils.servers.stopServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.checkServerStatus(['stopping', 'starting'])
-    },
     async updateRegion() {
       const region = await utils.region.getRegion(
         process.env.VUE_APP_ACCOUNT_API_URL,
@@ -426,6 +383,11 @@ export default {
   unmounted() {
     clearInterval(this.iServer)
     this.iServer = null
+  },
+  watch: {
+    tasks() {
+      this.updateServer()
+    }
   }
 }
 </script>
