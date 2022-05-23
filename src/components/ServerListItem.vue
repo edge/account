@@ -10,8 +10,8 @@
         <span class="serverList__name">{{ server.settings.hostname }}</span>
         <!-- ip address / domain name -->
         <div class="ip__and__domain">
-          <span>{{ server.network.ip[0] }}</span>
-          <span class="divider hidden"></span>
+          <span v-if="server.network">{{ server.network.ip[0] }}</span>
+          <span v-if="server.network" class="divider hidden"></span>
           <div class="truncate" :data="server.settings.domain">{{ server.settings.domain }}</div>
         </div>
       </div>
