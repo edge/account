@@ -31,7 +31,7 @@
 
 import * as utils from '../../account-utils/index'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import {  ServerIcon } from '@heroicons/vue/outline'
+import { ServerIcon } from '@heroicons/vue/outline'
 import ServerListItem from '@/components/ServerListItem'
 import { mapState } from 'vuex'
 

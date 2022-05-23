@@ -15,7 +15,7 @@
           </button>
         </MenuItem>
         <div class="divider"></div>
-        <!-- <MenuItem v-slot="{ active }">
+        <MenuItem v-slot="{ active }">
           <button
             @click.prevent="() => navigate('/billing')"
             :class="[
@@ -25,7 +25,7 @@
           >
             Billing
           </button>
-        </MenuItem> -->
+        </MenuItem>
         <MenuItem v-slot="{ active }">
           <button
             @click.prevent="() => navigate('/account')"
@@ -40,7 +40,7 @@
         <div class="divider"></div>
         <MenuItem v-slot="{ active }">
           <button
-            @click.prevent="logout"
+            @click.prevent="signOut"
             :class="[
               'menu__item',
               active ? 'active' : ''
@@ -55,6 +55,9 @@
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../account-utils/index'
 import {ChevronDownIcon} from '@heroicons/vue/solid'
 import { mapState } from 'vuex'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
@@ -69,7 +72,7 @@ export default {
     MenuItem
   },
   computed: {
-    ...mapState(['account']),
+    ...mapState(['account', 'session']),
     formattedAccountNumber() {
       return this.account._key.replace(/.{4}/g, '$& ')
     }
@@ -78,10 +81,19 @@ export default {
     navigate(path) {
       this.$router.push(path)
     },
-    async logout() {
-      await this.$store.commit('logout')
-      localStorage.removeItem('session')
-      this.$router.push('/signin')
+    async signOut() {
+      try {
+        await utils.sessions.deleteSession(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key
+        )
+        await this.$store.commit('signOut')
+        localStorage.removeItem('session')
+        this.$router.push('/signin')
+      }
+      catch (error) {
+        console.error(error)
+      }
     }
   }
 }
