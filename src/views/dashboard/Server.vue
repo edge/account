@@ -260,20 +260,6 @@ export default {
         if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
     },
-    async deleteServer() {
-      try {
-        await utils.servers.deleteServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
-        this.checkServerStatus('deleting')
-      }
-      catch (error) {
-        // TODO - handle error
-        console.error(error)
-      }
-    },
     formatActiveTask(data) {
       const task = {
         id: data.id
@@ -322,16 +308,6 @@ export default {
       console.log('data', data)
 
       return task
-    },
-    async toggleServerStatus() {
-      if (this.server.status === 'active') {
-        // power off
-        await this.stopServer()
-      }
-      else {
-        // power on
-        await this.startServer()
-      }
     },
     async updateRegion() {
       const region = await utils.region.getRegion(

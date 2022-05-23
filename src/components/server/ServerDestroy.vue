@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col pb-20 space-y-5">
     <div class="box">
-      <!-- server has been deleted -->
       <h4>Destroy server and backups</h4>
+      <!-- server has already been deleted -->
       <div v-if="isDeleted">
         <p class="mt-3 mb-1 text-gray-500">Your server and backups have been successfully deleted.</p>
         <button
@@ -20,15 +20,14 @@
         <p class="text-gray-500">Upon destruction, you will no longer be billed for this server.</p>
         <button
           class="mt-5 button button--error"
-          :disabled="isDeleting || activeTask"
+          :disabled="isDeleting"
           @click.prevent="deleteServer"
         >
-          <span v-if="isDeleting">Destroying</span>
-          <span v-else-if="activeTask">{{ activeTask.status }}</span>
+          <div v-if=isDeleting class="flex">
+            <span>Destroying</span>
+            <span><LoadingSpinner /></span>
+          </div>
           <span v-else>Destroy this server and backups</span>
-          <span v-if="isDeleting || activeTask">
-            <LoadingSpinner />
-          </span>
         </button>
       </div>
     </div>
@@ -36,25 +35,45 @@
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../../account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ServerDestroy',
-  props: ['activeTask', 'onDeleteServer', 'server'],
+  props: ['activeTasks', 'server'],
   components: {
     LoadingSpinner
   },
   computed: {
+    ...mapState(['session']),
     isDeleted() {
       return this.server.status === 'deleted'
     },
     isDeleting() {
-      return this.server.status === 'deleting'
+      return this.activeTasks.some(task => task.action === 'destroy')
+    },
+    serverId() {
+      return this.$route.params.id
     }
   },
   methods: {
     async deleteServer() {
-      await this.onDeleteServer()
+      try {
+        const response = await utils.servers.deleteServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        console.log(response.task)
+        this.$store.commit('addTask', response.task)
+      }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
     },
     returnToServers() {
       this.$router.push({ name: 'Servers' })
