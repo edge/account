@@ -185,12 +185,14 @@ export default {
     async deploy() {
       this.isSaving = true
       try {
-        const server = await utils.servers.createServer(
+        const result = await utils.servers.createServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.account._key,
           this.serverOptions
         )
+        const server = result.server
+        // const task = result.task
         this.isSaving = false
         // Redirect to the new server page.
         this.$router.push({ name: 'Server', params: { id: server._key }})
@@ -245,17 +247,6 @@ export default {
       this.serverOptions = {
         ...this.serverOptions,
         spec
-      }
-    },
-    validate(inputType, value) {
-      const regex = this.validationRules[inputType]
-
-      if (!regex) {
-        return true
-      }
-      else {
-        return regex.test(value)
-
       }
     }
   },
