@@ -1,36 +1,28 @@
 
 <template>
   <ul class="navigation-tools">
-    <li class="navigation-tools__item">
+    <li class="navigation-tools__item mobileOnly">
       <router-link to="/account" class="navigation-tools__link">
-        <span class="header-tools__icon">
-          <CogIcon class="w-5 h-5" />
-        </span>
-        <span>Settings</span>
+        <span class=""><UserIcon class="w-5 h-5" /></span>
+        <span class="navigation-tools__label">Settings</span>
       </router-link>
     </li>
-    <!-- <li class="navigation-tools__item">
+    <li class="navigation-tools__item mobileOnly">
       <router-link to="/billing" class="navigation-tools__link">
-        <span class="header-tools__icon">
-          <CashIcon class="w-5 h-5" />
-        </span>
-        <span>Billing</span>
+        <span class=""><CashIcon class="w-5 h-5" /></span>
+        <span class="navigation-tools__label">Billing</span>
       </router-link>
-    </li> -->
+    </li>
     <li class="navigation-tools__item">
       <a href="/support" class="navigation-tools__link" target="_blank" rel="noreferrer">
-        <span class="header-tools__icon">
-          <SupportIcon class="w-5 h-5" />
-        </span>
-        <span>Support</span>
+        <span class=""><SupportIcon class="w-5 h-5" /></span>
+        <span class="navigation-tools__label">Support</span>
       </a>
     </li>
-    <li class="navigation-tools__item">
+    <li class="navigation-tools__item mobileOnly">
       <button @click="signOut" class="navigation-tools__link">
-        <span class="header-tools__icon">
-          <LogoutIcon class="w-5 h-5" />
-        </span>
-        <span>Sign Out</span>
+        <span class=""><LogoutIcon class="w-5 h-5" /></span>
+        <span class="navigation-tools__label">Sign Out</span>
       </button>
     </li>
   </ul>
@@ -43,18 +35,18 @@ import * as utils from '../account-utils/index'
 import { mapState } from 'vuex'
 import {
   CashIcon,
-  CogIcon,
   LogoutIcon,
-  SupportIcon
+  SupportIcon,
+  UserIcon
 } from '@heroicons/vue/outline'
 
 export default {
   name: 'NavigationTools',
   components: {
     CashIcon,
-    CogIcon,
     LogoutIcon,
-    SupportIcon
+    SupportIcon,
+    UserIcon
   },
   computed: {
     ...mapState(['account', 'session'])
@@ -89,10 +81,16 @@ export default {
 }
 .navigation-tools__icon {
 }
+.navigation-tools__label {
+  @apply leading-none;
+}
+.mobileOnly {
+  @apply sm:hidden;
+}
 
 @media (max-width: 350px) {
   .navigation-tools__link {
-    @apply flex-col;
+    @apply flex-col space-x-0 space-y-1;
   }
 }
 </style>
