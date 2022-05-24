@@ -16,14 +16,13 @@
 
     <div class="relative mt-8">
       <button
-        @click="save"
-        :disabled="isSaving || !haveSpecsChanged || activeTask"
+        @click="resize"
+        :disabled="isSaving || !haveSpecsChanged"
         class="h-full button button--success"
       >
         <span v-if="isSaving">Resizing</span>
-        <span v-else-if="activeTask">{{activeTask.status}}</span>
         <span v-else>Resize</span>
-        <span v-if="isSaving || activeTask">
+        <span v-if="isSaving">
           <LoadingSpinner />
         </span>
       </button>
@@ -41,7 +40,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'ServerResize',
-  props: ['activeTask', 'region', 'server'],
+  props: ['region', 'server'],
   components: {
     LoadingSpinner,
     ServerSpecs
@@ -71,7 +70,10 @@ export default {
       return this.server.spec
     },
     haveSpecsChanged() {
-      return JSON.stringify(this.currentSpec) !== JSON.stringify(this.newSpec)
+      const cpusChanged = this.currentSpec.cpus !== this.newSpec.cpus
+      const diskChanged = this.currentSpec.disk !== this.newSpec.disk
+      const ramChanged = this.currentSpec.ram !== this.newSpec.ram
+      return cpusChanged || diskChanged || ramChanged
     },
     newHourlyCost() {
       return (
@@ -83,34 +85,19 @@ export default {
     }
   },
   methods: {
-    async save() {
-      this.isSaving = true
-      await this.resize()
-
-      this.polling = setInterval(() => {
-        if (!this.activeTask) {
-          this.isSaving = false
-        }
-      }, 5000)
-    },
     async resize () {
       if (!this.haveSpecsChanged) return
 
-      const serverOptions = {
-        ...this.server,
-        region: this.server.region._key,
-        spec: this.newSpec
-      }
-
       try {
-        const response = await utils.servers.updateServer(
+        const response = await utils.servers.resizeServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.server._key,
-          serverOptions
+          this.newSpec
         )
-        // TODO - handle successful response, waiting on API update
-        console.log(response)
+        response.tasks.forEach(task => {
+          this.$store.commit('addTask', task)
+        })
       }
       catch (error) {
         // TODO - handle error

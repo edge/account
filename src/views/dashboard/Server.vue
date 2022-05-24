@@ -27,7 +27,7 @@
           <span class="text-gray-400 server-detail">/</span>
           <span class="server-detail">{{ server.spec.cpus }} vCPU</span>
           <span class="text-gray-400 server-detail">/</span>
-          <span class="server-detail">{{ formattedDisk }} Storage</span>
+          <span class="server-detail">{{ formattedDisk }} Disk</span>
           <span class="text-gray-400 server-detail">/</span>
           <span class="server-detail">{{ formattedRAM }} RAM</span>
           <span class="text-gray-400 server-detail">/</span>
@@ -69,7 +69,7 @@
         </div>
 
         <!-- action in progress section -->
-        <div v-else-if="creating || destroying" class="box box--tall">
+        <div v-else-if="creating || destroying || resizing" class="box box--tall">
           <div class="flex flex-col items-center justify-center text-center">
             <h4 class="mt-4">{{ progressTitle }}</h4>
             <p class="mt-2 mb-0 text-gray-500">{{ progressMessage }}</p>
@@ -288,12 +288,20 @@ export default {
       if (this.creating) return 'Server metrics and other information will be displayed here once deployment is complete.'
       // eslint-disable-next-line max-len
       if (this.destroying) return 'All server data and associated backups are being destroyed. Upon destruction, you will no longer be billed for this server.'
-      else return 'Server metrics and other information will be displayed here once server resize is complete.'
+      // eslint-disable-next-line max-len
+      if (this.resizing) return 'Server metrics and other information will be available again once server resize is complete.'
+      else return ''
     },
     progressTitle() {
       if (this.creating) return 'Deploying your new server'
       if (this.destroying) return 'Destroying your server'
-      else return 'Resizing your server'
+      if (this.resizing) return 'Resizing your server'
+      else return ''
+    },
+    resizing() {
+      const diskResize = this.activeTasks.some(task => task.action === 'resizeDisk')
+      const resourceResize = this.activeTasks.some(task => task.action === 'resizeResource')
+      return diskResize || resourceResize
     },
     serverDestroyed() {
       return this.server.status === 'deleted'

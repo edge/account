@@ -52,7 +52,7 @@
         />
       </div>
       <div class="box">
-        <span class="box__title">Storage (GB)</span>
+        <span class="box__title">Disk (GB)</span>
         <vue-slider
           v-model="storageValue"
           ref="ssdSlider"
@@ -87,11 +87,11 @@
         <div class="flex flex-col lg:items-center lg:flex-row">
           <div class="w-36 text-green">Current server:</div>
           <div class="flex items-center space-x-2.5">
-            <span class="text-lg">{{ formatMiB(current.spec.cpus) }} vCPU</span>
+            <span class="text-lg">{{ current.spec.cpus }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
             <span class="text-lg">{{ formatMiB(current.spec.ram) }} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ current.spec.disk / 1024 }}GB Disk</span>
+            <span class="text-lg">{{ formatMiB(current.spec.disk) }} Disk</span>
           </div>
         </div>
         <div class="flex items-baseline">

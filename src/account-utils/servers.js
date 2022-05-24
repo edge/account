@@ -34,7 +34,7 @@ export const deleteIPAddress = async (host, sessionId, serverId, ip) => {
   return response.body
 }
 
-// delete server by id
+// delete server
 export const deleteServer = async (host, sessionId, serverId) => {
   const url = `${host}/servers/${serverId}`
   const response = await superagent.delete(url)
@@ -66,7 +66,16 @@ export const getTasks = async (host, sessionId, serverId) => {
   return response.body
 }
 
-// start a server by id
+// resize server
+export const resizeServer = async (host, sessionId, serverId, newServerSpec) => {
+  const url = `${host}/servers/${serverId}/resize`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ spec: newServerSpec })
+  return response.body
+}
+
+// start a server
 export const startServer = async (host, sessionId, serverId) => {
   const url = `${host}/servers/${serverId}/start`
   const response = await superagent.post(url)
@@ -74,19 +83,10 @@ export const startServer = async (host, sessionId, serverId) => {
   return response.body
 }
 
-// stop a server by id
+// stop a server
 export const stopServer = async (host, sessionId, serverId) => {
   const url = `${host}/servers/${serverId}/stop`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-// update server by id
-export const updateServer = async (host, sessionId, serverId, serverOptions) => {
-  const url = `${host}/servers/${serverId}`
-  const response = await superagent.put(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(serverOptions)
   return response.body
 }
