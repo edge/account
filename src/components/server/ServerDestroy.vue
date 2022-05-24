@@ -3,10 +3,10 @@
     <div class="box">
       <h4>Destroy server and backups</h4>
       <!-- server has already been deleted -->
-      <div v-if="isDeleted">
+      <div v-if="isDestroyed">
         <p class="mt-3 mb-1 text-gray-500">Your server and backups have been successfully deleted.</p>
         <button
-          class="mt-5 button button--success"
+          class="button button--success"
           @click.prevent="returnToServers"
         >
           <span>Return to Servers</span>
@@ -19,11 +19,11 @@
         <p class="mt-3 mb-1 text-gray-500">This is irreversible. All server data and associated backups will be irretrievable.</p>
         <p class="text-gray-500">Upon destruction, you will no longer be billed for this server.</p>
         <button
-          class="mt-5 button button--error"
-          :disabled="isDeleting"
+          class="button button--error"
+          :disabled="isLoading"
           @click.prevent="deleteServer"
         >
-          <div v-if=isDeleting class="flex">
+          <div v-if=isLoading class="flex">
             <span>Destroying</span>
             <span><LoadingSpinner /></span>
           </div>
@@ -44,16 +44,18 @@ import { mapState } from 'vuex'
 export default {
   name: 'ServerDestroy',
   props: ['activeTasks', 'server'],
+  data() {
+    return {
+      isLoading: false
+    }
+  },
   components: {
     LoadingSpinner
   },
   computed: {
     ...mapState(['session']),
-    isDeleted() {
+    isDestroyed() {
       return this.server.status === 'deleted'
-    },
-    isDeleting() {
-      return this.activeTasks.some(task => task.action === 'destroy')
     },
     serverId() {
       return this.$route.params.id
@@ -61,30 +63,20 @@ export default {
   },
   methods: {
     async deleteServer() {
+      this.isLoading = true
       try {
         const response = await utils.servers.deleteServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId
         )
-        console.log(response.task)
         this.$store.commit('addTask', response.task)
       }
       catch (error) {
         // TODO - handle error
         console.error(error)
       }
-    },
-    returnToServers() {
-      this.$router.push({ name: 'Servers' })
-    }
-  },
-  watch: {
-    activeTask(value) {
-      if (value === null) {
-        clearInterval(this.polling)
-        this.polling = null
-      }
+      this.isLoading = false
     }
   }
 }
