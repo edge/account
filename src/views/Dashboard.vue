@@ -36,6 +36,9 @@ export default {
     }
   },
   mounted() {
+    // get any active tasks on page load
+    this.$store.dispatch('getActiveTasks')
+
     // poll all active tasks
     setInterval(() => this.$store.dispatch('updateTasks'), TASK_REFRESH_INTERVAL)
   },

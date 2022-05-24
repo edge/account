@@ -40,10 +40,19 @@ const store = createStore({
     }
   },
   actions: {
+    async getActiveTasks({ commit, state }) {
+      const statusParams = 'status=created&status=running'
+      const response = await utils.tasks.getTasks(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        state.session._key,
+        statusParams
+      )
+      commit('setTasks', response.results)
+    },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks
       if (!state.tasks.length) return
-      if (!state.tasks.some(task => task.status === 'created' || task.status === 'running')) return
+      if (!state.tasks.some(task => ['created', 'running'].includes(task.status))) return
 
       const keyParams = state.tasks.map(task => `key=${task._key}`).join('&')
       const response = await utils.tasks.getTasks(
