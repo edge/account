@@ -19,7 +19,7 @@
         <h4>Server specs</h4>
         <p class="mt-3 text-gray-500">Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
         <ServerSpecs
-          :calculatedCost=calculatedCost
+          :hourlyCost=hourlyCost
           @specs-changed="(spec) => updateSpec(spec)"
         />
         <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.preset">{{serverErrors.preset}}</span>
@@ -110,6 +110,7 @@ export default {
   title() {
     return 'Edge Account Portal » Deploy a new server'
   },
+  props: ['region'],
   components: {
     Domain,
     LoadingSpinner,
@@ -136,6 +137,7 @@ export default {
           password: ''
         },
         spec: {
+          bandwith: 10,
           cpus: null,
           disk: null,
           ram: null
@@ -169,14 +171,15 @@ export default {
   },
   computed: {
     ...mapState(['account', 'session', 'tasks']),
-    calculatedCost() {
+    hourlyCost() {
       if (!this.selectedRegion) return 0
-      const { ram, disk, cpus } = this.selectedRegion.cost
-      const calculatedCost =
-      (ram * this.serverOptions.spec.ram / 1024) +
-      (disk * this.serverOptions.spec.disk / 1024) +
-      (cpus * this.serverOptions.spec.cpus)
-      return calculatedCost
+      const { bandwidth, cpus, disk, ram } = this.selectedRegion.cost
+      const hourlyCost =
+      (bandwidth * (this.serverOptions.spec.bandwidth || 10)) +
+      (cpus * this.serverOptions.spec.cpus) +
+      (disk * this.serverOptions.spec.disk) +
+      (ram * this.serverOptions.spec.ram)
+      return hourlyCost
     },
     canDeploy() {
       return !this.v$.serverOptions.$invalid || this.isSaving || this.deploying
