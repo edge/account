@@ -1,7 +1,7 @@
 <template>
   <div>
     <Switch
-      @click="toggleModal"
+      @click="toggleServer"
       :class="enabled ? 'bg-green' : 'bg-gray-300'"
       class="switch"
       :disabled="toggling"
@@ -20,7 +20,13 @@
         class="transform ball"
       />
     </Switch>
-    <Modal v-show="enabled" ref="modal" @modal-confirmation="toggleServer" />
+    <!-- stop confirmation modal -->
+    <StopConfirmation
+      v-show=showConfirmationModal
+      ref="destroyConfirmation"
+      @modal-confirm=stopServer
+      @modal-close=toggleConfirmationModal
+    />
   </div>
 </template>
 
@@ -29,21 +35,22 @@
 
 import * as utils from '../../account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import Modal from '@/components/Modal'
+import StopConfirmation from '@/components/confirmations/StopConfirmation'
 import { Switch } from '@headlessui/vue'
 import { mapState } from 'vuex'
 
 export default {
   name: 'ServerStatus',
   props: ['activeTasks', 'server'],
-  components: {
-    LoadingSpinner,
-    Modal,
-    Switch
-  },
   data() {
     return {
+      showConfirmationModal: false
     }
+  },
+  components: {
+    LoadingSpinner,
+    StopConfirmation,
+    Switch
   },
   computed: {
     ...mapState(['session']),
@@ -80,22 +87,16 @@ export default {
       )
       this.$store.commit('addTask', response.task)
     },
-    toggleModal () {
-      if (this.server.status === 'active') {
-        this.$refs.modal.open = true
-      }
-      else {
-        this.toggleServer()
-      }
+    toggleConfirmationModal() {
+      this.showConfirmationModal = !this.showConfirmationModal
     },
     async toggleServer () {
       if (this.server.status === 'active') {
-        await this.stopServer()
+        this.toggleConfirmationModal()
       }
       else {
         await this.startServer()
       }
-      this.$refs.modal.open = false
     }
   }
 }

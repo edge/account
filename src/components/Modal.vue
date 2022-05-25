@@ -4,7 +4,15 @@
   <TransitionRoot as="template" :show="open">
     <Dialog as="div" class="fixed inset-0 z-10 overflow-y-auto" @close="open = false">
       <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+        <TransitionChild
+          as="template"
+          enter="ease-out duration-300"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="ease-in duration-200"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
           <DialogOverlay class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
         </TransitionChild>
 
@@ -35,16 +43,23 @@
               </div>
             </div>
             <div class="mt-5 sm:mt-2 sm:ml-10 sm:pl-4 sm:flex">
-              <button type="button" class="w-full button button--small button--error sm:w-auto" @click="() => {
-                confirm();
-                open = false;
-              }">
+              <button
+                class="w-full button button--small button--error sm:w-auto"
+                @click="() => {
+                  confirm();
+                  open = false;
+                }"
+              >
                 Continue
               </button>
-              <button type="button" class="w-full mt-3 button button--small button--outline sm:mt-0 sm:w-auto sm:ml-3" @click="() => {
-                close();
-                open = false;
-              }" ref="cancelButtonRef">
+              <button
+                class="w-full mt-3 button button--small button--outline sm:mt-0 sm:w-auto sm:ml-3"
+                @click="() => {
+                  close();
+                  open = false;
+                }"
+                ref="cancelButtonRef"
+              >
                 Cancel
               </button>
             </div>
@@ -57,9 +72,9 @@
 </template>
 
 <script>
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import { ref } from 'vue'
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { ExclamationIcon } from '@heroicons/vue/outline'
 
 export default {
   components: {

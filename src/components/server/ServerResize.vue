@@ -16,7 +16,7 @@
 
     <div class="relative mt-8">
       <button
-        @click="resize"
+        @click="toggleConfirmationModal"
         :disabled="isSaving || !haveSpecsChanged"
         class="h-full button button--success"
       >
@@ -27,6 +27,13 @@
         </span>
       </button>
     </div>
+    <!-- resize confirmation modal -->
+    <ResizeConfirmation
+      v-show=showConfirmationModal
+      ref="destroyConfirmation"
+      @modal-confirm=resizeServer
+      @modal-close=toggleConfirmationModal
+    />
   </div>
 </template>
 
@@ -35,6 +42,7 @@
 
 import * as utils from '../../account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import ResizeConfirmation from '@/components/confirmations/ResizeConfirmation'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 import { mapState } from 'vuex'
 
@@ -43,6 +51,7 @@ export default {
   props: ['region', 'server'],
   components: {
     LoadingSpinner,
+    ResizeConfirmation,
     ServerSpecs
   },
   data: function () {
@@ -53,7 +62,8 @@ export default {
         cpus: null,
         disk: null,
         ram: null
-      }
+      },
+      showConfirmationModal: false
     }
   },
   computed: {
@@ -85,9 +95,7 @@ export default {
     }
   },
   methods: {
-    async resize () {
-      if (!this.haveSpecsChanged) return
-
+    async resizeServer () {
       try {
         const response = await utils.servers.resizeServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -103,6 +111,9 @@ export default {
         // TODO - handle error
         console.error(error)
       }
+    },
+    toggleConfirmationModal() {
+      this.showConfirmationModal = !this.showConfirmationModal
     },
     updateNewSpec(newSpec) {
       this.newSpec = newSpec

@@ -21,7 +21,7 @@
         <button
           class="button button--error"
           :disabled="isLoading"
-          @click.prevent="deleteServer"
+          @click.prevent="toggleDestroyConfirmation"
         >
           <div v-if=isLoading class="flex">
             <span>Destroying</span>
@@ -31,6 +31,14 @@
         </button>
       </div>
     </div>
+    <!-- destroy confirmation modal -->
+    <DestroyConfirmation
+      v-show=showConfirmationModal
+      ref="destroyConfirmation"
+      @modal-confirm=destroyServer
+      @modal-close=toggleDestroyConfirmation
+      :serverName="server.settings.hostname"
+    />
   </div>
 </template>
 
@@ -38,6 +46,7 @@
 /* global process */
 
 import * as utils from '../../account-utils'
+import DestroyConfirmation from '@/components/confirmations/DestroyConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 
@@ -46,10 +55,12 @@ export default {
   props: ['activeTasks', 'server'],
   data() {
     return {
-      isLoading: false
+      isLoading: false,
+      showConfirmationModal: false
     }
   },
   components: {
+    DestroyConfirmation,
     LoadingSpinner
   },
   computed: {
@@ -59,10 +70,13 @@ export default {
     },
     serverId() {
       return this.$route.params.id
+    },
+    isModalOpen() {
+      return this.$refs.destroyConfirmation.open
     }
   },
   methods: {
-    async deleteServer() {
+    async destroyServer() {
       this.isLoading = true
       try {
         const response = await utils.servers.deleteServer(
@@ -77,6 +91,9 @@ export default {
         console.error(error)
       }
       this.isLoading = false
+    },
+    toggleDestroyConfirmation() {
+      this.showConfirmationModal = !this.showConfirmationModal
     }
   }
 }
