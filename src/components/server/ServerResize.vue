@@ -12,7 +12,7 @@
     <div class="relative mt-8">
       <button
         @click="toggleConfirmationModal"
-        :disabled="isSaving || !haveSpecsChanged"
+        :disabled="isSaving || !haveSpecsChanged || diskSizeDecreased"
         class="h-full button button--success"
       >
         <span v-if="isSaving">Resizing</span>
@@ -78,6 +78,9 @@ export default {
     },
     currentSpec() {
       return this.server.spec
+    },
+    diskSizeDecreased() {
+      return this.currentSpec.disk > this.newSpec.disk
     },
     haveSpecsChanged() {
       const cpusChanged = this.currentSpec.cpus !== this.newSpec.cpus

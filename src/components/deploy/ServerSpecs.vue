@@ -76,9 +76,12 @@
         />
       </div>
     </div>
-    <span v-show="diskValueChanged" class="block mt-4 text-red">
-      <span class="font-medium">Note:</span>
-      Because your server's filesystem will be expanded, this resize is not reversible.
+    <!-- disk size change warning -->
+    <span v-show="diskValueIncreased || diskValueDecreased" class="block mt-4 text-red">
+      <span class="font-medium">Note: </span>
+      <!-- eslint-disable-next-line max-len -->
+      <span v-if=diskValueIncreased>Because your server's filesystem will be expanded, this resize is not reversible.</span>
+      <span v-else>Disk size cannot be decreased in size.</span>
     </span>
 
     <!-- selected results shown on resize screen -->
@@ -199,8 +202,12 @@ export default {
     }
   },
   computed: {
-    diskValueChanged() {
-      if (this.current) return this.spec.disk != this.current.spec.disk
+    diskValueDecreased() {
+      if (this.current) return this.spec.disk < this.current.spec.disk
+      return false
+    },
+    diskValueIncreased() {
+      if (this.current) return this.spec.disk > this.current.spec.disk
       return false
     },
     spec() {
