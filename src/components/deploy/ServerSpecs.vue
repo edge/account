@@ -81,7 +81,9 @@
       <span class="font-medium">Note: </span>
       <!-- eslint-disable-next-line max-len -->
       <span v-if=diskValueIncreased>Because your server's filesystem will be expanded, this resize is not reversible.</span>
-      <span v-else>Disk size cannot be decreased in size.</span>
+      <span v-else>Disk size cannot be decreased in size.
+        <span class="underline cursor-pointer" @click="resetDiskMinimum">Reset</span>
+      </span>
     </span>
 
     <!-- selected results shown on resize screen -->
@@ -232,12 +234,18 @@ export default {
     formatSliderRAM(sliderRAM) {
       if (sliderRAM < 1) return `${sliderRAM * 1024} MB`
       else return `${sliderRAM} GB`
+    },
+    resetDiskMinimum() {
+      if (!this.current) return
+      if (this.storageValue * 1024 < this.current.spec.disk) {
+        this.storageValue = (this.current.spec.disk / 1024).toString()
+      }
     }
   },
   mounted() {
-    this.cpuValue = this.current ? this.current.spec.cpus : 1
-    this.ramValue = this.current ? this.current.spec.ram / 1024 : 0.5
-    this.storageValue = this.current ? this.current.spec.disk / 1024 : 10
+    this.cpuValue = this.current ? (this.current.spec.cpus).toString() : 1
+    this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : 0.5
+    this.storageValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
   },
   watch: {
     spec() {
