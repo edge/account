@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="specs__grid" :class="showStorage ? '' : 'hide-storage'">
+    <div class="specs__grid">
       <div class="box">
         <span class="box__title">vCPU</span>
         <vue-slider
@@ -10,6 +10,7 @@
           contained=true
           :min=1
           :max=16
+          :minStart="3"
           :marks="{
             '1': '1',
             '4': '4',
@@ -42,7 +43,7 @@
           :min=0.5
           :max=16
           tooltip="always"
-          :tooltip-formatter="formatRam"
+          :tooltip-formatter="formatSliderRAM"
           tooltipPlacement="top"
           :tooltip-style="styles.tooltip"
           :process-style="styles.process"
@@ -51,8 +52,8 @@
           :step-active-style="styles.activeStep"
         />
       </div>
-      <div class="box" v-if="showStorage">
-        <span class="box__title">Storage (GB)</span>
+      <div class="box">
+        <span class="box__title">Disk (GB)</span>
         <vue-slider
           v-model="storageValue"
           ref="ssdSlider"
@@ -75,38 +76,57 @@
         />
       </div>
     </div>
+    <!-- disk size change warning -->
+    <span v-show="diskValueIncreased || diskValueDecreased" class="block mt-4 text-red">
+      <span class="font-medium">Note: </span>
+      <!-- eslint-disable-next-line max-len -->
+      <span v-if=diskValueIncreased>Because your server's filesystem will be expanded, this resize is not reversible.</span>
+      <span v-else>Disk size cannot be decreased in size.
+        <span class="underline cursor-pointer" @click="resetDiskMinimum">Reset</span>
+      </span>
+    </span>
 
     <!-- selected results shown on resize screen -->
     <!-- uses two rows to show current vs new specs and cost -->
     <div v-if="this.current" class="mt-5">
       <div class="flex flex-col items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 lg:flex-row">
-        <div class="flex flex-col lg:items-center lg:flex-row">
-          <div class="w-36 text-green">Current server:</div>
+        <div class="flex flex-col items-baseline">
+          <span class="text-green">Current server:</span>
           <div class="flex items-center space-x-2.5">
             <span class="text-lg">{{ current.spec.cpus }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ formatRam(current.spec.ram) }} RAM</span>
+            <span class="text-lg">{{ formatMiB(current.spec.ram) }} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ current.spec.disk / 1024 }}GB SSD</span>
+            <span class="text-lg">{{ formatMiB(current.spec.disk) }} Disk</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span><span class="text-lg">${{ currentCost }}</span> per month</span>
+          <span class="text-green">Cost</span>
+          <div>
+            <span><span class="text-lg">${{ formatCost(currentHourlyCost) }}</span> per hour</span>
+            <span class="mx-1">|</span>
+            <span><span class="text-lg">${{ formatCost(currentHourlyCost * 24) }}</span> per day</span>
+          </div>
         </div>
       </div>
       <div class="flex flex-col items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
-        <div class="flex flex-col lg:items-center lg:flex-row">
-          <div class="w-36 text-green">After resize:</div>
+        <div class="flex flex-col items-baseline">
+          <span class="text-green">After resize:</span>
           <div class="flex items-center space-x-2.5">
             <span class="text-lg">{{ cpuValue }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ formatRam(ramValue) }} RAM</span>
+            <span class="text-lg">{{ formatMiB(spec.ram) }} RAM</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ storageValue }}GB SSD</span>
+            <span class="text-lg">{{ formatMiB(spec.disk) }} Disk</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span><span class="text-lg font-medium">${{ calculatedCost }}</span> per month</span>
+          <span class="text-green">Cost</span>
+          <div>
+            <span><span class="text-lg">${{ formatCost(hourlyCost) }}</span> per hour</span>
+            <span class="mx-1">|</span>
+            <span><span class="text-lg">${{ formatCost(hourlyCost * 24) }}</span> per day</span>
+          </div>
         </div>
       </div>
     </div>
@@ -119,14 +139,18 @@
         <div class="flex items-center space-x-2.5">
           <span class="text-lg">{{ cpuValue }} vCPU</span>
           <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{ formatRam(ramValue) }} RAM</span>
+          <span class="text-lg">{{ formatMiB(spec.ram) }} RAM</span>
           <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{ storageValue }}GB SSD</span>
+          <span class="text-lg">{{ formatMiB(spec.disk) }} Disk</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">
         <span class="text-green">Cost</span>
-        <span><span class="text-lg">${{ calculatedCost }}</span> per month</span>
+        <div>
+          <span><span class="text-lg">${{ formatCost(hourlyCost) }}</span> per hour</span>
+          <span class="mx-1">|</span>
+          <span><span class="text-lg">${{ formatCost(hourlyCost * 24) }}</span> per day</span>
+        </div>
       </div>
     </div>
   </div>
@@ -139,10 +163,9 @@ import VueSlider from 'vue-slider-component'
 export default {
   name: 'ServerSpecs',
   props: [
-    'calculatedCost',
-    'currentCost',
+    'hourlyCost',
+    'currentHourlyCost',
     'current',
-    'resizeType',
     'selectedSpecs'
   ],
   components: {
@@ -181,17 +204,17 @@ export default {
     }
   },
   computed: {
-    formattedRam() {
-      if (this.current.ram < 1) {
-        return `${this.current.ram * 1024}MB`
-      }
-      return `${this.current.ram}GB`
+    diskValueDecreased() {
+      if (this.current) return this.spec.disk < this.current.spec.disk
+      return false
     },
-    showStorage() {
-      return !this.resizeType || this.resizeType.id !== 1
+    diskValueIncreased() {
+      if (this.current) return this.spec.disk > this.current.spec.disk
+      return false
     },
     spec() {
       return {
+        bandwidth: 10,
         cpus: this.cpuValue,
         disk: this.storageValue * 1024,
         ram: this.ramValue * 1024
@@ -199,25 +222,32 @@ export default {
     }
   },
   methods: {
-    formatRam(value) {
-      if (value < 1) {
-        return `${value * 1024}MB`
+    formatCost(cost) {
+      return (Math.ceil(cost * 100) / 100).toFixed(2)
+    },
+    formatMiB(MiB) {
+      if (MiB < 1024) {
+        return `${MiB} MB`
       }
-      return `${value}GB`
+      return `${MiB / 1024} GB`
+    },
+    formatSliderRAM(sliderRAM) {
+      if (sliderRAM < 1) return `${sliderRAM * 1024} MB`
+      else return `${sliderRAM} GB`
+    },
+    resetDiskMinimum() {
+      if (!this.current) return
+      if (this.storageValue * 1024 < this.current.spec.disk) {
+        this.storageValue = (this.current.spec.disk / 1024).toString()
+      }
     }
   },
   mounted() {
-    this.cpuValue = this.current ? this.current.spec.cpus : 1
-    this.ramValue = this.current ? this.current.spec.ram / 1024 : 0.5
-    this.storageValue = this.current ? this.current.spec.disk / 1024 : 10
+    this.cpuValue = this.current ? (this.current.spec.cpus).toString() : 1
+    this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : 0.5
+    this.storageValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
   },
   watch: {
-    resizeType() {
-      if (this.resizeType.id === 1) {
-        // Set the storage slider back to current.
-        this.storageValue = this.current.spec.disk / 1024
-      }
-    },
     spec() {
       this.$emit('specs-changed', this.spec)
     }
@@ -229,10 +259,6 @@ export default {
   .specs__grid {
     @apply mt-10 w-full grid grid-cols-1 gap-x-4 gap-y-10;
     @apply sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
-  }
-
-  .specs__grid.hide-storage {
-    @apply xl:grid-cols-2;
   }
 
   /* radio option */

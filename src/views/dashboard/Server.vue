@@ -11,16 +11,7 @@
     </ul>
 
     <!-- title -->
-    <div class="flex flex-col items-start sm:space-x-4 sm:items-center sm:flex-row">
-      <div class="relative">
-        <h1 class="mb-0 leading-none">{{server.settings.hostname}}</h1>
-        <span
-          class="absolute top-0 block w-2 h-2 rounded-full -right-1"
-          :class="server.status === 'active' ? 'bg-green' : 'bg-gray-300'"
-        />
-      </div>
-      <ActiveTask :task=activeTask />
-    </div>
+    <h1 class="mb-0 leading-none">{{server.settings.hostname}}</h1>
 
     <!-- overview -->
     <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4">
@@ -36,22 +27,59 @@
           <span class="text-gray-400 server-detail">/</span>
           <span class="server-detail">{{ server.spec.cpus }} vCPU</span>
           <span class="text-gray-400 server-detail">/</span>
-          <span class="server-detail">{{ formattedDisk }} Storage</span>
+          <span class="server-detail">{{ formattedDisk }} Disk</span>
           <span class="text-gray-400 server-detail">/</span>
           <span class="server-detail">{{ formattedRAM }} RAM</span>
+          <span class="text-gray-400 server-detail">/</span>
+          <div
+            class="flex items-center"
+            :class="[
+              isActive ? 'active' : '',
+              isInactive ? 'inactive' : ''
+            ]"
+          >
+            <span class="serverList__statusDot" />
+            <span class="serverList__statusText capitalize">{{ server.status }}</span>
+          </div>
         </div>
       </div>
 
       <div class="flex-shrink-0">
-        <ServerStatus :server="server" :onToggleStatus="toggleServerStatus" />
+        <ServerStatus :activeTasks=activeTasks :server=server />
       </div>
 
     </div>
 
     <div class="grid items-start grid-cols-12 mt-12 space-x-10">
       <div class="col-span-12">
+        <div v-if=serverDestroyed class="box">
+          <div class="flex flex-col items-center justify-center text-center">
+            <div class="flex items-center mt-4">
+              <ExclamationIcon class="text-red h-5 mr-2" />
+              <h4>Server Destroyed</h4>
+            </div>
+            <p class="mt-3 mb-1 text-gray-500">This server and all of its associated backups have been destroyed.</p>
+            <button
+              class="mt-4 button button--success"
+              @click.prevent="returnToServers"
+            >
+              <span>Return to Servers</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- action in progress section -->
+        <div v-else-if="creating || destroying || resizing" class="box box--tall">
+          <div class="flex flex-col items-center justify-center text-center">
+            <h4 class="mt-4">{{ progressTitle }}</h4>
+            <p class="mt-2 mb-0 text-gray-500">{{ progressMessage }}</p>
+            <div class="mt-4"><ProgressBar :red="destroying" /></div>
+          </div>
+        </div>
+
         <!-- tabs -->
         <TabGroup
+          v-else
           as="div"
           class="tabGroup"
         >
@@ -114,8 +142,8 @@
               </button>
             </Tab>
           </TabList>
-          <TabPanels class="mt-5">
 
+          <TabPanels class="mt-5">
             <!-- overview -->
             <TabPanel>
               <ServerOverview :server=server :metrics=server.metrics />
@@ -128,18 +156,18 @@
 
             <!-- resize -->
             <TabPanel>
-              <ServerResize :activeTask=activeTask :server=server :region=region />
+              <ServerResize :activeTasks=activeTasks :server=server :region=region />
             </TabPanel>
 
             <!-- backups -->
             <TabPanel>
-              <ServerBackups :activeTask=activeTask :server=server />
+              <ServerBackups :activeTasks=activeTasks :server=server />
             </TabPanel>
 
             <!-- network -->
             <!-- <TabPanel>
               <ServerNetwork
-                :activeTask=activeTask
+                :activeTasks=activeTasks
                 :addIP=addIPAddress
                 :deleteIP=deleteIPAddress
                 :server=server
@@ -153,9 +181,8 @@
 
             <!-- destroy -->
             <TabPanel>
-              <ServerDestroy :activeTask=activeTask :server=server :onDeleteServer=deleteServer />
+              <ServerDestroy :activeTasks=activeTasks :server=server />
             </TabPanel>
-
           </TabPanels>
         </TabGroup>
       </div>
@@ -176,14 +203,16 @@
 /* global process */
 
 import * as utils from '../../account-utils'
-import ActiveTask from '@/components/ActiveTask'
+// import ActiveTask from '@/components/ActiveTask'
 import CentOsIcon from '@/components/icons/Centos'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import ProgressBar from '@/components/ProgressBar'
 import ServerBackups from '@/components/server/ServerBackups'
 import ServerConsole from '@/components/server/ServerConsole'
 import ServerDestroy from '@/components/server/ServerDestroy'
 import ServerHistory from '@/components/server/ServerHistory'
-import ServerNetwork from '@/components/server/ServerNetwork'
+// import ServerNetwork from '@/components/server/ServerNetwork'
 import ServerOverview from '@/components/server/ServerOverview'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
@@ -198,28 +227,24 @@ export default {
   },
   data: function () {
     return {
-      activeTask: null,
       iCheckServerStatus: null,
       iServer: null,
       loading: false,
       region: null,
-      server: null,
-      serverTasks: [],
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
+      server: null
     }
   },
   components: {
-    ActiveTask,
+    // ActiveTask,
     CentOsIcon,
+    ExclamationIcon,
     ServerDestroy,
     LoadingSpinner,
+    ProgressBar,
     ServerBackups,
     ServerConsole,
     ServerHistory,
-    ServerNetwork,
+    // ServerNetwork,
     ServerOverview,
     ServerResize,
     ServerStatus,
@@ -231,9 +256,15 @@ export default {
     UbuntuIcon
   },
   computed: {
-    ...mapState(['account', 'session']),
-    serverId() {
-      return this.$route.params.id
+    ...mapState(['account', 'session', 'tasks']),
+    activeTasks() {
+      return this.$store.getters.tasksByServerId(this.serverId)
+    },
+    creating() {
+      return this.activeTasks.some(task => task.action === 'create')
+    },
+    destroying() {
+      return this.activeTasks.some(task => task.action === 'destroy')
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
@@ -243,25 +274,44 @@ export default {
       if (ram < 1024) return `${ram} MB`
       return `${ram / 1024} GB`
     },
+    isActive() {
+      return this.server.status === 'active'
+    },
+    isInactive() {
+      return this.server.status === 'stopped' || this.server.status === 'crashed'
+    },
     os() {
       return this.server.settings.os
+    },
+    progressMessage() {
+      // eslint-disable-next-line max-len
+      if (this.creating) return 'Server metrics and other information will be displayed here once deployment is complete.'
+      // eslint-disable-next-line max-len
+      if (this.destroying) return 'All server data and associated backups are being destroyed. Upon destruction, you will no longer be billed for this server.'
+      // eslint-disable-next-line max-len
+      if (this.resizing) return 'Server metrics and other information will be available again once server resize is complete.'
+      else return ''
+    },
+    progressTitle() {
+      if (this.creating) return 'Deploying your new server'
+      if (this.destroying) return 'Destroying your server'
+      if (this.resizing) return 'Resizing your server'
+      else return ''
+    },
+    resizing() {
+      const diskResize = this.activeTasks.some(task => task.action === 'resizeDisk')
+      const resourceResize = this.activeTasks.some(task => task.action === 'resizeResource')
+      return diskResize || resourceResize
+    },
+    serverDestroyed() {
+      return this.server.status === 'deleted'
+    },
+    serverId() {
+      return this.$route.params.id
     }
   },
   methods: {
     ...mapActions(['setVncSettings']),
-    async addIPAddress() {
-      try {
-        await utils.servers.addIPAddress(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
-        this.checkServerStatus('')
-      }
-      catch (error) {
-        console.error(error)
-      }
-    },
     async checkServerStatus(statusList) {
       const pendingStatusList = typeof statusList === 'string' ? [statusList] : statusList
 
@@ -272,34 +322,6 @@ export default {
         // eslint-disable-next-line max-len
         if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
-    },
-    async deleteIPAddress(ip) {
-      try {
-        await utils.servers.deleteIPAddress(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId,
-          ip
-        )
-        this.checkServerStatus('')
-      }
-      catch (error) {
-        console.error(error)
-      }
-    },
-    async deleteServer() {
-      try {
-        await utils.servers.deleteServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
-        this.checkServerStatus('deleting')
-      }
-      catch (error) {
-        // TODO - handle error
-        console.error(error)
-      }
     },
     formatActiveTask(data) {
       const task = {
@@ -350,31 +372,8 @@ export default {
 
       return task
     },
-    async toggleServerStatus() {
-      if (this.server.status === 'active') {
-        // power off
-        await this.stopServer()
-      }
-      else {
-        // power on
-        await this.startServer()
-      }
-    },
-    async startServer() {
-      await utils.servers.startServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.checkServerStatus(['stopping', 'starting'])
-    },
-    async stopServer() {
-      await utils.servers.stopServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.checkServerStatus(['stopping', 'starting'])
+    returnToServers() {
+      this.$router.push({ name: 'Servers' })
     },
     async updateRegion() {
       const region = await utils.region.getRegion(
@@ -426,43 +425,72 @@ export default {
   unmounted() {
     clearInterval(this.iServer)
     this.iServer = null
+  },
+  watch: {
+    tasks() {
+      this.updateServer()
+    }
   }
 }
 </script>
 
 <style scoped>
-  /* crumbs */
-  .crumbs {
-    @apply flex space-x-2 mb-2 items-center;
-  }
-  .crumbs li {
-    @apply text-gray-400;
-  }
-  .crumbs li a {
-    @apply text-green hover:text-green hover:underline;
-  }
-  .tabGroup {
-    @apply relative;
-  }
+/* crumbs */
+.crumbs {
+  @apply flex space-x-2 mb-2 items-center;
+}
+.crumbs li {
+  @apply text-gray-400;
+}
+.crumbs li a {
+  @apply text-green hover:text-green hover:underline;
+}
+.tabGroup {
+  @apply relative;
+}
 
-  .tabs {
-    @apply w-full space-x-4 md:space-x-8 border-b border-gray-300 overflow-auto flex flex-nowrap;
-  }
-  .tab {
-    @apply pb-1 font-medium border-b text-gray-500 border-transparent;
-    @apply hover:text-black;
-  }
-  .tab--selected {
-    @apply text-green border-green;
-    @apply hover:text-green;
-  }
-  .server-detail {
-    @apply flex-shrink-0;
-  }
-  .server-icon {
-    @apply w-4 h-4 text-gray-500 flex-shrink-0;
-  }
-  .specsGradient {
-    @apply absolute top-0 right-0 w-10 h-full pointer-events-none sm:hidden bg-gradient-to-l from-gray-200;
-  }
+.tabs {
+  @apply w-full space-x-4 md:space-x-8 border-b border-gray-300 overflow-auto flex flex-nowrap;
+}
+.tab {
+  @apply pb-1 font-medium border-b text-gray-500 border-transparent;
+  @apply hover:text-black;
+}
+.tab--selected {
+  @apply text-green border-green;
+  @apply hover:text-green;
+}
+.server-detail {
+  @apply flex-shrink-0;
+}
+.server-icon {
+  @apply w-4 h-4 text-gray-500 flex-shrink-0;
+}
+.specsGradient {
+  @apply absolute top-0 right-0 w-10 h-full pointer-events-none sm:hidden bg-gradient-to-l from-gray-200;
+}
+
+.box {
+  @apply p-4 md:p-6 bg-white rounded-lg w-full;
+}
+.box.box--tall {
+  @apply py-20 !important;
+}
+
+/* status dot */
+.serverList__statusDot {
+  @apply w-2.5 h-2.5 rounded-full mr-1 bg-gray-400;
+}
+.active .serverList__statusDot {
+  @apply bg-green;
+}
+.inactive .serverList__statusDot {
+  @apply bg-red;
+}
+.active .serverList__statusText {
+  @apply text-green;
+}
+.inactive .serverList__statusText {
+  @apply text-red;
+}
 </style>

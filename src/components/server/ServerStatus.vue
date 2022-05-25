@@ -1,7 +1,7 @@
 <template>
   <div>
     <Switch
-      @click="toggleModal"
+      @click="toggleServer"
       :class="enabled ? 'bg-green' : 'bg-gray-300'"
       class="switch"
       :disabled="toggling"
@@ -20,53 +20,90 @@
         class="transform ball"
       />
     </Switch>
-    <Modal v-show="enabled" ref="modal" @modal-confirmation="toggleServer" />
+    <!-- stop confirmation modal -->
+    <StopConfirmation
+      v-show=showConfirmationModal
+      ref="destroyConfirmation"
+      @modal-confirm=stopServer
+      @modal-close=toggleConfirmationModal
+      :serverName="server.settings.hostname"
+    />
   </div>
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../../account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import Modal from '@/components/Modal'
+import StopConfirmation from '@/components/confirmations/StopConfirmation'
 import { Switch } from '@headlessui/vue'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ServerStatus',
-  props: ['server', 'onToggleStatus'],
-  components: {
-    LoadingSpinner,
-    Modal,
-    Switch
-  },
+  props: ['activeTasks', 'server'],
   data() {
     return {
+      showConfirmationModal: false
     }
   },
+  components: {
+    LoadingSpinner,
+    StopConfirmation,
+    Switch
+  },
   computed: {
+    ...mapState(['session']),
     enabled() {
-      return this.server.status === 'active' || this.server.status === 'stopping'
+      return this.stopping || this.server.status === 'active'
+    },
+    serverId() {
+      return this.$route.params.id
+    },
+    starting() {
+      return this.activeTasks.some(task => task.action === 'start')
+    },
+    stopping() {
+      return this.activeTasks.some(task => task.action === 'stop')
     },
     toggling() {
-      return this.server.status === 'starting' || this.server.status === 'stopping'
+      return this.starting || this.stopping
     }
   },
   methods: {
-    toggleModal () {
-      if (this.server.status === 'active') {
-        this.$refs.modal.open = true
-      }
-      else {
-        this.toggleServer()
-      }
+    async startServer() {
+      const response = await utils.servers.startServer(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId
+      )
+      this.$store.commit('addTask', response.task)
+    },
+    async stopServer() {
+      const response = await utils.servers.stopServer(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId
+      )
+      this.$store.commit('addTask', response.task)
+      this.toggleConfirmationModal()
+    },
+    toggleConfirmationModal() {
+      this.showConfirmationModal = !this.showConfirmationModal
     },
     async toggleServer () {
-      await this.onToggleStatus()
-      this.$refs.modal.open = false
+      if (this.server.status === 'active') {
+        this.toggleConfirmationModal()
+      }
+      else {
+        await this.startServer()
+      }
     }
-  },
-  mounted() {
   }
 }
 </script>
+
 <style scoped>
   .switch {
     @apply relative inline-flex flex-shrink-0 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-16 md:w-20 h-7 md:h-8 focus:outline-none;

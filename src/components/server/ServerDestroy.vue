@@ -1,12 +1,12 @@
 <template>
   <div class="flex flex-col pb-20 space-y-5">
     <div class="box">
-      <!-- server has been deleted -->
       <h4>Destroy server and backups</h4>
-      <div v-if="isDeleted">
+      <!-- server has already been deleted -->
+      <div v-if="isDestroyed">
         <p class="mt-3 mb-1 text-gray-500">Your server and backups have been successfully deleted.</p>
         <button
-          class="mt-5 button button--success"
+          class="button button--success"
           @click.prevent="returnToServers"
         >
           <span>Return to Servers</span>
@@ -19,53 +19,82 @@
         <p class="mt-3 mb-1 text-gray-500">This is irreversible. All server data and associated backups will be irretrievable.</p>
         <p class="text-gray-500">Upon destruction, you will no longer be billed for this server.</p>
         <button
-          class="mt-5 button button--error"
-          :disabled="isDeleting || activeTask"
-          @click.prevent="deleteServer"
+          class="button button--error"
+          :disabled="isLoading"
+          @click.prevent="toggleConfirmationModal"
         >
-          <span v-if="isDeleting">Destroying</span>
-          <span v-else-if="activeTask">{{ activeTask.status }}</span>
+          <div v-if=isLoading class="flex">
+            <span>Destroying</span>
+            <span><LoadingSpinner /></span>
+          </div>
           <span v-else>Destroy this server and backups</span>
-          <span v-if="isDeleting || activeTask">
-            <LoadingSpinner />
-          </span>
         </button>
       </div>
     </div>
+    <!-- destroy confirmation modal -->
+    <DestroyConfirmation
+      v-show=showConfirmationModal
+      ref="destroyConfirmation"
+      @modal-confirm=destroyServer
+      @modal-close=toggleConfirmationModal
+      :serverName="server.settings.hostname"
+    />
   </div>
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '../../account-utils'
+import DestroyConfirmation from '@/components/confirmations/DestroyConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ServerDestroy',
-  props: ['activeTask', 'onDeleteServer', 'server'],
+  props: ['activeTasks', 'server'],
+  data() {
+    return {
+      isLoading: false,
+      showConfirmationModal: false
+    }
+  },
   components: {
+    DestroyConfirmation,
     LoadingSpinner
   },
   computed: {
-    isDeleted() {
+    ...mapState(['session']),
+    isDestroyed() {
       return this.server.status === 'deleted'
     },
-    isDeleting() {
-      return this.server.status === 'deleting'
+    serverId() {
+      return this.$route.params.id
+    },
+    isModalOpen() {
+      return this.$refs.destroyConfirmation.open
     }
   },
   methods: {
-    async deleteServer() {
-      await this.onDeleteServer()
-    },
-    returnToServers() {
-      this.$router.push({ name: 'Servers' })
-    }
-  },
-  watch: {
-    activeTask(value) {
-      if (value === null) {
-        clearInterval(this.polling)
-        this.polling = null
+    async destroyServer() {
+      this.isLoading = true
+      try {
+        const response = await utils.servers.deleteServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.$store.commit('addTask', response.task)
       }
+      catch (error) {
+        // TODO - handle error
+        console.error(error)
+      }
+      this.toggleConfirmationModal()
+      this.isLoading = false
+    },
+    toggleConfirmationModal() {
+      this.showConfirmationModal = !this.showConfirmationModal
     }
   }
 }

@@ -2,36 +2,38 @@
   <div class="box">
     <h4>Resize your server</h4>
 
-    <!-- eslint-disable-next-line max-len -->
-    <p class="mt-3 text-gray-500">You are currently on the <b>XX plan</b> for <b>${{ currentCost }} per month</b>. Select an option below to resize your server.</p>
-
-    <ResizeType :resizeTypes="resizeTypes" @resize-type-changed="updateResizeType" />
-
-    <div class="w-full h-px my-10 bg-gray-300" />
-
     <ServerSpecs
-      :currentCost=currentCost
-      :calculatedCost=newCost
+      :currentHourlyCost=currentHourlyCost
+      :hourlyCost=newHourlyCost
       :current=server
-      :resizeType=selectedResizeType
-      :selectedSpecs=selectedResizeSpecs
       @specs-changed="updateNewSpec"
     />
 
     <div class="relative mt-8">
       <button
-        @click="save"
-        :disabled="isSaving || !haveSpecsChanged || activeTask"
+        @click="toggleConfirmationModal"
+        :disabled="isSaving || !haveSpecsChanged || diskSizeDecreased"
         class="h-full button button--success"
       >
         <span v-if="isSaving">Resizing</span>
-        <span v-else-if="activeTask">{{activeTask.status}}</span>
         <span v-else>Resize</span>
-        <span v-if="isSaving || activeTask">
+        <span v-if="isSaving">
           <LoadingSpinner />
         </span>
       </button>
     </div>
+    <!-- resize confirmation modal -->
+    <ResizeConfirmation
+      v-show=showConfirmationModal
+      ref="destroyConfirmation"
+      @modal-confirm=resizeServer
+      @modal-close=toggleConfirmationModal
+      :currentCost=currentHourlyCost
+      :currentSpec=currentSpec
+      :newCost=newHourlyCost
+      :newSpec=newSpec
+      :serverName="server.settings.hostname"
+    />
   </div>
 </template>
 
@@ -40,120 +42,85 @@
 
 import * as utils from '../../account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import ResizeType from '@/components/server/ResizeType'
+import ResizeConfirmation from '@/components/confirmations/ResizeConfirmation'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 import { mapState } from 'vuex'
 
 export default {
   name: 'ServerResize',
-  props: ['activeTask', 'region', 'server'],
+  props: ['region', 'server'],
   components: {
     LoadingSpinner,
-    ResizeType,
+    ResizeConfirmation,
     ServerSpecs
   },
   data: function () {
     return {
-      feedback: '',
       isSaving: false,
       newSpec: {
+        bandwidth: 10,
         cpus: null,
         disk: null,
         ram: null
       },
-      polling: null,
-      resizeTypes: [
-        {
-          id: 1,
-          title: 'CPU and  RAM only',
-          // eslint-disable-next-line max-len
-          description: 'This will only increase or decrease the CPU and RAM of your server, not disk size. This can be reversed.',
-          enabled: true
-        },
-        {
-          id: 2,
-          title: 'Disk, CPU and RAM',
-          // eslint-disable-next-line max-len
-          description: 'This will increase the disk size, CPU and RAM of your server. This is a permanent change and cannot be reversed.',
-          enabled: true
-        }
-      ],
-      selectedResizeType: null,
-      selectedResizeSpecs: {},
-      showFeedback: false,
-      showStatus: false
+      showConfirmationModal: false
     }
   },
   computed: {
     ...mapState(['account', 'session']),
-    currentCost() {
-      return (this.region.cost.ram * (this.currentSpec.ram / 1024)) +
-        (this.region.cost.disk * (this.currentSpec.disk / 1024)) +
+    currentHourlyCost() {
+      return (
+        (this.region.cost.bandwidth * (this.currentSpec.bandwidth || 10)) +
+        (this.region.cost.ram * (this.currentSpec.ram)) +
+        (this.region.cost.disk * (this.currentSpec.disk)) +
         (this.region.cost.cpus * this.currentSpec.cpus)
+      )
     },
     currentSpec() {
       return this.server.spec
     },
-    haveSpecsChanged() {
-      return JSON.stringify(this.currentSpec) !== JSON.stringify(this.newSpec)
+    diskSizeDecreased() {
+      return this.currentSpec.disk > this.newSpec.disk
     },
-    newCost() {
-      return (this.region.cost.ram * (this.newSpec.ram / 1024)) +
-        (this.region.cost.disk * (this.newSpec.disk / 1024)) +
+    haveSpecsChanged() {
+      const cpusChanged = this.currentSpec.cpus !== this.newSpec.cpus
+      const diskChanged = this.currentSpec.disk !== this.newSpec.disk
+      const ramChanged = this.currentSpec.ram !== this.newSpec.ram
+      return cpusChanged || diskChanged || ramChanged
+    },
+    newHourlyCost() {
+      return (
+        (this.region.cost.bandwidth * this.newSpec.bandwidth) +
+        (this.region.cost.ram * (this.newSpec.ram)) +
+        (this.region.cost.disk * (this.newSpec.disk)) +
         (this.region.cost.cpus * this.newSpec.cpus)
+      )
     }
   },
-  mounted() {
-    this.selectedResizeType = this.resizeTypes[0]
-  },
   methods: {
-    async save() {
-      this.isSaving = true
-      await this.resize()
-
-      this.polling = setInterval(() => {
-        if (!this.activeTask) {
-          this.isSaving = false
-        }
-      }, 5000)
-    },
-    async resize () {
-      if (!this.haveSpecsChanged) return
-
-      const serverOptions = {
-        ...this.server,
-        region: this.server.region._key,
-        spec: this.newSpec
-      }
-
+    async resizeServer () {
       try {
-        const response = await utils.servers.updateServer(
+        const response = await utils.servers.resizeServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.server._key,
-          serverOptions
+          this.newSpec
         )
-        // TODO - handle successful response, waiting on API update
-        console.log(response)
+        response.tasks.forEach(task => {
+          this.$store.commit('addTask', task)
+        })
+        this.toggleConfirmationModal()
       }
       catch (error) {
         // TODO - handle error
         console.error(error)
       }
     },
+    toggleConfirmationModal() {
+      this.showConfirmationModal = !this.showConfirmationModal
+    },
     updateNewSpec(newSpec) {
       this.newSpec = newSpec
-    },
-    updateResizeType(data) {
-      this.selectedResizeType = data
-    }
-  },
-  watch: {
-    activeTask(value) {
-      if (value === null) {
-        clearInterval(this.polling)
-        this.polling = null
-      }
     }
   }
 }
