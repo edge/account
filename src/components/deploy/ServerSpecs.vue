@@ -42,7 +42,7 @@
           :min=0.5
           :max=16
           tooltip="always"
-          :tooltip-formatter="formatMiB"
+          :tooltip-formatter="formatSliderRAM"
           tooltipPlacement="top"
           :tooltip-style="styles.tooltip"
           :process-style="styles.process"
@@ -84,8 +84,8 @@
     <!-- uses two rows to show current vs new specs and cost -->
     <div v-if="this.current" class="mt-5">
       <div class="flex flex-col items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 lg:flex-row">
-        <div class="flex flex-col lg:items-center lg:flex-row">
-          <div class="w-36 text-green">Current server:</div>
+        <div class="flex flex-col items-baseline">
+          <span class="text-green">Current server:</span>
           <div class="flex items-center space-x-2.5">
             <span class="text-lg">{{ current.spec.cpus }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
@@ -94,15 +94,18 @@
             <span class="text-lg">{{ formatMiB(current.spec.disk) }} Disk</span>
           </div>
         </div>
-        <div class="flex items-baseline">
-          <span><span class="text-lg">${{ formatCost(currentHourlyCost) }}</span> per month</span>
+        <div class="flex flex-col items-baseline">
+          <span class="text-green">Cost</span>
+          <div>
+            <span><span class="text-lg">${{ formatCost(currentHourlyCost) }}</span> per hour</span>
             <span class="mx-1">|</span>
-          <span><span class="text-lg">${{ formatCost(currentHourlyCost * 24) }}</span> per day</span>
+            <span><span class="text-lg">${{ formatCost(currentHourlyCost * 24) }}</span> per day</span>
+          </div>
         </div>
       </div>
       <div class="flex flex-col items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
-        <div class="flex flex-col lg:items-center lg:flex-row">
-          <div class="w-36 text-green">After resize:</div>
+        <div class="flex flex-col items-baseline">
+          <span class="text-green">After resize:</span>
           <div class="flex items-center space-x-2.5">
             <span class="text-lg">{{ cpuValue }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
@@ -111,10 +114,13 @@
             <span class="text-lg">{{ formatMiB(spec.disk) }} Disk</span>
           </div>
         </div>
-        <div class="flex items-baseline">
-          <span><span class="text-lg font-medium">${{ formatCost(hourlyCost) }}</span> per month</span>
-          <span class="mx-1">|</span>
-          <span><span class="text-lg">${{ formatCost(hourlyCost * 24) }}</span> per day</span>
+        <div class="flex flex-col items-baseline">
+          <span class="text-green">Cost</span>
+          <div>
+            <span><span class="text-lg">${{ formatCost(hourlyCost) }}</span> per hour</span>
+            <span class="mx-1">|</span>
+            <span><span class="text-lg">${{ formatCost(hourlyCost * 24) }}</span> per day</span>
+          </div>
         </div>
       </div>
     </div>
@@ -214,6 +220,10 @@ export default {
         return `${MiB} MB`
       }
       return `${MiB / 1024} GB`
+    },
+    formatSliderRAM(sliderRAM) {
+      if (sliderRAM < 1) return `${sliderRAM * 1024} MB`
+      else return `${sliderRAM} GB`
     }
   },
   mounted() {
