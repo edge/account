@@ -2,11 +2,6 @@
   <div class="box">
     <h4>Resize your server</h4>
 
-    <!-- eslint-disable-next-line max-len -->
-    <p class="mt-3 text-gray-500">You are currently on the <b>XX plan</b> for <b>${{ currentHourlyCost }} per month</b>. Select an option below to resize your server.</p>
-
-    <div class="w-full h-px my-10 bg-gray-300" />
-
     <ServerSpecs
       :currentHourlyCost=currentHourlyCost
       :hourlyCost=newHourlyCost

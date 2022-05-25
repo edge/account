@@ -10,6 +10,7 @@
           contained=true
           :min=1
           :max=16
+          :minStart="3"
           :marks="{
             '1': '1',
             '4': '4',
