@@ -9,7 +9,7 @@
         <!-- server name -->
         <span class="serverList__name">{{ server.settings.hostname }}</span>
         <!-- ip address / domain name -->
-        <div class="ip__and__domain">
+        <div class="ip__and__domain text-m">
           <span v-if="server.network">{{ server.network.ip[0] }}</span>
           <span v-if="server.network" class="divider hidden"></span>
           <div class="truncate" :data="server.settings.domain">{{ server.settings.domain }}</div>
@@ -32,7 +32,7 @@
             <span>{{ os.version }}</span>
           </div>
         <!-- specs -->
-        <div class="serverList__stats">
+        <div class="serverList__stats text-m">
           <span>{{ server.spec.cpus }} vCPU</span>
           <span class="divider"></span>
           <span>{{ formattedDisk }} Disk</span>
@@ -43,12 +43,15 @@
       <!-- region -->
       <div class="serverList__field zone">
         <span class="serverList__header">Zone</span>
-        <span>{{ region.name }}</span>
+        <div class="flex">
+          <img class="flagIcon" :src="region.flag" alt="flag">
+          <span class="text-m">{{ region.name }}</span>
+        </div>
       </div>
       <!-- created -->
       <div class="serverList__field created">
         <span class="serverList__header">Created</span>
-        <span>{{ created }}</span>
+        <span class="text-m">{{ created }}</span>
       </div>
       <!-- status dot -->
       <div class="serverList__field status">
@@ -56,7 +59,7 @@
         <div class="flex items-center">
           <span class="serverList__statusDot" />
           <span
-            class="capitalize"
+            class="capitalize text-m"
             :class="[
               isActive ? 'text-green' : '',
               isInactive ? 'text-red' : ''
@@ -115,6 +118,14 @@ export default {
 }
 </script>
 <style scoped>
+.text-m {
+  font-size: 0.8rem;
+}
+
+.flagIcon {
+  @apply h-4 w-4 rounded-xl mr-1;
+}
+
 /* list item */
 .serverList__item {
   @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-t-8 border-gray-400 rounded-md w-full p-5 pr-8;
@@ -135,10 +146,10 @@ export default {
   @apply text-md mr-2;
 }
 .ip__and__domain {
-  @apply text-sm flex flex-col overflow-hidden lg:text-xs
+  @apply flex flex-col overflow-hidden;
 }
 .zone, .created, .status {
-  @apply flex flex-row items-center;
+  @apply flex flex-col;
 }
 .serverList__name {
   @apply text-md text-gray-500 truncate;
@@ -150,7 +161,7 @@ export default {
   @apply text-red font-medium;
 }
 .serverList__stats {
-  @apply flex space-x-1.5 text-sm lg:text-xs;
+  @apply flex space-x-1.5;
 }
 /* status dot */
 .serverList__statusDot {
@@ -185,9 +196,6 @@ export default {
   .ip__and__domain.divider {
     @apply block;
   }
-  .zone, .created, .status {
-    @apply flex-col items-start;
-  }
   .zone {
     @apply col-start-2 row-start-2;
   }
@@ -211,7 +219,7 @@ export default {
   }
   .details {
     @apply col-span-1 flex-shrink;
-    flex-basis: 320px;
+    flex-basis: 280px;
   }
   .specs {
     @apply flex-shrink-0;
@@ -219,11 +227,11 @@ export default {
   }
   .zone {
     @apply col-start-3 row-start-1 flex-shrink-0;
-    flex-basis: 50px;
+    flex-basis: 80px;
   }
   .created {
     @apply col-start-4 row-start-1 flex-shrink-0;
-    flex-basis: 100px;
+    flex-basis: 120px;
   }
   .status {
     @apply col-start-5 row-start-1;
