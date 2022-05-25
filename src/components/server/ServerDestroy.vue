@@ -21,7 +21,7 @@
         <button
           class="button button--error"
           :disabled="isLoading"
-          @click.prevent="toggleDestroyConfirmation"
+          @click.prevent="toggleConfirmationModal"
         >
           <div v-if=isLoading class="flex">
             <span>Destroying</span>
@@ -36,7 +36,7 @@
       v-show=showConfirmationModal
       ref="destroyConfirmation"
       @modal-confirm=destroyServer
-      @modal-close=toggleDestroyConfirmation
+      @modal-close=toggleConfirmationModal
       :serverName="server.settings.hostname"
     />
   </div>
@@ -90,9 +90,10 @@ export default {
         // TODO - handle error
         console.error(error)
       }
+      this.toggleConfirmationModal()
       this.isLoading = false
     },
-    toggleDestroyConfirmation() {
+    toggleConfirmationModal() {
       this.showConfirmationModal = !this.showConfirmationModal
     }
   }

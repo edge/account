@@ -1,27 +1,52 @@
 <template>
-  <ModalTest>
+  <Modal>
     <template v-slot:icon>
-      <ExclamationIcon class="w-6 h-6" aria-hidden="true" />
+      <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
     </template>
     <template v-slot:header>
-      <h4>Resize Server</h4>
+      <span>Resize {{ serverName }}</span>
     </template>
     <template v-slot:body>
-      <span>Are you sure you wish to resize your server? This will cause a change in cost.</span>
+     <span class="font-semibold">Warning: server will be powered off while resizing.</span>
+      <div class="flex flex-col space-y-2 pt-4">
+        <!-- eslint-disable-next-line max-len -->
+        <li>Cost will {{ costIncreased ? 'increase' : 'decrease' }} from {{ currentCostFormatted }} to {{ newCostFormatted }}</li>
+        <li v-if="diskIncreased">Disk space cannot be reduced after resize</li>
+      </div>
     </template>
-    <template v-slot:confirmButtonText>Resize</template>
-  </ModalTest>
+    <template v-slot:confirmButtonText>Yes, Resize Server</template>
+  </Modal>
 </template>
 
 <script>
 import { ExclamationIcon } from '@heroicons/vue/outline'
-import ModalTest from '@/components/ModalTest'
+import Modal from '@/components/Modal'
 
 export default {
   name: 'ResizeConfirmation',
+  props: ['currentCost', 'currentSpec', 'newCost', 'newSpec', 'serverName'],
   components: {
     ExclamationIcon,
-    ModalTest
+    Modal
+  },
+  computed: {
+    costIncreased() {
+      return this.newCost > this.currentCost
+    },
+    currentCostFormatted() {
+      return `$${this.formatCost(this.currentCost)} per hour`
+    },
+    diskIncreased() {
+      return this.currentSpec.disk < this.newSpec.disk
+    },
+    newCostFormatted() {
+      return `$${this.formatCost(this.newCost)} per hour`
+    }
+  },
+  methods: {
+    formatCost(cost) {
+      return (Math.ceil(cost * 100) / 100).toFixed(2)
+    }
   }
 }
 </script>

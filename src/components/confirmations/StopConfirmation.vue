@@ -1,27 +1,32 @@
 <template>
-  <ModalTest>
+  <Modal>
     <template v-slot:icon>
-      <ExclamationIcon class="w-6 h-6" aria-hidden="true" />
+      <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
     </template>
     <template v-slot:header>
-      <h4>Power Down Server</h4>
+      <span>Power Down {{ serverName }}</span>
     </template>
     <template v-slot:body>
-      <span>You will still be billed for a powered down server. To end billing, destroy the server instead.</span>
+      <span class="font-semibold">Warning: you are about to power down your server.</span>
+      <div class="flex flex-col space-y-2 pt-4">
+        <li>You will still be charged for a powered down server</li>
+        <li>To end billing, destroy the server instead</li>
+      </div>
     </template>
     <template v-slot:confirmButtonText>Continue</template>
-  </ModalTest>
+  </Modal>
 </template>
 
 <script>
 import { ExclamationIcon } from '@heroicons/vue/outline'
-import ModalTest from '@/components/ModalTest'
+import Modal from '@/components/Modal'
 
 export default {
   name: 'DestroyConfirmation',
+  props: ['serverName'],
   components: {
     ExclamationIcon,
-    ModalTest
+    Modal
   }
 }
 </script>

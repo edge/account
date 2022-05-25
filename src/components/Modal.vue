@@ -1,114 +1,59 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
-  <div>
-  <TransitionRoot as="template" :show="open">
-    <Dialog as="div" class="fixed inset-0 z-10 overflow-y-auto" @close="open = false">
-      <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
-          <DialogOverlay class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
-        </TransitionChild>
-
-        <!-- This element is to trick the browser into centering the modal contents. -->
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <TransitionChild
-          as="template" enter="ease-out duration-300"
-          enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          enter-to="opacity-100 translate-y-0 sm:scale-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100 translate-y-0 sm:scale-100"
-          leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        >
-          <div class="panel">
-            <div class="sm:flex sm:items-start">
-              <div class="icon">
-                <ExclamationIcon class="w-6 h-6" aria-hidden="true" />
-              </div>
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <DialogTitle as="h4" class="">
-                  Power down server?
-                </DialogTitle>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">
-                    You will still be billed for a powered down server. To end billing, destroy the server instead.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="mt-5 sm:mt-2 sm:ml-10 sm:pl-4 sm:flex">
-              <button
-                class="w-full button button--small button--error sm:w-auto"
-                @click="() => {
-                  confirm();
-                  open = false;
-                }"
-              >
-                Continue
-              </button>
-              <button
-                class="w-full mt-3 button button--small button--outline sm:mt-0 sm:w-auto sm:ml-3"
-                @click="() => {
-                  close();
-                  open = false;
-                }"
-                ref="cancelButtonRef"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </TransitionChild>
+  <div class="modal-overlay">
+    <div class="panel">
+      <div class="header">
+        <div class="icon"><slot name="icon" /></div>
+        <div class="mt-2 mb-4"><slot name="header" /></div>
       </div>
-    </Dialog>
-  </TransitionRoot>
+      <div class="my-4 px-8 text-sm text-gray-500">
+        <slot name="body" />
+        <div class="w-full my-8 sm:flex sm:space-x-4">
+          <button
+            class="w-full button button--small button--error"
+            @click="confirm"
+          >
+            <slot name="confirmButtonText" />
+          </button>
+          <button
+            class="w-full mt-3 button button--small button--outline sm:mt-0"
+            @click="close"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { ExclamationIcon } from '@heroicons/vue/outline'
-import { ref } from 'vue'
-import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 export default {
-  components: {
-    Dialog,
-    DialogOverlay,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
-    ExclamationIcon
-  },
+  name: 'ConfirmationModal',
   methods: {
     close() {
-      this.$emit('modal-closed')
-      open = false
+      this.$emit('modal-close')
     },
     confirm() {
-      this.$emit('modal-confirmation')
-    }
-  },
-  setup() {
-    const open = ref(false)
-
-    return {
-      open
+      this.$emit('modal-confirm')
     }
   }
 }
 </script>
 
 <style scoped>
-  .panel {
-    @apply inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6;
-  }
-  .icon {
-    @apply flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 text-red rounded-full sm:mx-0 sm:h-10 sm:w-10;
-  }
+.modal-overlay {
+  /* -top-5 is set because there is a mt-5 applied somewhere that I can't find */
+  @apply fixed -top-5 left-0 h-screen w-screen bg-gray-800 bg-opacity-75 flex justify-center items-center z-40;
+}
+.panel {
+  @apply inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full;
+}
+.icon {
+  @apply flex items-center justify-center flex-shrink-0 mx-auto text-red rounded-full mb-2 mt-4 sm:mb-0 sm:mx-0;
+}
+.header {
+  @apply flex flex-col w-full items-center text-2xl text-red border-b border-gray-400;
+}
 </style>

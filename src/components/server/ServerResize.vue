@@ -33,6 +33,11 @@
       ref="destroyConfirmation"
       @modal-confirm=resizeServer
       @modal-close=toggleConfirmationModal
+      :currentCost=currentHourlyCost
+      :currentSpec=currentSpec
+      :newCost=newHourlyCost
+      :newSpec=newSpec
+      :serverName="server.settings.hostname"
     />
   </div>
 </template>
@@ -106,6 +111,7 @@ export default {
         response.tasks.forEach(task => {
           this.$store.commit('addTask', task)
         })
+        this.toggleConfirmationModal()
       }
       catch (error) {
         // TODO - handle error

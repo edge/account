@@ -26,6 +26,7 @@
       ref="destroyConfirmation"
       @modal-confirm=stopServer
       @modal-close=toggleConfirmationModal
+      :serverName="server.settings.hostname"
     />
   </div>
 </template>
@@ -86,6 +87,7 @@ export default {
         this.serverId
       )
       this.$store.commit('addTask', response.task)
+      this.toggleConfirmationModal()
     },
     toggleConfirmationModal() {
       this.showConfirmationModal = !this.showConfirmationModal
