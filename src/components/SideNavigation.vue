@@ -16,13 +16,11 @@
 import Logo from '@/components/Logo'
 import Menu from '@/components/Menu'
 import NavigationTools from '@/components/NavigationTools'
-import BurgerButton from '@/components/BurgerButton'
 
 export default {
   name: 'SideNavigation',
   data: function () {
     return {
-      showNav: false,
       mainNav: [
         {
           link: '/servers',
@@ -57,23 +55,10 @@ export default {
       ]
     }
   },
-  methods: {
-    bodyScrollLock () {
-      const targetElement = document.querySelector('#menu')
-
-      if (this.showNav) {
-        bodyScrollLock.disableBodyScroll(targetElement)
-      }
-      else {
-        bodyScrollLock.enableBodyScroll(targetElement)
-      }
-    }
-  },
   components: {
     Logo,
     Menu,
-    NavigationTools,
-    BurgerButton
+    NavigationTools
   }
 }
 </script>

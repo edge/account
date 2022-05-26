@@ -4,7 +4,7 @@
     <li class="navigation-tools__item mobileOnly">
       <router-link to="/account" class="navigation-tools__link">
         <span class=""><UserIcon class="w-5 h-5" /></span>
-        <span class="navigation-tools__label">Settings</span>
+        <span class="navigation-tools__label">Account</span>
       </router-link>
     </li>
     <li class="navigation-tools__item mobileOnly">
@@ -85,7 +85,7 @@ export default {
   @apply leading-none;
 }
 .mobileOnly {
-  @apply sm:hidden;
+  @apply md:hidden;
 }
 
 @media (max-width: 350px) {

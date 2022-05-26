@@ -1,5 +1,5 @@
 <template>
-  <div class="topNavigation" :class="{'menu-open':showNav}">
+  <div ref="menu" class="topNavigation" :class="{'menu-open':showNav}">
 
     <!-- logo - hidden on larger screens -->
     <div class="md:hidden"><Logo size="small" /></div>
@@ -8,7 +8,7 @@
     <div class="md:hidden"><BurgerButton @click="showNav = !showNav;" /></div>
     <!-- search - hidden on small screens -->
     <div class="topNavigation__left">
-      <!-- <Search size="large"/> -->
+      <Search size="large"/>
     </div>
 
     <!-- user nav and deploy button - hidden on small screens -->
@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import Logo from '@/components/Logo'
 import BurgerButton from '@/components/BurgerButton'
+import Logo from '@/components/Logo'
 import MobileNavigation from '@/components/MobileNavigation'
 import Search from '@/components/Search'
 import UserMenu from '@/components/UserMenu'
@@ -44,9 +44,9 @@ export default {
     }
   },
   components: {
+    BurgerButton,
     Logo,
     MobileNavigation,
-    BurgerButton,
     Search,
     UserMenu
   },
@@ -54,16 +54,6 @@ export default {
     ...mapState(['account', 'session'])
   },
   methods: {
-    bodyScrollLock () {
-      const targetElement = document.querySelector('#menu')
-
-      if (this.showNav) {
-        bodyScrollLock.disableBodyScroll(targetElement)
-      }
-      else {
-        bodyScrollLock.enableBodyScroll(targetElement)
-      }
-    },
     isLoggedIn: function() {
       return this.$store.getters['auth/isAuthenticated']
     }
@@ -71,8 +61,7 @@ export default {
   watch: {
     $route () {
       this.showNav = false
-    },
-    showNav: 'bodyScrollLock'
+    }
   }
 }
 </script>
