@@ -25,6 +25,7 @@ const store = createStore({
       state.account = null
       state.isAuthed = false
       state.session = null
+      state.tasks = []
     },
     setAccount(state, account) {
       state.account = account
