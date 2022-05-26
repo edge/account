@@ -21,7 +21,7 @@ const store = createStore({
     deleteTask(state, taskToDelete) {
       state.tasks = state.tasks.filter(task => task._key !== taskToDelete._key)
     },
-    logout(state) {
+    signOut(state) {
       state.account = null
       state.isAuthed = false
       state.session = null
