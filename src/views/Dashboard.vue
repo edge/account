@@ -20,6 +20,11 @@ export default {
   title() {
     return 'Edge Account Portal » Server'
   },
+  data() {
+    return {
+      iTasks: null
+    }
+  },
   computed: {
     ...mapState(['tasks'])
   },
@@ -40,13 +45,16 @@ export default {
     this.$store.dispatch('getActiveTasks')
 
     // poll all active tasks
-    setInterval(() => this.$store.dispatch('updateTasks'), TASK_REFRESH_INTERVAL)
+    this.iTasks = setInterval(() => this.$store.dispatch('updateTasks'), TASK_REFRESH_INTERVAL)
+  },
+  unmounted() {
+    clearInterval(this.iTasks)
   },
   watch: {
     tasks() {
       this.tasks.forEach(task => {
         // remove any tasks that compelte from the store
-        if (['complete', 'gone'].inclues(task.status)) this.removeTask(task)
+        if (['complete', 'gone'].includes(task.status)) this.removeTask(task)
         // TODO - handle failed tasks
         if (task.status === 'failed') console.error(`failed task: ${task._key}`)
       })

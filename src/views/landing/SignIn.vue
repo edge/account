@@ -16,6 +16,7 @@
             v-mask="'#### #### #### ####'"
             v-model="v$.accountNumberInput.$model"
             placeholder="1234 5678 9012 3456"
+            autocomplete
             @keypress="signInOnEnter"
           />
         </div>
@@ -197,12 +198,14 @@ export default {
             this.requires2FA = true
             this.isLoading = false
           }
-          else this.errors.accountNumberInput = 'No account found'
+          else {
+            setTimeout(() => {
+              this.isLoading = false
+              this.errors.accountNumberInput = 'We couldn\'t find that account'
+            }, 1000)
+          }
         }
       }
-      setTimeout(() => {
-        this.isLoading = false
-      }, 1000)
     },
     signInOnEnter(event) {
       if (event.charCode !== 13) return
