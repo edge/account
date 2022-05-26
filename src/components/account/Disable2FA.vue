@@ -12,7 +12,7 @@
       </div>
       <span v-else>Disable 2FA</span>
     </button>
-    <!-- disable confirmation modal -->
+    <!-- disable 2fa confirmation modal -->
     <Disable2FAConfirmation
       v-show=showConfirmationModal
       @modal-confirm=disable2FA

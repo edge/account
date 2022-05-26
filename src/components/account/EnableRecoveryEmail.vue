@@ -38,6 +38,7 @@
         <span class="errorMessage__text">{{ errors.email }}</span>
       </div>
     </div>
+
     <!-- verify recovery email step -->
     <div v-show="step === 2" class="my-2">
       <!-- email sent message -->
@@ -105,8 +106,8 @@ import * as validation from '../../utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
@@ -156,6 +157,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['updateAccount']),
     enableOnEnter(event) {
       if (event.charCode !== 13) return
       event.preventDefault()
@@ -185,13 +187,6 @@ export default {
     returnToEnable() {
       this.email = ''
       this.step = 1
-    },
-    async updateAccount() {
-      const account = await utils.accounts.getAccount(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
-      this.$store.commit('setAccount', account)
     },
     verifyOnEnter(event) {
       if (event.charCode !== 13) return
