@@ -50,6 +50,13 @@ const store = createStore({
       )
       commit('setTasks', response.results)
     },
+    async updateAccount({ commit, state }) {
+      const account = await utils.accounts.getAccount(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        state.session._key
+      )
+      commit('setAccount', account)
+    },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks
       if (!state.tasks.length) return

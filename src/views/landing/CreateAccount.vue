@@ -83,7 +83,11 @@
               </button>
               <div v-show="show2FA">
                 <div class="input-group mt-2">
-                  <GoogleAuthEnable v-if="!is2FAEnabled" :confirmEnabled="onEnable2FA" />
+                  <Enable2FA
+                    v-if="!is2FAEnabled"
+                    :confirmEnabled="onEnable2FA"
+                    :createAccount="true"
+                  />
                   <div v-else class="my-4 flex items-center">
                     <div>
                       <ShieldCheckIcon class="w-5 text-green" />
@@ -107,7 +111,7 @@
               </button>
               <div v-show="showRecovery">
                 <div class="input-group mt-2">
-                  <RecoveryEmail v-if="!isRecoveryEnabled" :confirmEnabled="onEnableRecovery" />
+                  <EnableRecoveryEmail v-if="!isRecoveryEnabled" :confirmEnabled="onEnableRecovery" />
                   <div v-else class="my-2 flex items-center">
                     <div>
                       <ShieldCheckIcon class="w-5 text-green" />
@@ -220,9 +224,9 @@
 /* global process */
 
 import * as utils from '../../account-utils/index'
-import GoogleAuthEnable from '@/components/account/GoogleAuthEnable'
+import Enable2FA from '@/components/account/Enable2FA'
+import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
 import Logo from '@/components/Logo'
-import RecoveryEmail from '@/components/account/RecoveryEmail'
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -265,14 +269,14 @@ export default {
     CubeTransparentIcon,
 
     DuplicateIcon,
+    Enable2FA,
+    EnableRecoveryEmail,
     ExclamationIcon,
     FingerPrintIcon,
-    GoogleAuthEnable,
     KeyIcon,
     Logo,
     ShieldCheckIcon,
-    ShieldExclamationIcon,
-    RecoveryEmail
+    ShieldExclamationIcon
   },
   data() {
     return {

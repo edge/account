@@ -1,39 +1,49 @@
 <template>
   <div class="mainContent__inner">
     <h1>Account</h1>
-    <div>
-      <h4 class="w-full pb-2 mt-10 mb-6 font-medium border-b border-gray-400">Your account number</h4>
-      <!-- eslint-disable-next-line max-len -->
-      <p class="text-gray-500">Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
+    <div class="box">
+      <div>
+        <h4>Your account number</h4>
+        <!-- eslint-disable-next-line max-len -->
+        <p class="text-gray-500">Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
+      </div>
+      <!-- account number display -->
+      <div class="account-number-wrapper">
+        <span class="account-number monospace">{{ formattedAccountNumber }}</span>
+        <!-- copy to clipboard button -->
+        <button
+          @click.prevent="copyToClipboard"
+          class="text-gray-400 hover:text-green"
+        >
+          <DuplicateIcon class="w-6 h-6" />
+        </button>
+        <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
+      </div>
     </div>
-    <!-- account number display -->
-    <div class="account-number-wrapper">
-      <span class="account-number monospace">{{ formattedAccountNumber }}</span>
-      <!-- copy to clipboard button -->
-      <button
-        @click.prevent="copyToClipboard"
-        class="text-gray-400 hover:text-green"
-      >
-        <DuplicateIcon class="w-6 h-6" />
-      </button>
-      <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
-    </div>
-    <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Setup 2FA</h4>
-    <div>
-      <GoogleAuthEnable />
+    <div class="box">
+      <h4>Setup 2FA</h4>
+      <div>
+        <Disable2FA v-if="account.totp" />
+        <Enable2FA v-else />
+      </div>
     </div>
 
-    <h4 class="w-full pb-2 mt-16 mb-6 font-medium border-b border-gray-400">Add recovery email</h4>
-    <div>
-      <RecoveryEmail />
+    <div class="box">
+      <h4>Add recovery email</h4>
+      <div>
+        <DisableRecoveryEmail v-if="account.recovery" />
+        <EnableRecoveryEmail v-else />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Disable2FA from '@/components/account/Disable2FA'
+import DisableRecoveryEmail from '@/components/account/DisableRecoveryEmail'
 import { DuplicateIcon } from '@heroicons/vue/outline'
-import GoogleAuthEnable from '@/components/account/GoogleAuthEnable'
-import RecoveryEmail from '@/components/account/RecoveryEmail'
+import Enable2FA from '@/components/account/Enable2FA'
+import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
 import { mapState } from 'vuex'
 
 export default {
@@ -42,9 +52,11 @@ export default {
     return 'Edge Account Portal » Account'
   },
   components: {
+    Disable2FA,
+    DisableRecoveryEmail,
     DuplicateIcon,
-    GoogleAuthEnable,
-    RecoveryEmail
+    Enable2FA,
+    EnableRecoveryEmail
   },
   computed: {
     ...mapState(['account', 'session']),
@@ -55,8 +67,6 @@ export default {
   },
   data() {
     return {
-      twofactorUrl: '',
-      twofactorQR: '',
       copied: false
     }
   },
@@ -72,16 +82,19 @@ export default {
 }
 </script>
 <style scoped>
-/* standard cell */
-.serverList__cell {
-  @apply text-gray-500 text-sm lg:w-1/3 truncate;
+.box {
+  @apply w-full my-4 p-6 bg-white rounded-lg;
+}
+
+.box h4 {
+  @apply w-full pb-2 mb-6 font-medium border-b border-gray-400;
 }
 
 .account-number-wrapper {
-  @apply flex items-center justify-between relative py-3 pr-3 w-max;
+  @apply flex items-center justify-between relative w-max max-w-full;
 }
 .account-number {
-  @apply text-4xl text-green pr-4;
+  @apply text-3xl text-green pr-4;
 }
 
 .copied {

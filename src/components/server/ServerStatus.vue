@@ -23,7 +23,6 @@
     <!-- stop confirmation modal -->
     <StopConfirmation
       v-show=showConfirmationModal
-      ref="destroyConfirmation"
       @modal-confirm=stopServer
       @modal-close=toggleConfirmationModal
       :serverName="server.settings.hostname"
