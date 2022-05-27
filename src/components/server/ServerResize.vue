@@ -1,19 +1,19 @@
 <template>
-  <div class="box">
-    <h4>Resize your server</h4>
-
-    <ServerSpecs
-      :currentHourlyCost=currentHourlyCost
-      :hourlyCost=newHourlyCost
-      :current=server
-      @specs-changed="updateNewSpec"
-    />
-
-    <div class="relative mt-8">
+  <div>
+    <div class="box">
+      <h4>Resize your server</h4>
+      <ServerSpecs
+        :currentHourlyCost=currentHourlyCost
+        :hourlyCost=newHourlyCost
+        :current=server
+        @specs-changed="updateNewSpec"
+      />
+    </div>
+    <div class="relative my-8">
       <button
         @click="toggleConfirmationModal"
         :disabled="isSaving || !haveSpecsChanged || diskSizeDecreased"
-        class="h-full button button--success"
+        class="h-full button button--success w-full md:max-w-xs"
       >
         <span v-if="isSaving">Resizing</span>
         <span v-else>Resize</span>

@@ -89,43 +89,44 @@
     <!-- selected results shown on resize screen -->
     <!-- uses two rows to show current vs new specs and cost -->
     <div v-if="this.current" class="mt-5">
-      <div class="flex flex-col items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 lg:flex-row">
+      <!-- eslint-disable-next-line max-len -->
+      <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 lg:flex-row">
         <div class="flex flex-col items-baseline">
           <span class="text-green">Current Server</span>
-          <div class="flex items-center space-x-2.5">
-            <span class="text-lg">{{ current.spec.cpus }} vCPU</span>
-            <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ formatMiB(current.spec.ram) }} RAM</span>
-            <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ formatMiB(current.spec.disk) }} Disk</span>
+          <div class="specs_and_cost flex">
+            <span class="text-lg flex-shrink-0">{{ current.spec.cpus }} vCPU</span>
+            <span class="dot" />
+            <span class="text-lg flex-shrink-0">{{ formatMiB(current.spec.ram) }} RAM</span>
+            <span class="dot" />
+            <span class="text-lg flex-shrink-0">{{ formatMiB(current.spec.disk) }} Disk</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
           <span class="text-green">Estimated Cost</span>
-          <div class="flex items-center space-x-2.5">
-            <span><span class="text-lg">${{ currentHourlyCostFormatted }}</span> per hour</span>
-            <span class="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
-            <span><span class="text-lg">${{ currentDailyCostFormatted }}</span> per day</span>
+          <div class="specs_and_cost flex">
+            <span><span class="text-lg flex-shrink-0">${{ currentHourlyCostFormatted }}</span> per hour</span>
+            <span class="dot" />
+            <span><span class="text-lg flex-shrink-0">${{ currentDailyCostFormatted }}</span> per day</span>
           </div>
         </div>
       </div>
-      <div class="flex flex-col items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
+      <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
         <div class="flex flex-col items-baseline">
           <span class="text-green">After Resize</span>
-          <div class="flex items-center space-x-2.5">
-            <span class="text-lg">{{ cpuValue }} vCPU</span>
-            <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ formatMiB(spec.ram) }} RAM</span>
-            <span class="w-1 h-1 bg-gray-400 rounded-full" />
-            <span class="text-lg">{{ formatMiB(spec.disk) }} Disk</span>
+          <div class="specs_and_cost flex">
+            <span class="text-lg flex-shrink-0">{{ cpuValue }} vCPU</span>
+            <span class="dot" />
+            <span class="text-lg flex-shrink-0">{{ formatMiB(spec.ram) }} RAM</span>
+            <span class="dot" />
+            <span class="text-lg flex-shrink-0">{{ formatMiB(spec.disk) }} Disk</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
           <span class="text-green">Estimated Cost</span>
-          <div class="flex items-center space-x-2.5">
-            <span><span class="text-lg">${{ hourlyCostFormatted }}</span> per hour</span>
-            <span class="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
-            <span><span class="text-lg">${{ dailyCostFormatted }}</span> per day</span>
+          <div class="specs_and_cost flex">
+            <span><span class="text-lg flex-shrink-0">${{ hourlyCostFormatted }}</span> per hour</span>
+            <span class="dot" />
+            <span><span class="text-lg flex-shrink-0">${{ dailyCostFormatted }}</span> per day</span>
           </div>
         </div>
       </div>
@@ -133,23 +134,23 @@
 
     <!-- selected results shown on deploy screen -->
     <!-- eslint-disable-next-line max-len -->
-    <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 md:space-y-0 md:flex-row pt-7">
+    <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 lg:space-y-0 lg:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Your server</span>
-        <div class="flex items-center space-x-2.5">
-          <span class="text-lg">{{ cpuValue }} vCPU</span>
-          <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{ formatMiB(spec.ram) }} RAM</span>
-          <span class="w-1 h-1 bg-gray-400 rounded-full" />
-          <span class="text-lg">{{ formatMiB(spec.disk) }} Disk</span>
+        <div class="specs_and_cost flex">
+          <span class="text-lg flex-shrink-0">{{ cpuValue }} vCPU</span>
+          <span class="dot" />
+          <span class="text-lg flex-shrink-0">{{ formatMiB(spec.ram) }} RAM</span>
+          <span class="dot" />
+          <span class="text-lg flex-shrink-0">{{ formatMiB(spec.disk) }} Disk</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">
         <span class="text-green">Estimated Cost</span>
-        <div class="flex items-center space-x-2.5">
-          <span><span class="text-lg">${{ hourlyCostFormatted }}</span> per hour</span>
-          <span class="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
-          <span><span class="text-lg">${{ dailyCostFormatted }}</span> per day</span>
+        <div class="specs_and_cost flex">
+          <span><span class="text-lg flex-shrink-0">${{ hourlyCostFormatted }}</span> per hour</span>
+          <span class="dot" />
+          <span><span class="text-lg flex-shrink-0">${{ dailyCostFormatted }}</span> per day</span>
         </div>
       </div>
     </div>
@@ -269,17 +270,33 @@ export default {
 </script>
 
 <style scoped>
-  .specs__grid {
-    @apply mt-10 w-full grid grid-cols-1 gap-x-4 gap-y-10;
-    @apply sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
-  }
+.specs__grid {
+  @apply mt-10 w-full grid grid-cols-1 gap-x-4 gap-y-10;
+  @apply sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
+}
 
-  /* radio option */
-  .box {
-    @apply relative flex space-x-3 items-start justify-center pr-5 pl-2 pt-14 pb-8 border border-gray-300 rounded-md;
-  }
+.specs_and_cost {
+  @apply flex items-center space-x-2.5;
+}
+.dot {
+  @apply w-1 h-1 bg-gray-400 rounded-full
+}
 
-  .box__title {
-    @apply absolute top-0 inline-block px-3 text-gray-500 transform -translate-y-1/2 bg-white;
+/* radio option */
+.box {
+  @apply relative flex space-x-3 items-start justify-center pr-5 pl-2 pt-14 pb-8 border border-gray-300 rounded-md;
+}
+
+.box__title {
+  @apply absolute top-0 inline-block px-3 text-gray-500 transform -translate-y-1/2 bg-white;
+}
+
+@media (max-width: 420px) {
+  .specs_and_cost {
+    @apply flex-col items-start space-x-0 space-y-2
   }
+  .dot {
+    @apply hidden
+  }
+}
 </style>
