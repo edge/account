@@ -1,8 +1,12 @@
 <template>
-  <div class="my-2 flex flex-col text-gray-500 space-y-2">
-    <span class="text-lg">PLACEHOLDER</span>
-    <span>Your recovery email is xxx@xxx.xxx.</span>
-    <span>You can remove it at any time with the button below</span>
+  <div class="my-2 flex flex-col text-gray-500">
+    <div class="flex items-center mb-2">
+      <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
+      <span>Recovery email is enabled.</span>
+    </div>
+    <span class="mb-2">PLACEHOLDER</span>
+    <span class="mb-2">Your recovery email is xxx@xxx.xxx.</span>
+    <span class="mb-4">You can remove it at any time with the button below</span>
     <button
       class="button button--error w-52"
       @click=toggleConfirmationModal
@@ -49,7 +53,7 @@ export default {
   methods: {
     ...mapActions(['updateAccount']),
     async disableRecovery() {
-      this.loading = true
+      this.isLoading = true
       try {
         this.toggleConfirmationModal()
         await utils.accounts.disableRecovery(
@@ -61,7 +65,7 @@ export default {
       catch (error) {
         console.error(error)
       }
-      this.loading = false
+      this.isLoading = false
     },
     toggleConfirmationModal() {
       this.showConfirmationModal = !this.showConfirmationModal

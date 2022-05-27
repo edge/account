@@ -110,7 +110,7 @@
               </button>
               <div v-show="showRecovery">
                 <div class="input-group mt-2">
-                  <EnableRecoveryEmail v-if="!isRecoveryEnabled" :confirmEnabled="onEnableRecovery" />
+                  <EnableRecoveryEmail v-if="!isRecoveryEnabled" />
                   <div v-else class="my-2 flex items-center">
                     <div>
                       <ShieldCheckIcon class="w-5 text-green" />
@@ -287,7 +287,6 @@ export default {
       },
       isGeneratingAccount: false,
       isVerifying: false,
-      isRecoveryEnabled: false,
       show2FA: false,
       showRecovery: false,
       step: 1
@@ -304,6 +303,10 @@ export default {
     },
     isAccountSecured() {
       return this.is2FAEnabled && this.isRecoveryEnabled
+    },
+    isRecoveryEnabled() {
+      if (this.account.recovery) return this.account.recovery.email.verified
+      return false
     },
     formattedAccountNumber() {
       // add space every 4 characters
@@ -358,9 +361,6 @@ export default {
     },
     async goToAccount() {
       this.$router.push('/')
-    },
-    onEnableRecovery() {
-      this.isRecoveryEnabled = true
     },
     toggleShow2FA() {
       if (this.step !== 2) {

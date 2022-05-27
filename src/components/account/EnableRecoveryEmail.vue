@@ -203,7 +203,6 @@ export default {
           this.recoverySecret
         )
         await this.updateAccount()
-        this.confirmEnabled()
         this.isLoading = false
       }
       catch (error) {

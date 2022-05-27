@@ -2,15 +2,15 @@
   <div class="flex flex-col text-gray-500">
     <div class="flex items-center mb-2">
       <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
-      <span>Two-factor authentication has been enabled for this account.</span>
+      <span>Two-factor authentication is enabled.</span>
     </div>
-    <span class="mb-4">If you wish to disable 2FA, or change your 2FA device, please use the button below.</span>
+    <span class="mb-4">To disable two-factor authentication, please click the button below:</span>
     <button
       class="button button--error sm:w-52"
       @click=toggleConfirmationModal
     >
       <div v-if="isLoading" class="flex items-center">
-        <span>Disabling 2FA</span>
+        <span>Disabling</span>
         <span><LoadingSpinner /></span>
       </div>
       <span v-else>Disable 2FA</span>
