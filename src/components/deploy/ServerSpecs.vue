@@ -80,7 +80,7 @@
     <span v-show="diskValueIncreased || diskValueDecreased" class="block mt-4 text-red">
       <span class="font-medium">Note: </span>
       <!-- eslint-disable-next-line max-len -->
-      <span v-if=diskValueIncreased>Because your server's filesystem will be expanded, this resize is not reversible.</span>
+      <span v-if=diskValueIncreased>Your server's filesystem will be expanded. This disk resize is not reversible.</span>
       <span v-else>Disk size cannot be decreased in size.
         <span class="underline cursor-pointer" @click="resetDiskMinimum">Reset</span>
       </span>
@@ -91,7 +91,7 @@
     <div v-if="this.current" class="mt-5">
       <div class="flex flex-col items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 lg:flex-row">
         <div class="flex flex-col items-baseline">
-          <span class="text-green">Current server:</span>
+          <span class="text-green">Current Server</span>
           <div class="flex items-center space-x-2.5">
             <span class="text-lg">{{ current.spec.cpus }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
@@ -101,17 +101,17 @@
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span class="text-green">Cost</span>
-          <div>
-            <span><span class="text-lg">${{ formatCost(currentHourlyCost) }}</span> per hour</span>
-            <span class="mx-1">|</span>
-            <span><span class="text-lg">${{ formatCost(currentHourlyCost * 24) }}</span> per day</span>
+          <span class="text-green">Estimated Cost</span>
+          <div class="flex items-center space-x-2.5">
+            <span><span class="text-lg">${{ currentHourlyCostFormatted }}</span> per hour</span>
+            <span class="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
+            <span><span class="text-lg">${{ currentDailyCostFormatted }}</span> per day</span>
           </div>
         </div>
       </div>
       <div class="flex flex-col items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
         <div class="flex flex-col items-baseline">
-          <span class="text-green">After resize:</span>
+          <span class="text-green">After Resize</span>
           <div class="flex items-center space-x-2.5">
             <span class="text-lg">{{ cpuValue }} vCPU</span>
             <span class="w-1 h-1 bg-gray-400 rounded-full" />
@@ -121,11 +121,11 @@
           </div>
         </div>
         <div class="flex flex-col items-baseline">
-          <span class="text-green">Cost</span>
-          <div>
-            <span><span class="text-lg">${{ formatCost(hourlyCost) }}</span> per hour</span>
-            <span class="mx-1">|</span>
-            <span><span class="text-lg">${{ formatCost(hourlyCost * 24) }}</span> per day</span>
+          <span class="text-green">Estimated Cost</span>
+          <div class="flex items-center space-x-2.5">
+            <span><span class="text-lg">${{ hourlyCostFormatted }}</span> per hour</span>
+            <span class="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
+            <span><span class="text-lg">${{ dailyCostFormatted }}</span> per day</span>
           </div>
         </div>
       </div>
@@ -145,11 +145,11 @@
         </div>
       </div>
       <div class="flex flex-col items-baseline">
-        <span class="text-green">Cost</span>
-        <div>
-          <span><span class="text-lg">${{ formatCost(hourlyCost) }}</span> per hour</span>
-          <span class="mx-1">|</span>
-          <span><span class="text-lg">${{ formatCost(hourlyCost * 24) }}</span> per day</span>
+        <span class="text-green">Estimated Cost</span>
+        <div class="flex items-center space-x-2.5">
+          <span><span class="text-lg">${{ hourlyCostFormatted }}</span> per hour</span>
+          <span class="mx-1 w-1 h-1 bg-gray-400 rounded-full" />
+          <span><span class="text-lg">${{ dailyCostFormatted }}</span> per day</span>
         </div>
       </div>
     </div>
@@ -204,6 +204,12 @@ export default {
     }
   },
   computed: {
+    currentHourlyCostFormatted() {
+      return this.formatCost(this.currentHourlyCost, 4)
+    },
+    currentDailyCostFormatted() {
+      return this.formatCost(this.currentHourlyCost * 24, 2)
+    },
     diskValueDecreased() {
       if (this.current) return this.spec.disk < this.current.spec.disk
       return false
@@ -211,6 +217,12 @@ export default {
     diskValueIncreased() {
       if (this.current) return this.spec.disk > this.current.spec.disk
       return false
+    },
+    hourlyCostFormatted() {
+      return this.formatCost(this.hourlyCost, 4)
+    },
+    dailyCostFormatted() {
+      return this.formatCost(this.hourlyCost * 24, 2)
     },
     spec() {
       return {
@@ -222,8 +234,9 @@ export default {
     }
   },
   methods: {
-    formatCost(cost) {
-      return (Math.ceil(cost * 100) / 100).toFixed(2)
+    formatCost(cost, decimalPlaces) {
+      const mult = 10**decimalPlaces
+      return (Math.round(cost * mult) / mult).toFixed(decimalPlaces)
     },
     formatMiB(MiB) {
       if (MiB < 1024) {
@@ -268,36 +281,5 @@ export default {
 
   .box__title {
     @apply absolute top-0 inline-block px-3 text-gray-500 transform -translate-y-1/2 bg-white;
-  }
-
-  /* option title */
-  .optionTitle {
-    @apply text-center w-full pb-3 border-b border-gray-300;
-  }
-  .optionTitle.active {
-    @apply border-green border-opacity-20;
-  }
-  .optionTitle.checked {
-    @apply border-green border-opacity-40;
-  }
-
-  /* option specs */
-  .optionSpecs {
-    @apply flex flex-col items-center w-full mt-4 text-sm text-gray-500;
-  }
-
-  /* disabled tooltip */
-  .whyDisabled {
-    @apply w-full h-full md:h-auto top-0 left-0 absolute md:pb-2;
-    @apply transition md:transform md:-translate-y-10 md:group-hover:-translate-y-full;
-  }
-  .whyDisabled__inner {
-    @apply flex items-center justify-center w-full h-full md:h-auto p-3;
-    @apply text-center bg-opacity-90 bg-black text-white rounded-md leading-snug text-xs z-10 opacity-0;
-    @apply group-hover:opacity-100;
-  }
-  .whyDisabled__notch {
-    @apply w-4 h-4 bg-black transform rotate-45 absolute bottom-1;
-    @apply hidden md:block;
   }
 </style>
