@@ -127,6 +127,7 @@ export default {
     async verify2FA() {
       if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
+      console.log(this.otpSecret)
       try {
         await utils.accounts.verify2FA(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -134,11 +135,10 @@ export default {
           this.otpSecret
         )
         await this.updateAccount()
-        this.confirmEnabled()
         this.isLoading = false
-
       }
       catch (error) {
+        console.error(error)
         setTimeout(() => {
           this.errors.confirmationCode = 'Verification code invalid'
           this.isLoading = false

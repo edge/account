@@ -21,9 +21,9 @@
       </div>
     </div>
     <div class="box">
-      <h4>Setup 2FA</h4>
+      <h4>Setup two-factor authentication (2FA)</h4>
       <div>
-        <Disable2FA v-if="account.totp" />
+        <Disable2FA v-if="is2FAEnabled" />
         <Enable2FA v-else />
       </div>
     </div>
@@ -31,7 +31,7 @@
     <div class="box">
       <h4>Add recovery email</h4>
       <div>
-        <DisableRecoveryEmail v-if="account.recovery" />
+        <DisableRecoveryEmail v-if="!isRecoveryEnabled" />
         <EnableRecoveryEmail v-else />
       </div>
     </div>
@@ -63,6 +63,14 @@ export default {
     formattedAccountNumber() {
       // add space every 4 characters
       return this.account._key.replace(/.{4}/g, '$& ')
+    },
+    is2FAEnabled() {
+      if (this.account.totp) return this.account.totp.enabled
+      return false
+    },
+    isRecoveryEnabled() {
+      if (this.account.recovery) return this.account.recovery.email.verified
+      return false
     }
   },
   data() {
@@ -87,7 +95,7 @@ export default {
 }
 
 .box h4 {
-  @apply w-full pb-2 mb-6 font-medium border-b border-gray-400;
+  @apply w-full pb-2 mb-4 font-medium border-b border-gray-400;
 }
 
 .account-number-wrapper {

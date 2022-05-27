@@ -13,7 +13,7 @@
         <li>You can re-enable a recovery email at any point</li>
       </div>
     </template>
-    <template v-slot:confirmButtonText>Yes, Disable 2FA</template>
+    <template v-slot:confirmButtonText>Yes, Disable</template>
   </Modal>
 </template>
 

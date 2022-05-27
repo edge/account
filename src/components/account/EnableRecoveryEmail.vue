@@ -22,7 +22,7 @@
           :disabled="!canEnable"
         >
           <div v-if="isLoading" class="flex flex-row">
-            <span>Sending Email</span>
+            <span>Adding</span>
             <span><LoadingSpinner /></span>
           </div>
           <span v-else>Add</span>
@@ -82,7 +82,7 @@
             <span>Verifying</span>
             <span><LoadingSpinner /></span>
           </div>
-          <span v-else>Verify Email</span>
+          <span v-else>Verify</span>
         </button>
       </div>
       <!-- error message  -->

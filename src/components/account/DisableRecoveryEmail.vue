@@ -4,7 +4,7 @@
     <span>Your recovery email is xxx@xxx.xxx.</span>
     <span>You can remove it at any time with the button below</span>
     <button
-      class="button button--success w-52"
+      class="button button--error w-52"
       @click=toggleConfirmationModal
     >
       <div v-if="isLoading" class="flex items-center">
@@ -26,12 +26,14 @@
 /* global process */
 
 import * as utils from '../../account-utils/index'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableRecoveryConfirmation from '@/components/confirmations/DisableRecoveryConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
+    BadgeCheckIcon,
     DisableRecoveryConfirmation,
     LoadingSpinner
   },

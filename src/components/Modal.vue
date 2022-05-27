@@ -1,4 +1,3 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
 <template>
   <div class="modal-overlay">
     <div class="panel">
@@ -44,8 +43,7 @@ export default {
 
 <style scoped>
 .modal-overlay {
-  /* -top-5 is set because there is a mt-5 applied somewhere that I can't find */
-  @apply fixed -top-5 left-0 h-screen w-screen bg-gray-800 bg-opacity-75 flex justify-center items-center z-40;
+  @apply fixed top-0 left-0 h-screen w-screen bg-gray-800 bg-opacity-75 flex justify-center items-center z-40;
 }
 .panel {
   @apply inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full;

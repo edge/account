@@ -85,7 +85,6 @@
                 <div class="input-group mt-2">
                   <Enable2FA
                     v-if="!is2FAEnabled"
-                    :confirmEnabled="onEnable2FA"
                     :createAccount="true"
                   />
                   <div v-else class="my-4 flex items-center">
@@ -227,6 +226,7 @@ import * as utils from '../../account-utils/index'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
 import Logo from '@/components/Logo'
+import { mapState } from 'vuex'
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -287,7 +287,6 @@ export default {
       },
       isGeneratingAccount: false,
       isVerifying: false,
-      is2FAEnabled: false,
       isRecoveryEnabled: false,
       show2FA: false,
       showRecovery: false,
@@ -295,6 +294,11 @@ export default {
     }
   },
   computed: {
+    ...mapState(['account', 'session']),
+    is2FAEnabled() {
+      if(this.account.totp) return this.account.totp.enabled
+      return false
+    },
     isAccountGenerated() {
       return this.accountNumber && !this.isGeneratingAccount
     },
@@ -354,9 +358,6 @@ export default {
     },
     async goToAccount() {
       this.$router.push('/')
-    },
-    onEnable2FA() {
-      this.is2FAEnabled = true
     },
     onEnableRecovery() {
       this.isRecoveryEnabled = true

@@ -1,9 +1,12 @@
 <template>
-  <div class="my-2 flex flex-col text-gray-500 space-y-2">
-    <span>Two-factor authentication has been enabled for this account.</span>
-    <span>You can remove it at any time with the button below</span>
+  <div class="flex flex-col text-gray-500">
+    <div class="flex items-center mb-2">
+      <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
+      <span>Two-factor authentication has been enabled for this account.</span>
+    </div>
+    <span class="mb-4">If you wish to disable 2FA, or change your 2FA device, please use the button below.</span>
     <button
-      class="button button--success w-52"
+      class="button button--error sm:w-52"
       @click=toggleConfirmationModal
     >
       <div v-if="isLoading" class="flex items-center">
@@ -25,12 +28,14 @@
 /* global process */
 
 import * as utils from '../../account-utils/index'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import Disable2FAConfirmation from '@/components/confirmations/Disable2FAConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
+    BadgeCheckIcon,
     Disable2FAConfirmation,
     LoadingSpinner
   },
@@ -46,7 +51,7 @@ export default {
   methods: {
     ...mapActions(['updateAccount']),
     async disable2FA() {
-      this.loading = true
+      this.isLoading = true
       try {
         this.toggleConfirmationModal()
         await utils.accounts.disable2FA(
@@ -58,7 +63,7 @@ export default {
       catch (error) {
         console.error(error)
       }
-      this.loading = false
+      this.isLoading = false
     },
     toggleConfirmationModal() {
       this.showConfirmationModal = !this.showConfirmationModal
