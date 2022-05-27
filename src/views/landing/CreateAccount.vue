@@ -70,19 +70,26 @@
 
           <div class="step-content" v-if="step === 2 && !isAccountSecured">
             <!-- 2fa section -->
-            <div class="my-4">
+            <div class="my-4 bg-gray-200 rounded-lg">
               <button
                 @click.prevent="toggleShow2FA"
-                class="w-full button button--solid"
+                class="w-full button"
+                :class="is2FAEnabled ? 'button--outline-success text-green bg-white hover:text-white' : 'button--success'"
               >
                 <span>Enable Two-factor Authentication (2FA)</span>
                 <div class="absolute right-3">
-                  <ChevronDownIcon v-if="show2FA" class="chevron-icon" />
-                  <ChevronRightIcon v-else class="chevron-icon" />
+                  <ChevronDownIcon v-if="show2FA"
+                    class="chevron-icon"
+                    :class="is2FAEnabled ? 'enabled' : ''"
+                  />
+                  <ChevronRightIcon v-else
+                    class="chevron-icon"
+                    :class="is2FAEnabled ? 'enabled' : ''"
+                  />
                 </div>
               </button>
               <div v-show="show2FA">
-                <div class="input-group mt-2">
+                <div class="px-2 mb-4">
                   <Enable2FA
                     v-if="!is2FAEnabled"
                     :createAccount="true"
@@ -97,19 +104,26 @@
               </div>
             </div>
             <!-- recovery email section -->
-            <div class="mb-4">
+            <div class="mb-4 bg-gray-200 rounded-lg">
               <button
                 @click.prevent="toggleShowRecovery"
-                class="w-full button button--solid"
+                class="w-full button"
+                :class="isRecoveryEnabled ? 'button--outline-success text-green bg-white hover:text-white' : 'button--success'"
               >
                 <span>Add Recovery Email</span>
                 <div class="absolute right-3">
-                  <ChevronDownIcon v-if="showRecovery" class="chevron-icon" />
-                  <ChevronRightIcon v-else class="chevron-icon" />
+                  <ChevronDownIcon v-if="showRecovery"
+                    class="chevron-icon"
+                    :class="isRecoveryEnabled ? 'enabled' : ''"
+                  />
+                  <ChevronRightIcon v-else
+                  class="chevron-icon"
+                  :class="isRecoveryEnabled ? 'enabled' : ''"
+                />
                 </div>
               </button>
               <div v-show="showRecovery">
-                <div class="input-group mt-2">
+                <div class="px-2 mt-2">
                   <EnableRecoveryEmail v-if="!isRecoveryEnabled" />
                   <div v-else class="my-2 flex items-center">
                     <div>
@@ -295,16 +309,18 @@ export default {
   computed: {
     ...mapState(['account', 'session']),
     is2FAEnabled() {
+      if (!this.account) return false
       if(this.account.totp) return this.account.totp.enabled
       return false
     },
     isAccountGenerated() {
-      return this.accountNumber && !this.isGeneratingAccount
+      return this.account && !this.isGeneratingAccount
     },
     isAccountSecured() {
       return this.is2FAEnabled && this.isRecoveryEnabled
     },
     isRecoveryEnabled() {
+      if (!this.account) return false
       if (this.account.recovery) return this.account.recovery.email.verified
       return false
     },
@@ -441,6 +457,12 @@ export default {
 }
 .chevron-icon {
   @apply h-4 text-white;
+}
+.chevron-icon.enabled {
+  @apply text-green;
+}
+.button:hover .chevron-icon.enabled {
+  @apply text-white;
 }
 
 .credit-items-grid {

@@ -13,7 +13,7 @@
           type="email"
           autocomplete="off"
           class="overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
-          placeholder="Enter your email address"
+          placeholder="Enter email address"
           @keypress="enableOnEnter"
         />
         <button
