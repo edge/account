@@ -376,12 +376,17 @@ export default {
       this.$router.push({ name: 'Servers' })
     },
     async updateRegion() {
-      const region = await utils.region.getRegion(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.server.region
-      )
-      this.region = region
+      try {
+        const region = await utils.region.getRegion(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.server.region
+        )
+        this.region = region
+      }
+      catch (error) {
+        console.error(error)
+      }
     },
     async updateServer() {
       try {
@@ -395,7 +400,6 @@ export default {
         await this.updateTasks()
       }
       catch (error) {
-        // TODO - handle error
         console.error(error)
       }
     },
@@ -409,7 +413,6 @@ export default {
         this.serverTasks = tasks.results
       }
       catch (error) {
-        // TODO - handle error
         console.error(error)
       }
     }
