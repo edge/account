@@ -22,7 +22,6 @@
           :hourlyCost=hourlyCost
           @specs-changed="(spec) => updateSpec(spec)"
         />
-        <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.preset">{{serverErrors.preset}}</span>
       </div>
 
       <!-- automated backups -->
@@ -41,30 +40,27 @@
       <!-- host name / server name -->
       <div class="box">
         <ServerName @name-changed="hostname => updateHostname(hostname)" />
-        <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.hostname">{{ serverErrors.hostname }}</span>
         <div v-if="hostnameUpdated" class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.hostname.$errors"
             :key="error.$uid"
-            class="flex-1 order-1 text-red md:order-2"
+            class="mt-2 text-red"
           >
             - {{ error.$message }}
           </span>
         </div>
 
         <Domain :hostname="serverOptions.settings.hostname" />
-        <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.domain">{{ serverErrors.domain }}</span>
       </div>
 
       <!-- password -->
       <div class="box">
         <Password @password-changed="password => updatePassword(password)" />
-        <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.password">{{ serverErrors.password }}</span>
         <div class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.password.$errors"
             :key="error.$uid"
-            class="mt-2 flex-1 order-1 text-red md:order-2"
+            class="mt-2 text-red"
           >
             - {{ error.$message }}
           </span>
@@ -72,11 +68,11 @@
       </div>
 
       <!-- deploy button & error message -->
-      <div class="flex flex-col w-full md:space-x-5 md:items-center md:flex-row">
+      <div class="flex flex-col w-full space-y-2">
         <button
           @click.prevent="deploy"
           :disabled="!canDeploy"
-          class="order-2 w-full mt-3 md:max-w-xs md:mt-0 button button--success md:order-1"
+          class="w-full mt-3 md:max-w-xs md:mt-0 button button--success"
         >
           <div v-if=isSaving class="flex">
             <span>Deploying</span>
@@ -84,6 +80,11 @@
           </div>
           <span v-else>Deploy</span>
         </button>
+        <!-- http error -->
+        <div v-if="serverError" class="flex items-center">
+          <ExclamationIcon class="w-5 mr-2 text-red" />
+          <span class="text-red">{{ serverError }}</span>
+        </div>
       </div>
     </form>
   </div>
@@ -95,6 +96,7 @@
 import * as utils from '../../account-utils'
 import * as validation from '../../utils/validation'
 import Domain from '@/components/deploy/Domain'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import NetworkRegion from '@/components/deploy/NetworkRegion'
 import OperatingSystem from '@/components/deploy/OperatingSystem'
@@ -113,6 +115,7 @@ export default {
   props: ['region'],
   components: {
     Domain,
+    ExclamationIcon,
     LoadingSpinner,
     NetworkRegion,
     OperatingSystem,
@@ -126,7 +129,7 @@ export default {
       hostnameUpdated: false,
       isSaving: false,
       selectedRegion: null,
-      serverErrors: {},
+      serverError: '',
       serverOptions: {
         region: null,
         settings: {
@@ -201,12 +204,36 @@ export default {
         // add task to store and redirect to server page
         this.$store.commit('addTask', response.task)
         this.$router.push({ name: 'Server', params: { id: response.server._key }})
+        this.isSaving = false
       }
       catch (error) {
-        // TODO - handle server deploy errors
-        console.error(error)
+        setTimeout(() => {
+          this.serverError = this.formatHttpError(error)
+          this.isSaving = false
+        }, 500)
       }
-      this.isSaving = false
+    },
+    formatHttpError(error) {
+      const body = error.response.body
+      let field = ''
+      let message = ''
+      if (body.param) {
+        if (body.param === 'region') field = 'Region'
+        if (body.param === 'spec.cpus') field = 'vCPU'
+        if (body.param === 'spec.disk') field = 'Disk'
+        if (body.param === 'spec.ram') field = 'RAM'
+        if (body.param === 'settings.os') field = 'Operating System'
+        if (body.param === 'settings.hostname') field = 'Hostname'
+        if (body.param === 'settings.domain') field = 'Domain'
+      }
+      if (['Disk', 'RAM'].includes(field)) message = this.formatMiBInError(body.reason)
+      else message = body.reason || body.message
+      return `${field ? `${field}: ` : ''}${message}`
+    },
+    formatMiBInError(errorMessage) {
+      const MiB = errorMessage.replace(/^\D+/g, '')
+      const GB =  MiB ? `${MiB / 1024} GB` : ''
+      return errorMessage.replace(MiB, GB)
     },
     // toggleBackups () {
     //   this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
@@ -267,12 +294,5 @@ export default {
 <style scoped>
   .box {
     @apply w-full p-6 bg-white rounded-lg;
-  }
-  .box--error {
-    @apply ring-2 ring-red ring-opacity-50;
-  }
-  .box__grid {
-    @apply mt-6 w-full grid grid-cols-1 gap-4;
-    @apply sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3;
   }
 </style>
