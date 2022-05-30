@@ -74,32 +74,27 @@
               <button
                 @click.prevent="toggleShow2FA"
                 class="w-full button"
-                :class="is2FAEnabled ? 'button--outline-success text-green bg-white hover:text-white' : 'button--success'"
+                :class="is2FAEnabled ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
               >
                 <span>Enable Two-factor Authentication (2FA)</span>
-                <div class="absolute right-3">
+                <div v-if="!is2FAEnabled" class="absolute right-3">
                   <ChevronDownIcon v-if="show2FA"
                     class="chevron-icon"
-                    :class="is2FAEnabled ? 'enabled' : ''"
                   />
                   <ChevronRightIcon v-else
                     class="chevron-icon"
+                  />
+                </div>
+                <div v-else class="absolute right-3">
+                  <ShieldCheckIcon
+                    class="chevron-icon text-green"
                     :class="is2FAEnabled ? 'enabled' : ''"
                   />
                 </div>
               </button>
-              <div v-show="show2FA">
+              <div v-show="show2FA && !is2FAEnabled">
                 <div class="px-2 mb-4">
-                  <Enable2FA
-                    v-if="!is2FAEnabled"
-                    :createAccount="true"
-                  />
-                  <div v-else class="my-4 flex items-center">
-                    <div>
-                      <ShieldCheckIcon class="w-5 text-green" />
-                    </div>
-                    <span class="ml-2">Two-factor authentication successfully enabled</span>
-                  </div>
+                  <Enable2FA :createAccount="true" />
                 </div>
               </div>
             </div>
@@ -108,29 +103,27 @@
               <button
                 @click.prevent="toggleShowRecovery"
                 class="w-full button"
-                :class="isRecoveryEnabled ? 'button--outline-success text-green bg-white hover:text-white' : 'button--success'"
+                :class="isRecoveryEnabled ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
               >
                 <span>Add Recovery Email</span>
-                <div class="absolute right-3">
+                <div v-if="!isRecoveryEnabled" class="absolute right-3">
                   <ChevronDownIcon v-if="showRecovery"
                     class="chevron-icon"
-                    :class="isRecoveryEnabled ? 'enabled' : ''"
                   />
                   <ChevronRightIcon v-else
                   class="chevron-icon"
-                  :class="isRecoveryEnabled ? 'enabled' : ''"
-                />
+                  />
+                </div>
+                <div v-else class="absolute right-3">
+                  <ShieldCheckIcon
+                    class="chevron-icon text-green"
+                    :class="isRecoveryEnabled ? 'enabled' : ''"
+                  />
                 </div>
               </button>
-              <div v-show="showRecovery">
+              <div v-show="showRecovery && !isRecoveryEnabled">
                 <div class="px-2 mt-2">
-                  <EnableRecoveryEmail v-if="!isRecoveryEnabled" />
-                  <div v-else class="my-2 flex items-center">
-                    <div>
-                      <ShieldCheckIcon class="w-5 text-green" />
-                    </div>
-                    <span class="ml-2">Recovery email successfully added</span>
-                  </div>
+                  <EnableRecoveryEmail />
                 </div>
               </div>
             </div>
@@ -379,6 +372,7 @@ export default {
       this.$router.push('/')
     },
     toggleShow2FA() {
+      if (this.is2FAEnabled) return
       if (this.step !== 2) {
         this.step = 2
         this.show2FA = true
@@ -390,6 +384,7 @@ export default {
       }
     },
     toggleShowRecovery() {
+      if (this.isRecoveryEnabled) return
       if (this.step !== 2) {
         this.step = 2
         this.showRecovery = true
@@ -460,9 +455,6 @@ export default {
 }
 .chevron-icon.enabled {
   @apply text-green;
-}
-.button:hover .chevron-icon.enabled {
-  @apply text-white;
 }
 
 .credit-items-grid {
