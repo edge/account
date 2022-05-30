@@ -40,7 +40,7 @@
           :maxScale='100'
           :postpendValue="'%'"
         />
-        <p v-else class="mt-3 mb-0 text-gray-500">CPU loaad statistics will appear here as they become available.</p>
+        <p v-else class="mt-3 mb-0 text-gray-500">CPU load statistics will appear here as they become available.</p>
       </div>
 
       <div class="box">

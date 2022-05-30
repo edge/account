@@ -34,7 +34,7 @@ export const confirmationCode = helpers.withMessage('The confirmation code is 6 
  * - alphanumeric first character
  * - hostname length
  */
-const hostnameCharsRegexp = /^[a-zA-Z0-9-_.]{1,48}$/
+const hostnameCharsRegexp = /^[a-zA-Z0-9-_.]*$/
 export const hostnameChars = helpers.withMessage(
   'Must contain only alphanumeric characters, periods, underscores, and hyphens',
   // don't display error if no value entered
@@ -46,7 +46,6 @@ export const hostnameChars = helpers.withMessage(
 
 const hostnameFirstCharRegexp = /^[a-zA-Z0-9]{1}/
 export const hostnameFirstChar = helpers.withMessage(
-  // eslint-disable-next-line max-len
   'The first character must be alphanumeric',
   // don't display error if no value entered
   v => {
@@ -57,7 +56,6 @@ export const hostnameFirstChar = helpers.withMessage(
 
 const hostnameLengthRegexp = /^.{1,48}$/
 export const hostnameLength = helpers.withMessage(
-  // eslint-disable-next-line max-len
   'Must be between 1 and 49 characters',
   v => hostnameLengthRegexp.test(v)
 )

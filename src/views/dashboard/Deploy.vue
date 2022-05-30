@@ -42,7 +42,7 @@
       <div class="box">
         <ServerName @name-changed="hostname => updateHostname(hostname)" />
         <span class="flex-1 order-1 text-red md:order-2" v-if="serverErrors.hostname">{{ serverErrors.hostname }}</span>
-        <div class="flex flex-col">
+        <div v-if="hostnameUpdated" class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.hostname.$errors"
             :key="error.$uid"
@@ -123,6 +123,7 @@ export default {
   },
   data() {
     return {
+      hostnameUpdated: false,
       isSaving: false,
       selectedRegion: null,
       serverErrors: {},
@@ -174,11 +175,10 @@ export default {
     hourlyCost() {
       if (!this.selectedRegion) return 0
       const { bandwidth, cpus, disk, ram } = this.selectedRegion.cost
-      const hourlyCost =
-      (bandwidth * (this.serverOptions.spec.bandwidth || 10)) +
-      (cpus * this.serverOptions.spec.cpus) +
-      (disk * this.serverOptions.spec.disk) +
-      (ram * this.serverOptions.spec.ram)
+      const hourlyCost = (bandwidth * (this.serverOptions.spec.bandwidth || 10))
+        + (cpus * this.serverOptions.spec.cpus)
+        + (disk * this.serverOptions.spec.disk)
+        + (ram * this.serverOptions.spec.ram)
       return hourlyCost
     },
     canDeploy() {
@@ -205,7 +205,6 @@ export default {
       catch (error) {
         // TODO - handle server deploy errors
         console.error(error)
-        console.log(error.response)
       }
       this.isSaving = false
     },
@@ -213,6 +212,7 @@ export default {
     //   this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     // },
     updateHostname(hostname) {
+      this.hostnameUpdated = true
       this.serverOptions = {
         ...this.serverOptions,
         settings: {
