@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col pb-2 space-y-6">
     <div class="input-group">
-      <label class="label">Hostname</label>
+      <label class="label">Server Name</label>
       <input
-        v-model="hostname"
+        v-model="serverName"
         class="input input--floating"
-        placeholder="Hostname"
+        placeholder="server-name"
         type="text"
         required
       />
@@ -14,28 +14,17 @@
 </template>
 
 <script>
-// import * as utils from '../../account-utils'
 
 export default {
   name: 'ServerName',
   data () {
     return {
-      hostname: ''
+      serverName: ''
     }
-  },
-  methods: {
-    async getNewHostname() {
-      // const hostname = await utils.servers.getHostname()
-      // this.hostname = hostname
-    }
-  },
-  mounted() {
-    // Get a new, random hostname.
-    this.getNewHostname()
   },
   watch: {
-    hostname(hostname) {
-      this.$emit('name-changed', hostname)
+    serverName(serverName) {
+      this.$emit('name-changed', serverName)
     }
   }
 }

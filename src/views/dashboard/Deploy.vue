@@ -37,20 +37,18 @@
         </div>
       </div> -->
 
-      <!-- host name / server name -->
+      <!-- server name -->
       <div class="box">
-        <ServerName @name-changed="hostname => updateHostname(hostname)" />
-        <div v-if="hostnameUpdated" class="flex flex-col">
+        <ServerName @name-changed="serverName => updateServerName(serverName)" />
+        <div v-if="serverNameUpdated" class="flex flex-col">
           <span
-            v-for="error in v$.serverOptions.settings.hostname.$errors"
+            v-for="error in v$.serverOptions.settings.name.$errors"
             :key="error.$uid"
             class="mt-2 text-red"
           >
             - {{ error.$message }}
           </span>
         </div>
-
-        <Domain :hostname="serverOptions.settings.hostname" />
       </div>
 
       <!-- password -->
@@ -80,7 +78,6 @@
           </div>
           <span v-else>Deploy</span>
         </button>
-        <!-- http error -->
         <HttpError :error=httpError />
       </div>
     </form>
@@ -92,7 +89,6 @@
 
 import * as utils from '../../account-utils'
 import * as validation from '../../utils/validation'
-import Domain from '@/components/deploy/Domain'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import NetworkRegion from '@/components/deploy/NetworkRegion'
@@ -111,7 +107,6 @@ export default {
   },
   props: ['region'],
   components: {
-    Domain,
     HttpError,
     LoadingSpinner,
     NetworkRegion,
@@ -123,15 +118,14 @@ export default {
   },
   data() {
     return {
-      hostnameUpdated: false,
+      serverNameUpdated: false,
       httpError: '',
       isSaving: false,
       selectedRegion: null,
       serverOptions: {
         region: null,
         settings: {
-          hostname: '',
-          domain: '',
+          name: '',
           os: {
             id: null
           },
@@ -151,10 +145,10 @@ export default {
       serverOptions: {
         region: [validation.required],
         settings: {
-          hostname: [
-            validation.hostnameLength,
-            validation.hostnameChars,
-            validation.hostnameFirstChar
+          name: [
+            validation.serverNameLength,
+            validation.serverNameChars,
+            validation.serverNameFirstChar
           ],
           os: {
             id: [validation.required]
@@ -205,7 +199,7 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          this.httpError = this.formatHttpError(error)
+          this.httpError = error
           this.isSaving = false
         }, 500)
       }
@@ -213,14 +207,13 @@ export default {
     // toggleBackups () {
     //   this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     // },
-    updateHostname(hostname) {
-      this.hostnameUpdated = true
+    updateServerName(name) {
+      this.serverNameUpdated = true
       this.serverOptions = {
         ...this.serverOptions,
         settings: {
           ...this.serverOptions.settings,
-          hostname,
-          domain: `${hostname}.edge.network`
+          name
         }
       }
     },

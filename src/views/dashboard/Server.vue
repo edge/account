@@ -11,7 +11,7 @@
     </ul>
 
     <!-- title -->
-    <h1 class="mb-0 leading-none">{{server.settings.hostname}}</h1>
+    <h1 class="mb-0 leading-none">{{ server.settings.name ||server.settings.hostname }}</h1>
 
     <!-- overview -->
     <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4">

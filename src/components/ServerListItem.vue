@@ -7,7 +7,7 @@
       <!-- server details -->
       <div class="serverList__field details overflow-hidden">
         <!-- server name -->
-        <span class="serverList__name">{{ server.settings.hostname }}</span>
+        <span class="serverList__name">{{ server.settings.name ||server.settings.hostname }}</span>
         <!-- ip address / domain name -->
         <div class="ip__and__domain text-m">
           <span v-if="server.network">{{ server.network.ip[0] }}</span>

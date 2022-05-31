@@ -29,35 +29,35 @@ export const confirmationCode = helpers.withMessage('The confirmation code is 6 
 
 
 /**
- * Server hostname validators.
+ * Server name validators.
  * - valid characters (alphanumeric, periods, underscores and hyphens)
  * - alphanumeric first character
- * - hostname length
+ * - length
  */
-const hostnameCharsRegexp = /^[a-zA-Z0-9-_.]*$/
-export const hostnameChars = helpers.withMessage(
+const serverNameCharsRegexp = /^[a-zA-Z0-9-_.]*$/
+export const serverNameChars = helpers.withMessage(
   'Must contain only alphanumeric characters, periods, underscores, and hyphens',
   // don't display error if no value entered
   v => {
-    if(v) return hostnameCharsRegexp.test(v)
+    if(v) return serverNameCharsRegexp.test(v)
     else return true
   }
 )
 
-const hostnameFirstCharRegexp = /^[a-zA-Z0-9]{1}/
-export const hostnameFirstChar = helpers.withMessage(
+const serverNameFirstCharRegexp = /^[a-zA-Z0-9]{1}/
+export const serverNameFirstChar = helpers.withMessage(
   'The first character must be alphanumeric',
   // don't display error if no value entered
   v => {
-    if(v) return hostnameFirstCharRegexp.test(v)
+    if(v) return serverNameFirstCharRegexp.test(v)
     else return true
   }
 )
 
-const hostnameLengthRegexp = /^.{1,48}$/
-export const hostnameLength = helpers.withMessage(
+const serverNameLengthRegexp = /^.{1,48}$/
+export const serverNameLength = helpers.withMessage(
   'Must be between 1 and 49 characters',
-  v => hostnameLengthRegexp.test(v)
+  v => serverNameLengthRegexp.test(v)
 )
 
 /**
