@@ -12,6 +12,15 @@ export const addIPAddress = async (host, sessionId, serverId) => {
   return response.body
 }
 
+// create a backup
+export const createBackup = async (host, sessionId, serverId, comment) => {
+  const url = `${host}/servers/${serverId}/backups`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ comment })
+  return response.body
+}
+
 // create a new server
 export const createServer = async (host, sessionId, accountId, serverOptions) => {
   const url = `${host}/servers`
@@ -22,6 +31,14 @@ export const createServer = async (host, sessionId, accountId, serverOptions) =>
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send(options)
+  return response.body
+}
+
+// delete specific IP address from server
+export const deletebackup = async (host, sessionId, serverId, backupID) => {
+  const url = `${host}/servers/${serverId}/backups/${backupID}`
+  const response = await superagent.delete(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
@@ -39,6 +56,15 @@ export const deleteServer = async (host, sessionId, serverId) => {
   const url = `${host}/servers/${serverId}`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+// get backups for server by id
+export const getBackups = async (host, sessionId, serverId, options) => {
+  const url = `${host}/servers/${serverId}/backups`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(options)
   return response.body
 }
 
