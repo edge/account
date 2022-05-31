@@ -72,7 +72,7 @@
         <button
           @click.prevent="deploy"
           :disabled="!canDeploy"
-          class="w-full mt-3 md:max-w-xs md:mt-0 button button--success"
+          class="button button--success w-full md:max-w-xs"
         >
           <div v-if=isSaving class="flex">
             <span>Deploying</span>
@@ -81,10 +81,7 @@
           <span v-else>Deploy</span>
         </button>
         <!-- http error -->
-        <div v-if="serverError" class="flex items-center">
-          <ExclamationIcon class="w-5 mr-2 text-red" />
-          <span class="text-red">{{ serverError }}</span>
-        </div>
+        <HttpError :error=httpError />
       </div>
     </form>
   </div>
@@ -96,7 +93,7 @@
 import * as utils from '../../account-utils'
 import * as validation from '../../utils/validation'
 import Domain from '@/components/deploy/Domain'
-import { ExclamationIcon } from '@heroicons/vue/outline'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import NetworkRegion from '@/components/deploy/NetworkRegion'
 import OperatingSystem from '@/components/deploy/OperatingSystem'
@@ -115,7 +112,7 @@ export default {
   props: ['region'],
   components: {
     Domain,
-    ExclamationIcon,
+    HttpError,
     LoadingSpinner,
     NetworkRegion,
     OperatingSystem,
@@ -127,9 +124,9 @@ export default {
   data() {
     return {
       hostnameUpdated: false,
+      httpError: '',
       isSaving: false,
       selectedRegion: null,
-      serverError: '',
       serverOptions: {
         region: null,
         settings: {
@@ -208,32 +205,10 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          this.serverError = this.formatHttpError(error)
+          this.httpError = this.formatHttpError(error)
           this.isSaving = false
         }, 500)
       }
-    },
-    formatHttpError(error) {
-      const body = error.response.body
-      let field = ''
-      let message = ''
-      if (body.param) {
-        if (body.param === 'region') field = 'Region'
-        if (body.param === 'spec.cpus') field = 'vCPU'
-        if (body.param === 'spec.disk') field = 'Disk'
-        if (body.param === 'spec.ram') field = 'RAM'
-        if (body.param === 'settings.os') field = 'Operating System'
-        if (body.param === 'settings.hostname') field = 'Hostname'
-        if (body.param === 'settings.domain') field = 'Domain'
-      }
-      if (['Disk', 'RAM'].includes(field)) message = this.formatMiBInError(body.reason)
-      else message = body.reason || body.message
-      return `${field ? `${field}: ` : ''}${message}`
-    },
-    formatMiBInError(errorMessage) {
-      const MiB = errorMessage.replace(/^\D+/g, '')
-      const GB =  MiB ? `${MiB / 1024} GB` : ''
-      return errorMessage.replace(MiB, GB)
     },
     // toggleBackups () {
     //   this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
