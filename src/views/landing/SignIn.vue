@@ -183,10 +183,6 @@ export default {
           this.is2FACodeValid = true
           const payload = { account, session }
           this.$store.dispatch('signIn', payload)
-          // this.$store.commit('setAccount', account)
-          // this.$store.commit('setSession', session)
-          // this.$store.commit('setIsAuthed', true)
-          // localStorage.setItem('session', session._key)
           setTimeout(() => {
             this.$router.push('/servers')
           }, 800)
@@ -203,7 +199,7 @@ export default {
             setTimeout(() => {
               this.isLoading = false
               this.errors.accountNumberInput = 'We couldn\'t find that account'
-            }, 1000)
+            }, 800)
           }
         }
       }
