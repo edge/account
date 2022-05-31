@@ -345,15 +345,12 @@ export default {
 
       setTimeout(async () => {
         try {
-          const res = await utils.accounts.createAccount(process.env.VUE_APP_ACCOUNT_API_URL)
+          const { account, session } = await utils.accounts.createAccount(process.env.VUE_APP_ACCOUNT_API_URL)
           // finish number generator on newly generated account number and dispatch to store
           clearInterval(numGeneratorId)
-          this.accountNumber = res.account._key
-          this.$store.commit('setAccount', res.account)
-          this.$store.commit('setSession', res.session)
-          this.$store.commit('setIsAuthed', true)
-          localStorage.setItem('session', res.session._key)
-
+          this.accountNumber = account._key
+          const payload = { account, session }
+          this.$store.dispatch('signIn', payload)
           this.isGeneratingAccount = false
           this.changeStep(2)
         }

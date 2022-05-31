@@ -58,8 +58,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
-        await this.$store.commit('signOut')
-        localStorage.removeItem('session')
+        this.$store.dispatch('signOut')
         this.$router.push('/signin')
       }
       catch (error) {
