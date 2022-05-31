@@ -1,7 +1,7 @@
 <template>
   <div v-if="error" class="flex items-center">
     <ExclamationIcon class="w-5 mr-2 text-red" />
-    <span class="text-red">{{ error }}</span>
+    <span class="text-red">{{ formattedError }}</span>
   </div>
 </template>
 
@@ -30,25 +30,8 @@ export default {
     }
   },
   computed: {
-    hourlyCost() {
-      if (!this.selectedRegion) return 0
-      const { bandwidth, cpus, disk, ram } = this.selectedRegion.cost
-      const hourlyCost = (bandwidth * (this.serverOptions.spec.bandwidth || 10))
-        + (cpus * this.serverOptions.spec.cpus)
-        + (disk * this.serverOptions.spec.disk)
-        + (ram * this.serverOptions.spec.ram)
-      return hourlyCost
-    },
-    canDeploy() {
-      return !this.v$.serverOptions.$invalid || this.isSaving || this.deploying
-    },
-    deploying() {
-      return this.tasks.some(task => task.action === 'create')
-    }
-  },
-  methods: {
-    formatError(error) {
-      const body = error.response.body
+    formattedError() {
+      const body = this.error.response.body
 
       const field = body.param ? paramLookup[body.param] : ''
       let message = ''
@@ -56,7 +39,9 @@ export default {
       else message = body.reason || body.message
 
       return [field, message].join(': ')
-    },
+    }
+  },
+  methods: {
     formatMiBInError(errorMessage) {
       const MiB = errorMessage.replace(/^\D+/g, '')
       const GB =  MiB ? `${MiB / 1024} GB` : ''
