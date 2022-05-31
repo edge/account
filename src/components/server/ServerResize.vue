@@ -9,18 +9,19 @@
         @specs-changed="updateNewSpec"
       />
     </div>
-    <div class="relative my-8">
+    <div class="flex flex-col relative my-5 space-y-2">
       <button
         @click="toggleConfirmationModal"
-        :disabled="isSaving || !haveSpecsChanged || diskSizeDecreased"
-        class="h-full button button--success w-full md:max-w-xs"
+        :disabled="isLoading || !haveSpecsChanged || diskSizeDecreased"
+        class="button button--success w-full md:max-w-xs"
       >
-        <span v-if="isSaving">Resizing</span>
+        <span v-if="isLoading">Resizing</span>
         <span v-else>Resize</span>
-        <span v-if="isSaving">
+        <span v-if="isLoading">
           <LoadingSpinner />
         </span>
       </button>
+      <HttpError :error=httpError />
     </div>
     <!-- resize confirmation modal -->
     <ResizeConfirmation
@@ -41,6 +42,7 @@
 /* global process */
 
 import * as utils from '../../account-utils'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ResizeConfirmation from '@/components/confirmations/ResizeConfirmation'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
@@ -50,13 +52,15 @@ export default {
   name: 'ServerResize',
   props: ['region', 'server'],
   components: {
+    HttpError,
     LoadingSpinner,
     ResizeConfirmation,
     ServerSpecs
   },
   data: function () {
     return {
-      isSaving: false,
+      httpError: '',
+      isLoading: false,
       newSpec: {
         bandwidth: 10,
         cpus: null,
@@ -99,7 +103,9 @@ export default {
   },
   methods: {
     async resizeServer () {
+      this.isLoading = true
       try {
+        this.toggleConfirmationModal()
         const response = await utils.servers.resizeServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -109,11 +115,13 @@ export default {
         response.tasks.forEach(task => {
           this.$store.commit('addTask', task)
         })
-        this.toggleConfirmationModal()
+        this.isLoading = false
       }
       catch (error) {
-        // TODO - handle error
-        console.error(error)
+        setTimeout(() => {
+          this.httpError = error
+          this.isLoading = false
+        }, 500)
       }
     },
     toggleConfirmationModal() {
