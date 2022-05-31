@@ -90,7 +90,6 @@ export default {
         this.servers = servers.results
       }
       catch (error) {
-        // TODO - handle error
         console.error(error)
       }
       this.loading = false

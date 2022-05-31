@@ -257,7 +257,7 @@ export default {
     }
   },
   mounted() {
-    this.cpuValue = this.current ? (this.current.spec.cpus).toString() : 1
+    this.cpuValue = this.current ? this.current.spec.cpus : 1
     this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : 0.5
     this.storageValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
   },

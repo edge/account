@@ -21,12 +21,6 @@ const store = createStore({
     deleteTask(state, taskToDelete) {
       state.tasks = state.tasks.filter(task => task._key !== taskToDelete._key)
     },
-    signOut(state) {
-      state.account = null
-      state.isAuthed = false
-      state.session = null
-      state.tasks = []
-    },
     setAccount(state, account) {
       state.account = account
     },
@@ -49,6 +43,19 @@ const store = createStore({
         statusParams
       )
       commit('setTasks', response.results)
+    },
+    signIn({ commit }, payload) {
+      commit('setAccount', payload.account)
+      commit('setSession', payload.session)
+      commit('setIsAuthed', true)
+      localStorage.setItem('session', payload.session._key)
+    },
+    signOut({ commit }) {
+      commit('setAccount', null)
+      commit('setSession', null)
+      commit('setTasks', [])
+      commit('setIsAuthed', false)
+      localStorage.removeItem('session')
     },
     async updateAccount({ commit, state }) {
       const account = await utils.accounts.getAccount(
