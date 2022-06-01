@@ -77,3 +77,12 @@ export const domain = helpers.withMessage(
   'Maximum length is 255 characters.',
   v => domainRegexp.test(v)
 )
+
+/**
+ * Server backup comment validator.
+ */
+const serverCommentLengthRegexp = /^.{1,128}$/
+export const serverCommentLength = helpers.withMessage(
+  'Must be between 1 and 128 characters',
+  v => serverCommentLengthRegexp.test(v)
+)

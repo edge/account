@@ -43,8 +43,8 @@ const themes = {
     },
 
     '&:disabled, &.disabled': {
-      backgroundColor: colors.red[100],
-      borderColor: colors.red[100]
+      backgroundColor: colors.gray.DEFAULT,
+      borderColor: colors.gray.DEFAULT
     }
   },
   success: {

@@ -35,7 +35,7 @@ export const createServer = async (host, sessionId, accountId, serverOptions) =>
 }
 
 // delete specific IP address from server
-export const deletebackup = async (host, sessionId, serverId, backupID) => {
+export const deleteBackup = async (host, sessionId, serverId, backupID) => {
   const url = `${host}/servers/${serverId}/backups/${backupID}`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
@@ -98,6 +98,14 @@ export const resizeServer = async (host, sessionId, serverId, newServerSpec) => 
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send({ spec: newServerSpec })
+  return response.body
+}
+
+// resize server
+export const restoreBackup = async (host, sessionId, serverId, backupId) => {
+  const url = `${host}/servers/${serverId}/backups/${backupId}/restore`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 

@@ -9,6 +9,7 @@
 import { ExclamationIcon } from '@heroicons/vue/outline'
 
 const paramLookup = {
+  'comment': 'Comment',
   'region': 'Region',
   'spec.cpus': 'vCPU',
   'spec.disk': 'Disk',

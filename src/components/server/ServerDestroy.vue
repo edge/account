@@ -56,7 +56,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'ServerDestroy',
-  props: ['activeTasks', 'server'],
+  props: ['server'],
   data() {
     return {
       httpError: '',
