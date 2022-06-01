@@ -10,10 +10,11 @@ export const createAccount = async (host) => {
   return response.body
 }
 
-export const enable2FA = async (host, sessionId) => {
+export const enable2FA = async (host, sessionId, options) => {
   const url = `${host}/account/2fa`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(options)
   return response.body
 }
 
@@ -43,14 +44,6 @@ export const getAccount = async (host, sessionId) => {
   const url = `${host}/account`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-export const verify2FA = async (host, sessionId, otp) => {
-  const url = `${host}/account/2fa`
-  const response = await superagent.put(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ otp })
   return response.body
 }
 

@@ -45,12 +45,12 @@
         class="text-center overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
         v-mask="'# # # # # #'"
         placeholder="1 2 3 4 5 6"
-        @keypress="verifyOnEnter"
+        @keypress="enableOnEnter"
       />
       <button
         class="rounded-l-none text-sm py-3 button button--success w-32"
-        @click="verify2FA"
-        :disabled="!canVerify"
+        @click="enable2FA"
+        :disabled="!canEnable"
       >
         <div v-if="isLoading" class="flex flex-row items-center">
           <span>Verifying</span>
@@ -79,8 +79,9 @@ import * as validation from '../../utils/validation'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-import { mapActions, mapState } from 'vuex'
+import speakeasy from 'speakeasy'
 import useVuelidate from '@vuelidate/core'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   props: ['confirmEnabled', 'createAccount'],
@@ -96,7 +97,7 @@ export default {
         confirmationCode: ''
       },
       isLoading: false,
-      totpAuthUrl: null
+      secret: speakeasy.generateSecret()
     }
   },
   validations() {
@@ -108,51 +109,46 @@ export default {
   },
   computed: {
     ...mapState(['account', 'session']),
-    canVerify() {
+    canEnable() {
       return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode && !this.isLoading
     },
-    otpSecret() {
+    otp() {
       return this.confirmationCode.split(' ').join('')
+    },
+    totpAuthUrl() {
+      return this.secret.otpauth_url
     }
   },
   methods: {
     ...mapActions(['updateAccount']),
     async enable2FA() {
-      const res = await utils.accounts.enable2FA(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
-      this.totpAuthUrl = res.url
-    },
-    async verify2FA() {
       if (this.v$.confirmationCode.$invalid) return
+
       this.isLoading = true
-      console.log(this.otpSecret)
       try {
-        await utils.accounts.verify2FA(
+        await utils.accounts.enable2FA(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.otpSecret
+          {
+            otp: this.otp,
+            secret: this.secret.base32
+          }
         )
         await this.updateAccount()
         this.isLoading = false
       }
       catch (error) {
-        console.error(error)
         setTimeout(() => {
           this.errors.confirmationCode = 'Verification code invalid'
           this.isLoading = false
         }, 1000)
       }
     },
-    verifyOnEnter(event) {
+    enableOnEnter(event) {
       if (event.charCode !== 13) return
       event.preventDefault()
-      this.verify2FA()
+      this.enable2FA()
     }
-  },
-  mounted() {
-    this.enable2FA()
   },
   setup() {
     return {
