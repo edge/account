@@ -21,7 +21,7 @@
           >
             <div v-if="isLoading" class="flex items-center">
               <span>Creating</span>
-              <span><LoadingSpinner /></span>
+              <span class="ml-2"><LoadingSpinner /></span>
             </div>
             <span v-else>Create backup</span>
           </button>

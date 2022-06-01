@@ -26,7 +26,7 @@
           >
             <div v-if=isLoading class="flex">
               <span>Destroying</span>
-              <span><LoadingSpinner /></span>
+              <span class="ml-2"><LoadingSpinner /></span>
             </div>
             <span v-else>Destroy this server and backups</span>
           </button>

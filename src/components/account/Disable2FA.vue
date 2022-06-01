@@ -11,7 +11,7 @@
     >
       <div v-if="isLoading" class="flex items-center">
         <span>Disabling</span>
-        <span><LoadingSpinner /></span>
+        <span class="ml-2"><LoadingSpinner /></span>
       </div>
       <span v-else>Disable 2FA</span>
     </button>

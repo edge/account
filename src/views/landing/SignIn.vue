@@ -43,7 +43,7 @@
           >
             <div v-if="isLoading" class="flex flex-row">
               <span>Signing in</span>
-              <span><LoadingSpinner /></span>
+              <span class="ml-2"><LoadingSpinner /></span>
             </div>
             <span v-else>Sign in</span>
           </button>

@@ -23,7 +23,7 @@
         >
           <div v-if="isLoading" class="flex flex-row">
             <span>Adding</span>
-            <span><LoadingSpinner /></span>
+            <span class="ml-2"><LoadingSpinner /></span>
           </div>
           <span v-else>Add</span>
         </button>
@@ -80,7 +80,7 @@
         >
           <div v-if="isLoading" class="flex flex-row items-center">
             <span>Verifying</span>
-            <span><LoadingSpinner /></span>
+            <span class="ml-2"><LoadingSpinner /></span>
           </div>
           <span v-else>Verify</span>
         </button>

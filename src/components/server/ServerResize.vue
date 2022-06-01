@@ -17,7 +17,7 @@
       >
         <span v-if="isLoading">Resizing</span>
         <span v-else>Resize</span>
-        <span v-if="isLoading">
+        <span v-if="isLoading" class="ml-2">
           <LoadingSpinner />
         </span>
       </button>

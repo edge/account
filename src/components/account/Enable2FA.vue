@@ -54,7 +54,7 @@
       >
         <div v-if="isLoading" class="flex flex-row items-center">
           <span>Verifying</span>
-          <span><LoadingSpinner /></span>
+          <span class="ml-2"><LoadingSpinner /></span>
         </div>
         <span v-else >Enable 2FA</span>
       </button>

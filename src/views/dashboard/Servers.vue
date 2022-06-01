@@ -4,7 +4,7 @@
 
     <div v-if="loading && !servers.length" class="flex items-center">
       <span>Loading servers</span>
-      <LoadingSpinner />
+      <div class="ml-2"><LoadingSpinner /></div>
     </div>
 
     <ul v-else-if="servers.length" role="list" class="serverList">

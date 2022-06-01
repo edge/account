@@ -74,7 +74,7 @@
         >
           <div v-if=isSaving class="flex">
             <span>Deploying</span>
-            <span><LoadingSpinner /></span>
+            <span class="ml-2"><LoadingSpinner /></span>
           </div>
           <span v-else>Deploy</span>
         </button>

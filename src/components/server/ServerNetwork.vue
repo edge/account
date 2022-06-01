@@ -37,7 +37,7 @@
     <button @click="addIP" :disabled="isSaving || activeTask" class="h-full mt-5 button button--success">
       <span v-if="activeTask">{{ activeTask.status }}</span>
       <span v-else>Add IP address</span>
-      <span v-if="activeTask">
+      <span v-if="activeTask" class="ml-2">
         <LoadingSpinner />
       </span>
     </button>
