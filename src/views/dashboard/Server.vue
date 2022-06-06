@@ -20,8 +20,10 @@
         <div class="specsGradient" />
         <div class="flex items-center justify-start space-x-2 overflow-auto">
           <div class="flex items-center flex-shrink-0 space-x-1 text-gray-900">
-            <UbuntuIcon v-if="os.group === 'ubuntu'" className="server-icon" />
-            <CentOsIcon v-if="os.group === 'centos'" className="server-icon" />
+            <DistroIcon
+              :os="os.group"
+              className="server-icon"
+            />
             <span class="server-detail">{{ os.version }}</span>
           </div>
           <span class="text-gray-400 server-detail">/</span>
@@ -204,7 +206,7 @@
 
 import * as utils from '../../account-utils'
 // import ActiveTask from '@/components/ActiveTask'
-import CentOsIcon from '@/components/icons/Centos'
+import DistroIcon from '@/components/icons/DistroIcon'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ProgressBar from '@/components/ProgressBar'
@@ -216,7 +218,6 @@ import ServerHistory from '@/components/server/ServerHistory'
 import ServerOverview from '@/components/server/ServerOverview'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
-import UbuntuIcon from '@/components/icons/Ubuntu'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { mapActions, mapState } from 'vuex'
 
@@ -236,7 +237,7 @@ export default {
   },
   components: {
     // ActiveTask,
-    CentOsIcon,
+    DistroIcon,
     ExclamationIcon,
     ServerDestroy,
     LoadingSpinner,
@@ -252,8 +253,7 @@ export default {
     TabList,
     Tab,
     TabPanels,
-    TabPanel,
-    UbuntuIcon
+    TabPanel
   },
   computed: {
     ...mapState(['account', 'session', 'tasks']),

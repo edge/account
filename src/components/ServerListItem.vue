@@ -20,12 +20,8 @@
         <!-- OS -->
           <div class="serverList__header flex items-center">
             <div class="mr-1">
-              <UbuntuIcon
-                v-if="os.group === 'ubuntu'"
-                className="w-4 h-4"
-              />
-              <CentOsIcon
-                v-if="os.group === 'centos'"
+              <DistroIcon
+                :os="os.group"
                 className="w-4 h-4"
               />
             </div>
@@ -73,15 +69,13 @@
 </template>
 
 <script>
-import CentOsIcon from '@/components/icons/Centos'
-import UbuntuIcon from '@/components/icons/Ubuntu'
+import DistroIcon from '@/components/icons/DistroIcon'
 import moment from 'moment'
 
 export default {
   name: 'ServerListItem',
   components: {
-    CentOsIcon,
-    UbuntuIcon
+    DistroIcon
   },
   props: ['server', 'regions'],
   computed: {

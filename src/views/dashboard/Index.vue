@@ -48,8 +48,6 @@
         </div>
         <div class="flex items-center flex-shrink-0 mt-3 space-x-5 lg:space-x-0 lg:flex-1 lg:mt-0 lg:justify-between">
           <div class="flex items-center space-x-1 lg:justify-center serverList__cell">
-            <UbuntuIcon v-if="server.os === 'ubuntu'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
-            <CentOsIcon v-if="server.os === 'centos'" className="w-5 h-5 text-gray-400 flex-shrink-0" />
             <span>{{`${server.os.charAt(0).toUpperCase()}${server.os.substring(1)}`}} {{ server.osVersion }}</span>
           </div>
           <span class="lg:text-center serverList__cell">{{ server.ip }}</span>
@@ -78,8 +76,6 @@
 </template>
 
 <script>
-import CentOsIcon from '@/components/icons/Centos'
-import UbuntuIcon from '@/components/icons/Ubuntu'
 import { CloudUploadIcon, ServerIcon, ShieldCheckIcon } from '@heroicons/vue/outline'
 
 import { fetcher } from '../../utils/api'
@@ -92,11 +88,9 @@ export default {
     return 'Edge Account Portal » Index'
   },
   components: {
-    CentOsIcon,
     CloudUploadIcon,
     ServerIcon,
-    ShieldCheckIcon,
-    UbuntuIcon
+    ShieldCheckIcon
   },
   computed: {
     ...mapGetters({
