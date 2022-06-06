@@ -123,6 +123,7 @@ export default {
         confirmationCode: '',
         email: ''
       },
+      httpError: {response: {body: {message: 'test'}}},
       isLoading: false,
       step: 1
     }
@@ -173,13 +174,15 @@ export default {
           this.session._key,
           this.email
         )
-        await this.updateAccount()
-        this.isLoading = false
-        this.step = 2
+        setTimeout(async () => {
+          await this.updateAccount()
+          this.isLoading = false
+          this.step = 2
+        }, 500)
       }
       catch (error) {
-        this.errors.email = 'Oops, something went wrong. Please try again.'
         setTimeout(() => {
+          this.errors.email = 'Oops, something went wrong. Please try again.'
           this.isLoading = false
         }, 1000)
       }
@@ -202,8 +205,10 @@ export default {
           this.session._key,
           this.recoverySecret
         )
-        await this.updateAccount()
-        this.isLoading = false
+        setTimeout(async () => {
+          await this.updateAccount()
+          this.isLoading = false
+        }, 800)
       }
       catch (error) {
         setTimeout(() => {

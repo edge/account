@@ -4,11 +4,9 @@
       <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
       <span>Recovery email is enabled.</span>
     </div>
-    <span class="mb-2">PLACEHOLDER</span>
-    <span class="mb-2">Your recovery email is xxx@xxx.xxx.</span>
-    <span class="mb-4">You can remove it at any time with the button below</span>
+    <span class="mb-4">To remove your recovery email, please click the button below:</span>
     <button
-      class="button button--error w-52"
+      class="button button--error w-52 mb-1"
       @click=toggleConfirmationModal
     >
       <div v-if="isLoading" class="flex items-center">
@@ -17,6 +15,7 @@
       </div>
       <span v-else>Disable Recovery Eamil</span>
     </button>
+    <HttpError :error=httpError />
     <!-- disable recovery email confirmation modal -->
     <DisableRecoveryConfirmation
       v-show=showConfirmationModal
@@ -32,6 +31,7 @@
 import * as utils from '../../account-utils/index'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableRecoveryConfirmation from '@/components/confirmations/DisableRecoveryConfirmation'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapActions, mapState } from 'vuex'
 
@@ -39,10 +39,12 @@ export default {
   components: {
     BadgeCheckIcon,
     DisableRecoveryConfirmation,
+    HttpError,
     LoadingSpinner
   },
   data() {
     return {
+      httpError: '',
       isLoading: false,
       showConfirmationModal: false
     }
@@ -53,6 +55,7 @@ export default {
   methods: {
     ...mapActions(['updateAccount']),
     async disableRecovery() {
+      this.httpError = ''
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
@@ -60,12 +63,17 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
-        await this.updateAccount()
+        setTimeout(async () => {
+          await this.updateAccount()
+          this.isLoading = false
+        }, 500)
       }
       catch (error) {
-        console.error(error)
+        setTimeout(async () => {
+          this.httpError = error
+          this.isLoading = false
+        }, 500)
       }
-      this.isLoading = false
     },
     toggleConfirmationModal() {
       this.showConfirmationModal = !this.showConfirmationModal

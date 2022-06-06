@@ -34,12 +34,12 @@ export default {
     formattedError() {
       const body = this.error.response.body
 
-      const field = body.param ? paramLookup[body.param] : ''
+      const field = body.param && paramLookup[body.param]
       let message = ''
       if (['spec.disk', 'spec.ram'].includes(body.param)) message = this.formatMiBInError(body.reason)
       else message = body.reason || body.message
 
-      return [field, message].join(': ')
+      return field ? [field, message].join(': ') : message
     }
   },
   methods: {
