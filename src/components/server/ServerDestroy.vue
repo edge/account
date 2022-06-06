@@ -40,7 +40,7 @@
       ref="destroyConfirmation"
       @modal-confirm=destroyServer
       @modal-close=toggleConfirmationModal
-      :serverName="server.settings.hostname"
+      :serverName="server.settings.name || server.settings.hostname"
     />
   </div>
 </template>

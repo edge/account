@@ -33,7 +33,7 @@
       :currentSpec=currentSpec
       :newCost=newHourlyCost
       :newSpec=newSpec
-      :serverName="server.settings.hostname"
+      :serverName="server.settings.name || server.settings.hostname"
     />
   </div>
 </template>

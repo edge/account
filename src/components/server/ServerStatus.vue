@@ -25,7 +25,7 @@
       v-show=showConfirmationModal
       @modal-confirm=stopServer
       @modal-close=toggleConfirmationModal
-      :serverName="server.settings.hostname"
+      :serverName="server.settings.name || server.settings.hostname"
     />
   </div>
 </template>
