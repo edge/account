@@ -1,5 +1,6 @@
 <template>
   <img
+    class="grayscale"
     :class=className
     :src=filePath
     alt="distro icon"
@@ -25,5 +26,7 @@ export default {
 </script>
 
 <style scoped>
-
+.grayscale {
+  filter: grayscale()
+}
 </style>
