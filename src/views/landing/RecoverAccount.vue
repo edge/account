@@ -61,12 +61,11 @@
         Check your emails - we've sent you a code which you can enter below to recover your account number.
       </p>
       <!-- resend email button and feedback -->
-      <p
-        v-show="emailCooldown === 0"
-        class="text-gray-500 mb-0.5"
-      >
+      <p class="text-gray-500 mb-1">
+        Haven't received the email?
         <!-- eslint-disable-next-line max-len -->
-        Haven't received the email? <span @click="reRequestEmail" class="underline cursor-pointer hover:text-green">Click here</span> to resend it.
+        <span v-if="emailCooldown === 0"><span @click="reRequestEmail" class="underline cursor-pointer hover:text-green">Click here</span> to resend it.</span>
+        <span v-else>Please wait {{ emailCooldown }} seconds.</span>
       </p>
       <!-- confirmation code and button -->
       <div class="mt-4">
@@ -234,15 +233,17 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.email
         )
-        // set 15s email cooldown timer
-        this.emailCooldown = 15
-        this.iEmailCooldown = setInterval(() => {
-          this.emailCooldown = this.emailCooldown - 1
-          if (this.emailCooldown === 0) clearInterval(this.iEmailCooldown)
-        }, 1000)
+        setTimeout(() => {
+          // set 15s email cooldown timer
+          this.emailCooldown = 15
+          this.iEmailCooldown = setInterval(() => {
+            this.emailCooldown = this.emailCooldown - 1
+            if (this.emailCooldown === 0) clearInterval(this.iEmailCooldown)
+          }, 1000)
 
-        this.isLoading = false
-        this.step = 2
+          this.isLoading = false
+          this.step = 2
+        }, 500)
       }
       catch (error) {
         setTimeout(() => {
