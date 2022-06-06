@@ -18,11 +18,11 @@ export const enable2FA = async (host, sessionId, options) => {
   return response.body
 }
 
-export const enableRecovery = async (host, sessionId, emailAddress) => {
+export const enableRecovery = async (host, sessionId, address) => {
   const url = `${host}/account/recovery`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ address: emailAddress })
+    .send({ address })
   return response.body
 }
 
@@ -47,10 +47,24 @@ export const getAccount = async (host, sessionId) => {
   return response.body
 }
 
+export const recoverAccount = async (host, address) => {
+  const url = `${host}/account/recover`
+  const response = await superagent.post(url)
+    .send({ address })
+  return response.body
+}
+
+export const verifyRecoverAccount = async (host, address, secret) => {
+  const url = `${host}/account/recover`
+  const response = await superagent.put(url)
+    .send({ address, secret })
+  return response.body
+}
+
 export const verifyRecovery = async (host, sessionId, secret) => {
   const url = `${host}/account/recovery`
   const response = await superagent.put(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ secret: secret })
+    .send({ secret })
   return response.body
 }

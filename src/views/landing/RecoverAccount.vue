@@ -39,7 +39,7 @@
           <span v-else>Send Recovery Email</span>
         </button>
         <button
-          @click.prevent="returnToSignIn"
+          @click.prevent="continueToAccount"
           class="button button--solid"
           >
           <span>Cancel</span>
@@ -80,13 +80,14 @@
       <!-- return to sign in button -->
       <div class="flex flex-col mt-6">
         <button
-          @click.prevent="returnToSignIn"
+          @click.prevent="continueToAccount"
           class="button button--solid"
           >
           <span>Cancel</span>
         </button>
       </div>
     </div>
+
     <!-- display account number step -->
     <div v-show="step === 3">
       <p class="text-lg">Recover your account.</p>
@@ -113,10 +114,10 @@
       <!-- return to sign in button -->
       <div class="flex flex-col mt-6">
         <button
-          @click.prevent="returnToSignIn"
-          class="button button--solid"
+          @click.prevent="continueToAccount"
+          class="button button--success"
           >
-          <span>Return to Sign In</span>
+          <span>Continue to Your Account</span>
         </button>
       </div>
     </div>
@@ -124,7 +125,9 @@
 </template>
 
 <script>
-// import * as utils from '../../account-utils/index'
+/* global process */
+
+import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
@@ -159,6 +162,7 @@ export default {
       iEmailCooldown: null,
       isLoading: false,
       isRecoveryCodeValid: false,
+      recoveryCode: null,
       step: 1
     }
   },
@@ -198,8 +202,8 @@ export default {
     resetRecoveryCodeError() {
       this.errors.recoveryCode = ''
     },
-    returnToSignIn() {
-      this.$router.push({ name: 'Sign In' })
+    continueToAccount() {
+      this.$router.push({ name: 'Index' })
     },
     async reRequestEmail() {
       this.showEmailCooldownError = false
@@ -216,15 +220,20 @@ export default {
         }, 5000)
       }
       catch (error) {
-        this.errors.email = 'Oops, something went wrong. Please try again.'
+        setTimeout(() => {
+          this.errors.email = 'Oops, something went wrong. Please try again.'
+          this.isLoading = false
+        }, 1000)
       }
     },
     async requestEmail() {
       if (this.v$.email.$invalid) return
       this.isLoading = true
       try {
-        // recover account route doesn't yet exist
-        // await utils.accounts.recoverAccount(process.env.VUE_APP_ACCOUNT_API_URL, this.email)
+        await utils.accounts.recoverAccount(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.email
+        )
         // set 15s email cooldown timer
         this.emailCooldown = 15
         this.iEmailCooldown = setInterval(() => {
@@ -236,8 +245,8 @@ export default {
         this.step = 2
       }
       catch (error) {
-        this.errors.email = 'We don\'t appear to have an account with this email address.'
         setTimeout(() => {
+          this.errors.email = 'We don\'t appear to have an account with this email address.'
           this.isLoading = false
         }, 1000)
       }
@@ -249,11 +258,18 @@ export default {
     },
     async verifyCode() {
       try {
-        // verify recovery code route doesn't yet exist
-        // await utils.accounts.verifyRecoveryCode(process.env.VUE_APP_ACCOUNT_API_URL, this.email, this.recoveryCode)
+        const { account, session } = await utils.accounts.verifyRecoverAccount(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.email,
+          this.recoveryCode
+        )
+
+        this.accountNumber = account._key
+        const payload = { account, session }
+        this.$store.dispatch('signIn', payload)
+
         this.isRecoveryCodeValid = true
         this.step = 3
-        this.accountNumber = '1234567890123456'
       }
       catch (error) {
         this.errors.recoveryCode = 'Recovery code invalid'
