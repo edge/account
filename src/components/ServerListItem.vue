@@ -22,11 +22,11 @@
             <div class="mr-1">
               <UbuntuIcon
                 v-if="os.group === 'ubuntu'"
-                className="w-5 h-5"
+                className="w-4 h-4"
               />
               <CentOsIcon
                 v-if="os.group === 'centos'"
-                className="w-5 h-5"
+                className="w-4 h-4"
               />
             </div>
             <span>{{ os.version }}</span>

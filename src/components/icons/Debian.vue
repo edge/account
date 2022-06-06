@@ -1,15 +1,14 @@
-
 <template>
   <img
     :class=className
-    src="/assets/images/512_centos_purple.png"
+    src="/assets/images/512_debian.png"
     alt="debian icon"
   >
 </template>
 
 <script>
 export default {
-  name: 'CentOsIcon',
+  name: 'DebianIcon',
   props: ['className']
 }
 </script>
