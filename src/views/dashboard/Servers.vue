@@ -104,6 +104,7 @@ export default {
   },
   unmounted() {
     clearInterval(this.iServers)
+    this.iServers = null
   }
 }
 </script>

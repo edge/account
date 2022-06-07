@@ -396,7 +396,6 @@ export default {
           this.serverId
         )
         this.server = server
-        await this.updateRegion()
         await this.updateTasks()
       }
       catch (error) {
@@ -420,6 +419,7 @@ export default {
   async mounted() {
     this.loading = true
     await this.updateServer()
+    await this.updateRegion()
     this.iServer = setInterval(() => {
       this.updateServer()
     }, 5 * 1000)
