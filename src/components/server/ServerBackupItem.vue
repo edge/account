@@ -1,20 +1,20 @@
 <template>
   <tr>
-    <td class="tableBody__cell date">
+    <td class="tableBody__cell date" :title="formattedDate">
       <div class="flex flex-row items-center">
         <div><CalendarIcon class="table__icon" /></div>
         <span>{{ formattedDate }}</span>
       </div>
     </td>
-    <td class="tableBody__cell time">
+    <td class="tableBody__cell time" :title="formattedTime">
       <div class="flex flex-row items-center">
         <div><ClockIcon class="table__icon" /></div>
         <span>{{ formattedTime }}</span>
       </div>
     </td>
-    <td class="tableBody__cell status">
+    <td class="tableBody__cell status" :title="backup.status">
       <span class="mr-2 lg:hidden">Status:</span>
-      <div
+      <span
         class="capitalize text-gray-500"
         :class="[
           isInactive ? 'text-red' : '',
@@ -22,7 +22,7 @@
         ]"
       >
         <span>{{ backup.status }}</span>
-      </div>
+      </span>
     </td>
     <td class="tableBody__cell comment" :title="backup.comment">
       <span class="backup-comment">{{ backup.comment }}</span>
@@ -90,15 +90,11 @@ export default {
     backupId() {
       return this.backup._key
     },
-    creationDate() {
-      const dateStr = this.backup.name.split('-').slice(-3).join('-')
-      return dateStr
-    },
     formattedDate() {
-      return moment(this.creationDate).format('LL')
+      return moment(this.backup.created).format('LL')
     },
     formattedTime() {
-      return moment(this.creationDate).format('LTS')
+      return moment(this.backup.created).format('LTS')
     },
     isActionDisabled() {
       return !this.isActive || this.isRestoring || this.isDeleting
@@ -220,7 +216,7 @@ tr {
   }
 
   .tableBody__cell {
-    @apply text-sm px-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
   }
 
   .backup-comment {

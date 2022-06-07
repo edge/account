@@ -35,16 +35,16 @@
         <table class="divide-y divide-gray-200">
           <thead class="hidden lg:table-header-group tableHead">
             <tr>
-              <th scope="col" class="tableHead__cell" width="160">
+              <th scope="col" class="tableHead__cell" width="120">
                 Date
               </th>
-              <th scope="col" class="tableHead__cell" width="110">
+              <th scope="col" class="tableHead__cell" width="90">
                 Time
               </th>
-              <th scope="col" class="tableHead__cell" width="110">
+              <th scope="col" class="tableHead__cell" width="">
                 Status
               </th>
-              <th scope="col" class="tableHead__cell">
+              <th scope="col" class="tableHead__cell" width="">
                 Comment
               </th>
               <th scope="col" class="tableHead__cell actions" width="220"></th>
@@ -161,7 +161,7 @@ export default {
   @apply border-gray-300 border-b rounded-lg w-full bg-gray-50;
 }
 .tableHead__cell {
-  @apply px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
+  @apply pl-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
 }
 .tableBody {
   @apply bg-white divide-y divide-gray-200;
