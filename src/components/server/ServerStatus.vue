@@ -4,7 +4,7 @@
       @click="toggleServer"
       :class="enabled ? 'bg-green' : 'bg-gray-300'"
       class="switch"
-      :disabled="toggling"
+      :disabled="toggling || disableActions"
     >
       <span class="sr-only">Use setting</span>
       <span
@@ -41,7 +41,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'ServerStatus',
-  props: ['activeTasks', 'server'],
+  props: ['activeTasks', 'disableActions', 'server'],
   data() {
     return {
       showConfirmationModal: false

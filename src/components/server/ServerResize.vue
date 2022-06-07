@@ -12,7 +12,7 @@
     <div class="flex flex-col relative my-5 space-y-2">
       <button
         @click="toggleConfirmationModal"
-        :disabled="isLoading || !haveSpecsChanged || diskSizeDecreased"
+        :disabled=!canResize
         class="button button--success w-full md:max-w-xs"
       >
         <span v-if="isLoading">Resizing</span>
@@ -50,7 +50,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'ServerResize',
-  props: ['region', 'server'],
+  props: ['disableActions', 'region', 'server'],
   components: {
     HttpError,
     LoadingSpinner,
@@ -72,6 +72,9 @@ export default {
   },
   computed: {
     ...mapState(['account', 'session']),
+    canResize() {
+      return !this.isLoading && this.haveSpecsChanged && !this.diskSizeDecreased && !this.disableActions
+    },
     currentHourlyCost() {
       return (
         (this.region.cost.bandwidth * (this.currentSpec.bandwidth || 10)) +

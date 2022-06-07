@@ -15,13 +15,14 @@
     <td class="tableBody__cell status" :title="backup.status">
       <span class="mr-2 lg:hidden">Status:</span>
       <span
-        class="capitalize text-gray-500"
+        class="flex items-center capitalize text-gray-500"
         :class="[
           isInactive ? 'text-red' : '',
           isActive ? 'text-green' : ''
         ]"
       >
         <span>{{ backup.status }}</span>
+        <div><LoadingSpinner v-if=isCreating class="w-3.5 h-3.5 ml-1 text-gray" /></div>
       </span>
     </td>
     <td class="tableBody__cell comment" :title="backup.comment">
@@ -30,7 +31,7 @@
     <td class="tableBody__cell actions">
       <div class="flex items-center w-full space-x-2 action_buttons">
         <button
-          :disabled="isActionDisabled"
+          :disabled="disableActions"
           class="tableButton restore"
           @click.prevent="restoreBackup"
         >
@@ -43,7 +44,7 @@
           </div>
         </button>
         <button
-          :disabled="isActionDisabled"
+          :disabled="disableActions"
           class="tableButton button-error delete"
           @click.prevent="deleteBackup"
         >
@@ -78,7 +79,7 @@ export default {
     RefreshIcon,
     TrashIcon
   },
-  props: ['backup'],
+  props: ['activeTasks', 'disableActions', 'backup'],
   data: function () {
     return {
       httpError: '',
@@ -86,9 +87,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session', 'tasks']),
+    ...mapState(['session']),
     backupId() {
       return this.backup._key
+    },
+    backupTasks() {
+      return this.activeTasks.filter(task => task.data._key === this.backupId)
     },
     formattedDate() {
       return moment(this.backup.created).format('LL')
@@ -96,20 +100,20 @@ export default {
     formattedTime() {
       return moment(this.backup.created).format('LTS')
     },
-    isActionDisabled() {
-      return !this.isActive || this.isRestoring || this.isDeleting
-    },
     isActive() {
       return this.backup.status === 'active'
     },
+    isCreating() {
+      return this.backupTasks.some(task => task.action === 'createBackup') || this.backup.status === 'creating'
+    },
     isDeleting() {
-      return this.backup.status === 'deleting'
+      return this.backupTasks.some(task => task.action === 'deleteBackup') || this.backup.status === 'deleting'
     },
     isInactive() {
       return ['crashed', 'deleted', 'deleting'].includes(this.backup.status)
     },
     isRestoring() {
-      return false
+      return this.backupTasks.some(task => task.action === 'restoreBackup')
     },
     serverId() {
       return this.$route.params.id
@@ -123,7 +127,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
-          this.backup._key
+          this.backupId
         )
         this.$emit('update-backups')
         this.$store.commit('addTask', response.task)
@@ -141,7 +145,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
-          this.backup._key
+          this.backupId
         )
         this.$emit('update-backups')
         this.$store.commit('addTask', response.task)

@@ -14,9 +14,9 @@
             class="bg-transparent input input--floating"
           />
         </div>
-        <div class="relative">
+        <div>
           <button @click="createBackup"
-            :disabled="isLoading"
+            :disabled="!canCreate"
             class="mt-5 lg:mt-0 button button--success"
           >
             <div v-if="isLoading" class="flex items-center">
@@ -27,6 +27,7 @@
           </button>
         </div>
       </div>
+      <HttpError :error=httpError class="mt-2" />
     </div>
     <div class="box">
       <h4>Existing backups</h4>
@@ -53,7 +54,9 @@
           <tbody class="tableBody">
             <ServerBackupItem
               v-for="backup in backups"
+              :activeTasks=activeTasks
               :backup=backup
+              :disableActions=disableBackupActions
               :key="backup.name"
               @update-backups=updateBackups
             />
@@ -71,6 +74,7 @@
 
 import * as utils from '../../account-utils'
 import * as validation from '../../utils/validation'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ServerBackupItem from '@/components/server/ServerBackupItem'
 import { mapState } from 'vuex'
@@ -79,14 +83,15 @@ import useVuelidate from '@vuelidate/core'
 export default {
   name: 'ServerBackups',
   components: {
+    HttpError,
     LoadingSpinner,
     ServerBackupItem
   },
-  props: ['server'],
+  props: ['activeTasks', 'disableActions', 'server'],
   data: function () {
     return {
       comment: '',
-      backups: this.server.backups,
+      backups: [],
       httpError: '',
       iBackups: [],
       isLoading: false
@@ -99,6 +104,13 @@ export default {
   },
   computed: {
     ...mapState(['session']),
+    canCreate() {
+      return !this.isLoading && !this.disableBackupActions && !this.v$.comment.$invalid
+    },
+    disableBackupActions() {
+      // eslint-disable-next-line max-len
+      return this.disableActions || this.backups.some(backup => ['creating', 'deleting', 'restoring'].includes(backup.status))
+    },
     serverId() {
       return this.$route.params.id
     }
@@ -107,6 +119,7 @@ export default {
     async createBackup() {
       this.isLoading = true
       try {
+        this.httpError = ''
         // this.toggleConfirmationModal()
         const response = await utils.servers.createBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -120,7 +133,6 @@ export default {
         this.isLoading = false
       }
       catch (error) {
-        console.error(error)
         setTimeout(() => {
           this.httpError = error
           this.comment = ''

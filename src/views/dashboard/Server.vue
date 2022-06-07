@@ -47,7 +47,11 @@
       </div>
 
       <div class="flex-shrink-0">
-        <ServerStatus :activeTasks=activeTasks :server=server />
+        <ServerStatus
+          :activeTasks=activeTasks
+          :disableActions=disableActions
+          :server=server
+        />
       </div>
 
     </div>
@@ -148,7 +152,10 @@
           <TabPanels class="mt-5">
             <!-- overview -->
             <TabPanel>
-              <ServerOverview :server=server :metrics=server.metrics />
+              <ServerOverview
+                :server=server
+                :metrics=server.metrics
+              />
             </TabPanel>
 
             <!-- console -->
@@ -158,12 +165,21 @@
 
             <!-- resize -->
             <TabPanel>
-              <ServerResize :activeTasks=activeTasks :server=server :region=region />
+              <ServerResize
+                :activeTasks=activeTasks
+                :disableActions=disableActions
+                :server=server
+                :region=region
+              />
             </TabPanel>
 
             <!-- backups -->
             <TabPanel>
-              <ServerBackups :activeTasks=activeTasks :server=server />
+              <ServerBackups
+                :activeTasks=activeTasks
+                :disableActions=disableActions
+                :server=server
+              />
             </TabPanel>
 
             <!-- network -->
@@ -183,7 +199,11 @@
 
             <!-- destroy -->
             <TabPanel>
-              <ServerDestroy :activeTasks=activeTasks :server=server />
+              <ServerDestroy
+                :activeTasks=activeTasks
+                :disableActions=disableActions
+                :server=server
+              />
             </TabPanel>
           </TabPanels>
         </TabGroup>
@@ -265,6 +285,9 @@ export default {
     },
     destroying() {
       return this.activeTasks.some(task => task.action === 'destroy')
+    },
+    disableActions() {
+      return this.activeTasks.length > 0
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`

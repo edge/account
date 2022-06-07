@@ -21,7 +21,7 @@
         <div class="flex flex-col space-y-2">
           <button
             class="button button--error w-full md:max-w-xs"
-            :disabled="isLoading"
+            :disabled="isLoading || disableActions"
             @click.prevent="toggleConfirmationModal"
           >
             <div v-if=isLoading class="flex">
@@ -56,7 +56,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'ServerDestroy',
-  props: ['server'],
+  props: ['disableActions', 'server'],
   data() {
     return {
       httpError: '',
