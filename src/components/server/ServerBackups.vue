@@ -6,11 +6,11 @@
       <p class="mt-3 text-gray-500">A backup copy is a disk image of the virtual machine, which is used for recovery in case the original data are lost.</p>
       <div class="flex flex-col w-full mt-5 lg:space-x-4 lg:items-end lg:flex-row">
         <div class="flex-1 w-full lg:w-auto input-group">
-          <label class="label">Backup comment</label>
+          <label class="label">Backup name</label>
           <input
             type="text"
             v-model=comment
-            placeholder="Add backup comment here"
+            placeholder="Add backup name here"
             class="bg-transparent input input--floating"
           />
         </div>
@@ -19,7 +19,7 @@
             :disabled="!canCreate"
             class="mt-5 lg:mt-0 button button--success"
           >
-            <div v-if="isLoading" class="flex items-center">
+            <div v-if="isCreating" class="flex items-center">
               <span>Creating</span>
               <span class="ml-2"><LoadingSpinner /></span>
             </div>
@@ -43,22 +43,23 @@
                 Time
               </th>
               <th scope="col" class="tableHead__cell" width="">
-                Status
+                Name
               </th>
               <th scope="col" class="tableHead__cell" width="">
-                Comment
+                Status
               </th>
               <th scope="col" class="tableHead__cell actions" width="220"></th>
             </tr>
           </thead>
           <tbody class="tableBody">
+            <LoadingTableDataRow v-if="isLoadingBackups" :colspan="5"/>
             <ServerBackupItem
+              v-else
               v-for="backup in backups"
               :activeTasks=activeTasks
               :backup=backup
-              :disableActions=disableBackupActions
+              :disableActions=disableActions
               :key="backup.name"
-              @update-backups=updateBackups
             />
           </tbody>
         </table>
@@ -76,6 +77,7 @@ import * as utils from '../../account-utils'
 import * as validation from '../../utils/validation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import ServerBackupItem from '@/components/server/ServerBackupItem'
 import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
@@ -85,16 +87,23 @@ export default {
   components: {
     HttpError,
     LoadingSpinner,
+    LoadingTableDataRow,
     ServerBackupItem
   },
-  props: ['activeTasks', 'disableActions', 'server'],
+  props: [
+    'activeTasks',
+    'backups',
+    'disableActions',
+    'isLoadingBackups',
+    'server'
+  ],
   data: function () {
     return {
       comment: '',
-      backups: [],
       httpError: '',
       iBackups: [],
-      isLoading: false
+      isCreating: false,
+      isUpdating: false
     }
   },
   validations() {
@@ -105,11 +114,7 @@ export default {
   computed: {
     ...mapState(['session']),
     canCreate() {
-      return !this.isLoading && !this.disableBackupActions && !this.v$.comment.$invalid
-    },
-    disableBackupActions() {
-      // eslint-disable-next-line max-len
-      return this.disableActions || this.backups.some(backup => ['creating', 'deleting', 'restoring'].includes(backup.status))
+      return !this.isCreating && !this.disableActions && !this.v$.comment.$invalid
     },
     serverId() {
       return this.$route.params.id
@@ -117,7 +122,7 @@ export default {
   },
   methods: {
     async createBackup() {
-      this.isLoading = true
+      this.isCreating = true
       try {
         this.httpError = ''
         // this.toggleConfirmationModal()
@@ -127,36 +132,19 @@ export default {
           this.serverId,
           this.comment
         )
-        this.updateBackups()
+        this.$emit('update-backups')
         this.$store.commit('addTask', response.task)
         this.comment = ''
-        this.isLoading = false
+        this.isCreating = false
       }
       catch (error) {
         setTimeout(() => {
           this.httpError = error
           this.comment = ''
-          this.isLoading = false
+          this.isCreating = false
         }, 500)
       }
-    },
-    async updateBackups() {
-      const response = await utils.servers.getBackups(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.backups = response.results
     }
-  },
-  mounted() {
-    this.updateBackups()
-    this.iBackups = setInterval(() => {
-      this.updateBackups()
-    }, 5000)
-  },
-  unmounted() {
-    clearInterval(this.iBackups)
   },
   setup() {
     return {
