@@ -75,13 +75,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
-    ubuntuList() {
-      return this.osList.filter(os => os.group === 'ubuntu')
-    },
-    centosList() {
-      return this.osList.filter(os => os.group === 'centos')
-    }
+    ...mapState(['session'])
   },
   methods: {
     formatOsName(os) {
@@ -99,14 +93,16 @@ export default {
             o[d.group] = []
             this.selectedVersion[d.group] = null
           }
-          if (!this.selectedVersion[d.group]) this.selectedVersion[d.group] = d.id
+          if (d.default) {
+            console.log(d)
+            this.selectedVersion[d.group] = d.id
+          }
           o[d.group].push(d)
           return o
         }, {})
-        this.selectedOS = 'centos'
+        this.selectedOS = os.results[0].group
       }
       catch (error) {
-        // TODO - handle error
         console.error(error)
       }
     },
