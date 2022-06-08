@@ -78,8 +78,8 @@ export default {
     }, 5000)
   },
   unmounted() {
-    this.iTasks = null
     clearInterval(this.iTasks)
+    this.iTasks = null
   }
 }
 </script>
