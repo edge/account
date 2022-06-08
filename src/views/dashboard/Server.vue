@@ -3,6 +3,8 @@
     <!-- title -->
     <h1 class="mb-0 leading-none">{{ server.settings.name ||server.settings.hostname }}</h1>
 
+    <span v-if="disableActions"></span>
+
     <!-- ip and domain -->
     <div class="flex items-center space-x-2 mt-1 text-gray-500">
       <span>{{ serverIp }}</span>
@@ -55,7 +57,7 @@
 
     <div class="grid items-start grid-cols-12 mt-12 space-x-10">
       <div class="col-span-12">
-        <div v-if=serverDestroyed class="box">
+        <div v-if=isDestroyed class="box">
           <div class="flex flex-col items-center justify-center text-center">
             <div class="flex items-center mt-4">
               <ExclamationIcon class="text-red h-5 mr-2" />
@@ -72,11 +74,11 @@
         </div>
 
         <!-- action in progress section -->
-        <div v-else-if="creating || destroying || resizing" class="box box--tall">
+        <div v-else-if="isCreating || isDestroying || isResizing" class="box box--tall">
           <div class="flex flex-col items-center justify-center text-center">
             <h4 class="mt-4">{{ progressTitle }}</h4>
             <p class="mt-2 mb-0 text-gray-500">{{ progressMessage }}</p>
-            <div class="mt-4"><ProgressBar :red="destroying" /></div>
+            <div class="mt-4"><ProgressBar :red="isDestroying" /></div>
           </div>
         </div>
 
@@ -174,8 +176,11 @@
             <TabPanel>
               <ServerBackups
                 :activeTasks=activeTasks
+                :backups=backups
                 :disableActions=disableActions
+                :isLoadingBackups=isLoadingBackups
                 :server=server
+                @update-backups=updateBackups
               />
             </TabPanel>
 
@@ -222,7 +227,6 @@
 /* global process */
 
 import * as utils from '../../account-utils'
-// import ActiveTask from '@/components/ActiveTask'
 import DistroIcon from '@/components/icons/DistroIcon'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -248,15 +252,16 @@ export default {
   },
   data: function () {
     return {
+      backups: [],
       iCheckServerStatus: null,
       iServer: null,
+      isUpdatingBackups: false,
       loading: false,
       region: null,
       server: null
     }
   },
   components: {
-    // ActiveTask,
     DistroIcon,
     ExclamationIcon,
     ServerDestroy,
@@ -280,14 +285,9 @@ export default {
     activeTasks() {
       return this.$store.getters.tasksByServerId(this.serverId)
     },
-    creating() {
-      return this.activeTasks.some(task => task.action === 'create')
-    },
-    destroying() {
-      return this.activeTasks.some(task => task.action === 'destroy')
-    },
     disableActions() {
-      return this.activeTasks.length > 0
+      // eslint-disable-next-line max-len
+      return this.activeTasks.length > 0 || this.backups.some(backup => ['creating', 'deleting', 'restoring'].includes(backup.status))
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
@@ -300,40 +300,50 @@ export default {
     isActive() {
       return this.server.status === 'active'
     },
+    isCreating() {
+      return this.activeTasks.some(task => task.action === 'create')
+    },
+    isDestroyed() {
+      return this.server.status === 'deleted'
+    },
+    isDestroying() {
+      return this.activeTasks.some(task => task.action === 'destroy')
+    },
     isInactive() {
       return this.server.status === 'stopped' || this.server.status === 'crashed'
+    },
+    isLoadingBackups() {
+      if (this.backups.length) return false
+      return this.isUpdatingBackups
+    },
+    isResizing() {
+      const diskResize = this.activeTasks.some(task => task.action === 'resizeDisk')
+      const resourceResize = this.activeTasks.some(task => task.action === 'resizeResource')
+      return diskResize || resourceResize
     },
     os() {
       return this.server.settings.os
     },
     progressMessage() {
       // eslint-disable-next-line max-len
-      if (this.creating) return 'Server metrics and other information will be displayed here once deployment is complete.'
+      if (this.isCreating) return 'Server metrics and other information will be displayed here once deployment is complete.'
       // eslint-disable-next-line max-len
-      if (this.destroying) return 'All server data and associated backups are being destroyed. Upon destruction, you will no longer be billed for this server.'
+      if (this.isDestroying) return 'All server data and associated backups are being destroyed. Upon destruction, you will no longer be billed for this server.'
       // eslint-disable-next-line max-len
-      if (this.resizing) return 'Server metrics and other information will be available again once server resize is complete.'
+      if (this.isResizing) return 'Server metrics and other information will be available again once server resize is complete.'
       else return ''
     },
     progressTitle() {
-      if (this.creating) return 'Deploying your new server'
-      if (this.destroying) return 'Destroying your server'
-      if (this.resizing) return 'Resizing your server'
+      if (this.isCreating) return 'Deploying your new server'
+      if (this.isDestroying) return 'Destroying your server'
+      if (this.isResizing) return 'Resizing your server'
       else return ''
-    },
-    resizing() {
-      const diskResize = this.activeTasks.some(task => task.action === 'resizeDisk')
-      const resourceResize = this.activeTasks.some(task => task.action === 'resizeResource')
-      return diskResize || resourceResize
-    },
-    serverDestroyed() {
-      return this.server.status === 'deleted'
     },
     serverId() {
       return this.$route.params.id
     },
     serverIp() {
-      if (this.server.network.ip) return this.server.network.ip[0]
+      if (this.server.network) return this.server.network.ip[0]
       return ''
     }
   },
@@ -350,60 +360,18 @@ export default {
         if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
     },
-    formatActiveTask(data) {
-      const task = {
-        id: data.id
-      }
-
-      if (data.type === 'vm_backup') {
-        task.status = 'Backing up VM'
-      }
-
-      if (data.type === 'host_create') {
-        task.status = 'Creating VM'
-      }
-
-      if (data.type === 'host_delete') {
-        task.status = 'Destroying VM'
-      }
-
-      if (data.type === 'host_change_params') {
-        task.status = 'Changing VM parameters'
-      }
-
-      if (data.type === 'host_restart') {
-        task.status = 'Restarting VM'
-      }
-
-      if (data.type === 'host_restore') {
-        task.status = 'Restoring VM'
-      }
-
-      if (data.type === 'host_start') {
-        task.status = 'Starting VM'
-      }
-
-      if (data.type === 'host_stop') {
-        task.status = 'Stopping VM'
-      }
-
-      if (data.type === 'ip_allocate') {
-        task.status = 'Adding IP address'
-      }
-
-      if (data.type === 'ip_delete') {
-        task.status = 'Removing IP address'
-      }
-
-      console.log('data', data)
-
-      return task
-    },
     returnToServers() {
       this.$router.push({ name: 'Servers' })
     },
     async updateBackups() {
-
+      this.isUpdatingBackups = true
+      const response = await utils.servers.getBackups(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId
+      )
+      this.backups = response.results
+      this.isUpdatingBackups = false
     },
     async updateRegion() {
       try {
@@ -426,6 +394,7 @@ export default {
           this.serverId
         )
         this.server = server
+        this.updateBackups()
       }
       catch (error) {
         console.error(error)
