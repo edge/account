@@ -33,7 +33,7 @@
         <button
           :disabled="disableActions"
           class="tableButton restore"
-          @click.prevent="restoreBackup"
+          @click.prevent="toggleRestoreConfirmationModal"
         >
           <div class="flex items-center">
             <div>
@@ -46,7 +46,7 @@
         <button
           :disabled="disableActions"
           class="tableButton button-error delete"
-          @click.prevent="deleteBackup"
+          @click.prevent="toggleDestroyConfirmationModal"
         >
           <div class="flex items-center">
             <div>
@@ -58,6 +58,20 @@
         </button>
       </div>
     </td>
+
+    <!-- destroy and restore confirmation modals -->
+    <DestroyBackupConfirmation
+      v-show=showDestroyConfirmationModal
+      :backup=backup
+      @modal-confirm=deleteBackup
+      @modal-close=toggleDestroyConfirmationModal
+    />
+    <RestoreBackupConfirmation
+      v-show=showRestoreConfirmationModal
+      :backup=backup
+      @modal-confirm=restoreBackup
+      @modal-close=toggleRestoreConfirmationModal
+    />
   </tr>
 </template>
 
@@ -65,7 +79,9 @@
 /* global process */
 
 import * as utils from '../../account-utils'
+import DestroyBackupConfirmation from '@/components/confirmations/DestroyBackupConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import RestoreBackupConfirmation from '@/components/confirmations/RestoreBackupConfirmation'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import { CalendarIcon, ClockIcon, RefreshIcon, TrashIcon } from '@heroicons/vue/outline'
@@ -75,15 +91,19 @@ export default {
   components: {
     CalendarIcon,
     ClockIcon,
+    DestroyBackupConfirmation,
     LoadingSpinner,
     RefreshIcon,
+    RestoreBackupConfirmation,
     TrashIcon
   },
   props: ['activeTasks', 'disableActions', 'backup'],
   data: function () {
     return {
       httpError: '',
-      isLoading: false
+      isLoading: false,
+      showDestroyConfirmationModal: false,
+      showRestoreConfirmationModal: false
     }
   },
   computed: {
@@ -122,6 +142,7 @@ export default {
   methods: {
     async deleteBackup() {
       this.isLoading = true
+      this.toggleDestroyConfirmationModal()
       try {
         const response = await utils.servers.deleteBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -140,6 +161,7 @@ export default {
     },
     async restoreBackup() {
       this.isLoading = true
+      this.toggleRestoreConfirmationModal()
       try {
         const response = await utils.servers.restoreBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -155,6 +177,12 @@ export default {
         console.error(error.response.body)
         this.isLoading = false
       }
+    },
+    toggleDestroyConfirmationModal() {
+      this.showDestroyConfirmationModal = !this.showDestroyConfirmationModal
+    },
+    toggleRestoreConfirmationModal() {
+      this.showRestoreConfirmationModal = !this.showRestoreConfirmationModal
     }
   }
 }
