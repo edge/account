@@ -95,7 +95,7 @@ export default {
 }
 
 .box h4 {
-  @apply w-full pb-2 mb-4 font-medium border-b border-gray-400;
+  @apply w-full pb-2 mb-4 font-medium;
 }
 
 .account-number-wrapper {
