@@ -12,6 +12,9 @@
         <span>{{ formattedTime }}</span>
       </div>
     </td>
+    <td class="tableBody__cell comment" :title="backup.comment">
+      <span class="backup-comment">{{ backup.comment }}</span>
+    </td>
     <td class="tableBody__cell status" :title="backup.status">
       <span class="mr-2 lg:hidden">Status:</span>
       <span
@@ -24,9 +27,6 @@
         <span>{{ backup.status }}</span>
         <div><LoadingSpinner v-if=isCreating class="w-3.5 h-3.5 ml-1 text-gray" /></div>
       </span>
-    </td>
-    <td class="tableBody__cell comment" :title="backup.comment">
-      <span class="backup-comment">{{ backup.comment }}</span>
     </td>
     <td class="tableBody__cell actions">
       <div class="flex items-center w-full space-x-2 action_buttons">
@@ -92,7 +92,7 @@ export default {
       return this.backup._key
     },
     backupTasks() {
-      return this.activeTasks.filter(task => task.data._key === this.backupId)
+      return this.activeTasks.filter(task => task.data && task.data._key === this.backupId)
     },
     formattedDate() {
       return moment(this.backup.created).format('LL')
