@@ -1,15 +1,5 @@
 <template>
   <div class="mainContent__inner" v-if="server">
-    <!-- crumbs -->
-    <ul class="crumbs">
-      <li>
-        <router-link to="/">
-          Edge Servers
-        </router-link>
-      </li>
-      <li>/</li>
-    </ul>
-
     <!-- title -->
     <h1 class="mb-0 leading-none">{{ server.settings.name ||server.settings.hostname }}</h1>
 
@@ -201,7 +191,7 @@
 
             <!-- history -->
             <TabPanel>
-              <ServerHistory :tasks=serverTasks />
+              <ServerHistory />
             </TabPanel>
 
             <!-- destroy -->
@@ -245,8 +235,11 @@ import ServerHistory from '@/components/server/ServerHistory'
 import ServerOverview from '@/components/server/ServerOverview'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
+import moment from 'moment'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { mapActions, mapState } from 'vuex'
+
+moment.locale('en-GB')
 
 export default {
   name: 'Server',
@@ -409,6 +402,9 @@ export default {
     returnToServers() {
       this.$router.push({ name: 'Servers' })
     },
+    async updateBackups() {
+
+    },
     async updateRegion() {
       try {
         const region = await utils.region.getRegion(
@@ -430,20 +426,6 @@ export default {
           this.serverId
         )
         this.server = server
-        await this.updateTasks()
-      }
-      catch (error) {
-        console.error(error)
-      }
-    },
-    async updateTasks() {
-      try {
-        const tasks = await utils.servers.getTasks(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
-        this.serverTasks = tasks.results
       }
       catch (error) {
         console.error(error)
@@ -472,16 +454,6 @@ export default {
 </script>
 
 <style scoped>
-/* crumbs */
-.crumbs {
-  @apply flex space-x-2 mb-2 items-center;
-}
-.crumbs li {
-  @apply text-gray-400;
-}
-.crumbs li a {
-  @apply text-green hover:text-green hover:underline;
-}
 .tabGroup {
   @apply relative;
 }

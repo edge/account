@@ -19,7 +19,7 @@
             </th>
           </tr>
         </thead>
-        <tbody class="tableBody">
+        <tbody class="tableBody" v-if=tasks>
           <ServerHistoryItem
             v-for="task in tasks"
             :task="task"
@@ -32,17 +32,55 @@
 </template>
 
 <script>
-import ServerHistoryItem from '@/components/server/ServerHistoryItem'
-import moment from 'moment'
+/* global process */
 
-moment.locale('en-GB')
+import * as utils from '../../account-utils'
+import ServerHistoryItem from '@/components/server/ServerHistoryItem'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ServerHistory',
   components: {
     ServerHistoryItem
   },
-  props: ['tasks']
+  data() {
+    return {
+      iTasks: null,
+      tasks: null
+    }
+  },
+  computed: {
+    ...mapState(['session']),
+    serverId() {
+      return this.$route.params.id
+    }
+  },
+  // props: ['tasks'],
+  methods: {
+    async updateTasks() {
+      try {
+        const tasks = await utils.servers.getTasks(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.tasks = tasks.results
+      }
+      catch (error) {
+        console.error(error)
+      }
+    }
+  },
+  mounted() {
+    this.updateTasks()
+    this.iTasks = setInterval(() => {
+      this.updateTasks()
+    }, 5000)
+  },
+  unmounted() {
+    this.iTasks = null
+    clearInterval(this.iTasks)
+  }
 }
 </script>
 <style scoped>
