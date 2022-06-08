@@ -93,11 +93,9 @@ export default {
             o[d.group] = []
             this.selectedVersion[d.group] = null
           }
-          if (d.default) {
-            console.log(d)
-            this.selectedVersion[d.group] = d.id
-          }
-          o[d.group].push(d)
+          if (!this.selectedVersion[d.group]) this.selectedVersion[d.group] = d.id
+          if (d.default) this.selectedVersion[d.group] = d.id
+          o[d.group].unshift(d)
           return o
         }, {})
         this.selectedOS = os.results[0].group
