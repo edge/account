@@ -13,6 +13,13 @@
     <!-- title -->
     <h1 class="mb-0 leading-none">{{ server.settings.name ||server.settings.hostname }}</h1>
 
+    <!-- ip and domain -->
+    <div class="flex items-center space-x-2 mt-1 text-gray-500">
+      <span>{{ serverIp }}</span>
+      <span v-if=serverIp class="divider"/>
+      <span>{{ server.settings.domain }}</span>
+    </div>
+
     <!-- overview -->
     <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4">
 
@@ -26,13 +33,13 @@
             />
             <span class="server-detail">{{ os.version }}</span>
           </div>
-          <span class="text-gray-400 server-detail">/</span>
+          <span class="divider"/>
           <span class="server-detail">{{ server.spec.cpus }} vCPU</span>
-          <span class="text-gray-400 server-detail">/</span>
+          <span class="divider"/>
           <span class="server-detail">{{ formattedDisk }} Disk</span>
-          <span class="text-gray-400 server-detail">/</span>
+          <span class="divider"/>
           <span class="server-detail">{{ formattedRAM }} RAM</span>
-          <span class="text-gray-400 server-detail">/</span>
+          <span class="divider"/>
           <div
             class="flex items-center"
             :class="[
@@ -331,6 +338,10 @@ export default {
     },
     serverId() {
       return this.$route.params.id
+    },
+    serverIp() {
+      if (this.server.network.ip) return this.server.network.ip[0]
+      return ''
     }
   },
   methods: {
@@ -501,6 +512,10 @@ export default {
 }
 .box.box--tall {
   @apply py-20 !important;
+}
+
+.divider {
+  @apply h-4 bg-gray-400 w-px flex-shrink-0;
 }
 
 /* status dot */
