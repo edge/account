@@ -47,9 +47,9 @@ import {
 export default {
   name: 'OperatingSystemOptions',
   props: ['versions'],
-  computed: {
-    selectedVersion() {
-      return this.versions.find(v => v.default) || this.versions[0]
+  data() {
+    return {
+      selectedVersion: this.versions[0]
     }
   },
   components: {

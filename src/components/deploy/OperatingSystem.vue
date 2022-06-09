@@ -95,7 +95,6 @@ export default {
           }
           // set default selected version (last of each group)
           this.selectedVersion[d.group] = d.id
-          if (d.default) this.selectedVersion[d.group] = d.id
           o[d.group].unshift(d)
           return o
         }, {})
