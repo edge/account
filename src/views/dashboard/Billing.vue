@@ -4,18 +4,24 @@
     <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
       <div class="box">
         <h4>Account Details</h4>
-        <div>
-          <span>Account No: </span><span>{{ formattedAccountNumber }}</span>
+        <div class="details__section">
+          <span class="details__title">Account No:</span>
+          <span class="details__info">{{ formattedAccountNumber }}</span>
         </div>
-        <div>
-          <span>Wallet: </span><span>{{ account.wallet.address }}</span>
+        <div class="details__section">
+          <span class="details__title">Wallet:</span>
+          <a href="" class="link">
+            <span class="details__info">{{ account.wallet.address }}</span>
+          </a>
         </div>
-        <div>
-          <span>Balance (XE): </span><span>123,456 (placeholder)</span>
+        <div class="details__section">
+          <span class="details__title">Balance:</span>
+          <span class="details__info">123,456.000000 XE (placeholder)</span>
         </div>
       </div>
       <div class="box">
         <h4>Consumption</h4>
+        <span>Some consumption related info will go here. We'll make it look really cool. </span>
       </div>
     </div>
     <div class="box">
@@ -33,7 +39,6 @@
 <script>
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
-import { DuplicateIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 
 export default {
@@ -43,28 +48,13 @@ export default {
   },
   components: {
     BillingInvoiceTable,
-    BillingTransactionTable,
-    DuplicateIcon,
+    BillingTransactionTable
   },
   computed: {
     ...mapState(['account', 'session']),
     formattedAccountNumber() {
       // add space every 4 characters
       return this.account._key.replace(/.{4}/g, '$& ')
-    }
-  },
-  data() {
-    return {
-      copied: false
-    }
-  },
-  methods: {
-    async copyToClipboard () {
-      this.copied = true
-      await navigator.clipboard.writeText(this.account._key)
-      setTimeout(() => {
-        this.copied = false
-      }, 2000)
     }
   }
 }
@@ -78,18 +68,20 @@ export default {
   @apply w-full pb-2 mb-4 font-medium;
 }
 
-.account-number-wrapper {
-  @apply flex items-center justify-between relative w-max max-w-full;
+.details__section {
+  @apply flex flex-col my-2;
 }
-.account-number {
-  @apply text-3xl text-green pr-4;
+.details__title {
+  
+}
+.details__info {
+  @apply text-gray-500 text-md;
 }
 
-.copied {
-  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
-  @apply transition-opacity duration-200 ease-in;
+.link .details__info {
+  @apply border-b border-gray-400;
 }
-.copied.visible {
-  @apply opacity-100;
+.link:hover .details__info {
+  @apply text-green-400 border-green-400;
 }
 </style>
