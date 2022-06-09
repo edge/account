@@ -1,16 +1,16 @@
 <template>
   <tr>
     <td class="tableBody__cell">
-      <div class="flex flex-row justify-center lg:block truncate">
+      <div class="flex flex-row items-center justify-center lg:block truncate">
         <div><CalendarIcon class="table__icon mr-1 lg:hidden" /></div>
         <span>{{ formattedDate }}, {{ formattedTime }}</span>
       </div>
     </td>
-    <td class="tableBody__cell">
+    <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Tx Hash:</span>
       <span>{{ tx.hash }}</span>
     </td>
-    <td class="tableBody__cell row-start-1 col-span-3">
+    <td class="tableBody__cell col-span-2">
       <div v-if="sent" class="flex items-center">
         <span class="mr-2 lg:hidden">To:</span>
         <div><ArrowDownIcon class="table__icon w-4 mr-1 text-red" /></div>
@@ -23,11 +23,11 @@
       </div>
 
     </td>
-    <td class="tableBody__cell">
+    <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Memo:</span>
       <span>{{ tx.memo }}</span>
     </td>
-    <td class="tableBody__cell row-start-3 col-span-3">
+    <td class="tableBody__cell row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>
       <div
         class="flex items-center truncate"
@@ -39,8 +39,8 @@
       </div>
     </td>
     <td class="tableBody__cell">
-      <span class="mr-2 lg:hidden">Amount (XE):</span>
-      <span>{{ formattedAmount }}</span>
+      <span class="mr-2 lg:hidden">Amount:</span>
+      <span>{{ formattedAmount }} <span class="lg:hidden">XE</span></span>
     </td>
   </tr>
 </template>
@@ -94,8 +94,8 @@ export default {
 </script>
 <style scoped>
 tr {
-  @apply grid grid-rows-3 py-2 gap-x-2 gap-y-1;
-  grid-template-columns: auto auto 1fr;
+  @apply grid grid-rows-4 py-4 gap-x-2 gap-y-2;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .tableBody__cell {
@@ -106,10 +106,6 @@ tr {
   @apply w-4
 }
 
-.task-action {
-  @apply text-sm text-black
-}
-
 @screen lg {
   tr {
     @apply table-row py-0;
@@ -117,10 +113,6 @@ tr {
 
   .tableBody__cell {
     @apply text-sm pl-6 py-4 table-cell align-middle w-full truncate;
-  }
-
-  .task-action {
-    @apply text-gray-500;
   }
 }
 </style>

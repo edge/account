@@ -6,12 +6,11 @@
         <span>{{ formattedDate }}, {{ formattedTime }}</span>
       </div>
     </td>
-    <td class="tableBody__cell">
-      <div class="flex flex-row justify-center lg:block">
-        <span>{{ invoice.description }}</span>
-      </div>
+    <td class="tableBody__cell col-span-2">
+      <span class="mr-2 lg:hidden">Description:</span>
+      <span>{{ invoice.description }}</span>
     </td>
-    <td class="tableBody__cell row-start-3 col-span-3">
+    <td class="tableBody__cell row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>
       <div
         class="capitalize"
@@ -20,11 +19,15 @@
         <span>{{ invoice.status }}</span>
       </div>
     </td>
-    <td class="tableBody__cell row-start-1 col-span-3">
-      <span class="capitalize task-action">{{ formattedAmount }}</span>
+    <td class="tableBody__cell col-span-2">
+      <span class="mr-2 lg:hidden">Amount:</span>
+      <span class="capitalize">{{ formattedAmount }} <span class="lg:hidden">XE</span></span>
     </td>
-    <td class="tableBody__cell">
-      <div><DocumentDownloadIcon class="w-5"/></div>
+    <td class="tableBody__cell col-span-2">
+      <button
+        class="cursor-pointer hover:text-green"
+        @click=downloadInvoice
+      ><DocumentDownloadIcon class="w-5"/></button>
     </td>
   </tr>
 </template>
@@ -53,13 +56,18 @@ export default {
     isStatusRed() {
       return this.invoice.status === 'unpaid'
     }
+  },
+  methods: {
+    downloadInvoice() {
+      console.log('download invoice TBD')
+    }
   }
 }
 </script>
 <style scoped>
 tr {
-  @apply grid grid-rows-3 py-2 gap-x-2 gap-y-1;
-  grid-template-columns: auto auto 1fr;
+  @apply grid grid-rows-4 py-4 gap-x-2 gap-y-2;
+  grid-template-columns: auto;
 }
 
 .tableBody__cell {
@@ -70,10 +78,6 @@ tr {
   @apply w-4;
 }
 
-.task-action {
-  @apply text-sm text-black
-}
-
 @screen lg {
   tr {
     @apply table-row py-0;
@@ -81,10 +85,6 @@ tr {
 
   .tableBody__cell {
     @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
-  }
-
-  .task-action {
-    @apply text-gray-500;
   }
 }
 </style>
