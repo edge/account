@@ -6,6 +6,7 @@
 
 import * as utils from '../account-utils/index'
 import Account from '@/views/dashboard/Account'
+import Billing from '@/views/dashboard/Billing'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
 import Deploy from '@/views/dashboard/Deploy'
@@ -37,6 +38,11 @@ const routes = [
         path: 'account',
         name: 'Account',
         component: Account
+      },
+      {
+        path: 'billing',
+        name: 'Billing',
+        component: Billing
       },
       {
         path: 'servers',
