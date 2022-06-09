@@ -8,7 +8,7 @@
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Tx Hash:</span>
-      <span>{{ tx.hash }}</span>
+      <span class="truncate">{{ tx.hash }}</span>
     </td>
     <td class="tableBody__cell col-span-2">
       <div v-if="sent" class="flex items-center">

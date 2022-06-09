@@ -2,16 +2,16 @@
   <div class="mainContent__inner space-y-4">
     <h1>Billing</h1>
     <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-      <div class="box">
+      <div class="box overflow-hidden">
         <h4>Account Details</h4>
         <div class="details__section">
           <span class="details__title">Account No:</span>
           <span class="details__info">{{ formattedAccountNumber }}</span>
         </div>
-        <div class="details__section">
+        <div class="details__section overflow-hidden w-full">
           <span class="details__title">Wallet:</span>
-          <a href="" class="link">
-            <span class="details__info">{{ account.wallet.address }}</span>
+          <a href="" class="link truncate">
+            <span class="details__info truncate">{{ account.wallet.address }}</span>
           </a>
         </div>
         <div class="details__section">
