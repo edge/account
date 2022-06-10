@@ -25,7 +25,7 @@
         </div>
         <div class="details__section">
           <span class="details__title">Balance:</span>
-          <span class="details__info">123,456.000000 XE (placeholder)</span>
+          <span class="details__info">{{ formattedBalance }} XE</span>
         </div>
       </div>
       <div class="box">
@@ -46,6 +46,9 @@
 </template>
 
 <script>
+/* global process */
+
+import * as xe from '@edge/xe-utils'
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
@@ -63,14 +66,19 @@ export default {
   },
   data() {
     return {
-      copied: false
+      balance: null,
+      copied: false,
+      iBalance: null
     }
   },
   computed: {
-    ...mapState(['account', 'session']),
+    ...mapState(['account']),
     formattedAccountNumber() {
       // add space every 4 characters
       return this.account._key.replace(/.{4}/g, '$& ')
+    },
+    formattedBalance() {
+      return (this.balance / 1e6).toFixed(6)
     }
   },
   methods: {
@@ -80,7 +88,29 @@ export default {
       setTimeout(() => {
         this.copied = false
       }, 2000)
+    },
+    async updateBalance() {
+      try {
+        const info = await xe.wallet.info(
+          process.env.VUE_APP_BLOCKCHAIN_API_URL,
+          this.account.wallet.address
+        )
+        this.balance = info.balance
+      }
+      catch (error) {
+        console.error(error)
+      }
     }
+  },
+  mounted() {
+    this.updateBalance()
+    this.iBalance = setInterval(() => {
+      this.updateBalance()
+    }, 5000)
+  },
+  unmounted() {
+    clearInterval(this.iBalance)
+    this.iBalance = null
   }
 }
 </script>
