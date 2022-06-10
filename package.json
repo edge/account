@@ -17,14 +17,13 @@
     "lint": "eslint --ext .js,.vue src",
     "lint:fix": "eslint --fix --ext .js,.vue src",
     "start": "node server/index.js",
-    "testnet": "VUE_APP_ACCOUNT_API_URL=https://api.account.test.network VUE_APP_INDEX_API_URL=https://index.test.network VUE_APP_BLOCKCHAIN_API_URL=https://xe1.test.network  npm run dev"
+    "testnet": "VUE_APP_ACCOUNT_API_URL=https://api.account.test.network VUE_APP_INDEX_API_URL=https://index.test.network npm run dev"
   },
   "main": "server/index.js",
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
     "@edge/index-utils": "^0.6.0",
     "@edge/wallet-utils": "0.13.0",
-    "@edge/xe-utils": "^1.4.1",
     "@headlessui/vue": "^1.4.2",
     "@heroicons/vue": "^1.0.1",
     "@metamask/detect-provider": "^1.2.0",

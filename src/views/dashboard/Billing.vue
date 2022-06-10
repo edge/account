@@ -48,7 +48,7 @@
 <script>
 /* global process */
 
-import * as xe from '@edge/xe-utils'
+import * as utils from '../../account-utils/index'
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
@@ -72,7 +72,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account']),
+    ...mapState(['account', 'session']),
     formattedAccountNumber() {
       // add space every 4 characters
       return this.account._key.replace(/.{4}/g, '$& ')
@@ -91,9 +91,9 @@ export default {
     },
     async updateBalance() {
       try {
-        const info = await xe.wallet.info(
-          process.env.VUE_APP_BLOCKCHAIN_API_URL,
-          this.account.wallet.address
+        const info = await utils.accounts.getWallet(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key
         )
         this.balance = info.balance
       }
