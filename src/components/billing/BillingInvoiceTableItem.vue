@@ -2,32 +2,36 @@
   <tr>
     <td class="tableBody__cell">
       <div class="flex flex-row justify-center lg:block truncate">
+        <span class="mr-2 lg:hidden">Date:</span>
         <div><CalendarIcon class="table__icon mr-1 lg:hidden" /></div>
-        <span>{{ formattedDate }}</span>
+        <span class="truncate">{{ formattedDate }}</span>
       </div>
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Description:</span>
-      <span>{{ description }}</span>
+      <span class="truncate">{{ description }}</span>
     </td>
-    <td class="tableBody__cell row-start-1 col-start-2">
+    <td class="tableBody__cell status row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>
-      <div
-        class="capitalize"
-        :class="isStatusRed ? 'text-red' : 'text-green'"
+      <span
+        class="truncate capitalize"
+        :class="isPaid ? 'text-green' : 'text-red'"
       >
-        <span>{{ invoice.status }}</span>
-      </div>
+        {{ invoice.status }}
+      </span>
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Amount:</span>
-      <span class="capitalize">{{ formattedAmount }} <span class="lg:hidden">XE</span></span>
+      <span class="truncate">{{ formattedAmount }} <span class="lg:hidden">USD</span></span>
     </td>
     <td class="tableBody__cell col-span-2">
       <button
-        class="cursor-pointer hover:text-green"
+        class="button button--extraSmall button--success w-full lg:w-max"
         @click=downloadInvoice
-      ><DocumentDownloadIcon class="w-5"/></button>
+      >
+        <span class="leading-5">PDF</span>
+        <div><DocumentDownloadIcon class="ml-2 w-5"/></div>
+      </button>
     </td>
   </tr>
 </template>
@@ -45,20 +49,17 @@ export default {
   props: ['invoice'],
   computed: {
     description() {
-      const date = moment(this.invoice.end).format('LL')
+      const date = moment(this.invoice.start).format('LL')
       return `Daily Invoice ${date}`
     },
     formattedDate() {
-      return moment(this.invoice.end).format('LL')
-    },
-    formattedTime() {
-      return moment(this.invoice.end).format('LTS')
+      return moment(this.invoice.start).format('LL')
     },
     formattedAmount() {
-      return (this.invoice.items.amount / 1e6).toFixed(6)
+      return `$ ${(Math.round(this.invoice.amount * 1e4) / 1e4).toFixed(4)}`
     },
-    isStatusRed() {
-      return this.invoice.status === 'unpaid'
+    isPaid() {
+      return this.invoice.status === 'paid'
     }
   },
   methods: {
@@ -70,12 +71,12 @@ export default {
 </script>
 <style scoped>
 tr {
-  @apply grid grid-rows-4 py-4 gap-x-2 gap-y-2;
+  @apply grid py-4 gap-x-2 gap-y-2;
   grid-template-columns: auto;
 }
 
 .tableBody__cell {
-  @apply text-xs flex items-center text-gray-500 leading-4;
+  @apply text-xs flex items-center text-gray-500 leading-4 truncate;
 }
 
 .table__icon {
@@ -88,7 +89,21 @@ tr {
   }
 
   .tableBody__cell {
-    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full;
+  }
+}
+
+@media (max-width: 450px) {
+  tr {
+    @apply grid py-4 gap-x-2 gap-y-2;
+    grid-template-columns: 1fr;
+  }
+
+  .status {
+    @apply row-start-2 col-start-1;
+  }
+  .tableBody__cell {
+    @apply col-span-1;
   }
 }
 </style>
