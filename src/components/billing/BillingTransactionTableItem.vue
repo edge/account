@@ -25,7 +25,7 @@
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Memo:</span>
-      <span>{{ tx.memo }}</span>
+      <span>{{ tx.data.memo }}</span>
     </td>
     <td class="tableBody__cell row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>
@@ -35,7 +35,7 @@
       >
         <div v-if="isConfirmed"><CheckCircleIcon class="table__icon w-4 mr-1"/></div>
         <div v-else><ClockIcon class="table__icon w-4 mr-1"/></div>
-        <span class="capitalize truncate">{{ tx.status }}</span>
+        <span class="capitalize truncate">{{ status }}</span>
       </div>
     </td>
     <td class="tableBody__cell">
@@ -53,8 +53,7 @@ import {
   ArrowUpIcon,
   CalendarIcon,
   CheckCircleIcon,
-  ClockIcon,
-  InformationCircleIcon
+  ClockIcon
 } from '@heroicons/vue/outline'
 
 export default {
@@ -64,8 +63,7 @@ export default {
     ArrowUpIcon,
     CalendarIcon,
     CheckCircleIcon,
-    ClockIcon,
-    InformationCircleIcon
+    ClockIcon
   },
   props: ['tx'],
   computed: {
@@ -74,20 +72,25 @@ export default {
       return (this.tx.amount / 1e6).toFixed(6)
     },
     formattedDate() {
-      return moment(this.tx.created).format('LL')
+      return moment(this.tx.timestamp).format('LL')
     },
     formattedTime() {
-      return moment(this.tx.created).format('LTS')
+      return moment(this.tx.timestamp).format('LTS')
     },
     isConfirmed() {
-      return this.tx.status === 'confirmed'
+      return this.tx.confirmations >= 10
       // return (this.tx.confirmations || 0) >= 10
     },
     isPending() {
-      return this.tx.status === 'pending'
+      return this.tx.pending
     },
     sent() {
       return this.tx.sender === this.tx.recipient || this.account.wallet.address === this.tx.sender
+    },
+    status() {
+      if (this.isConfirmed) return 'Confirmed'
+      if (this.isPending) return 'Pending'
+      return `${this.tx.confirmations} confirmations`
     }
   }
 }

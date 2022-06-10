@@ -37,7 +37,8 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as index from '@edge/index-utils'
+// import * as utils from '../../account-utils'
 import BillingTransactionTableItem from '@/components/billing/BillingTransactionTableItem'
 import { mapState } from 'vuex'
 
@@ -58,43 +59,11 @@ export default {
   methods: {
     async updateTransactions() {
       try {
-        // const transactions = await utils.billing.gettransactions(
-        //   process.env.VUE_APP_ACCOUNT_API_URL,
-        //   this.session._key
-        // )
-        // this.transactions = transactions.results
-        this.transactions = [
-          {
-            created: Date.now(),
-            hash: '123456784f1542982f9c804ac2cf8fddb8b4cc7b573c54c1127b9b8e38dede1',
-            amount: 125000000,
-            sender: this.account.wallet.address,
-            recipient: 'xe_a1237683b23c342d324',
-            status: 'pending',
-            memo: 'Invoice Payment 30 May 2022',
-            _key: '111'
-          },
-          {
-            created: Date.now(),
-            hash: '98765484f1542982f9c804ac2cf8fddb8b4cc7b573c54c1127b9b8e38dede1',
-            amount: 170000000,
-            sender: 'xe_123abc456def789abc012def',
-            recipient: 'xe_a1237683b23c342d324',
-            status: 'confirmed',
-            memo: 'Invoice Payment 29 May 2022',
-            _key: '222'
-          },
-          {
-            created: Date.now(),
-            hash: 'a1b2c34f1542982f9c804ac2cf8fddb8b4cc7b573c54c1127b9b8e38dede1',
-            amount: 189000000,
-            sender: 'xe_123abc456def789abc012def',
-            recipient: 'xe_a1237683b23c342d324',
-            status: 'confirmed',
-            memo: 'Invoice Payment 28 May 2022',
-            _key: '333'
-          }
-        ]
+        const transactions = await index.tx.transactions(
+          process.env.VUE_APP_INDEX_API_URL,
+          this.account.wallet.address
+        )
+        this.transactions = transactions.results
       }
       catch (error) {
         console.error(error)
