@@ -9,7 +9,7 @@
       <router-link
         :to="item.link"
         class="main-nav__link"
-        :class="location && (item.text === location) ? 'router-link-active' : ''"
+        :class="location && isActive(item) ? 'router-link-active' : ''"
       >
         {{item.text}}
       </router-link>
@@ -24,6 +24,12 @@ export default {
   data: function () {
     return {
       location: null
+    }
+  },
+  methods: {
+    isActive(item) {
+      if (item.link === '/servers') return this.location.includes('/server')
+      return item.link === this.location
     }
   },
   mounted() {
