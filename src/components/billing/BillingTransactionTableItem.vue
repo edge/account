@@ -2,8 +2,9 @@
   <tr>
     <td class="tableBody__cell">
       <div class="flex flex-row items-center lg:block truncate">
+        <span class="mr-2 lg:hidden flex-shrink-0">Date:</span>
         <div><CalendarIcon class="table__icon mr-1 lg:hidden" /></div>
-        <span class="truncate">{{ formattedDate }}, {{ formattedTime }}</span>
+        <span class="truncate">{{ formattedDate }}</span>
       </div>
     </td>
     <td class="tableBody__cell col-span-2">
@@ -25,9 +26,9 @@
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Memo:</span>
-      <span>{{ tx.data.memo }}</span>
+      <span class="truncate">{{ tx.data.memo }}</span>
     </td>
-    <td class="tableBody__cell row-start-1 col-start-2">
+    <td class="tableBody__cell status row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>
       <div
         class="flex items-center truncate"
@@ -74,9 +75,6 @@ export default {
     formattedDate() {
       return moment(this.tx.timestamp).format('LL')
     },
-    formattedTime() {
-      return moment(this.tx.timestamp).format('LTS')
-    },
     isConfirmed() {
       return this.tx.confirmations >= 10
       // return (this.tx.confirmations || 0) >= 10
@@ -102,7 +100,7 @@ tr {
 }
 
 .tableBody__cell {
-  @apply text-xs flex items-center text-gray-500 leading-4;
+  @apply text-xs flex items-center text-gray-500 leading-4 truncate;
 }
 
 .table__icon {
@@ -115,7 +113,21 @@ tr {
   }
 
   .tableBody__cell {
-    @apply text-sm pl-6 py-4 table-cell align-middle w-full truncate;
+    @apply text-sm pl-6 py-4 table-cell align-middle;
+  }
+}
+
+@media (max-width: 450px) {
+  tr {
+    @apply grid grid-rows-4 py-4 gap-x-2 gap-y-2;
+    grid-template-columns: 1fr;
+  }
+
+  .status {
+    @apply row-start-2 col-start-1;
+  }
+  .tableBody__cell {
+    @apply col-span-1;
   }
 }
 </style>
