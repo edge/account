@@ -65,17 +65,6 @@ export default {
           this.session._key
         )
         this.invoices = invoices.results
-        // dummy invoice data
-        this.invoices = [{
-          amount: 0.1948992,
-          status:'paid',
-          start:1654732800000,
-          end:1654819200000,
-          created:1654819233249,
-          updated:1654851455202,
-          payment:'xxx'
-        }]
-
       }
       catch (error) {
         console.error(error)
