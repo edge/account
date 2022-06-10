@@ -24,7 +24,7 @@
       <span class="mr-2 lg:hidden">Amount:</span>
       <span class="truncate">{{ formattedAmount }} <span class="lg:hidden">USD</span></span>
     </td>
-    <td class="tableBody__cell col-span-2">
+    <td class="tableBody__cell table__button col-span-2">
       <button
         class="button button--extraSmall button--success w-full lg:w-max"
         @click=downloadInvoice
@@ -90,6 +90,9 @@ tr {
 
   .tableBody__cell {
     @apply text-sm pl-6 py-4 table-cell align-middle w-full;
+  }
+  .tableBody__cell.table__button {
+    @apply py-0;
   }
 }
 
