@@ -25,7 +25,8 @@
         </div>
         <div class="details__section">
           <span class="details__title">Balance:</span>
-          <span class="details__info">{{ formattedBalance }} XE</span>
+          <span class="details__info">{{ formattedBalance }} <span class="currency">XE</span></span>
+          <span class="details__info italic">$ {{ formattedUSDBalance }} <span class="currency">USD</span></span>
         </div>
       </div>
       <div class="box">
@@ -53,6 +54,7 @@ import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
+import superagent from 'superagent'
 
 export default {
   name: 'Billing',
@@ -68,7 +70,8 @@ export default {
     return {
       balance: null,
       copied: false,
-      iBalance: null
+      iBalance: null,
+      rate: null
     }
   },
   computed: {
@@ -78,7 +81,16 @@ export default {
       return this.account._key.replace(/.{4}/g, '$& ')
     },
     formattedBalance() {
-      return (this.balance / 1e6).toFixed(6)
+      return (this.balance / 1e6).toLocaleString(undefined, {
+        maximumFractionDigits: 6,
+        minimumFractionDigits: 6
+      })
+    },
+    formattedUSDBalance() {
+      return (this.rate * this.balance / 1e6).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2
+      })
     }
   },
   methods: {
@@ -96,6 +108,17 @@ export default {
           this.session._key
         )
         this.balance = info.balance
+        await this.updateUSDRate()
+      }
+      catch (error) {
+        console.error(error)
+      }
+    },
+    async updateUSDRate() {
+      try {
+        const url = `${process.env.VUE_APP_INDEX_API_URL}/token/current`
+        const response = await superagent.get(url)
+        this.rate = response.body.usdPerXE
       }
       catch (error) {
         console.error(error)
@@ -146,5 +169,9 @@ export default {
 }
 .copied.visible {
   @apply opacity-100;
+}
+
+.currency {
+  @apply text-xs;
 }
 </style>
