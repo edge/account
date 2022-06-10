@@ -1,24 +1,24 @@
 <template>
   <tr>
     <td class="tableBody__cell">
-      <div class="flex flex-row items-center justify-center lg:block truncate">
+      <div class="flex flex-row items-center lg:block truncate">
         <div><CalendarIcon class="table__icon mr-1 lg:hidden" /></div>
-        <span>{{ formattedDate }}, {{ formattedTime }}</span>
+        <span class="truncate">{{ formattedDate }}, {{ formattedTime }}</span>
       </div>
     </td>
     <td class="tableBody__cell col-span-2">
-      <span class="mr-2 lg:hidden">Tx Hash:</span>
+      <span class="mr-2 lg:hidden flex-shrink-0">Tx Hash:</span>
       <span class="truncate">{{ tx.hash }}</span>
     </td>
     <td class="tableBody__cell col-span-2">
-      <div v-if="sent" class="flex items-center">
+      <div v-if="sent" class="flex items-center truncate">
         <span class="mr-2 lg:hidden">To:</span>
-        <div><ArrowDownIcon class="table__icon w-4 mr-1 text-red" /></div>
+        <div><ArrowDownIcon class="table__icon mr-1 text-red" /></div>
         <span class="truncate">{{ tx.recipient }}</span>
       </div>
-      <div v-else class="flex items-center">
+      <div v-else class="flex items-center truncate">
         <span class="mr-2 lg:hidden">From:</span>
-        <div><ArrowUpIcon class="table__icon w-4 mr-1 text-green" /></div>
+        <div><ArrowUpIcon class="table__icon mr-1 text-green" /></div>
         <span class="truncate">{{ tx.sender }}</span>
       </div>
 
@@ -102,11 +102,11 @@ tr {
 }
 
 .tableBody__cell {
-  @apply text-xs flex items-center text-gray-500;
+  @apply text-xs flex items-center text-gray-500 leading-4;
 }
 
 .table__icon {
-  @apply w-4
+  @apply w-3.5 lg:w-4
 }
 
 @screen lg {
