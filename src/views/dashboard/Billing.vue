@@ -10,9 +10,18 @@
         </div>
         <div class="details__section overflow-hidden w-full">
           <span class="details__title">Wallet:</span>
-          <a href="" class="link truncate">
-            <span class="details__info truncate">{{ account.wallet.address }}</span>
-          </a>
+          <div class="flex items-center relative">
+            <a href="" class="link truncate">
+              <span class="details__info truncate">{{ account.wallet.address }}</span>
+            </a>
+            <button
+              @click.prevent="copyToClipboard"
+              class="text-gray-400 hover:text-green"
+            >
+              <DuplicateIcon class="ml-2 w-6 h-6" />
+            </button>
+            <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
+          </div>
         </div>
         <div class="details__section">
           <span class="details__title">Balance:</span>
@@ -39,6 +48,7 @@
 <script>
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
+import { DuplicateIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 
 export default {
@@ -48,13 +58,28 @@ export default {
   },
   components: {
     BillingInvoiceTable,
-    BillingTransactionTable
+    BillingTransactionTable,
+    DuplicateIcon
+  },
+  data() {
+    return {
+      copied: false
+    }
   },
   computed: {
     ...mapState(['account', 'session']),
     formattedAccountNumber() {
       // add space every 4 characters
       return this.account._key.replace(/.{4}/g, '$& ')
+    }
+  },
+  methods: {
+    async copyToClipboard () {
+      this.copied = true
+      await navigator.clipboard.writeText(this.account.wallet.address)
+      setTimeout(() => {
+        this.copied = false
+      }, 2000)
     }
   }
 }
@@ -72,7 +97,7 @@ export default {
   @apply flex flex-col my-2;
 }
 .details__title {
-  
+
 }
 .details__info {
   @apply text-gray-500 text-md;
@@ -83,5 +108,13 @@ export default {
 }
 .link:hover .details__info {
   @apply text-green-400 border-green-400;
+}
+
+.copied {
+  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+  @apply transition-opacity duration-200 ease-in;
+}
+.copied.visible {
+  @apply opacity-100;
 }
 </style>
