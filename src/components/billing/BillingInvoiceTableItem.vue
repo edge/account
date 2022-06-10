@@ -8,7 +8,7 @@
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Description:</span>
-      <span>{{ invoice.description }}</span>
+      <span>{{ description }}</span>
     </td>
     <td class="tableBody__cell row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>
@@ -44,14 +44,18 @@ export default {
   },
   props: ['invoice'],
   computed: {
+    description() {
+      const date = moment(this.invoice.end).format('LL')
+      return `Daily Invoice ${date}`
+    },
     formattedDate() {
-      return moment(this.invoice.created).format('LL')
+      return moment(this.invoice.end).format('LL')
     },
     formattedTime() {
-      return moment(this.invoice.created).format('LTS')
+      return moment(this.invoice.end).format('LTS')
     },
     formattedAmount() {
-      return (this.invoice.amount / 1e6).toFixed(6)
+      return (this.invoice.items.amount / 1e6).toFixed(6)
     },
     isStatusRed() {
       return this.invoice.status === 'unpaid'

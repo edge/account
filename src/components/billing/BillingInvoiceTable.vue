@@ -53,29 +53,39 @@ export default {
   methods: {
     async updateInvoices() {
       try {
-        // const invoices = await utils.billing.getInvoices(
-        //   process.env.VUE_APP_ACCOUNT_API_URL,
-        //   this.session._key
-        // )
+        const invoices = await utils.billing.getInvoices(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key
+        )
+        console.log(invoices.results)
         // this.invoices = invoices.results
         this.invoices = [
           {
-            created: Date.now(),
-            description: 'Daily invoice',
+            end: Date.now(),
+            items: {
+              amount: 125000000,
+              summary: 'Daily invoice'
+            },
             amount: 125000000,
             status: 'unpaid',
             _key: '111'
           },
           {
-            created: Date.now(),
-            description: 'Daily invoice',
+            end: Date.now(),
+            items: {
+              amount: 170000000,
+              summary: 'Daily invoice'
+            },
             amount: 170000000,
             status: 'paid',
             _key: '222'
           },
           {
-            created: Date.now(),
-            description: 'Daily invoice',
+            end: Date.now(),
+            items: {
+              amount: 189000000,
+              summary: 'Daily invoice'
+            },
             amount: 189000000,
             status: 'paid',
             _key: '333'
