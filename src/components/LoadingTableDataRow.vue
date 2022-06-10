@@ -13,7 +13,7 @@ export default {
 
 <style scoped>
 .loading__row {
-  @apply py-4;
+  @apply py-4 text-gray-500 italic;
 }
 
 @screen lg {

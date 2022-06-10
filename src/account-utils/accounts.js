@@ -47,6 +47,13 @@ export const getAccount = async (host, sessionId) => {
   return response.body
 }
 
+export const getWallet = async (host, sessionId) => {
+  const url = `${host}/account/wallet`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 export const recoverAccount = async (host, address) => {
   const url = `${host}/account/recover`
   const response = await superagent.post(url)

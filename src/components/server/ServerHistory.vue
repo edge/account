@@ -19,8 +19,10 @@
             </th>
           </tr>
         </thead>
-        <tbody class="tableBody" v-if=tasks>
+        <tbody class="tableBody">
+          <LoadingTableDataRow v-if="!tasks" colspan="5"/>
           <ServerHistoryItem
+            v-else
             v-for="task in tasks"
             :task="task"
             :key="task._key"
@@ -35,12 +37,14 @@
 /* global process */
 
 import * as utils from '../../account-utils'
+import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import ServerHistoryItem from '@/components/server/ServerHistoryItem'
 import { mapState } from 'vuex'
 
 export default {
   name: 'ServerHistory',
   components: {
+    LoadingTableDataRow,
     ServerHistoryItem
   },
   data() {
@@ -112,6 +116,10 @@ table, tbody {
 
   tr {
     @apply table-row py-0;
+  }
+
+  .tableBody__cell {
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
   }
 }
 </style>
