@@ -23,8 +23,13 @@
           </th>
         </tr>
       </thead>
-      <tbody class="tableBody" v-if=transactions>
+      <tbody class="tableBody">
+        <LoadingTableDataRow v-if="!transactions" colspan="6" />
+        <tr v-else-if="!transactions.length">
+          <td colspan="6" class="tableBody__cell text-center text-gray-500">No invoices</td>
+        </tr>
         <BillingTransactionTableItem
+          v-else
           v-for="tx in transactions"
           :tx="tx"
           :key="tx._key"
@@ -38,14 +43,15 @@
 /* global process */
 
 import * as index from '@edge/index-utils'
-// import * as utils from '../../account-utils'
 import BillingTransactionTableItem from '@/components/billing/BillingTransactionTableItem'
+import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import { mapState } from 'vuex'
 
 export default {
   name: 'BillingTransactionTable',
   components: {
-    BillingTransactionTableItem
+    BillingTransactionTableItem,
+    LoadingTableDataRow
   },
   data() {
     return {
@@ -114,6 +120,10 @@ table, tbody {
 
   tr {
     @apply table-row py-0;
+  }
+
+  .tableBody__cell {
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
   }
 }
 </style>

@@ -3,7 +3,7 @@
     <td class="tableBody__cell">
       <div class="flex flex-row justify-center lg:block truncate">
         <div><CalendarIcon class="table__icon mr-1 lg:hidden" /></div>
-        <span>{{ formattedDate }}, {{ formattedTime }}</span>
+        <span>{{ formattedDate }}</span>
       </div>
     </td>
     <td class="tableBody__cell col-span-2">

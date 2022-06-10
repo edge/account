@@ -18,8 +18,13 @@
           <th scope="col" class="tableHead__cell" width="80"></th>
         </tr>
       </thead>
-      <tbody class="tableBody" v-if=invoices>
+      <tbody class="tableBody">
+        <LoadingTableDataRow v-if="!invoices" colspan="5" />
+        <tr v-else-if="!invoices.length">
+          <td colspan="5" class="tableBody__cell text-center text-gray-500">No invoices</td>
+        </tr>
         <BillingInvoiceTableItem
+          v-else
           v-for="invoice in invoices"
           :invoice="invoice"
           :key="invoice._key"
@@ -34,12 +39,14 @@
 
 import * as utils from '../../account-utils'
 import BillingInvoiceTableItem from '@/components/billing/BillingInvoiceTableItem'
+import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import { mapState } from 'vuex'
 
 export default {
   name: 'BillingInvoiceTable',
   components: {
-    BillingInvoiceTableItem
+    BillingInvoiceTableItem,
+    LoadingTableDataRow
   },
   data() {
     return {
@@ -57,40 +64,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
-        console.log(invoices.results)
-        // this.invoices = invoices.results
-        this.invoices = [
-          {
-            end: Date.now(),
-            items: {
-              amount: 125000000,
-              summary: 'Daily invoice'
-            },
-            amount: 125000000,
-            status: 'unpaid',
-            _key: '111'
-          },
-          {
-            end: Date.now(),
-            items: {
-              amount: 170000000,
-              summary: 'Daily invoice'
-            },
-            amount: 170000000,
-            status: 'paid',
-            _key: '222'
-          },
-          {
-            end: Date.now(),
-            items: {
-              amount: 189000000,
-              summary: 'Daily invoice'
-            },
-            amount: 189000000,
-            status: 'paid',
-            _key: '333'
-          }
-        ]
+        this.invoices = invoices.results
       }
       catch (error) {
         console.error(error)
@@ -141,6 +115,10 @@ table, tbody {
 
   tr {
     @apply table-row py-0;
+  }
+
+  .tableBody__cell {
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
   }
 }
 </style>

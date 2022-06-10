@@ -52,7 +52,10 @@
             </tr>
           </thead>
           <tbody class="tableBody">
-            <LoadingTableDataRow v-if="isLoadingBackups" :colspan="5"/>
+            <LoadingTableDataRow v-if="isLoadingBackups" colspan="5"/>
+            <tr v-else-if="!backups.length">
+              <td colspan="5" class="tableBody__cell text-center text-gray-500">No backups</td>
+            </tr>
             <ServerBackupItem
               v-else
               v-for="backup in backups"
@@ -185,6 +188,10 @@ table, tbody {
 
   tr {
     @apply table-row py-0;
+  }
+
+  .tableBody__cell {
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
   }
 }
 </style>
