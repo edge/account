@@ -119,7 +119,7 @@ export default {
     },
     async updateUSDRate() {
       try {
-        const url = `${process.env.VUE_APP_INDEX_API_URL}/token/current`
+        const url = `${process.env.VUE_APP_INDEX_URL}/token/current`
         const response = await superagent.get(url)
         this.rate = response.body.usdPerXE
       }
