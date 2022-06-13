@@ -56,6 +56,9 @@
             <span class="leading-none">Delete</span>
           </div>
         </button>
+        <Tooltip v-if="httpError" :text="httpError" theme="error" position="left">
+          <ExclamationIcon class="w-5 mt-1 text-red" />
+        </Tooltip>
       </div>
     </td>
 
@@ -82,9 +85,16 @@ import * as utils from '../../account-utils'
 import DestroyBackupConfirmation from '@/components/confirmations/DestroyBackupConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import RestoreBackupConfirmation from '@/components/confirmations/RestoreBackupConfirmation'
+import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import moment from 'moment'
-import { CalendarIcon, ClockIcon, RefreshIcon, TrashIcon } from '@heroicons/vue/outline'
+import {
+  CalendarIcon,
+  ClockIcon,
+  ExclamationIcon,
+  RefreshIcon,
+  TrashIcon
+} from '@heroicons/vue/outline'
 
 export default {
   name: 'ServerBackupItem',
@@ -92,16 +102,25 @@ export default {
     CalendarIcon,
     ClockIcon,
     DestroyBackupConfirmation,
+    ExclamationIcon,
     LoadingSpinner,
     RefreshIcon,
     RestoreBackupConfirmation,
+    Tooltip,
     TrashIcon
   },
-  props: ['activeTasks', 'disableActions', 'backup'],
+  props: [
+    'activeTasks',
+    'attemptingAction',
+    'backup',
+    'disableActions',
+    'onAttemptAction'
+  ],
   data: function () {
     return {
-      httpError: '',
-      isLoading: false,
+      attemptingDestroy: false,
+      attemptingRestore: false,
+      httpError: null,
       showDestroyConfirmationModal: false,
       showRestoreConfirmationModal: false
     }
@@ -127,13 +146,14 @@ export default {
       return this.backupTasks.some(task => task.action === 'createBackup') || this.backup.status === 'creating'
     },
     isDeleting() {
-      return this.backupTasks.some(task => task.action === 'deleteBackup') || this.backup.status === 'deleting'
+      // eslint-disable-next-line max-len
+      return this.attemptingDestroy || this.backupTasks.some(task => task.action === 'deleteBackup') || this.backup.status === 'deleting'
     },
     isInactive() {
       return ['crashed', 'deleted', 'deleting'].includes(this.backup.status)
     },
     isRestoring() {
-      return this.backupTasks.some(task => task.action === 'restoreBackup')
+      return this.attemptingRestore || this.backupTasks.some(task => task.action === 'restoreBackup')
     },
     serverId() {
       return this.$route.params.id
@@ -141,7 +161,8 @@ export default {
   },
   methods: {
     async deleteBackup() {
-      this.isLoading = true
+      this.httpError = null
+      this.attemptingDestroy = true
       this.toggleDestroyConfirmationModal()
       try {
         const response = await utils.servers.deleteBackup(
@@ -152,15 +173,18 @@ export default {
         )
         this.$emit('update-backups')
         this.$store.commit('addTask', response.task)
-        this.isLoading = false
+        this.attemptingDestroy = false
       }
       catch (error) {
-        console.error(error.response.body)
-        this.isLoading = false
+        setTimeout(() => {
+          this.httpError = error.response.body.reason || error.response.body.message
+          this.attemptingDestroy = false
+        }, 500)
       }
     },
     async restoreBackup() {
-      this.isLoading = true
+      this.httpError = null
+      this.attemptingRestore = true
       this.toggleRestoreConfirmationModal()
       try {
         const response = await utils.servers.restoreBackup(
@@ -171,11 +195,13 @@ export default {
         )
         this.$emit('update-backups')
         this.$store.commit('addTask', response.task)
-        this.isLoading = false
+        this.attemptingRestore = false
       }
       catch (error) {
-        console.error(error.response.body)
-        this.isLoading = false
+        setTimeout(() => {
+          this.httpError = error.response.body.reason || error.response.body.message
+          this.attemptingRestore = false
+        }, 500)
       }
     },
     toggleDestroyConfirmationModal() {
@@ -183,6 +209,17 @@ export default {
     },
     toggleRestoreConfirmationModal() {
       this.showRestoreConfirmationModal = !this.showRestoreConfirmationModal
+    }
+  },
+  watch: {
+    attemptingAction(attempting) {
+      if (attempting) this.httpError = null
+    },
+    attemptingDestroy(newValue) {
+      this.onAttemptAction(newValue)
+    },
+    attemptingRestore(newValue) {
+      this.onAttemptAction(newValue)
     }
   }
 }
@@ -248,7 +285,7 @@ tr {
   }
 
   .tableBody__cell {
-    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full;
   }
 
   .backup-comment {

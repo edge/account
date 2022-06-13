@@ -1,7 +1,14 @@
 <template>
   <div class="tooltip-box">
     <slot />
-    <div class="tooltip" :class="theme === 'dark' ? 'dark' : 'light', position || 'top', wide ? 'wide' : ''">
+    <div
+      class="tooltip"
+      :class="[
+        theme || 'light',
+        position || 'top',
+        wide ? 'wide' : ''
+      ]"
+    >
       <span class="text">{{ text }}</span>
     </div>
   </div>
@@ -54,7 +61,7 @@ export default {
   }
 
   .tooltip-box:hover .tooltip.left {
-    @apply -translate-x-5;
+    @apply -translate-x-2;
   }
 
   /* tooltip position */
@@ -87,6 +94,9 @@ export default {
   .tooltip.dark {
     @apply bg-black-100 border border-green !important;
   }
+  .tooltip.error {
+    @apply bg-red
+  }
 
   /* the notch */
   .tooltip .text::after {
@@ -111,7 +121,20 @@ export default {
   }
 
   .tooltip.left .text::after {
-    @apply top-1/2 right-0 transform -translate-y-1/2 translate-x-10;
+    @apply top-1/2 right-0 transform -translate-y-1/2 translate-x-2;
     border-color: transparent transparent transparent #0ecc5f;
+  }
+
+  .tooltip.error.top .text::after {
+    border-color: #cd5f4e transparent transparent transparent
+  }
+  .tooltip.error.right .text::after {
+    border-color: transparent #cd5f4e transparent transparent
+  }
+  .tooltip.error.bottom .text::after {
+    border-color: transparent transparent #cd5f4e transparent
+  }
+  .tooltip.error.left .text::after {
+    border-color: transparent transparent transparent #cd5f4e 
   }
 </style>

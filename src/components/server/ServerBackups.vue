@@ -12,6 +12,7 @@
             v-model=comment
             placeholder="Add backup name here"
             class="bg-transparent input input--floating"
+            @keypress="createOnEnter"
           />
         </div>
         <div>
@@ -48,7 +49,7 @@
               <th scope="col" class="tableHead__cell" width="">
                 Status
               </th>
-              <th scope="col" class="tableHead__cell actions" width="220"></th>
+              <th scope="col" class="tableHead__cell actions" width="250"></th>
             </tr>
           </thead>
           <tbody class="tableBody">
@@ -60,9 +61,11 @@
               v-else
               v-for="backup in backups"
               :activeTasks=activeTasks
+              :attemptingAction=attemptingAction
               :backup=backup
-              :disableActions=disableActions
+              :disableActions=disableBackupActions
               :key="backup.name"
+              :onAttemptAction=updateAttemptingAction
             />
           </tbody>
         </table>
@@ -102,8 +105,9 @@ export default {
   ],
   data: function () {
     return {
+      attemptingAction: false,
       comment: '',
-      httpError: '',
+      httpError: null,
       iBackups: [],
       isCreating: false,
       isUpdating: false
@@ -119,16 +123,21 @@ export default {
     canCreate() {
       return !this.isCreating && !this.disableActions && !this.v$.comment.$invalid
     },
+    disableBackupActions() {
+      return this.disableActions || this.attemptingAction
+    },
     serverId() {
       return this.$route.params.id
     }
   },
   methods: {
+    clearAllErrors() {
+      this.httpError = null
+    },
     async createBackup() {
       this.isCreating = true
       try {
-        this.httpError = ''
-        // this.toggleConfirmationModal()
+        this.httpError = null
         const response = await utils.servers.createBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -147,6 +156,14 @@ export default {
           this.isCreating = false
         }, 500)
       }
+    },
+    createOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.createBackup()
+    },
+    updateAttemptingAction(newState) {
+      this.attemptingAction = newState
     }
   },
   setup() {
