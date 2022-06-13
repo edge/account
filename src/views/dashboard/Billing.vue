@@ -11,7 +11,7 @@
         <div class="details__section overflow-hidden w-full">
           <span class="details__title">Wallet:</span>
           <div class="flex items-center relative">
-            <a href="" class="link truncate">
+            <a :href="explorerUrlWallet" target="_blank" rel="noreferrer" class="link truncate">
               <span class="details__info truncate">{{ account.wallet.address }}</span>
             </a>
             <button
@@ -76,6 +76,9 @@ export default {
   },
   computed: {
     ...mapState(['account', 'session']),
+    explorerUrlWallet() {
+      return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.account.wallet.address}`
+    },
     formattedAccountNumber() {
       // add space every 4 characters
       return this.account._key.replace(/.{4}/g, '$& ')

@@ -9,18 +9,24 @@
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden flex-shrink-0">Tx Hash:</span>
-      <span class="truncate">{{ tx.hash }}</span>
+      <a :href="explorerUrlTx" target="_blank" rel="noreferrer">
+        <span class="truncate">{{ tx.hash }}</span>
+      </a>
     </td>
     <td class="tableBody__cell col-span-2">
       <div v-if="sent" class="flex items-center truncate">
         <span class="mr-2 lg:hidden">To:</span>
         <div><ArrowDownIcon class="table__icon mr-1 text-red" /></div>
-        <span class="truncate">{{ tx.recipient }}</span>
+        <a :href="explorerUrlToAddress" target="_blank" rel="noreferrer">
+          <span class="truncate">{{ tx.recipient }}</span>
+        </a>
       </div>
       <div v-else class="flex items-center truncate">
         <span class="mr-2 lg:hidden">From:</span>
         <div><ArrowUpIcon class="table__icon mr-1 text-green" /></div>
-        <span class="truncate">{{ tx.sender }}</span>
+        <a :href="explorerUrlFromAddress" target="_blank" rel="noreferrer">
+          <span class="truncate">{{ tx.sender }}</span>
+        </a>
       </div>
 
     </td>
@@ -47,6 +53,8 @@
 </template>
 
 <script>
+/* global process */
+
 import { mapState } from 'vuex'
 import moment from 'moment'
 import {
@@ -69,6 +77,15 @@ export default {
   props: ['tx'],
   computed: {
     ...mapState(['account']),
+    explorerUrlFromAddress() {
+      return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.tx.sender}`
+    },
+    explorerUrlToAddress() {
+      return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.tx.recipient}`
+    },
+    explorerUrlTx() {
+      return `${process.env.VUE_APP_EXPLORER_URL}/transaction/${this.tx.hash}`
+    },
     formattedAmount() {
       return (this.tx.amount / 1e6).toFixed(6)
     },
@@ -105,6 +122,14 @@ tr {
 
 .table__icon {
   @apply w-3.5 lg:w-4
+}
+
+a {
+  @apply truncate
+}
+
+a span {
+  @apply text-gray-500 border-b border-gray-500 hover:text-green hover:border-green
 }
 
 @screen lg {
