@@ -30,7 +30,7 @@ def deployScript() {
     --env LETSENCRYPT_HOST=$DOMAIN \
     --env LETSENCRYPT_EMAIL="adam@edge.network" \
     --env VUE_APP_EXPLORER_URL=$EXPLORER_URL \
-    --env VUE_APP_INDEX_URL=$INDEX_URL \
+    --env VUE_APP_INDEX_API_URL=$INDEX_URL \
     $IMAGE
   ''')
 }
