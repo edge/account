@@ -64,7 +64,6 @@ export default {
   },
   methods: {
     async updateTransactions() {
-      console.log(process.env.VUE_APP_EXPLORER_URL)
       try {
         const transactions = await index.tx.transactions(
           process.env.VUE_APP_INDEX_URL,
