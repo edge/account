@@ -178,7 +178,7 @@
                 :activeTasks=activeTasks
                 :backups=backups
                 :disableActions=disableActions
-                :isLoadingBackups=isLoadingBackups
+                :isLoadingBackups="!loadedBackups"
                 :server=server
                 @update-backups=updateBackups
               />
@@ -256,6 +256,7 @@ export default {
       iCheckServerStatus: null,
       iServer: null,
       isUpdatingBackups: false,
+      loadedBackups: false,
       loading: false,
       region: null,
       server: null
@@ -364,14 +365,13 @@ export default {
       this.$router.push({ name: 'Servers' })
     },
     async updateBackups() {
-      this.isUpdatingBackups = true
       const response = await utils.servers.getBackups(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId
       )
       this.backups = response.results
-      this.isUpdatingBackups = false
+      this.loadedBackups = true
     },
     async updateRegion() {
       try {
