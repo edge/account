@@ -37,6 +37,9 @@
 </template>
 
 <script>
+/* global process */
+
+import { mapState } from 'vuex'
 import moment from 'moment'
 import { CalendarIcon, DocumentDownloadIcon } from '@heroicons/vue/outline'
 
@@ -48,6 +51,7 @@ export default {
   },
   props: ['invoice'],
   computed: {
+    ...mapState(['session']),
     description() {
       const date = moment(this.invoice.start).format('LL')
       return `Daily Invoice ${date}`
@@ -63,8 +67,41 @@ export default {
     }
   },
   methods: {
-    downloadInvoice() {
-      console.log('download invoice TBD')
+    async downloadInvoice() {
+      try {
+        const url = `${process.env.VUE_APP_ACCOUNT_API_URL}/billing/invoices/${this.invoice._key}/download`
+
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${this.session._key}`
+          }
+        })
+        const blob = await response.blob()
+        // Explicitly set the mime-type to avoid browser issues
+        const newBlob = new Blob([blob], { type: 'application/pdf' })
+
+        // Handle Microsoft browser quirks
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+          return window.navigator.msSaveOrOpenBlob(newBlob)
+        }
+
+        // For normal browsers
+        const objectUrl = window.URL.createObjectURL(newBlob)
+
+        const link = document.createElement('a')
+        link.href = objectUrl
+        link.download = `Edge Invoice - ${this.formattedDate}`
+        link.click()
+
+        // open the pdf in a new tab, but doesn't set the pdf file name this would replace the above 4 lines
+        // window.open(objectUrl, '_blank')
+
+        // Revoke ObjectURL (cleanup)
+        setTimeout(() => window.URL.revokeObjectURL(objectUrl), 100)
+      }
+      catch (error) {
+        console.error(error)
+      }
     }
   }
 }
