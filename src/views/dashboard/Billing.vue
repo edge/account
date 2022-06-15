@@ -6,7 +6,17 @@
         <h4>Account Details</h4>
         <div class="details__section">
           <span class="details__title">Account No:</span>
-          <span class="details__info">{{ formattedAccountNumber }}</span>
+          <div class="flex items-center justify-between">
+            <span v-if="showAccountNumber" class="details__info">{{ formattedAccountNumber }}</span>
+            <span v-else class="details__info">XXXX XXXX XXXX XXXX</span>
+            <button
+              @click.prevent="toggleShowAccountNumber"
+              class="text-gray-400 hover:text-green"
+            >
+              <EyeIcon v-if="showAccountNumber" class="ml-2 w-5 h-5" />
+              <EyeOffIcon v-if="!showAccountNumber" class="ml-2 w-5 h-5" />
+            </button>
+          </div>
         </div>
         <div class="details__section overflow-hidden w-full">
           <span class="details__title">Wallet:</span>
@@ -67,6 +77,7 @@ import { PlusIcon } from '@heroicons/vue/outline'
 import TopUpModal from '@/components/billing/TopUpModal'
 import { mapState } from 'vuex'
 import superagent from 'superagent'
+import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
 export default {
   name: 'Billing',
@@ -77,6 +88,8 @@ export default {
     BillingInvoiceTable,
     BillingTransactionTable,
     DuplicateIcon,
+    EyeIcon,
+    EyeOffIcon,
     PlusIcon,
     TopUpModal
   },
@@ -86,6 +99,7 @@ export default {
       copied: false,
       iBalance: null,
       rate: null,
+      showAccountNumber: false,
       showTopUpModal: false
     }
   },
@@ -118,6 +132,9 @@ export default {
       setTimeout(() => {
         this.copied = false
       }, 2000)
+    },
+    toggleShowAccountNumber() {
+      this.showAccountNumber = !this.showAccountNumber
     },
     toggleTopUpModal() {
       this.showTopUpModal = !this.showTopUpModal

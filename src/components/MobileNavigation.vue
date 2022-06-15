@@ -76,7 +76,7 @@ export default {
   computed: {
     ...mapState(['account']),
     formattedAccountNumber() {
-      return this.account._key.replace(/.{4}/g, '$& ')
+      return `XXXX XXXX XXXX ${this.account._key.slice(-4)}`
     }
   }
 }

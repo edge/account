@@ -3,17 +3,26 @@
     <h1>Account</h1>
     <div class="box">
       <div>
-        <h4>Your account number</h4>
+        <h4>Your Account Number</h4>
         <!-- eslint-disable-next-line max-len -->
         <p class="text-gray-500">Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
       </div>
       <!-- account number display -->
       <div class="account-number-wrapper">
-        <span class="account-number monospace">{{ formattedAccountNumber }}</span>
+        <span v-if="showAccountNumber" class="account-number monospace">{{ formattedAccountNumber }}</span>
+        <span v-else class="account-number masked monospace">XXXX XXXX XXXX XXXX</span>
+        <!-- hide/show account number button button -->
+        <button
+          @click.prevent="toggleShowAccountNumber"
+          class="ml-2 text-gray-400 hover:text-green"
+        >
+          <EyeIcon v-if="showAccountNumber" class="ml-2 w-5 h-5" />
+          <EyeOffIcon v-if="!showAccountNumber" class="ml-2 w-5 h-5" />
+        </button>
         <!-- copy to clipboard button -->
         <button
           @click.prevent="copyToClipboard"
-          class="text-gray-400 hover:text-green"
+          class="ml-2 text-gray-400 hover:text-green"
         >
           <DuplicateIcon class="w-6 h-6" />
         </button>
@@ -45,6 +54,7 @@ import { DuplicateIcon } from '@heroicons/vue/outline'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
 import { mapState } from 'vuex'
+import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
 export default {
   name: 'Account',
@@ -55,6 +65,8 @@ export default {
     Disable2FA,
     DisableRecoveryEmail,
     DuplicateIcon,
+    EyeIcon,
+    EyeOffIcon,
     Enable2FA,
     EnableRecoveryEmail
   },
@@ -75,7 +87,8 @@ export default {
   },
   data() {
     return {
-      copied: false
+      copied: false,
+      showAccountNumber: false
     }
   },
   methods: {
@@ -85,6 +98,9 @@ export default {
       setTimeout(() => {
         this.copied = false
       }, 2000)
+    },
+    toggleShowAccountNumber() {
+      this.showAccountNumber = !this.showAccountNumber
     }
   }
 }
@@ -103,6 +119,9 @@ export default {
 }
 .account-number {
   @apply text-3xl text-green pr-4;
+}
+.account-number.masked {
+  @apply text-gray;
 }
 
 .copied {
