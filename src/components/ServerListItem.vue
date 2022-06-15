@@ -217,7 +217,7 @@ export default {
   }
   .specs {
     @apply flex-shrink-0;
-    flex-basis: 220px;
+    flex-basis: 230px;
   }
   .zone {
     @apply col-start-3 row-start-1 flex-shrink-0;
