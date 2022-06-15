@@ -27,10 +27,10 @@
           <div class="flex flex-col">
             <span class="details__title">Balance:</span>
             <span class="details__info">{{ formattedBalance }} <span class="currency">XE</span></span>
-            <span class="details__info italic">$ {{ formattedUSDBalance }} <span class="currency">USD</span></span>
+            <span class="details__info">$ {{ formattedUSDBalance }} <span class="currency">USD</span></span>
           </div>
           <button @click=toggleTopUpModal class="button button--success button--small h-10">
-            Top-up Account
+            Top Up Account
             <div><PlusIcon class="w-4 ml-2"/></div>
           </button>
         </div>
