@@ -23,10 +23,16 @@
             <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
           </div>
         </div>
-        <div class="details__section">
-          <span class="details__title">Balance:</span>
-          <span class="details__info">{{ formattedBalance }} <span class="currency">XE</span></span>
-          <span class="details__info italic">$ {{ formattedUSDBalance }} <span class="currency">USD</span></span>
+        <div class="details__section balance">
+          <div class="flex flex-col">
+            <span class="details__title">Balance:</span>
+            <span class="details__info">{{ formattedBalance }} <span class="currency">XE</span></span>
+            <span class="details__info italic">$ {{ formattedUSDBalance }} <span class="currency">USD</span></span>
+          </div>
+          <button @click=toggleTopUpModal class="button button--success button--small h-10">
+            Top-up Account
+            <div><PlusIcon class="w-4 ml-2"/></div>
+          </button>
         </div>
       </div>
       <div class="box">
@@ -43,6 +49,10 @@
       <h4>Invoices</h4>
       <BillingInvoiceTable />
     </div>
+    <TopUpModal
+      v-show=showTopUpModal
+      @modal-close=toggleTopUpModal
+    />
   </div>
 </template>
 
@@ -53,6 +63,8 @@ import * as utils from '../../account-utils/index'
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
+import { PlusIcon } from '@heroicons/vue/outline'
+import TopUpModal from '@/components/billing/TopUpModal'
 import { mapState } from 'vuex'
 import superagent from 'superagent'
 
@@ -64,14 +76,17 @@ export default {
   components: {
     BillingInvoiceTable,
     BillingTransactionTable,
-    DuplicateIcon
+    DuplicateIcon,
+    PlusIcon,
+    TopUpModal
   },
   data() {
     return {
       balance: null,
       copied: false,
       iBalance: null,
-      rate: null
+      rate: null,
+      showTopUpModal: false
     }
   },
   computed: {
@@ -103,6 +118,9 @@ export default {
       setTimeout(() => {
         this.copied = false
       }, 2000)
+    },
+    toggleTopUpModal() {
+      this.showTopUpModal = !this.showTopUpModal
     },
     async updateBalance() {
       try {
@@ -152,11 +170,11 @@ export default {
 .details__section {
   @apply flex flex-col my-2;
 }
-.details__title {
-
-}
 .details__info {
   @apply text-gray-500 text-md;
+}
+.details__section.balance {
+  @apply flex-row justify-between items-end
 }
 
 .link .details__info {
@@ -176,5 +194,15 @@ export default {
 
 .currency {
   @apply text-xs;
+}
+
+@media (max-width: 450px) {
+  .details__section.balance {
+    @apply flex-col items-start;
+  }
+
+  .details__section.balance .button {
+    @apply w-full mt-2;
+  }
 }
 </style>
