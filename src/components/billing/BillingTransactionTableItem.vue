@@ -45,7 +45,7 @@
         <span class="capitalize truncate">{{ status }}</span>
       </div>
     </td>
-    <td class="tableBody__cell">
+    <td class="tableBody__cell amount">
       <span class="mr-2 lg:hidden">Amount:</span>
       <span>{{ formattedAmount }} <span class="lg:hidden">XE</span></span>
     </td>
@@ -139,6 +139,10 @@ a span {
 
   .tableBody__cell {
     @apply text-sm pl-6 py-4 table-cell align-middle;
+  }
+
+  .tableBody__cell.amount {
+    @apply text-right pr-6
   }
 }
 

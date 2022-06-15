@@ -18,7 +18,7 @@
           <th scope="col" class="tableHead__cell" width="15%">
             Status
           </th>
-          <th scope="col" class="tableHead__cell" width="15%">
+          <th scope="col" class="tableHead__cell amount" width="15%">
             Amount (XE)
           </th>
         </tr>
@@ -124,6 +124,10 @@ table, tbody {
 
   .tableBody__cell {
     @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
+  }
+
+  .tableHead__cell.amount {
+    @apply text-right
   }
 }
 </style>
