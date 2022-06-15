@@ -13,7 +13,20 @@
         <li>This action will not affect current server status</li>
       </div>
     </template>
-    <template v-slot:confirmButtonText>Yes, Delete Backup</template>
+    <template v-slot:buttons>
+      <button
+        class="w-full button button--small button--error"
+        @click="confirm"
+      >
+        Yes, Delete Backup
+      </button>
+      <button
+        class="w-full mt-3 button button--small button--outline sm:mt-0"
+        @click="close"
+      >
+        Cancel
+      </button>
+    </template>
   </Modal>
 </template>
 
@@ -27,6 +40,14 @@ export default {
   components: {
     ExclamationIcon,
     Modal
+  },
+  methods: {
+    close() {
+      this.$emit('modal-close')
+    },
+    confirm() {
+      this.$emit('modal-confirm')
+    }
   }
 }
 </script>

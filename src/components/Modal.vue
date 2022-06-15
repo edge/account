@@ -8,18 +8,7 @@
       <div class="my-4 px-8 text-sm text-gray-500">
         <slot name="body" />
         <div class="w-full my-8 sm:flex sm:space-x-4">
-          <button
-            class="w-full button button--small button--error"
-            @click="confirm"
-          >
-            <slot name="confirmButtonText" />
-          </button>
-          <button
-            class="w-full mt-3 button button--small button--outline sm:mt-0"
-            @click="close"
-          >
-            Cancel
-          </button>
+          <slot name="buttons" />
         </div>
       </div>
     </div>
@@ -29,15 +18,7 @@
 <script>
 
 export default {
-  name: 'ConfirmationModal',
-  methods: {
-    close() {
-      this.$emit('modal-close')
-    },
-    confirm() {
-      this.$emit('modal-confirm')
-    }
-  }
+  name: 'Modal'
 }
 </script>
 

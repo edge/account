@@ -13,7 +13,20 @@
         <li>To end billing, destroy the server instead</li>
       </div>
     </template>
-    <template v-slot:confirmButtonText>Continue</template>
+    <template v-slot:buttons>
+      <button
+        class="w-full button button--small button--error"
+        @click="confirm"
+      >
+        Continue
+      </button>
+      <button
+        class="w-full mt-3 button button--small button--outline sm:mt-0"
+        @click="close"
+      >
+        Cancel
+      </button>
+    </template>
   </Modal>
 </template>
 
@@ -27,6 +40,14 @@ export default {
   components: {
     ExclamationIcon,
     Modal
+  },
+  methods: {
+    close() {
+      this.$emit('modal-close')
+    },
+    confirm() {
+      this.$emit('modal-confirm')
+    }
   }
 }
 </script>

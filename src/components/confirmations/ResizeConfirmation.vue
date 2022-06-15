@@ -14,7 +14,20 @@
         <li v-if="diskIncreased">Disk space cannot be reduced after resize</li>
       </div>
     </template>
-    <template v-slot:confirmButtonText>Yes, Resize Server</template>
+    <template v-slot:buttons>
+      <button
+        class="w-full button button--small button--error"
+        @click="confirm"
+      >
+        Yes, Resize Server
+      </button>
+      <button
+        class="w-full mt-3 button button--small button--outline sm:mt-0"
+        @click="close"
+      >
+        Cancel
+      </button>
+    </template>
   </Modal>
 </template>
 
@@ -46,6 +59,12 @@ export default {
   methods: {
     formatCost(cost) {
       return (Math.ceil(cost * 100) / 100).toFixed(2)
+    },
+    close() {
+      this.$emit('modal-close')
+    },
+    confirm() {
+      this.$emit('modal-confirm')
     }
   }
 }
