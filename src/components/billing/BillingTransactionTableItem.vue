@@ -16,14 +16,14 @@
     <td class="tableBody__cell col-span-2">
       <div v-if="sent" class="flex items-center truncate">
         <span class="mr-2 lg:hidden">To:</span>
-        <div><ArrowDownIcon class="table__icon mr-1 text-red" /></div>
+        <div><ArrowUpIcon class="table__icon mr-1 text-red" /></div>
         <a :href="explorerUrlToAddress" target="_blank" rel="noreferrer">
           <span class="truncate">{{ tx.recipient }}</span>
         </a>
       </div>
       <div v-else class="flex items-center truncate">
         <span class="mr-2 lg:hidden">From:</span>
-        <div><ArrowUpIcon class="table__icon mr-1 text-green" /></div>
+        <div><ArrowDownIcon class="table__icon mr-1 text-green" /></div>
         <a :href="explorerUrlFromAddress" target="_blank" rel="noreferrer">
           <span class="truncate">{{ tx.sender }}</span>
         </a>
