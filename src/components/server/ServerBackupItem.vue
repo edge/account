@@ -61,21 +61,21 @@
         </Tooltip>
       </div>
     </td>
-
-    <!-- destroy and restore confirmation modals -->
-    <DestroyBackupConfirmation
-      v-show=showDestroyConfirmationModal
-      :backup=backup
-      @modal-confirm=deleteBackup
-      @modal-close=toggleDestroyConfirmationModal
-    />
-    <RestoreBackupConfirmation
-      v-show=showRestoreConfirmationModal
-      :backup=backup
-      @modal-confirm=restoreBackup
-      @modal-close=toggleRestoreConfirmationModal
-    />
   </tr>
+  <!-- destroy and restore confirmation modals -->
+  <DestroyBackupConfirmation
+    v-show=showDestroyConfirmationModal
+    :backup=backup
+    @modal-confirm=deleteBackup
+    @modal-close=toggleDestroyConfirmationModal
+  />
+  <!-- eslint-disable-next-line vue/no-multiple-template-root-->
+  <RestoreBackupConfirmation
+    v-show=showRestoreConfirmationModal
+    :backup=backup
+    @modal-confirm=restoreBackup
+    @modal-close=toggleRestoreConfirmationModal
+  />
 </template>
 
 <script>
