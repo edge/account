@@ -2,9 +2,9 @@
     <div class="mobileNavigation">
       <div class="flex-shrink-0 h-16 md:h-20"></div>
       <div class="mobileNavigation__inner">
-        <div class="px-3 py-4 bg-gray-200 border-b border-gray-300">
+        <!-- <div class="px-3 py-4 bg-gray-200 border-b border-gray-300">
           <Search size="full" />
-        </div>
+        </div> -->
         <div class="mobileNavigation__account">
           <span class="text-xs">ACCOUNT NO.</span>
           <span>{{ formattedAccountNumber }}</span>
@@ -27,7 +27,7 @@
 <script>
 import Menu from '@/components/Menu'
 import NavigationTools from '@/components/NavigationTools'
-import Search from '@/components/Search'
+// import Search from '@/components/Search'
 import { mapState } from 'vuex'
 
 export default {
@@ -70,8 +70,8 @@ export default {
   },
   components: {
     Menu,
-    NavigationTools,
-    Search
+    NavigationTools
+    // Search
   },
   computed: {
     ...mapState(['account']),
