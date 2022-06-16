@@ -178,9 +178,7 @@
                 :activeTasks=activeTasks
                 :backups=backups
                 :disableActions=disableActions
-                :isLoadingBackups="!loadedBackups"
                 :server=server
-                @update-backups=updateBackups
               />
             </TabPanel>
 
@@ -287,8 +285,7 @@ export default {
       return this.$store.getters.tasksByServerId(this.serverId)
     },
     disableActions() {
-      // eslint-disable-next-line max-len
-      return this.activeTasks.length > 0 || this.backups.some(backup => ['creating', 'deleting', 'restoring'].includes(backup.status))
+      return this.activeTasks.length > 0
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
@@ -364,15 +361,6 @@ export default {
     returnToServers() {
       this.$router.push({ name: 'Servers' })
     },
-    async updateBackups() {
-      const response = await utils.servers.getBackups(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.backups = response.results
-      this.loadedBackups = true
-    },
     async updateRegion() {
       try {
         const region = await utils.region.getRegion(
@@ -394,7 +382,6 @@ export default {
           this.serverId
         )
         this.server = server
-        this.updateBackups()
       }
       catch (error) {
         console.error(error)
