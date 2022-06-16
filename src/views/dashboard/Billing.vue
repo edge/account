@@ -6,7 +6,7 @@
         <h4>Account Details</h4>
         <div class="details__section">
           <span class="details__title">Account No:</span>
-          <div class="flex items-center justify-between">
+          <div class="flex items-center">
             <span v-if="showAccountNumber" class="details__info">{{ formattedAccountNumber }}</span>
             <span v-else class="details__info">XXXX XXXX XXXX XXXX</span>
             <button
