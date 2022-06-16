@@ -18,7 +18,7 @@
             </button>
           </div>
         </div>
-        <div class="details__section overflow-hidden w-full">
+        <div class="details__section overflow-hidden w-max max-w-full">
           <span class="details__title">Wallet:</span>
           <div class="flex items-center relative">
             <a :href="explorerUrlWallet" target="_blank" rel="noreferrer" class="link truncate">
