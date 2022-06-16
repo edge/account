@@ -1,6 +1,5 @@
 <template>
-  <div class="box">
-    <h4>Invoices</h4>
+  <div>
     <div class="mt-4 overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
