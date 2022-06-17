@@ -141,4 +141,13 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
+router.beforeEach((to, from, next) => {
+  if (typeof router.navigateCallback === 'function') {
+    const continueNavigation = router.navigateCallback()
+    if (!continueNavigation) return next(false)
+  }
+  next()
+})
+
+
 export default router

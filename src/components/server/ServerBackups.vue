@@ -143,6 +143,9 @@ export default {
     }
   },
   methods: {
+    backPage() {
+      this.pageHistory = this.pageHistory.slice(0, -1)
+    },
     changePage(newPage) {
       this.pageHistory = [...this.pageHistory, newPage]
     },
@@ -200,8 +203,17 @@ export default {
     this.iBackups = setInterval(() => {
       this.updateBackups()
     }, 5000)
+    // add back button guard to return to previous table page.
+    this.$router.navigateCallback = () => {
+      if (this.pageHistory.length > 1) {
+        this.backPage()
+        return false
+      }
+      return true
+    }
   },
   unmounted() {
+    delete this.$router.navigateCallback
     clearInterval(this.iBackups)
   },
   setup() {

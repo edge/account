@@ -52,12 +52,12 @@
     </div>
     <div class="box">
       <h4>Transactions</h4>
-      <BillingTransactionTable />
+      <BillingTransactionTable :currentPages=currentPages :onChangePage=changePage />
     </div>
 
     <div class="box">
       <h4>Invoices</h4>
-      <BillingInvoiceTable />
+      <BillingInvoiceTable :currentPages=currentPages :onChangePage=changePage />
     </div>
     <TopUpModal
       v-show=showTopUpModal
@@ -100,11 +100,15 @@ export default {
       iBalance: null,
       rate: null,
       showAccountNumber: false,
-      showTopUpModal: false
+      showTopUpModal: false,
+      tablePageHistory: [{ tx: 1, invoice: 1 }]
     }
   },
   computed: {
     ...mapState(['account', 'session']),
+    currentPages() {
+      return this.tablePageHistory[this.tablePageHistory.length - 1]
+    },
     explorerUrlWallet() {
       return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.account.wallet.address}`
     },
@@ -126,6 +130,12 @@ export default {
     }
   },
   methods: {
+    backPage() {
+      this.tablePageHistory = this.tablePageHistory.slice(0, -1)
+    },
+    changePage(newPages) {
+      this.tablePageHistory = [...this.tablePageHistory, newPages]
+    },
     async copyToClipboard () {
       this.copied = true
       await navigator.clipboard.writeText(this.account.wallet.address)
@@ -168,10 +178,18 @@ export default {
     this.iBalance = setInterval(() => {
       this.updateBalance()
     }, 5000)
+    // add back button guard to return to previous table page.
+    this.$router.navigateCallback = () => {
+      if (this.tablePageHistory.length > 1) {
+        this.backPage()
+        return false
+      }
+      return true
+    }
   },
   unmounted() {
+    delete this.$router.navigateCallback
     clearInterval(this.iBalance)
-    this.iBalance = null
   }
 }
 </script>

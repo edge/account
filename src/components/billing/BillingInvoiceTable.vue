@@ -54,6 +54,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'BillingInvoiceTable',
+  props: ['currentPages', 'onChangePage'],
   components: {
     BillingInvoiceTableItem,
     LoadingTableDataRow,
@@ -64,19 +65,22 @@ export default {
       iInvoices: null,
       invoices: null,
       limit: 5,
-      metadata: { totalCount: 0 },
-      pageHistory: [1]
+      metadata: { totalCount: 0 }
     }
   },
   computed: {
     ...mapState(['session']),
     currentPage() {
-      return this.pageHistory[this.pageHistory.length - 1]
+      return this.currentPages.invoice
     }
   },
   methods: {
     changePage(newPage) {
-      this.pageHistory = [...this.pageHistory, newPage]
+      const newPages = {
+        tx: this.currentPages.tx,
+        invoice: newPage
+      }
+      this.onChangePage(newPages)
     },
     async updateInvoices() {
       try {
@@ -107,7 +111,7 @@ export default {
     this.iInvoices = null
   },
   watch: {
-    pageHistory() {
+    currentPage() {
       this.updateInvoices()
     }
   }

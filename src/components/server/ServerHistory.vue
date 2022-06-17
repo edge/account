@@ -76,6 +76,9 @@ export default {
   },
   // props: ['tasks'],
   methods: {
+    backPage() {
+      this.pageHistory = this.pageHistory.slice(0, -1)
+    },
     changePage(newPage) {
       this.pageHistory = [...this.pageHistory, newPage]
     },
@@ -103,8 +106,17 @@ export default {
     this.iTasks = setInterval(() => {
       this.updateTasks()
     }, 5000)
+    // add back button guard to return to previous table page.
+    this.$router.navigateCallback = () => {
+      if (this.pageHistory.length > 1) {
+        this.backPage()
+        return false
+      }
+      return true
+    }
   },
   unmounted() {
+    delete this.$router.navigateCallback
     clearInterval(this.iTasks)
   },
   watch: {
