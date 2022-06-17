@@ -54,9 +54,9 @@ export const serverNameFirstChar = helpers.withMessage(
   }
 )
 
-const serverNameLengthRegexp = /^.{1,48}$/
+const serverNameLengthRegexp = /^.{1,64}$/
 export const serverNameLength = helpers.withMessage(
-  'Must be between 1 and 49 characters',
+  'Must be between 1 and 64 characters',
   v => serverNameLengthRegexp.test(v)
 )
 
