@@ -40,7 +40,7 @@
       <div class="serverList__field zone">
         <span class="serverList__header">Zone</span>
         <div class="flex">
-          <img class="flagIcon" :src="region.flag" alt="flag">
+          <img class="flagIcon" :src="flagSrc" alt="flag">
           <span class="text-m">{{ region.name }}</span>
         </div>
       </div>
@@ -82,6 +82,10 @@ export default {
     created() {
       const created = moment(this.server.created).fromNow()
       return created === 'a few seconds ago' ? 'Just now' : created
+    },
+    flagSrc() {
+      return 'https://hatscripts.github.io/circle-flags/flags/gb.svg'
+      // return `https://hatscripts.github.io/circle-flags/flags/${region.flag}.svg`
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`

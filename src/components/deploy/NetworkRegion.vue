@@ -38,7 +38,7 @@
               <span>{{region.city}}</span>
             </RadioGroupDescription>
           </div>
-          <!-- <img :src='region.flagIcon && region.flagIcon[0] ? region.flagIcon[0].url : ""' width="40" class="rounded-sm" /> -->
+          <img :src='flagSrc' width="40" class="rounded-sm" />
         </div>
       </RadioGroupOption>
     </div>
@@ -75,7 +75,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session'])
+    ...mapState(['session']),
+    flagSrc() {
+      return 'https://hatscripts.github.io/circle-flags/flags/gb.svg'
+      // return `https://hatscripts.github.io/circle-flags/flags/${region.flag}.svg`
+    }
   },
   methods: {
     async updateRegions() {
