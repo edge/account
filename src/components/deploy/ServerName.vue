@@ -17,12 +17,16 @@
 
 export default {
   name: 'ServerName',
+  props: ['hostname'],
   data () {
     return {
       serverName: ''
     }
   },
   watch: {
+    hostname() {
+      this.serverName = this.hostname
+    },
     serverName(serverName) {
       this.$emit('name-changed', serverName)
     }

@@ -39,10 +39,21 @@
 
       <!-- server name -->
       <div class="box">
-        <ServerName @name-changed="serverName => updateServerName(serverName)" />
+        <ServerName @name-changed="serverName => updateServerName(serverName)" :hostname=hostname />
         <div v-if="serverNameUpdated" class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.name.$errors"
+            :key="error.$uid"
+            class="mt-2 text-red"
+          >
+            - {{ error.$message }}
+          </span>
+        </div>
+
+        <Domain @domain-changed="domain => updateDomain(domain)" :hostname="hostname" />
+        <div v-if="serverDomainUpdated" class="flex flex-col">
+          <span
+            v-for="error in v$.serverOptions.settings.domain.$errors"
             :key="error.$uid"
             class="mt-2 text-red"
           >
@@ -89,6 +100,7 @@
 
 import * as utils from '../../account-utils'
 import * as validation from '../../utils/validation'
+import Domain from '@/components/deploy/Domain'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import NetworkRegion from '@/components/deploy/NetworkRegion'
@@ -107,6 +119,7 @@ export default {
   },
   props: ['region'],
   components: {
+    Domain,
     HttpError,
     LoadingSpinner,
     NetworkRegion,
@@ -118,7 +131,9 @@ export default {
   },
   data() {
     return {
+      serverDomainUpdated: false,
       serverNameUpdated: false,
+      hostname: null,
       httpError: '',
       isSaving: false,
       selectedRegion: null,
@@ -126,6 +141,7 @@ export default {
         region: null,
         settings: {
           name: '',
+          domain: '',
           os: {
             id: null
           },
@@ -150,6 +166,7 @@ export default {
             validation.serverNameChars,
             validation.serverNameFirstChar
           ],
+          domain: [validation.domain],
           os: {
             id: [validation.required]
           },
@@ -204,9 +221,27 @@ export default {
         }, 500)
       }
     },
+    async getHostname() {
+      const response = await utils.servers.getHostname(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.hostname = response.hostname
+      this.updateServerName(response.hostname)
+    },
     // toggleBackups () {
     //   this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })
     // },
+    updateDomain(domain) {
+      this.serverDomainUpdated = true
+      this.serverOptions = {
+        ...this.serverOptions,
+        settings: {
+          ...this.serverOptions.settings,
+          domain
+        }
+      }
+    },
     updateServerName(name) {
       this.serverNameUpdated = true
       this.serverOptions = {
@@ -250,6 +285,9 @@ export default {
         spec
       }
     }
+  },
+  mounted() {
+    this.getHostname()
   },
   setup() {
     return {

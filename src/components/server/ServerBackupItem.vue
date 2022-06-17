@@ -19,12 +19,9 @@
       <span class="mr-2 lg:hidden">Status:</span>
       <span
         class="flex items-center capitalize text-gray-500"
-        :class="[
-          isInactive ? 'text-red' : '',
-          isActive ? 'text-green' : ''
-        ]"
+        :class="isInactive ? 'text-red' : ''"
       >
-        <span>{{ backup.status }}</span>
+        <span>{{ isActive ? 'Complete' : backup.status }}</span>
         <div><LoadingSpinner v-if=isCreating class="w-3.5 h-3.5 ml-1 text-gray" /></div>
       </span>
     </td>

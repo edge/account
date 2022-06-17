@@ -3,11 +3,11 @@
     <div class="input-group">
       <label class="label">Domain</label>
       <input
+        v-model="domain"
         class="input input--floating"
-        :value="domain"
-        placeholder=".edge.network"
-        readonly
+        placeholder="domain-name"
         type="text"
+        required
       />
     </div>
   </div>
@@ -16,11 +16,19 @@
 <script>
 export default {
   name: 'Domain',
-  computed: {
-    domain() {
-      return this.hostname ? `${this.hostname}.edge.network` : ''
+  props: ['hostname'],
+  data() {
+    return {
+      domain: ''
     }
   },
-  props: ['hostname']
+  watch: {
+    hostname() {
+      this.domain = `${this.hostname}.edge.network`
+    },
+    domain(domain) {
+      this.$emit('domain-changed', domain)
+    }
+  }
 }
 </script>

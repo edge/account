@@ -68,6 +68,13 @@ export const getBackups = async (host, sessionId, serverId, options) => {
   return response.body
 }
 
+export const getHostname = async (host, sessionId) => {
+  const url = `${host}/servers/hostname`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // get server by id
 export const getServer = async (host, sessionId, serverId) => {
   const url = `${host}/servers/${serverId}`

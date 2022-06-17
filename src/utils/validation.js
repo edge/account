@@ -72,9 +72,9 @@ export const serverPassword = helpers.withMessage(
 /**
  * Server domain validator.
  */
-const domainRegexp = /^.{6,255}$/
+const domainRegexp = /((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}/i
 export const domain = helpers.withMessage(
-  'Maximum length is 255 characters.',
+  'Must be a valid FQDN.',
   v => domainRegexp.test(v)
 )
 
