@@ -53,7 +53,7 @@
             </tr>
           </thead>
           <tbody class="tableBody">
-            <LoadingTableDataRow v-if="isLoadingBackups" colspan="5"/>
+            <LoadingTableDataRow v-if="!backups" colspan="5"/>
             <tr v-else-if="!backups.length">
               <td colspan="5" class="tableBody__cell text-center text-gray-500">No backups</td>
             </tr>
@@ -70,8 +70,13 @@
           </tbody>
         </table>
       </div>
-
-
+      <Pagination
+        :border="true"
+        :currentPage=currentPage
+        :limit=limit
+        :totalCount="metadata.totalCount"
+        @change-page=changePage
+      />
     </div>
   </div>
 </template>
@@ -84,6 +89,7 @@ import * as validation from '../../utils/validation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
+import Pagination from '@/components/Pagination'
 import ServerBackupItem from '@/components/server/ServerBackupItem'
 import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
@@ -94,23 +100,26 @@ export default {
     HttpError,
     LoadingSpinner,
     LoadingTableDataRow,
+    Pagination,
     ServerBackupItem
   },
   props: [
     'activeTasks',
-    'backups',
     'disableActions',
-    'isLoadingBackups',
     'server'
   ],
   data: function () {
     return {
       attemptingAction: false,
+      backups: null,
       comment: '',
       httpError: null,
-      iBackups: [],
+      iBackups: null,
       isCreating: false,
-      isUpdating: false
+      isUpdating: false,
+      limit: 10,
+      metadata: { totalCount: 0 },
+      pageHistory: [1]
     }
   },
   validations() {
@@ -123,6 +132,9 @@ export default {
     canCreate() {
       return !this.isCreating && !this.disableActions && !this.v$.comment.$invalid
     },
+    currentPage() {
+      return this.pageHistory[this.pageHistory.length - 1]
+    },
     disableBackupActions() {
       return this.disableActions || this.attemptingAction
     },
@@ -131,6 +143,9 @@ export default {
     }
   },
   methods: {
+    changePage(newPage) {
+      this.pageHistory = [...this.pageHistory, newPage]
+    },
     clearAllErrors() {
       this.httpError = null
     },
@@ -164,11 +179,39 @@ export default {
     },
     updateAttemptingAction(newState) {
       this.attemptingAction = newState
+    },
+    async updateBackups() {
+      const response = await utils.servers.getBackups(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId,
+        {
+          limit: this.limit,
+          page: this.currentPage
+        }
+      )
+      this.backups = response.results
+      this.metadata = response.metadata
+      this.loadedBackups = true
     }
+  },
+  mounted() {
+    this.updateBackups()
+    this.iBackups = setInterval(() => {
+      this.updateBackups()
+    }, 5000)
+  },
+  unmounted() {
+    clearInterval(this.iBackups)
   },
   setup() {
     return {
       v$: useVuelidate()
+    }
+  },
+  watch: {
+    pageHistory() {
+      this.updateBackups()
     }
   }
 }

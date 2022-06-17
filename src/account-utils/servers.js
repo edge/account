@@ -3,6 +3,7 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 import superagent from 'superagent'
+import { toQueryString } from './helpers'
 
 // add IP address to server
 export const addIPAddress = async (host, sessionId, serverId) => {
@@ -60,11 +61,12 @@ export const deleteServer = async (host, sessionId, serverId) => {
 }
 
 // get backups for server by id
-export const getBackups = async (host, sessionId, serverId, options) => {
-  const url = `${host}/servers/${serverId}/backups`
+export const getBackups = async (host, sessionId, serverId, params) => {
+  let url = `${host}/servers/${serverId}/backups`
+  // add query params
+  if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(options)
   return response.body
 }
 
@@ -84,16 +86,20 @@ export const getServer = async (host, sessionId, serverId) => {
 }
 
 // get all servers managed by the current account
-export const getServers = async (host, sessionId) => {
-  const url = `${host}/servers`
+export const getServers = async (host, sessionId, params) => {
+  let url = `${host}/servers`
+  // add query params
+  if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
 // get server tasks by server id
-export const getTasks = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}/tasks`
+export const getTasks = async (host, sessionId, serverId, params) => {
+  let url = `${host}/servers/${serverId}/tasks`
+  // add query params
+  if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body

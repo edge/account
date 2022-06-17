@@ -14,6 +14,12 @@
         :regions=regions
         :server=server
       />
+      <Pagination
+        :currentPage=currentPage
+        :limit=limit
+        :totalCount="metadata.totalCount"
+        @change-page=changePage
+      />
     </ul>
 
     <div v-else class="">
@@ -31,6 +37,7 @@
 
 import * as utils from '../../account-utils/index'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import Pagination from '@/components/Pagination'
 import { ServerIcon } from '@heroicons/vue/outline'
 import ServerListItem from '@/components/ServerListItem'
 import { mapState } from 'vuex'
@@ -42,30 +49,30 @@ export default {
   },
   components: {
     LoadingSpinner,
+    Pagination,
     ServerIcon,
     ServerListItem
   },
   data() {
     return {
       iServers: null,
+      limit: 10,
       loading: false,
+      metadata: { totalCount: 0 },
+      pageHistory: [1],
       regions: [],
       servers: []
     }
   },
   computed: {
-    ...mapState(['account', 'session'])
+    ...mapState(['account', 'session']),
+    currentPage() {
+      return this.pageHistory[this.pageHistory.length - 1]
+    }
   },
   methods: {
-    formatDisk(disk) {
-      if (disk < 1024) return `${disk} MB`
-      return `${disk / 1024} GB`
-    },
-    formatOSName(os) {
-      return os.group.slice(0, 1).toUpperCase() + os.group.slice(1)
-    },
-    formatOSVersion(os) {
-      return os.version
+    changePage(newPage) {
+      this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRegions() {
       try {
@@ -76,7 +83,6 @@ export default {
         this.regions = regions.results
       }
       catch (error) {
-        // TODO - handle error
         console.error(error)
       }
     },
@@ -85,9 +91,14 @@ export default {
       try {
         const servers = await utils.servers.getServers(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
+          this.session._key,
+          {
+            limit: this.limit,
+            page: this.currentPage
+          }
         )
         this.servers = servers.results
+        this.metadata = servers.metadata
       }
       catch (error) {
         console.error(error)
@@ -104,7 +115,11 @@ export default {
   },
   unmounted() {
     clearInterval(this.iServers)
-    this.iServers = null
+  },
+  watch: {
+    pageHistory() {
+      this.updateServers()
+    }
   }
 }
 </script>

@@ -1,36 +1,45 @@
 <template>
-  <div class="mt-4 overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="hidden lg:table-header-group tableHead">
-        <tr>
-          <th scope="col" class="tableHead__cell">
-            Date
-          </th>
-          <th scope="col" class="tableHead__cell">
-            Description
-          </th>
-          <th scope="col" class="tableHead__cell">
-            Status
-          </th>
-          <th scope="col" class="tableHead__cell">
-            Amount (USD)
-          </th>
-          <th scope="col" class="tableHead__cell" width="120"></th>
-        </tr>
-      </thead>
-      <tbody class="tableBody">
-        <LoadingTableDataRow v-if="!invoices" colspan="5" />
-        <tr v-else-if="!invoices.length">
-          <td colspan="5" class="tableBody__cell text-center text-gray-500">No invoices</td>
-        </tr>
-        <BillingInvoiceTableItem
-          v-else
-          v-for="invoice in invoices"
-          :invoice="invoice"
-          :key="invoice._key"
-        />
-      </tbody>
-    </table>
+  <div>
+    <div class="mt-4 overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="hidden lg:table-header-group tableHead">
+          <tr>
+            <th scope="col" class="tableHead__cell">
+              Date
+            </th>
+            <th scope="col" class="tableHead__cell">
+              Description
+            </th>
+            <th scope="col" class="tableHead__cell">
+              Status
+            </th>
+            <th scope="col" class="tableHead__cell">
+              Amount (USD)
+            </th>
+            <th scope="col" class="tableHead__cell" width="120"></th>
+          </tr>
+        </thead>
+        <tbody class="tableBody">
+          <LoadingTableDataRow v-if="!invoices" colspan="5" />
+          <tr v-else-if="!invoices.length">
+            <td colspan="5" class="tableBody__cell text-center text-gray-500">No invoices</td>
+          </tr>
+          <BillingInvoiceTableItem
+            v-else
+            v-for="invoice in invoices"
+            :invoice="invoice"
+            :key="invoice._key"
+          />
+        </tbody>
+      </table>
+    </div>
+    <Pagination
+      :border="true"
+      :currentPage=currentPage
+      :limit=limit
+      :totalCount="metadata.totalCount"
+      @change-page=changePage
+    />
   </div>
 </template>
 
@@ -40,31 +49,47 @@
 import * as utils from '../../account-utils'
 import BillingInvoiceTableItem from '@/components/billing/BillingInvoiceTableItem'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
+import Pagination from '@/components/Pagination'
 import { mapState } from 'vuex'
 
 export default {
   name: 'BillingInvoiceTable',
   components: {
     BillingInvoiceTableItem,
-    LoadingTableDataRow
+    LoadingTableDataRow,
+    Pagination
   },
   data() {
     return {
       iInvoices: null,
-      invoices: null
+      invoices: null,
+      limit: 5,
+      metadata: { totalCount: 0 },
+      pageHistory: [1]
     }
   },
   computed: {
-    ...mapState(['session'])
+    ...mapState(['session']),
+    currentPage() {
+      return this.pageHistory[this.pageHistory.length - 1]
+    }
   },
   methods: {
+    changePage(newPage) {
+      this.pageHistory = [...this.pageHistory, newPage]
+    },
     async updateInvoices() {
       try {
         const invoices = await utils.billing.getInvoices(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
+          this.session._key,
+          {
+            limit: this.limit,
+            page: this.currentPage
+          }
         )
         this.invoices = invoices.results
+        this.metadata = invoices.metadata
       }
       catch (error) {
         console.error(error)
@@ -80,13 +105,22 @@ export default {
   unmounted() {
     clearInterval(this.iInvoices)
     this.iInvoices = null
+  },
+  watch: {
+    pageHistory() {
+      this.updateInvoices()
+    }
   }
 }
 </script>
 <style scoped>
 .box {
-  @apply rounded-lg bg-white w-full overflow-auto p-4 md:p-6;
+  @apply w-full p-6 bg-white rounded-lg;
 }
+.box h4 {
+  @apply w-full pb-2 mb-4 font-medium;
+}
+
 .tableHead {
   @apply border-gray-300 border-b rounded-lg w-full bg-gray-50;
 }

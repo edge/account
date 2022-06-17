@@ -30,6 +30,13 @@
         </tbody>
       </table>
     </div>
+    <Pagination
+      :border="true"
+      :currentPage=currentPage
+      :limit=limit
+      :totalCount="metadata.totalCount"
+      @change-page=changePage
+    />
   </div>
 </template>
 
@@ -38,6 +45,7 @@
 
 import * as utils from '../../account-utils'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
+import Pagination from '@/components/Pagination'
 import ServerHistoryItem from '@/components/server/ServerHistoryItem'
 import { mapState } from 'vuex'
 
@@ -45,30 +53,45 @@ export default {
   name: 'ServerHistory',
   components: {
     LoadingTableDataRow,
+    Pagination,
     ServerHistoryItem
   },
   data() {
     return {
+      limit: 10,
+      metadata: { totalCount: 0 },
+      pageHistory: [1],
       iTasks: null,
       tasks: null
     }
   },
   computed: {
     ...mapState(['session']),
+    currentPage() {
+      return this.pageHistory[this.pageHistory.length - 1]
+    },
     serverId() {
       return this.$route.params.id
     }
   },
   // props: ['tasks'],
   methods: {
+    changePage(newPage) {
+      this.pageHistory = [...this.pageHistory, newPage]
+    },
     async updateTasks() {
       try {
         const tasks = await utils.servers.getTasks(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.serverId
+          this.serverId,
+          {
+            limit: this.limit,
+            page: this.currentPage
+          }
         )
         this.tasks = tasks.results
+        this.metadata = tasks.metadata
       }
       catch (error) {
         console.error(error)
@@ -83,7 +106,11 @@ export default {
   },
   unmounted() {
     clearInterval(this.iTasks)
-    this.iTasks = null
+  },
+  watch: {
+    pageHistory() {
+      this.updateTasks()
+    }
   }
 }
 </script>
