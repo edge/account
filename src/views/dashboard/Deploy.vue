@@ -46,7 +46,7 @@
             :key="error.$uid"
             class="mt-2 text-red"
           >
-            - {{ error.$message }}
+            {{ error.$message }}
           </span>
         </div>
 
@@ -57,7 +57,7 @@
             :key="error.$uid"
             class="mt-2 text-red"
           >
-            - {{ error.$message }}
+            {{ error.$message }}
           </span>
         </div>
       </div>
@@ -71,7 +71,7 @@
             :key="error.$uid"
             class="mt-2 text-red"
           >
-            - {{ error.$message }}
+            {{ error.$message }}
           </span>
         </div>
       </div>
