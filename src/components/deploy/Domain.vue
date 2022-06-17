@@ -8,6 +8,7 @@
         placeholder="domain-name"
         type="text"
         required
+        @focusout=onFocusOut
       />
     </div>
   </div>
@@ -22,9 +23,17 @@ export default {
       domain: ''
     }
   },
+  methods: {
+    onFocusOut() {
+      if (!this.domain) this.resetDomain()
+    },
+    resetDomain() {
+      this.domain = `${this.hostname}.edge.network`
+    }
+  },
   watch: {
     hostname() {
-      this.domain = `${this.hostname}.edge.network`
+      this.resetDomain()
     },
     domain(domain) {
       this.$emit('domain-changed', domain)
