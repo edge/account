@@ -18,7 +18,7 @@
       </router-link>
       <UserMenu />
     </div>
-    <MobileNavigation />
+    <MobileNavigation v-if="account" />
   </div>
 </template>
 
