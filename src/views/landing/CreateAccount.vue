@@ -169,13 +169,31 @@
 
           <!-- credit icons -->
           <div class="step-content" v-if="step === 3 || isAccountSecured">
-            <div class="credit-items-grid">
+            <div class="flex flex-col space-y-6 my-4">
+              <!-- eslint-disable-next-line max-len -->
+              <span>To top up your account, please transfer XE to the following wallet address. It may take up to 10 minutes for the balance to update.</span>
+              <div class="relative">
+                <div class="flex items-center w-full">
+                  <span class="address">{{ account.wallet.address }}</span>
+                  <button
+                    @click.prevent="copyToClipboard"
+                    class="text-gray-400 hover:text-green"
+                  >
+                    <DuplicateIcon class="ml-2 w-6 h-6" />
+                  </button>
+                </div>
+                <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
+              </div>
+            </div>
+
+            <!-- top up option grid - currently tbd -->
+            <!-- <div class="credit-items-grid">
               <span class="credit-item">
-                <CubeTransparentIcon class="credit-item-icon" />
+                <XEIcon class="credit-item-icon" />
                 <span class="text-sm">XE</span>
               </span>
               <span class="credit-item">
-                <CurrencyYenIcon class="credit-item-icon" />
+                <EdgeIcon class="credit-item-icon" />
                 <span class="text-sm">EDGE</span>
               </span>
               <span class="credit-item">
@@ -183,18 +201,19 @@
                 <span class="text-sm">Credit/Debit</span>
               </span>
               <span class="credit-item">
-                <CurrencyBangladeshiIcon class="credit-item-icon" />
+                <BTCIcon class="credit-item-icon" />
                 <span class="text-sm">BTC</span>
               </span>
               <span class="credit-item">
-                <CurrencyEuroIcon class="credit-item-icon" />
+                <ETHIcon class="credit-item-icon" />
                 <span class="text-sm">ETH</span>
               </span>
               <span class="credit-item">
-                <CurrencyRupeeIcon class="credit-item-icon" />
+                <XHavenIcon class="credit-item-icon" />
                 <span class="text-sm">xHaven</span>
               </span>
-            </div>
+            </div> -->
+
             <!-- skip step button -->
             <button
               @click.prevent="goToAccount"
@@ -237,15 +256,6 @@ import { mapState } from 'vuex'
 import {
   ChevronDownIcon,
   ChevronRightIcon,
-  CreditCardIcon,
-
-  // temporary icons for add credit section
-  CubeTransparentIcon,
-  CurrencyBangladeshiIcon,
-  CurrencyEuroIcon,
-  CurrencyRupeeIcon,
-  CurrencyYenIcon,
-
   ShieldCheckIcon
 } from '@heroicons/vue/solid'
 import {
@@ -265,16 +275,7 @@ export default {
   components: {
     ChevronDownIcon,
     ChevronRightIcon,
-    CreditCardIcon,
     CurrencyDollarIcon,
-
-    // temporary icons for add credit section
-    CurrencyBangladeshiIcon,
-    CurrencyEuroIcon,
-    CurrencyRupeeIcon,
-    CurrencyYenIcon,
-    CubeTransparentIcon,
-
     DuplicateIcon,
     Enable2FA,
     EnableRecoveryEmail,
@@ -462,6 +463,12 @@ export default {
 }
 .credit-item-icon {
   @apply h-10;
+}
+
+.address {
+  @apply break-words;
+  width: calc(100% - 30px);
+  font-size: 0.76rem;
 }
 
 @media (max-width: 410px) {
