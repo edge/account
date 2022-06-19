@@ -80,22 +80,17 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateTasks() {
-      try {
-        const tasks = await utils.servers.getTasks(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId,
-          {
-            limit: this.limit,
-            page: this.currentPage
-          }
-        )
-        this.tasks = tasks.results
-        this.metadata = tasks.metadata
-      }
-      catch (error) {
-        console.error(error)
-      }
+      const tasks = await utils.servers.getTasks(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId,
+        {
+          limit: this.limit,
+          page: this.currentPage
+        }
+      )
+      this.tasks = tasks.results
+      this.metadata = tasks.metadata
     }
   },
   mounted() {

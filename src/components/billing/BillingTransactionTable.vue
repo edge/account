@@ -84,21 +84,16 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateTransactions() {
-      try {
-        const transactions = await index.tx.transactions(
-          process.env.VUE_APP_INDEX_URL,
-          this.account.wallet.address,
-          {
-            limit: this.limit,
-            page: this.currentPage
-          }
-        )
-        this.transactions = transactions.results
-        this.metadata = transactions.metadata
-      }
-      catch (error) {
-        console.error(error)
-      }
+      const transactions = await index.tx.transactions(
+        process.env.VUE_APP_INDEX_URL,
+        this.account.wallet.address,
+        {
+          limit: this.limit,
+          page: this.currentPage
+        }
+      )
+      this.transactions = transactions.results
+      this.metadata = transactions.metadata
     }
   },
   mounted() {

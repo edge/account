@@ -75,34 +75,24 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRegions() {
-      try {
-        const regions = await utils.region.getRegions(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
-        )
-        this.regions = regions.results
-      }
-      catch (error) {
-        console.error(error)
-      }
+      const regions = await utils.region.getRegions(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.regions = regions.results
     },
     async updateServers() {
       this.loading = true
-      try {
-        const servers = await utils.servers.getServers(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          {
-            limit: this.limit,
-            page: this.currentPage
-          }
-        )
-        this.servers = servers.results
-        this.metadata = servers.metadata
-      }
-      catch (error) {
-        console.error(error)
-      }
+      const servers = await utils.servers.getServers(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        {
+          limit: this.limit,
+          page: this.currentPage
+        }
+      )
+      this.servers = servers.results
+      this.metadata = servers.metadata
       this.loading = false
     }
   },

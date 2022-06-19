@@ -79,21 +79,16 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateInvoices() {
-      try {
-        const invoices = await utils.billing.getInvoices(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          {
-            limit: this.limit,
-            page: this.currentPage
-          }
-        )
-        this.invoices = invoices.results
-        this.metadata = invoices.metadata
-      }
-      catch (error) {
-        console.error(error)
-      }
+      const invoices = await utils.billing.getInvoices(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        {
+          limit: this.limit,
+          page: this.currentPage
+        }
+      )
+      this.invoices = invoices.results
+      this.metadata = invoices.metadata
     }
   },
   mounted() {

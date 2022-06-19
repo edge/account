@@ -83,19 +83,13 @@ export default {
   },
   methods: {
     async updateRegions() {
-      try {
-        const regions = await utils.region.getRegions(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
-        )
-        this.regions = regions.results
-        // pre-select first active region
-        this.selected = regions.results.find(region => region.status === 'active')
-      }
-      catch (error) {
-        // TODO - handle error
-        console.error(error)
-      }
+      const regions = await utils.region.getRegions(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.regions = regions.results
+      // pre-select first active region
+      this.selected = regions.results.find(region => region.status === 'active')
     }
   },
   mounted() {

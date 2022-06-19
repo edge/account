@@ -15,6 +15,8 @@
       </div>
       <span v-else>Disable 2FA</span>
     </button>
+    <!-- error message  -->
+    <HttpError :error=httpError />
     <!-- disable 2fa confirmation modal -->
     <Disable2FAConfirmation
       v-show=showConfirmationModal
@@ -30,6 +32,7 @@
 import * as utils from '../../account-utils/index'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import Disable2FAConfirmation from '@/components/confirmations/Disable2FAConfirmation'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapActions, mapState } from 'vuex'
 
@@ -37,10 +40,12 @@ export default {
   components: {
     BadgeCheckIcon,
     Disable2FAConfirmation,
+    HttpError,
     LoadingSpinner
   },
   data() {
     return {
+      httpError: '',
       isLoading: false,
       showConfirmationModal: false
     }
@@ -59,11 +64,14 @@ export default {
           this.session._key
         )
         await this.updateAccount()
+        this.isLoading = false
       }
       catch (error) {
-        console.error(error)
+        setTimeout(async () => {
+          this.httpError = error
+          this.isLoading = false
+        }, 500)
       }
-      this.isLoading = false
     },
     toggleConfirmationModal() {
       this.showConfirmationModal = !this.showConfirmationModal

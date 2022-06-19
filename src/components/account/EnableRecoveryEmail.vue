@@ -33,9 +33,8 @@
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ error.$message }}</span>
       </div>
-      <div v-if="errors.email" class="flex items-center errorMessage mt-1">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ errors.email }}</span>
+      <div class="mt-2" v-if="errors.email">
+        <HttpError :error="errors.email" />
       </div>
     </div>
 
@@ -105,6 +104,7 @@ import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon } from '@heroicons/vue/outline'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import useVuelidate from '@vuelidate/core'
 import { mapActions, mapState } from 'vuex'
@@ -113,6 +113,7 @@ export default {
   components: {
     BadgeCheckIcon,
     ExclamationIcon,
+    HttpError,
     LoadingSpinner
   },
   data() {
@@ -182,7 +183,7 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          this.errors.email = 'Oops, something went wrong. Please try again.'
+          this.errors.email = error
           this.isLoading = false
         }, 1000)
       }
@@ -225,7 +226,6 @@ export default {
   },
   watch: {
     confirmationCode() {
-      // reset confirmation code error (i.e. invalid) when input is changed
       this.errors.confirmationCode = ''
     },
     email() {

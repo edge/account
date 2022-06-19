@@ -140,27 +140,17 @@ export default {
       this.showTopUpModal = !this.showTopUpModal
     },
     async updateBalance() {
-      try {
-        const info = await utils.accounts.getWallet(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
-        )
-        this.balance = info.balance
-        await this.updateUSDRate()
-      }
-      catch (error) {
-        console.error(error)
-      }
+      const info = await utils.accounts.getWallet(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.balance = info.balance
+      await this.updateUSDRate()
     },
     async updateUSDRate() {
-      try {
-        const url = `${process.env.VUE_APP_INDEX_URL}/token/current`
-        const response = await superagent.get(url)
-        this.rate = response.body.usdPerXE
-      }
-      catch (error) {
-        console.error(error)
-      }
+      const url = `${process.env.VUE_APP_INDEX_URL}/token/current`
+      const response = await superagent.get(url)
+      this.rate = response.body.usdPerXE
     }
   },
   mounted() {
