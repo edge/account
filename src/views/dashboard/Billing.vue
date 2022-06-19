@@ -45,10 +45,10 @@
           </button>
         </div>
       </div>
-      <div class="box">
+      <!-- <div class="box">
         <h4>Consumption</h4>
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
-      </div>
+      </div> -->
     </div>
     <div class="box">
       <h4>Transactions</h4>
