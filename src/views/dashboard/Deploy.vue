@@ -17,7 +17,6 @@
       <!-- server specs - cpu / ram / storage -->
       <div class="box">
         <h4>Server specs</h4>
-        <p class="mt-3 text-gray-500">Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
         <ServerSpecs
           :hourlyCost=hourlyCost
           @specs-changed="(spec) => updateSpec(spec)"
