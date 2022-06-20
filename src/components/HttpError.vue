@@ -1,7 +1,7 @@
 <template>
   <div v-if="error" class="flex items-center">
-    <ExclamationIcon class="w-5 mr-2 text-red" />
-    <span class="text-red">{{ formattedError }}</span>
+    <ExclamationIcon class="w-3.5 mr-2 text-red" />
+    <span class="errorMessage__text text-red">{{ formattedError }}</span>
   </div>
 </template>
 
