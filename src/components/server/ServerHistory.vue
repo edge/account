@@ -5,10 +5,10 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell" width="20%">
+            <th scope="col" class="tableHead__cell" width="180">
               Date
             </th>
-            <th scope="col" class="tableHead__cell" width="20%">
+            <th scope="col" class="tableHead__cell" width="150">
               Time
             </th>
             <th scope="col" class="tableHead__cell">

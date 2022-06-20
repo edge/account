@@ -1,13 +1,13 @@
 <template>
   <tr>
     <td class="tableBody__cell">
-      <div class="flex flex-row justify-center lg:block">
+      <div class="flex flex-row items-center">
         <div><CalendarIcon class="table__icon" /></div>
         <span>{{ formattedDate }}</span>
       </div>
     </td>
     <td class="tableBody__cell">
-      <div class="flex flex-row justify-center lg:block">
+      <div class="flex flex-row items-center">
         <div><ClockIcon class="table__icon" /></div>
         <span>{{ formattedTime }}</span>
       </div>
@@ -61,7 +61,7 @@ tr {
 }
 
 .tableBody__cell {
-  @apply text-xs flex items-center text-gray-500;
+  @apply flex items-center text-gray-500;
 }
 
 .table__icon {
@@ -69,7 +69,7 @@ tr {
 }
 
 .task-action {
-  @apply text-sm text-black
+  @apply text-md text-black
 }
 
 @screen lg {
