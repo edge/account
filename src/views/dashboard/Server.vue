@@ -6,10 +6,10 @@
     <span v-if="disableActions"></span>
 
     <!-- ip and domain -->
-    <div class="flex items-center space-x-2 mt-1 text-gray-500">
+    <div class="flex items-center space-x-2 mt-1 text-gray-500 truncate sub-header">
       <span>{{ serverIp }}</span>
       <span v-if=serverIp class="divider"/>
-      <span>{{ server.settings.domain }}</span>
+      <span class="truncate">{{ server.settings.domain }}</span>
     </div>
 
     <!-- overview -->
@@ -461,5 +461,14 @@ export default {
 }
 .inactive .serverList__statusText {
   @apply text-red;
+}
+
+@media (max-width: 450px) {
+  .sub-header {
+    @apply flex-col space-x-0 items-start;
+  }
+  .sub-header .divider {
+    @apply hidden;
+  }
 }
 </style>
