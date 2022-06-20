@@ -13,3 +13,10 @@ export const getInvoices = async (host, sessionId, params) => {
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
+
+export const unholdInvoice = async (host, sessionId, invoiceId) => {
+  const url = `${host}/billing/invoices/${invoiceId}/unhold`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}

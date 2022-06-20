@@ -17,8 +17,30 @@
         class="truncate capitalize"
         :class="isPaid ? 'text-green' : 'text-red'"
       >
-        {{ invoice.status }}
+        {{ status }}
       </span>
+      <Tooltip
+        v-if="!canPay && onHold"
+        position="right"
+        :text="tooltipText"
+        theme="error"
+        :wide="true"
+      >
+        <button
+          :disabled="true"
+          class="ml-2 text-gray-400"
+          @click=unholdInvoice
+        >
+          <span>- <span class="underline">Pay Now</span></span>
+        </button>
+      </Tooltip>
+      <button
+        v-else-if="onHold"
+        class="ml-2 hover:text-green"
+        @click=unholdInvoice
+      >
+        <span>- <span class="underline">Pay Now</span></span>
+      </button>
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Amount:</span>
@@ -39,6 +61,8 @@
 <script>
 /* global process */
 
+import * as utils from '../../account-utils'
+import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import { CalendarIcon, DocumentDownloadIcon } from '@heroicons/vue/outline'
@@ -47,11 +71,15 @@ export default {
   name: 'BillingInvoiceTableItem',
   components: {
     CalendarIcon,
-    DocumentDownloadIcon
+    DocumentDownloadIcon,
+    Tooltip
   },
-  props: ['invoice'],
+  props: ['invoice', 'rate', 'usdBalance'],
   computed: {
     ...mapState(['session']),
+    canPay() {
+      return this.invoice.amount > this.usdBalance
+    },
     description() {
       const date = moment(this.invoice.start).format('LL')
       return `Daily Invoice ${date}`
@@ -64,6 +92,16 @@ export default {
     },
     isPaid() {
       return this.invoice.status === 'paid'
+    },
+    onHold() {
+      return this.invoice.status === 'hold'
+    },
+    status() {
+      return this.onHold ? 'Unpaid' : this.invoice.status
+    },
+    tooltipText() {
+      const topUpAmount = (this.invoice.amount - this.usdBalance) / this.rate
+      return `Please add ${topUpAmount.toFixed(6)} XE to your wallet to pay`
     }
   },
   methods: {
@@ -99,6 +137,19 @@ export default {
       catch (error) {
         console.error(error)
       }
+    },
+    async unholdInvoice() {
+      if (!this.onHold || !this.canPay) return
+      try {
+        await utils.billing.unholdInvoice(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.invoice._key
+        )
+      }
+      catch (error) {
+        console.error(error)
+      }
     }
   }
 }
@@ -111,6 +162,11 @@ tr {
 
 .tableBody__cell {
   @apply text-xs flex items-center text-gray-500 leading-4 truncate;
+}
+
+.tableBody__cell.status {
+  overflow: visible;
+  text-overflow: unset
 }
 
 .table__icon {

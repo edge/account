@@ -57,7 +57,7 @@
 
     <div class="box">
       <h4>Invoices</h4>
-      <BillingInvoiceTable />
+      <BillingInvoiceTable :rate=rate :usdBalance=usdBalance />
     </div>
     <TopUpModal
       v-show=showTopUpModal
@@ -123,6 +123,9 @@ export default {
         maximumFractionDigits: 2,
         minimumFractionDigits: 2
       })
+    },
+    usdBalance() {
+      return this.rate * this.balance / 1e6
     }
   },
   methods: {

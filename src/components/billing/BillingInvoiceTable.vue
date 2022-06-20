@@ -4,7 +4,7 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell">
+            <th scope="col" class="tableHead__cell" width="15%">
               Date
             </th>
             <th scope="col" class="tableHead__cell">
@@ -29,6 +29,8 @@
             v-for="invoice in invoices"
             :invoice="invoice"
             :key="invoice._key"
+            :rate=rate
+            :usdBalance=usdBalance
           />
         </tbody>
       </table>
@@ -54,6 +56,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'BillingInvoiceTable',
+  props: ['rate', 'usdBalance'],
   components: {
     BillingInvoiceTableItem,
     LoadingTableDataRow,
