@@ -7,8 +7,12 @@
       <span>Resize {{ serverName }}</span>
     </template>
     <template v-slot:body>
-     <span class="font-semibold">Warning: server will be powered off while resizing.</span>
+     <div class="flex flex-col space-y-2">
+       <span class="font-semibold">Warning: server will be powered off while resizing.</span>
+     </div>
       <div class="flex flex-col space-y-2 pt-4">
+        <!-- eslint-disable-next-line max-len -->
+        <li v-if="resizedInLastHour">Your server was resized less than one hour ago. If you continue to resize again, you'll be charged a full hour for the previous size</li>
         <!-- eslint-disable-next-line max-len -->
         <li>Cost will {{ costIncreased ? 'increase' : 'decrease' }} from {{ currentCostFormatted }} to {{ newCostFormatted }}</li>
         <li v-if="diskIncreased">Disk space cannot be reduced after resize</li>
@@ -37,7 +41,14 @@ import Modal from '@/components/Modal'
 
 export default {
   name: 'ResizeConfirmation',
-  props: ['currentCost', 'currentSpec', 'newCost', 'newSpec', 'serverName'],
+  props: [
+    'currentCost',
+    'currentSpec',
+    'lastResizeTask',
+    'newCost',
+    'newSpec',
+    'serverName'
+  ],
   components: {
     ExclamationIcon,
     Modal
@@ -54,11 +65,15 @@ export default {
     },
     newCostFormatted() {
       return `$${this.formatCost(this.newCost)} per hour`
+    },
+    resizedInLastHour() {
+      const oneHourAgo = Date.now() - 3.6e6
+      return this.lastResizeTask && this.lastResizeTask.updated > oneHourAgo
     }
   },
   methods: {
     formatCost(cost) {
-      return (Math.ceil(cost * 100) / 100).toFixed(2)
+      return (Math.ceil(cost * 1e4) / 1e4).toFixed(4)
     },
     close() {
       this.$emit('modal-close')

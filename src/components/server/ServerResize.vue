@@ -31,6 +31,7 @@
       @modal-close=toggleConfirmationModal
       :currentCost=currentHourlyCost
       :currentSpec=currentSpec
+      :lastResizeTask="lastResizeTask"
       :newCost=newHourlyCost
       :newSpec=newSpec
       :serverName="server.settings.name || server.settings.hostname"
@@ -61,6 +62,7 @@ export default {
     return {
       httpError: '',
       isLoading: false,
+      lastResizeTask: null,
       newSpec: {
         bandwidth: 10,
         cpus: null,
@@ -105,6 +107,17 @@ export default {
     }
   },
   methods: {
+    async getLastResize() {
+      const tasks = await utils.servers.getTasks(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.server._key,
+        {
+          limit: 100
+        }
+      )
+      this.lastResizeTask = tasks.results.filter(task => task.action === 'resizeResource')[0]
+    },
     async resizeServer () {
       this.isLoading = true
       try {
@@ -133,6 +146,9 @@ export default {
     updateNewSpec(newSpec) {
       this.newSpec = newSpec
     }
+  },
+  mounted() {
+    this.getLastResize()
   }
 }
 </script>
