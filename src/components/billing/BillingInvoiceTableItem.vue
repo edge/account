@@ -161,7 +161,7 @@ tr {
 }
 
 .tableBody__cell {
-  @apply text-xs flex items-center text-gray-500 leading-4 truncate;
+  @apply flex items-center text-gray-500 leading-4 truncate;
 }
 
 .tableBody__cell.status {
