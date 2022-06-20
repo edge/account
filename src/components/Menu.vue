@@ -5,6 +5,7 @@
       :key="index"
       class="main-nav__item"
       :class="item.disabled ? 'disabled' : ''"
+      @click="closeNav"
     >
       <router-link
         :to="item.link"
@@ -20,7 +21,7 @@
 <script>
 export default {
   name: 'Menu',
-  props: ['mainNav'],
+  props: ['mainNav', 'closeNav'],
   data: function () {
     return {
       location: null

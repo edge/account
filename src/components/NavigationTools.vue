@@ -1,19 +1,19 @@
 
 <template>
   <ul class="navigation-tools">
-    <li class="navigation-tools__item mobileOnly">
+    <li @click="closeNav" class="navigation-tools__item mobileOnly">
       <router-link to="/account" class="navigation-tools__link">
         <span class=""><UserIcon class="w-5 h-5" /></span>
         <span class="navigation-tools__label">Account</span>
       </router-link>
     </li>
-    <li class="navigation-tools__item mobileOnly">
+    <li @click="closeNav" class="navigation-tools__item mobileOnly">
       <router-link to="/billing" class="navigation-tools__link">
         <span class=""><CashIcon class="w-5 h-5" /></span>
         <span class="navigation-tools__label">Billing</span>
       </router-link>
     </li>
-    <li class="navigation-tools__item">
+    <li @click="closeNav" class="navigation-tools__item">
       <a href="/support" class="navigation-tools__link" target="_blank" rel="noreferrer">
         <span class=""><SupportIcon class="w-5 h-5" /></span>
         <span class="navigation-tools__label">Support</span>
@@ -42,6 +42,7 @@ import {
 
 export default {
   name: 'NavigationTools',
+  props: ['closeNav'],
   components: {
     CashIcon,
     LogoutIcon,

@@ -10,7 +10,7 @@
           <span>{{ formattedAccountNumber }}</span>
         </div>
         <div class="mobileNavigation__menu">
-          <Menu :mainNav="mainNav"/>
+          <Menu :mainNav="mainNav" :closeNav=closeNav />
           <router-link
             to="/servers/deploy"
           >
@@ -18,7 +18,7 @@
           </router-link>
         </div>
         <div class="mobileNavigation__tools">
-          <NavigationTools/>
+          <NavigationTools :closeNav=closeNav />
         </div>
       </div>
     </div>
@@ -32,6 +32,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'MobileNavigation',
+  props: ['closeNav'],
   data: function () {
     return {
       mainNav: [

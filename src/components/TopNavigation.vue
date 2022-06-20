@@ -18,7 +18,7 @@
       </router-link>
       <UserMenu />
     </div>
-    <MobileNavigation v-if="account" />
+    <MobileNavigation v-if="account" :closeNav=closeMobileNav />
   </div>
 </template>
 
@@ -56,6 +56,9 @@ export default {
   methods: {
     isLoggedIn: function() {
       return this.$store.getters['auth/isAuthenticated']
+    },
+    closeMobileNav() {
+      this.showNav = false
     }
   },
   watch: {
