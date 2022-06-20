@@ -40,7 +40,7 @@
               <th scope="col" class="tableHead__cell" width="120">
                 Date
               </th>
-              <th scope="col" class="tableHead__cell" width="90">
+              <th scope="col" class="tableHead__cell lg:hidden xl:table-cell" width="90">
                 Time
               </th>
               <th scope="col" class="tableHead__cell" width="">

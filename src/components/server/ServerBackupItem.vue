@@ -240,7 +240,7 @@ tr {
   @apply sm:row-start-2;
 }
 .tableBody__cell.time {
-  @apply sm:row-start-2 col-start-2;
+  @apply sm:row-start-2 col-start-2 lg:hidden xl:table-cell;
 }
 .tableBody__cell.actions {
   @apply col-span-3 lg:px-0;
