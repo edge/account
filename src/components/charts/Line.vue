@@ -1,5 +1,10 @@
 <template>
-  <LineChart v-if="chartData" :chartData="chartData" :options="options" />
+  <LineChart
+    v-if="chartData"
+    :chartData="chartData"
+    :options="options"
+    :height="300"
+  />
 </template>
 
 <script>
@@ -13,10 +18,10 @@ export default {
   components: { LineChart },
   props: {
     data: Object,
+    labels: Array,
     minScale: Number,
     maxScale: Number,
-    labels: Array,
-    postpendValue: String,
+    unit: String,
     xLabel: String,
     yLabel: String
   },
@@ -44,39 +49,38 @@ export default {
 
     this.options = {
       responsive: true,
-      // cubicInterpolationMode: 'monotone',
       plugins: {
         legend: {
           display: false
         },
         tooltip: {
-          intersect: false,
           interaction: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: tooltipItem => ` ${tooltipItem.raw.toFixed(2)} ${this.unit}`
+            }
+          },
+          hover: {
+            mode: 'index',
             intersect: false
           }
         }
       },
       scales: {
         x: {
-          // grid: {display: false},
           title: {
             display: true,
             text: this.xLabel
           }
         },
         y: {
-          // grid: {display: false},
           suggestedMin: this.minScale,
           suggestedMax: this.maxScale,
           title: {
             display: true,
             text: this.yLabel
           }
-          // ticks: {
-          //   callback: function(value, index, ticks) {
-          //     return value + this.postpendValue
-          //   }
-          // }
         }
       }
     }

@@ -28,7 +28,7 @@
         This year
       </button>
     </div>
-    <div v-if="displayMetrics" class="grid w-full grid-cols-1 gap-5">
+    <div v-if="displayMetrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
       <div class="box">
         <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load ? 'mb-8' : ''">CPU Load</h4>
         <Line
@@ -40,7 +40,7 @@
           :data="graphMetrics.cpu_load"
           :minScale="0"
           :maxScale="100"
-          :postpendValue="'%'"
+          unit="%"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">CPU load statistics will appear here as they become available.</p>
       </div>
@@ -56,12 +56,12 @@
           :data="graphMetrics.mem_usage"
           :minScale="0"
           :maxScale="this.server.spec.ram  / 1024"
-          postpendValue="GB"
+          unit="GB"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">Memory usage statistics will appear here as they become available.</p>
       </div>
 
-      <div class="box">
+      <div class="box col-span-2">
         <h4 :class="this.graphMetrics && this.graphMetrics.disk_usage ? 'mb-8' : ''">Disk Usage</h4>
         <Line
           v-if="this.graphMetrics && this.graphMetrics.disk_usage"
@@ -72,7 +72,7 @@
           :data="this.graphMetrics.disk_usage"
           :minScale="0"
           :maxScale="this.server.spec.disk / 1024"
-          postpendValue="GB"
+          unit="GB"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">Disk usage statistics will appear here as they become available.</p>
       </div>
@@ -140,7 +140,7 @@ const intervalLookup = {
     xLabel: 'Day'
   },
   'month': {
-    format: 'll',
+    format: 'D MMM',
     interval: 'day',
     intervalMs: 8.64e7,
     steps: 30,
