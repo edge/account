@@ -13,13 +13,16 @@
       </div>
     </td>
     <td class="tableBody__cell row-start-1 col-span-3">
-      <span class="capitalize task-action">{{ task.action }}</span>
+      <span class="capitalize task-action">{{ formattedEvent }}</span>
     </td>
     <td class="tableBody__cell row-start-3 col-span-3">
       <span class="mr-2 lg:hidden">Status:</span>
       <div
         class="capitalize"
-        :class="isStatusRed ? 'text-red' : 'text-green'"
+        :class="[
+          isComplete ? 'text-green' : '',
+          isError ? 'text-red' : ''
+        ]"
       >
         <span>{{ task.status }}</span>
       </div>
@@ -30,6 +33,16 @@
 <script>
 import moment from 'moment'
 import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'
+
+const actionLookup = {
+  create: 'Deployed',
+  createBackup: 'Backup Created',
+  destroyBackup: 'Backup Destroyed',
+  resizeResource: 'Resized',
+  restoreBackup: 'Backup Restored',
+  start: 'Powered On',
+  stop: 'Powered Off'
+}
 
 export default {
   name: 'ServerHistoryItem',
@@ -45,11 +58,17 @@ export default {
     formattedDate() {
       return moment(this.task.created).format('LL')
     },
+    formattedEvent() {
+      return actionLookup[this.task.action]
+    },
     formattedTime() {
       return moment(this.task.created).format('LTS')
     },
-    isStatusRed() {
-      return this.task.status === 'aborted' || this.task.status === 'failed' || this.task.status === 'deferred'
+    isComplete() {
+      return this.task.status === 'complete'
+    },
+    isError() {
+      return ['aborted', 'failed', 'deferred'].includes(this.task.status)
     }
   }
 }
