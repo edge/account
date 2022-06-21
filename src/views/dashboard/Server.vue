@@ -95,7 +95,7 @@
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
-                Overview
+                Metrics
               </button>
             </Tab>
             <Tab v-slot="{selected}">
@@ -153,7 +153,6 @@
             <TabPanel>
               <ServerOverview
                 :server=server
-                :metrics=server.metrics
               />
             </TabPanel>
 

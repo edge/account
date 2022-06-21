@@ -3,25 +3,25 @@
 
     <!-- if metrics exist -->
     <div v-if="displayMetrics" class="buttonGroup">
-      <button @click.prevent="getMetrics('day')"
+      <button @click.prevent="updateMetrics('day')"
         class="buttonGroup__button"
         :class="currentPeriod == 'day' ? 'active' : ''"
       >
         Today
       </button>
-      <button @click.prevent="getMetrics('week')"
+      <button @click.prevent="updateMetrics('week')"
         class="buttonGroup__button"
         :class="currentPeriod == 'week' ? 'active' : ''"
       >
         This week
       </button>
-      <button @click.prevent="getMetrics('month')"
+      <button @click.prevent="updateMetrics('month')"
         class="buttonGroup__button"
         :class="currentPeriod == 'month' ? 'active' : ''"
       >
         This month
       </button>
-      <button @click.prevent="getMetrics('year')"
+      <button @click.prevent="updateMetrics('year')"
         class="border-none buttonGroup__button"
         :class="currentPeriod == 'year' ? 'active' : ''"
       >
@@ -30,33 +30,38 @@
     </div>
     <div v-if="displayMetrics" class="grid w-full grid-cols-1 gap-5">
       <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load && this.graphMetrics.cpu_load[0] ? 'mb-8' : ''">CPU load</h4>
+        <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load ? 'mb-8' : ''">CPU load</h4>
         <Line
-          v-if="this.graphMetrics && this.graphMetrics.cpu_load[0]"
+          v-if="this.graphMetrics"
           :key="componentKey"
-          :period="currentPeriod"
-          :data='removeEmptyPoints(this.graphMetrics.cpu_load[0].datapoints)'
-          :minScale='0'
-          :maxScale='100'
+          :labels="labels"
+          :xLabel="this.xLabel"
+          yLabel="CPU Load (%)"
+          :data="graphMetrics.cpu_load"
+          :minScale="0"
+          :maxScale="100"
           :postpendValue="'%'"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">CPU load statistics will appear here as they become available.</p>
       </div>
 
       <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics.mem_usage && this.graphMetrics.mem_usage[0] ? 'mb-8' : ''">Memory usage</h4>
+        <h4 :class="this.graphMetrics && this.graphMetrics.mem_usage ? 'mb-8' : ''">Memory usage</h4>
         <Line
-          v-if="this.graphMetrics && this.graphMetrics.mem_usage[0]"
+          v-if="this.graphMetrics"
           :key="componentKey"
-          :period="currentPeriod"
-          :data='formatDatapoints(removeEmptyPoints(this.graphMetrics.mem_usage[0].datapoints))'
-          :maxScale="this.server.ram_mib"
+          :labels="labels"
+          :xLabel="this.xLabel"
+          yLabel="Memory Usage (GB)"
+          :data="graphMetrics.mem_usage"
+          :minScale="0"
+          :maxScale="this.server.spec.ram  / 1024"
           postpendValue="MB"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">Memory usage statistics will appear here as they become available.</p>
       </div>
 
-      <div class="box">
+      <!-- <div class="box">
         <h4 :class="this.graphMetrics && this.graphMetrics['df.root.used'] ? 'mb-8' : ''">Disk usage</h4>
         <Line
           v-if="this.graphMetrics && this.graphMetrics['df.root.used'][0]"
@@ -67,19 +72,19 @@
           postpendValue="GB"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">Disk usage statistics will appear here as they become available.</p>
-      </div>
+      </div>  -->
 
-      <div class="box">
+      <!-- <div class="box">
         <h4 class="mb-8">Disk I/O</h4>
         <Line
-          v-if="this.graphMetrics && this.graphMetrics['iops'][0]"
+          v-if="this.graphMetrics && this.graphMetrics['iops']"
           :key="componentKey"
           :period="currentPeriod"
-          :data='removeEmptyPoints(this.graphMetrics["iops"][0].datapoints)'
+          :data="this.graphMetrics.dataIn"
         />
-      </div>
+      </div> -->
 
-      <div class="box">
+      <!-- <div class="box">
         <h4 class="mb-8">Net RX/TX</h4>
         <MultiLine
           v-if="this.graphMetrics && this.graphMetrics['net_rx'][0]"
@@ -91,7 +96,7 @@
           ]'
           :labels="['RX', 'TX']"
         />
-      </div>
+      </div> -->
     </div>
 
     <!-- if metrics don't exist -->
@@ -112,26 +117,56 @@
 
 <script>
 import Line from '@/components/charts/Line'
-import MultiLine from '@/components/charts/MultiLine'
+// import MultiLine from '@/components/charts/MultiLine'
 import RocketIcon from '@/components/icons/RocketIcon'
-import { getMetrics } from '../../utils/api'
+import moment from 'moment'
+
+const intervalLookup = {
+  'day': {
+    format: 'LT',
+    interval: 'hour',
+    intervalMs: 3.6e6,
+    steps: 24,
+    xLabel: 'Time'
+  },
+  'week': {
+    format: 'ddd',
+    interval: 'day',
+    intervalMs: 8.64e6,
+    steps: 7,
+    xLabel: 'Day'
+  },
+  'month': {
+    format: 'll',
+    interval: 'day',
+    intervalMs: 8.64e6,
+    steps: 30,
+    xLabel: 'Date'
+  },
+  'year': {
+    format: 'MMM',
+    interval: 'month',
+    intervalMs: 26.29746e8,
+    steps: 12,
+    xLabel: 'Month'
+  }
+}
 
 export default {
   name: 'ServerOverview',
-  props: {
-    metrics: Object,
-    server: Object
-  },
+  props: ['server'],
   data() {
     return {
       componentKey: 0,
       currentPeriod: 'day',
-      graphMetrics: null
+      graphMetrics: null,
+      timeLabels: [],
+      xLabel: 'Time'
     }
   },
   components: {
     Line,
-    MultiLine,
+    // MultiLine,
     RocketIcon
   },
   computed: {
@@ -141,44 +176,54 @@ export default {
     }
   },
   mounted() {
-    if (this.metrics && !this.graphMetrics) {
-      this.graphMetrics = {
-        ...this.metrics
-      }
-    }
+    this.updateMetrics('day')
   },
   methods: {
-    formatDatapoints(data, sizeType = 'MB') {
-      const divisor = sizeType === 'MB' ? 1048576 : 1073741824
+    // formatDatapoints(data, sizeType = 'MB') {
+    //   const divisor = sizeType === 'MB' ? 1048576 : 1073741824
 
-      data.forEach(datapoint => {
-        if (datapoint[0]) {
-          datapoint[0] = datapoint[0]/divisor
-        }
-      })
+    //   data.forEach(datapoint => {
+    //     if (datapoint[0]) {
+    //       datapoint[0] = datapoint[0]/divisor
+    //     }
+    //   })
 
-      return data
+    //   return data
+    // },
+    updateLabels(intervalObj) {
+      const now = Date.now()
+      const labels = []
+
+      const { format, intervalMs, steps, xLabel } = intervalObj
+
+      for (let i = 0; i < steps; i++) {
+        const label = moment(now - (i * intervalMs)).format(format)
+        labels.unshift(label)
+      }
+      this.labels = labels
+      this.xLabel = xLabel
     },
-    async getMetrics(period) {
+    async updateMetrics(period) {
       this.currentPeriod = period
-      const metrics = await getMetrics(this.server.serverId, period)
+      const intervalObj = intervalLookup[period]
+      const { steps } = intervalObj
 
+      this.updateLabels(intervalObj)
+
+      const getRanAmount = (max) => Math.random() * max
+      const cpu_load = []
+      const mem_usage = []
+      for (let i = 0; i < steps; i++) {
+        cpu_load.push(getRanAmount(100))
+        mem_usage.push(getRanAmount(this.server.spec.ram / 1024))
+      }
       this.graphMetrics = {
-        ...metrics
+        cpu_load,
+        mem_usage
       }
 
+      // charts re-render when key changes
       this.componentKey += 1
-    },
-    removeEmptyPoints(data) {
-      return data.filter(dp => dp[0])
-      // return data.map(dp => dp[0] || 0)
-      // return data
-    }
-  },
-  watch: {
-    $route(to, from) {
-      // clearInterval(this.polling)
-      // this.polling = null
     }
   }
 }

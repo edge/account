@@ -15,8 +15,10 @@ export default {
     data: Object,
     minScale: Number,
     maxScale: Number,
-    period: String,
-    postpendValue: String
+    labels: Array,
+    postpendValue: String,
+    xLabel: String,
+    yLabel: String
   },
   data() {
     return {
@@ -25,36 +27,24 @@ export default {
     }
   },
   mounted() {
-    const data = JSON.parse(JSON.stringify(this.data))
-    let postpendValue = ''
-
-    if (this.postpendValue) {
-      postpendValue = this.postpendValue
-    }
-
     this.chartData = {
-      labels: data.map(point => {
-        if (this.period === 'day') {
-          return new Date(point[1] * 1000).toLocaleTimeString('en-us', {hour:'2-digit', minute:'2-digit'})
-        }
-        else {
-          return new Date(point[1] * 1000).toLocaleDateString('en-us', {})
-        }
-      }),
+      labels: this.labels,
       datasets: [{
-        data: data.map(point => point[0]),
+        data: this.data,
         fill: false,
-        borderColor: 'rgb(78,205,95)',
+        backgroundColor: 'rgba(110,224,159)',
+        borderColor: 'rgb(14, 204, 95)',
         borderWidth: 2,
         spanGaps: true,
         stepped: false,
-        tension: 0,
-        pointRadius: 0
+        pointRadius: 0,
+        tension: 0.2
       }]
     }
 
     this.options = {
       responsive: true,
+      // cubicInterpolationMode: 'monotone',
       plugins: {
         legend: {
           display: false
@@ -67,14 +57,26 @@ export default {
         }
       },
       scales: {
+        x: {
+          // grid: {display: false},
+          title: {
+            display: true,
+            text: this.xLabel
+          }
+        },
         y: {
+          // grid: {display: false},
           suggestedMin: this.minScale,
           suggestedMax: this.maxScale,
-          ticks: {
-            callback: function(value, index, ticks) {
-              return value + postpendValue
-            }
+          title: {
+            display: true,
+            text: this.yLabel
           }
+          // ticks: {
+          //   callback: function(value, index, ticks) {
+          //     return value + this.postpendValue
+          //   }
+          // }
         }
       }
     }
