@@ -135,14 +135,14 @@ const intervalLookup = {
   'week': {
     format: 'ddd',
     interval: 'day',
-    intervalMs: 8.64e6,
+    intervalMs: 8.64e7,
     steps: 7,
     xLabel: 'Day'
   },
   'month': {
     format: 'll',
     interval: 'day',
-    intervalMs: 8.64e6,
+    intervalMs: 8.64e7,
     steps: 30,
     xLabel: 'Date'
   },
