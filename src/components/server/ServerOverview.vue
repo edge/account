@@ -30,7 +30,7 @@
     </div>
     <div v-if="displayMetrics" class="grid w-full grid-cols-1 gap-5">
       <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load ? 'mb-8' : ''">CPU load</h4>
+        <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load ? 'mb-8' : ''">CPU Load</h4>
         <Line
           v-if="this.graphMetrics"
           :key="componentKey"
@@ -46,7 +46,7 @@
       </div>
 
       <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics.mem_usage ? 'mb-8' : ''">Memory usage</h4>
+        <h4 :class="this.graphMetrics && this.graphMetrics.mem_usage ? 'mb-8' : ''">Memory Usage</h4>
         <Line
           v-if="this.graphMetrics"
           :key="componentKey"
@@ -56,23 +56,26 @@
           :data="graphMetrics.mem_usage"
           :minScale="0"
           :maxScale="this.server.spec.ram  / 1024"
-          postpendValue="MB"
+          postpendValue="GB"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">Memory usage statistics will appear here as they become available.</p>
       </div>
 
-      <!-- <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics['df.root.used'] ? 'mb-8' : ''">Disk usage</h4>
+      <div class="box">
+        <h4 :class="this.graphMetrics && this.graphMetrics.disk_usage ? 'mb-8' : ''">Disk Usage</h4>
         <Line
-          v-if="this.graphMetrics && this.graphMetrics['df.root.used'][0]"
+          v-if="this.graphMetrics && this.graphMetrics.disk_usage"
           :key="componentKey"
-          :period="currentPeriod"
-          :data='formatDatapoints(removeEmptyPoints(this.graphMetrics["df.root.used"][0].datapoints), "GB")'
-          :maxScale="this.server.disk_mib/1024"
+          :labels="labels"
+          :xLabel="this.xLabel"
+          yLabel="Disk Usage (GB)"
+          :data="this.graphMetrics.disk_usage"
+          :minScale="0"
+          :maxScale="this.server.spec.disk / 1024"
           postpendValue="GB"
         />
         <p v-else class="mt-3 mb-0 text-gray-500">Disk usage statistics will appear here as they become available.</p>
-      </div>  -->
+      </div>
 
       <!-- <div class="box">
         <h4 class="mb-8">Disk I/O</h4>
@@ -210,16 +213,20 @@ export default {
 
       this.updateLabels(intervalObj)
 
+      // generate random dummy data
       const getRanAmount = (max) => Math.random() * max
       const cpu_load = []
       const mem_usage = []
+      const disk_usage = []
       for (let i = 0; i < steps; i++) {
         cpu_load.push(getRanAmount(100))
         mem_usage.push(getRanAmount(this.server.spec.ram / 1024))
+        disk_usage.push(getRanAmount(this.server.spec.disk / 1024))
       }
       this.graphMetrics = {
         cpu_load,
-        mem_usage
+        mem_usage,
+        disk_usage
       }
 
       // charts re-render when key changes
