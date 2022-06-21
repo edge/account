@@ -80,6 +80,9 @@ export default {
           title: {
             display: true,
             text: this.yLabel
+          },
+          ticks: {
+            callback: (tickValue) => this.unit === '%' ? tickValue : tickValue.toFixed(1)
           }
         }
       }
