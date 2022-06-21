@@ -7,25 +7,25 @@
         class="buttonGroup__button"
         :class="currentPeriod == 'day' ? 'active' : ''"
       >
-        Today
+        24 Hours
       </button>
       <button @click.prevent="updateMetrics('week')"
         class="buttonGroup__button"
         :class="currentPeriod == 'week' ? 'active' : ''"
       >
-        This week
+        7 Days
       </button>
       <button @click.prevent="updateMetrics('month')"
         class="buttonGroup__button"
         :class="currentPeriod == 'month' ? 'active' : ''"
       >
-        This month
+        30 Days
       </button>
       <button @click.prevent="updateMetrics('year')"
         class="border-none buttonGroup__button"
         :class="currentPeriod == 'year' ? 'active' : ''"
       >
-        This year
+        12 Months
       </button>
     </div>
     <div v-if="displayMetrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
@@ -61,7 +61,7 @@
         <p v-else class="mt-3 mb-0 text-gray-500">Memory usage statistics will appear here as they become available.</p>
       </div>
 
-      <div class="box col-span-2">
+      <div class="box xl:col-span-2">
         <h4 :class="this.graphMetrics && this.graphMetrics.disk_usage ? 'mb-8' : ''">Disk Usage</h4>
         <Line
           v-if="this.graphMetrics && this.graphMetrics.disk_usage"
@@ -236,20 +236,26 @@ export default {
 }
 </script>
 <style scoped>
-  .box {
-    @apply p-4 md:p-6 bg-white rounded-lg w-full;
-  }
-  .box.box--tall {
-    @apply py-20 !important;
-  }
+.box {
+  @apply p-4 md:p-6 bg-white rounded-lg w-full;
+}
+.box.box--tall {
+  @apply py-20 !important;
+}
+.buttonGroup {
+  @apply flex border border-gray-300 rounded-md overflow-hidden bg-white;
+}
+.buttonGroup__button {
+  @apply px-3 md:px-4 py-2 md:py-3 border-r border-gray-300 bg-white focus:outline-none text-xs text-gray-500 uppercase;
+  @apply hover:bg-gray-100;
+}
+.buttonGroup__button.active {
+  @apply bg-green bg-opacity-10 text-green;
+}
+
+@media (max-width: 350px) {
   .buttonGroup {
-    @apply flex border border-gray-300 rounded-md overflow-hidden bg-white;
+    @apply w-full grid grid-cols-2
   }
-  .buttonGroup__button {
-    @apply px-3 md:px-4 py-2 md:py-3 border-r border-gray-300 bg-white focus:outline-none text-sm text-gray-500;
-    @apply hover:bg-gray-100;
-  }
-  .buttonGroup__button.active {
-    @apply bg-green bg-opacity-10 text-green;
-  }
+}
 </style>
