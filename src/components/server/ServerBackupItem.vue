@@ -21,7 +21,7 @@
         class="flex items-center capitalize text-gray-500"
         :class="isInactive ? 'text-red' : ''"
       >
-        <span>{{ isActive ? 'Complete' : backup.status }}</span>
+        <span>{{ status }}</span>
         <div><LoadingSpinner v-if=isCreating class="w-3.5 h-3.5 ml-1 text-gray" /></div>
       </span>
     </td>
@@ -136,9 +136,6 @@ export default {
     formattedTime() {
       return moment(this.backup.created).format('LTS')
     },
-    isActive() {
-      return this.backup.status === 'active'
-    },
     isCreating() {
       return this.backupTasks.some(task => task.action === 'createBackup') || this.backup.status === 'creating'
     },
@@ -154,6 +151,11 @@ export default {
     },
     serverId() {
       return this.$route.params.id
+    },
+    status() {
+      if (this.backup.status === 'active') return 'Complete'
+      if (this.backup.status === 'in_use') return 'In Use'
+      return this.backup.status
     }
   },
   methods: {
