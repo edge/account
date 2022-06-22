@@ -51,7 +51,6 @@
         <div v-if=isDestroyed class="box">
           <div class="flex flex-col items-center justify-center text-center">
             <div class="flex items-center mt-4">
-              <ExclamationIcon class="text-red h-5 mr-2" />
               <h4>Server Destroyed</h4>
             </div>
             <p class="mt-3 mb-1 text-gray-500">This server and all of its associated backups have been destroyed.</p>
@@ -216,7 +215,6 @@
 
 import * as utils from '../../account-utils'
 import DistroIcon from '@/components/icons/DistroIcon'
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ProgressBar from '@/components/ProgressBar'
 import ServerBackups from '@/components/server/ServerBackups'
@@ -253,7 +251,6 @@ export default {
   },
   components: {
     DistroIcon,
-    ExclamationIcon,
     ServerDestroy,
     LoadingSpinner,
     ProgressBar,
@@ -277,7 +274,7 @@ export default {
       return this.$store.getters.tasksByServerId(this.serverId)
     },
     disableActions() {
-      return this.activeTasks.length > 0
+      return this.activeTasks.length > 0 || this.isDestroyed
     },
     formattedDisk() {
       return `${this.server.spec.disk / 1024} GB`
