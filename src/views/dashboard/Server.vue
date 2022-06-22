@@ -98,14 +98,14 @@
                 Metrics
               </button>
             </Tab>
-            <Tab v-slot="{selected}">
+            <!-- <Tab v-slot="{selected}">
               <button
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
                 Console
               </button>
-            </Tab>
+            </Tab> -->
             <Tab v-slot="{selected}">
               <button
                 class="tab"
@@ -151,15 +151,15 @@
           <TabPanels class="mt-5">
             <!-- overview -->
             <TabPanel>
-              <ServerOverview
+              <ServerMetrics
                 :server=server
               />
             </TabPanel>
 
             <!-- console -->
-            <TabPanel>
+            <!-- <TabPanel>
               <ServerConsole :server=server />
-            </TabPanel>
+            </TabPanel> -->
 
             <!-- resize -->
             <TabPanel>
@@ -229,11 +229,11 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ProgressBar from '@/components/ProgressBar'
 import ServerBackups from '@/components/server/ServerBackups'
-import ServerConsole from '@/components/server/ServerConsole'
+// import ServerConsole from '@/components/server/ServerConsole'
 import ServerDestroy from '@/components/server/ServerDestroy'
 import ServerHistory from '@/components/server/ServerHistory'
 // import ServerNetwork from '@/components/server/ServerNetwork'
-import ServerOverview from '@/components/server/ServerOverview'
+import ServerMetrics from '@/components/server/ServerMetrics'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
 import moment from 'moment'
@@ -266,10 +266,10 @@ export default {
     LoadingSpinner,
     ProgressBar,
     ServerBackups,
-    ServerConsole,
+    // ServerConsole,
     ServerHistory,
     // ServerNetwork,
-    ServerOverview,
+    ServerMetrics,
     ServerResize,
     ServerStatus,
     TabGroup,
