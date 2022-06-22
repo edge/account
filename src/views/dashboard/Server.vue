@@ -6,17 +6,16 @@
     <span v-if="disableActions"></span>
 
     <!-- ip and domain -->
-    <div class="flex items-center space-x-2 mt-1 text-gray-500 truncate sub-header">
+    <div class="flex items-center space-x-2 mt-1 text-gray-500 truncate collapse sub-header">
       <span>{{ serverIp }}</span>
       <span v-if=serverIp class="divider"/>
       <span class="truncate">{{ server.settings.domain }}</span>
     </div>
 
     <!-- overview -->
-    <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4">
+    <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4 collapse status-row">
       <div class="relative flex-1 overflow-hidden">
-        <div class="specsGradient" />
-        <div class="flex items-center justify-start space-x-2 overflow-auto">
+        <div class="flex items-center justify-start space-x-2 overflow-auto collapse server-info">
           <div class="flex items-center flex-shrink-0 space-x-1 text-gray-900">
             <DistroIcon
               :os="os.group"
@@ -25,16 +24,17 @@
             <span class="server-detail">{{ os.version }}</span>
           </div>
           <span class="divider"/>
-          <span class="server-detail">{{ server.spec.cpus }} vCPU</span>
-          <span class="divider"/>
-          <span class="server-detail">{{ formattedDisk }} Disk</span>
-          <span class="divider"/>
-          <span class="server-detail">{{ formattedRAM }} RAM</span>
+          <div class="flex items-center space-x-2 flex-shrink-0 specs">
+            <span class="server-detail">{{ server.spec.cpus }} vCPU</span>
+            <span class="divider"/>
+            <span class="server-detail">{{ formattedDisk }} Disk</span>
+            <span class="divider"/>
+            <span class="server-detail">{{ formattedRAM }} RAM</span>
+          </div>
           <span class="divider"/>
           <ServerStatus :server=server />
         </div>
       </div>
-
       <div class="flex-shrink-0">
         <ServerPowerToggle
           :activeTasks=activeTasks
@@ -45,7 +45,7 @@
 
     </div>
 
-    <div class="grid items-start grid-cols-12 mt-12 space-x-10">
+    <div class="grid items-start grid-cols-12 mt-4 space-x-10">
       <div class="col-span-12">
         <div v-if=isDestroyed class="box">
           <div class="flex flex-col items-center justify-center text-center">
@@ -409,7 +409,7 @@ export default {
   @apply w-4 h-4 text-gray-500 flex-shrink-0;
 }
 .specsGradient {
-  @apply absolute top-0 right-0 w-10 h-full pointer-events-none sm:hidden bg-gradient-to-l from-gray-200;
+  @apply absolute top-0 right-0 w-10 h-full pointer-events-none bg-gradient-to-l from-gray-200;
 }
 
 .box {
@@ -441,11 +441,32 @@ export default {
 }
 
 @media (max-width: 450px) {
-  .sub-header {
+  .collapse.status-row {
+    @apply flex-col items-start space-x-0 space-y-4;
+  }
+
+  .collapse.sub-header {
     @apply flex-col space-x-0 items-start;
   }
-  .sub-header .divider {
+  .collapse .divider {
     @apply hidden;
+  }
+}
+
+@media (max-width: 650px) {
+  .collapse.server-info {
+    @apply flex-col items-start space-x-0 space-y-1;
+  }
+
+  .collapse .sub-header {
+    @apply flex-col space-x-0 items-start;
+  }
+  .collapse .divider {
+    @apply hidden;
+  }
+
+  .collapse .specs .divider {
+    @apply block
   }
 }
 </style>
