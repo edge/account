@@ -69,7 +69,9 @@ export default {
       return this.$route.params.id
     },
     resizing() {
-      return this.activeTasks.some(task => task.action === 'resizeResource')
+      const diskResize = this.activeTasks.some(task => task.action === 'resizeDisk')
+      const resourceResize = this.activeTasks.some(task => task.action === 'resizeResource')
+      return diskResize || resourceResize
     },
     restoring() {
       return this.activeTasks.some(task => task.action === 'restoreBackup')

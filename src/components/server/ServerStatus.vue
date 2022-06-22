@@ -39,7 +39,9 @@ export default {
       return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying)
     },
     isResizing() {
-      return this.activeTasks.some(task => task.action === 'resizeResource')
+      const diskResize = this.activeTasks.some(task => task.action === 'resizeDisk')
+      const resourceResize = this.activeTasks.some(task => task.action === 'resizeResource')
+      return diskResize || resourceResize
     },
     isRestoring() {
       return this.activeTasks.some(task => task.action === 'restoreBackup')
