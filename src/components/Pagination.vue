@@ -1,5 +1,5 @@
 <template>
-  <nav class="pagination" :class="border ? 'with-border' : ''">
+  <nav v-if="lastPage > 1" class="pagination" :class="border ? 'with-border' : ''">
     <ol class="pagination__list">
       <li
         class="pagination__item hide__mobile-small"
