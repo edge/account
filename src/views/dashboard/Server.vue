@@ -68,7 +68,7 @@
         <div v-else-if="isCreating || isDestroying || isResizing" class="box box--tall">
           <div class="flex flex-col items-center justify-center text-center">
             <h4 class="mt-4">{{ progressTitle }}</h4>
-            <p class="mt-2 mb-0 text-gray-500">{{ progressMessage }}</p>
+            <p class="mt-2 mb-0 text-gray-500">This may take a few minutes. Feel free to close this page.</p>
             <div class="mt-4"><ProgressBar :red="isDestroying" /></div>
           </div>
         </div>
@@ -305,22 +305,17 @@ export default {
       const resourceResize = this.activeTasks.some(task => task.action === 'resizeResource')
       return diskResize || resourceResize
     },
+    isRestoring() {
+      return this.activeTasks.some(task => task.action === 'restoreBackup')
+    },
     os() {
       return this.server.settings.os
-    },
-    progressMessage() {
-      // eslint-disable-next-line max-len
-      if (this.isCreating) return 'Server metrics and other information will be displayed here once deployment is complete.'
-      // eslint-disable-next-line max-len
-      if (this.isDestroying) return 'All server data and associated backups are being destroyed. Upon destruction, you will no longer be billed for this server.'
-      // eslint-disable-next-line max-len
-      if (this.isResizing) return 'Server metrics and other information will be available again once server resize is complete.'
-      else return ''
     },
     progressTitle() {
       if (this.isCreating) return 'Deploying your new server'
       if (this.isDestroying) return 'Destroying your server'
       if (this.isResizing) return 'Resizing your server'
+      if (this.isRestoring) return 'Restoring backup'
       else return ''
     },
     serverId() {
