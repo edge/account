@@ -2,11 +2,12 @@
   <nav class="pagination" :class="border ? 'with-border' : ''">
     <ol class="pagination__list">
       <li
-        class="pagination__item"
+        class="pagination__item hide__mobile-small"
         :class="onFirstPage ? 'not-link' : 'link'"
         @click="changePage(1)"
       >
-        <span>First</span>
+        <span class="hide__mobile">First</span>
+        <span class="mobile__only"><ChevronDoubleLeftIcon/></span>
       </li>
 
       <li
@@ -18,9 +19,8 @@
       </li>
 
       <li class="pagination__item">
-        <span>
-          Page {{ currentPage }} of {{ lastPage }}
-        </span>
+        <span class="hide__mobile mr-1">Page</span><span>{{ currentPage }} of {{ lastPage }}</span>
+
       </li>
 
       <li
@@ -32,22 +32,28 @@
       </li>
 
       <li
-        class="pagination__item"
+        class="pagination__item hide__mobile-small"
         :class="onLastPage ? 'not-link' : 'link'"
         @click="changePage(lastPage)"
       >
-        <span>Last</span>
+        <span class="hide__mobile">Last</span>
+        <span class="mobile__only"><ChevronDoubleRightIcon/></span>
       </li>
     </ol>
   </nav>
 </template>
 
 <script>
-import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
+import {ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
 
 export default {
   name: 'Pagination',
-  components: {ChevronRightIcon, ChevronLeftIcon},
+  components: {
+    ChevronDoubleLeftIcon,
+    ChevronDoubleRightIcon,
+    ChevronRightIcon,
+    ChevronLeftIcon
+  },
   props: [
     'border',
     'currentPage',
@@ -94,11 +100,11 @@ export default {
 }
 
 .pagination__item {
-  @apply bg-white rounded text-gray-400 h-9;
+  @apply flex bg-white rounded text-gray-400 h-9 py-2 px-6 ;
 }
 
 .pagination__item span {
-  @apply py-2 px-6 block;
+  @apply block;
 }
 
 .pagination__item.link span {
@@ -115,5 +121,33 @@ export default {
 
 .pagination__item svg {
   @apply w-5;
+}
+
+.pagination__item span.mobile__only {
+  @apply hidden
+}
+
+@media (max-width: 550px) {
+  .pagination__list {
+    @apply space-x-1
+  }
+
+  .pagination__item span.hide__mobile {
+    @apply hidden
+  }
+
+  .pagination__item span.mobile__only {
+    @apply block
+  }
+
+  .pagination__item {
+    @apply px-3
+  }
+}
+
+@media (max-width: 350px) {
+  .hide__mobile-small {
+    @apply hidden
+  }
 }
 </style>
