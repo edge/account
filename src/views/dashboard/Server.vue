@@ -32,21 +32,12 @@
           <span class="divider"/>
           <span class="server-detail">{{ formattedRAM }} RAM</span>
           <span class="divider"/>
-          <div
-            class="flex items-center"
-            :class="[
-              isActive ? 'active' : '',
-              isInactive ? 'inactive' : ''
-            ]"
-          >
-            <span class="serverList__statusDot" />
-            <span class="serverList__statusText capitalize">{{ server.status }}</span>
-          </div>
+          <ServerStatus :server=server />
         </div>
       </div>
 
       <div class="flex-shrink-0">
-        <ServerStatus
+        <ServerPowerToggle
           :activeTasks=activeTasks
           :disableActions=disableActions
           :server=server
@@ -234,6 +225,7 @@ import ServerDestroy from '@/components/server/ServerDestroy'
 import ServerHistory from '@/components/server/ServerHistory'
 // import ServerNetwork from '@/components/server/ServerNetwork'
 import ServerMetrics from '@/components/server/ServerMetrics'
+import ServerPowerToggle from '@/components/server/ServerPowerToggle'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
 import moment from 'moment'
@@ -270,6 +262,7 @@ export default {
     ServerHistory,
     // ServerNetwork,
     ServerMetrics,
+    ServerPowerToggle,
     ServerResize,
     ServerStatus,
     TabGroup,
@@ -294,9 +287,6 @@ export default {
       if (ram < 1024) return `${ram} MB`
       return `${ram / 1024} GB`
     },
-    isActive() {
-      return this.server.status === 'active'
-    },
     isCreating() {
       return this.activeTasks.some(task => task.action === 'create')
     },
@@ -305,9 +295,6 @@ export default {
     },
     isDestroying() {
       return this.activeTasks.some(task => task.action === 'destroy')
-    },
-    isInactive() {
-      return this.server.status === 'stopped' || this.server.status === 'crashed'
     },
     isLoadingBackups() {
       if (this.backups.length) return false

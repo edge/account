@@ -1,116 +1,86 @@
 <template>
-  <div>
-    <Switch
-      @click="toggleServer"
-      :class="enabled ? 'bg-green' : 'bg-gray-300'"
-      class="switch"
-      :disabled="toggling || disableActions"
-    >
-      <span class="sr-only">Use setting</span>
-      <span
-        class="label"
-        :class="enabled ? 'justify-start text-white pl-3 md:pl-4' : 'justify-end text-gray-500 pr-2.5 md:pr-3.5'"
-      >
-        {{ toggling ? '' : enabled ? 'ON' : 'OFF' }}
-        <LoadingSpinner v-if="toggling" />
-      </span>
-      <span
-        aria-hidden="true"
-        :class="enabled ? 'translate-x-9 md:translate-x-12' : 'translate-x-0'"
-        class="transform ball"
-      />
-    </Switch>
-    <!-- stop confirmation modal -->
-    <StopConfirmation
-      v-show=showConfirmationModal
-      @modal-confirm=stopServer
-      @modal-close=toggleConfirmationModal
-      :serverName="server.settings.name || server.settings.hostname"
-    />
+  <div
+    class="flex items-center"
+    :class="[
+      isActive ? 'active' : '',
+      isInactive ? 'inactive' : '',
+      extraClass
+    ]"
+  >
+    <span class="serverList__statusDot" />
+    <span class="serverList__statusText capitalize">{{ status }}</span>
   </div>
 </template>
 
 <script>
-/* global process */
-
-import * as utils from '../../account-utils'
-import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import StopConfirmation from '@/components/confirmations/StopConfirmation'
-import { Switch } from '@headlessui/vue'
 import { mapState } from 'vuex'
 
 export default {
   name: 'ServerStatus',
-  props: ['activeTasks', 'disableActions', 'server'],
-  data() {
-    return {
-      showConfirmationModal: false
-    }
-  },
-  components: {
-    LoadingSpinner,
-    StopConfirmation,
-    Switch
-  },
+  props: ['extraClass', 'server'],
   computed: {
-    ...mapState(['session']),
-    enabled() {
-      return this.stopping || this.server.status === 'active'
+    ...mapState(['tasks']),
+    activeTasks() {
+      return this.$store.getters.tasksByServerId(this.server._key)
     },
-    serverId() {
-      return this.$route.params.id
+    disablingTaskInProgress() {
+      // server status and active tasks aren't always 100% in sync
+      // these tasks are where the status will be displayed in grey whilst running
+      return this.isStopping || this.isStarting || this.isResizing || this.isRestoring
     },
-    starting() {
+    isActive() {
+      return (!this.disablingTaskInProgress) && this.server.status === 'active'
+    },
+    isDestroying() {
+      return this.activeTasks.some(task => task.action === 'destroy')
+    },
+    isInactive() {
+      // eslint-disable-next-line max-len
+      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying)
+    },
+    isResizing() {
+      return this.activeTasks.some(task => task.action === 'resizeResource')
+    },
+    isRestoring() {
+      return this.activeTasks.some(task => task.action === 'restoreBackup')
+    },
+    isStarting() {
       return this.activeTasks.some(task => task.action === 'start')
     },
-    stopping() {
+    isStopping() {
       return this.activeTasks.some(task => task.action === 'stop')
     },
-    toggling() {
-      return this.starting || this.stopping
-    }
-  },
-  methods: {
-    async startServer() {
-      const response = await utils.servers.startServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.$store.commit('addTask', response.task)
-    },
-    async stopServer() {
-      const response = await utils.servers.stopServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.$store.commit('addTask', response.task)
-      this.toggleConfirmationModal()
-    },
-    toggleConfirmationModal() {
-      this.showConfirmationModal = !this.showConfirmationModal
-    },
-    async toggleServer () {
-      if (this.server.status === 'active') {
-        this.toggleConfirmationModal()
-      }
-      else {
-        await this.startServer()
-      }
+    status() {
+      if (this.isStopping) return 'Stopping'
+      if (this.isDestroying) return 'Deleting'
+      if (this.isResizing) return 'Resizing'
+      if (this.isRestoring) return 'Restoring'
+      if (this.isStarting) return 'Starting'
+      return this.server.status
     }
   }
 }
 </script>
 
-<style scoped>
-  .switch {
-    @apply relative inline-flex flex-shrink-0 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-16 md:w-20 h-7 md:h-8 focus:outline-none;
-  }
-  .ball {
-    @apply inline-block w-6 h-6 md:w-7 md:h-7 transition duration-200 ease-in-out bg-white rounded-full shadow-lg pointer-events-none ring-0;
-  }
-  .label {
-    @apply absolute w-full h-full flex items-center text-xs leading-none;
-  }
+<style>
+.text-m {
+  font-size: 0.8rem;
+}
+
+/* status dot */
+.serverList__statusDot {
+  @apply w-2.5 h-2.5 rounded-full mr-1 bg-gray-400;
+}
+.active .serverList__statusDot {
+  @apply bg-green;
+}
+.inactive .serverList__statusDot {
+  @apply bg-red;
+}
+.active .serverList__statusText {
+  @apply text-green;
+}
+.inactive .serverList__statusText {
+  @apply text-red;
+}
 </style>

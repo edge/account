@@ -52,36 +52,37 @@
       <!-- status dot -->
       <div class="serverList__field status">
         <span class="serverList__header">Status</span>
-        <div class="flex items-center">
-          <span class="serverList__statusDot" />
-          <span
-            class="capitalize text-m"
-            :class="[
-              isActive ? 'text-green' : '',
-              isInactive ? 'text-red' : ''
-            ]"
-          >
-            {{ server.status }}
-          </span>
-        </div>
+        <ServerStatus extraClass="text-m" :server=server />
       </div>
     </li>
 </template>
 
 <script>
 import DistroIcon from '@/components/icons/DistroIcon'
+import ServerStatus from '@/components/server/ServerStatus'
+import { mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
   name: 'ServerListItem',
   components: {
-    DistroIcon
+    DistroIcon,
+    ServerStatus
   },
   props: ['server', 'regions'],
   computed: {
+    ...mapState(['tasks']),
+    activeTasks() {
+      return this.$store.getters.tasksByServerId(this.server._key)
+    },
     created() {
       const created = moment(this.server.created).fromNow()
       return created === 'a few seconds ago' ? 'Just now' : created
+    },
+    disablingTaskInProgress() {
+      // server status and active tasks aren't always 100% in sync
+      // these tasks are where the status will be displayed in grey whilst running
+      return this.isStopping || this.isStarting || this.isResizing || this.isRestoring
     },
     flagSrc() {
       return 'https://hatscripts.github.io/circle-flags/flags/gb.svg'
@@ -96,10 +97,26 @@ export default {
       return `${this.server.spec.disk / 1024} GB`
     },
     isActive() {
-      return this.server.status === 'active'
+      return (!this.disablingTaskInProgress) && this.server.status === 'active'
+    },
+    isDestroying() {
+      return this.activeTasks.some(task => task.action === 'destroy')
     },
     isInactive() {
-      return this.server.status === 'stopped' || this.server.status === 'crashed'
+      // eslint-disable-next-line max-len
+      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying)
+    },
+    isResizing() {
+      return this.activeTasks.some(task => task.action === 'resizeResource')
+    },
+    isRestoring() {
+      return this.activeTasks.some(task => task.action === 'restoreBackup')
+    },
+    isStarting() {
+      return this.activeTasks.some(task => task.action === 'start')
+    },
+    isStopping() {
+      return this.activeTasks.some(task => task.action === 'stop')
     },
     region() {
       return this.regions.find(region => region._key === this.server.region)
