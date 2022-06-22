@@ -2,7 +2,7 @@
   <div class="mainContent__inner">
     <h1>Edge Servers</h1>
 
-    <div v-if="loading && !servers.length" class="flex items-center">
+    <div v-if="!loaded" class="flex items-center">
       <span>Loading servers</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
@@ -57,7 +57,7 @@ export default {
     return {
       iServers: null,
       limit: 10,
-      loading: false,
+      loaded: false,
       metadata: { totalCount: 0 },
       pageHistory: [1],
       regions: [],
@@ -82,7 +82,6 @@ export default {
       this.regions = regions.results
     },
     async updateServers() {
-      this.loading = true
       const servers = await utils.servers.getServers(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
@@ -93,7 +92,7 @@ export default {
       )
       this.servers = servers.results
       this.metadata = servers.metadata
-      this.loading = false
+      this.loaded = true
     }
   },
   async mounted() {
