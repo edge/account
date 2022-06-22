@@ -14,7 +14,6 @@
 
     <!-- overview -->
     <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4">
-
       <div class="relative flex-1 overflow-hidden">
         <div class="specsGradient" />
         <div class="flex items-center justify-start space-x-2 overflow-auto">
@@ -68,7 +67,7 @@
           <div class="flex flex-col items-center justify-center text-center">
             <h4 class="mt-4">{{ progressTitle }}</h4>
             <p class="mt-2 mb-0 text-gray-500">This may take a few minutes. Feel free to close this page.</p>
-            <div class="mt-4"><ProgressBar :red="isDestroying" /></div>
+            <div class="mt-4 max-w-full"><ProgressBar :red="isDestroying" /></div>
           </div>
         </div>
 
