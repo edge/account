@@ -78,7 +78,7 @@
           class="tabGroup"
         >
           <div class="absolute top-0 right-0 w-10 h-5 bg-gradient-to-l from-gray-200" />
-          <TabList class="tabs">
+          <TabList class="tabs pr-6">
             <Tab v-slot="{selected}">
               <button
                 class="tab"
@@ -129,7 +129,7 @@
             </Tab>
             <Tab v-slot="{selected}">
               <button
-                class="pr-10 tab md:pr-0"
+                class="tab md:pr-0"
                 :class="[selected ? 'tab--selected' : '']"
               >
                 Destroy

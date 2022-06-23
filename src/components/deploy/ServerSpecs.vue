@@ -293,10 +293,10 @@ export default {
 
 @media (max-width: 420px) {
   .specs_and_cost {
-    @apply flex-col items-start space-x-0 space-y-2
+    @apply flex-col items-start space-x-0 space-y-2 mt-2;
   }
   .dot {
-    @apply hidden
+    @apply hidden;
   }
 }
 </style>

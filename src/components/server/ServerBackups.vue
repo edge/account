@@ -18,7 +18,7 @@
         <div>
           <button @click="createBackup"
             :disabled="!canCreate"
-            class="mt-5 lg:mt-0 button button--success"
+            class="mt-5 lg:mt-0 button button--success w-full sm:max-w-xs"
           >
             <div v-if="isCreating" class="flex items-center">
               <span>Creating</span>
