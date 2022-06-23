@@ -265,4 +265,14 @@ export default {
     @apply flex;
   }
 }
+
+@media (max-width: 300px) {
+  .serverList__stats {
+    @apply flex-col space-x-0;
+  }
+
+  .serverList__stats .divider {
+    @apply hidden;
+  }
+}
 </style>
