@@ -440,16 +440,28 @@ export default {
   @apply text-red;
 }
 
-@media (max-width: 450px) {
-  .collapse.status-row {
-    @apply flex-col items-start space-x-0 space-y-4;
+@media (max-width: 350px) {
+  .collapse .specs {
+    @apply flex-col items-start space-x-0
   }
 
+  .collapse .specs .divider {
+    @apply hidden;
+  }
+}
+
+@media (max-width: 450px) {
   .collapse.sub-header {
     @apply flex-col space-x-0 items-start;
   }
   .collapse .divider {
     @apply hidden;
+  }
+}
+
+@media (min-width: 350px) and (max-width: 650px) {
+  .collapse .specs .divider {
+    @apply block
   }
 }
 
@@ -463,10 +475,6 @@ export default {
   }
   .collapse .divider {
     @apply hidden;
-  }
-
-  .collapse .specs .divider {
-    @apply block
   }
 }
 </style>
