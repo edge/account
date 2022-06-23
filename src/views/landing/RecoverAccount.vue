@@ -55,7 +55,7 @@
         <div>
           <BadgeCheckIcon class="h-5 text-green" />
         </div>
-        <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
+        <span class="ml-1 text-green">Recovery email sent to {{ email }}</span>
       </div>
       <p class="text-gray-500">
         Check your emails - we've sent you a code which you can enter below to recover your account number.
@@ -177,9 +177,6 @@ export default {
     canSignIn() {
       return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput
     },
-    emailCooldownError() {
-      return `Please wait ${this.emailCooldown}s before re-requesting a recovery email`
-    },
     formattedAccountNumber() {
       // add space every 4 characters
       return this.accountNumber.toString().replace(/.{4}/g, '$& ')
@@ -205,12 +202,6 @@ export default {
       this.$router.push({ name: 'Index' })
     },
     async reRequestEmail() {
-      this.showEmailCooldownError = false
-
-      if (this.emailCooldown > 0) {
-        this.showEmailCooldownError = true
-        return
-      }
       try {
         await this.requestEmail()
         this.showRecoveryEmailResent = true

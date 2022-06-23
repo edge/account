@@ -21,7 +21,7 @@
           @click.prevent="enableRecovery"
           :disabled="!canEnable"
         >
-          <div v-if="isLoading" class="flex flex-row">
+          <div v-if="isLoading" class="flex flex-row items-center">
             <span>Adding</span>
             <span class="ml-2"><LoadingSpinner /></span>
           </div>
@@ -47,19 +47,17 @@
         </div>
         <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
       </div>
-      <!-- back to change recovery email button -->
-      <div class="mb-2">
-        <button
-          @click.prevent="returnToEnable"
-          class="text-sm text-gray-500 underline hover:text-green"
-        >
-          Change recovery email address
-        </button>
-      </div>
       <!-- instructions -->
-      <p class="text-gray-500">
+      <span class="text-gray-500">
         Not quite there yet.
         Check your emails and enter the confirmation code below to verify your recovery email address.
+      </span>
+      <!-- resend email button and feedback -->
+      <p class="text-gray-500 my-2">
+        Haven't received the email?
+        <!-- eslint-disable-next-line max-len -->
+        <span v-if="emailCooldown === 0"><span @click="returnToEnable" class="underline cursor-pointer hover:text-green">Click here</span> to change your recovery email address.</span>
+        <span v-else>Please wait {{ emailCooldown }} seconds.</span>
       </p>
       <!-- confirmation code and button -->
       <div class="input-field flex items-center w-full">
@@ -120,6 +118,7 @@ export default {
     return {
       confirmationCode: '',
       email: '',
+      emailCooldown: 0,
       errors: {
         confirmationCode: '',
         email: ''
@@ -175,8 +174,16 @@ export default {
           this.session._key,
           this.email
         )
+        await this.updateAccount()
+
         setTimeout(async () => {
-          await this.updateAccount()
+          // set 15s email cooldown timer
+          this.emailCooldown = 15
+          this.iEmailCooldown = setInterval(() => {
+            this.emailCooldown = this.emailCooldown - 1
+            if (this.emailCooldown === 0) clearInterval(this.iEmailCooldown)
+          }, 1000)
+
           this.isLoading = false
           this.step = 2
         }, 500)
