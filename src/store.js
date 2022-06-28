@@ -10,6 +10,7 @@ import { createStore } from 'vuex'
 const store = createStore({
   state: {
     account: null,
+    balance: null,
     isAuthed: false,
     session: null,
     tasks: []
@@ -23,6 +24,9 @@ const store = createStore({
     },
     setAccount(state, account) {
       state.account = account
+    },
+    setBalance(state, balance) {
+      state.balance = balance
     },
     setIsAuthed(state, isAuthed) {
       state.isAuthed = isAuthed
@@ -63,6 +67,13 @@ const store = createStore({
         state.session._key
       )
       commit('setAccount', account)
+    },
+    async updateBalance({ commit, state }) {
+      const response = await utils.billing.getBalance(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        state.session._key
+      )
+      commit('setBalance', response)
     },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks
