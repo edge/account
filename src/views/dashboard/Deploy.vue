@@ -148,7 +148,7 @@ export default {
           password: ''
         },
         spec: {
-          bandwith: 10,
+          bandwith: null,
           cpus: null,
           disk: null,
           ram: null

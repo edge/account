@@ -64,7 +64,7 @@ export default {
       isLoading: false,
       lastResizeTask: null,
       newSpec: {
-        bandwidth: 10,
+        bandwidth: null,
         cpus: null,
         disk: null,
         ram: null
@@ -84,13 +84,13 @@ export default {
     currentHourlyCost() {
       return (
         (this.region.cost.bandwidth * (this.currentSpec.bandwidth || 10)) +
-        (this.region.cost.ram * (this.currentSpec.ram)) +
-        (this.region.cost.disk * (this.currentSpec.disk)) +
+        (this.region.cost.ram * this.currentSpec.ram) +
+        (this.region.cost.disk * this.currentSpec.disk) +
         (this.region.cost.cpus * this.currentSpec.cpus)
       )
     },
     currentSpec() {
-      return this.server.spec
+      return { ...this.server.spec, bandwidth: this.server.spec.bandwidth || 10 }
     },
     diskSizeDecreased() {
       return this.currentSpec.disk > this.newSpec.disk
@@ -102,16 +102,13 @@ export default {
       return cpusChanged || diskChanged || ramChanged
     },
     haveSpecsIncreased() {
-      return ['ram', 'disk', 'cpus'].some(spec => {
-        console.log(`${spec}: ${this.newSpec[spec] > this.currentSpec[spec]}`)
-        return this.newSpec[spec] > this.currentSpec[spec]
-      })
+      return ['ram', 'disk', 'cpus'].some(spec => this.newSpec[spec] > this.currentSpec[spec])
     },
     newHourlyCost() {
       return (
         (this.region.cost.bandwidth * this.newSpec.bandwidth) +
-        (this.region.cost.ram * (this.newSpec.ram)) +
-        (this.region.cost.disk * (this.newSpec.disk)) +
+        (this.region.cost.ram * this.newSpec.ram) +
+        (this.region.cost.disk * this.newSpec.disk) +
         (this.region.cost.cpus * this.newSpec.cpus)
       )
     }

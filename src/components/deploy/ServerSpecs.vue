@@ -4,7 +4,7 @@
       <div class="box">
         <span class="box__title">vCPU</span>
         <vue-slider
-          v-model="cpuValue"
+          v-model=cpuValue
           dotSize=20
           width="100%"
           contained=true
@@ -30,10 +30,10 @@
         />
       </div>
       <div class="box">
-        <span class="box__title">RAM (GB)</span>
+        <span class="box__title">RAM (GiB)</span>
         <vue-slider
-          v-model="ramValue"
-          :vData="ramOptions"
+          v-model=ramValue
+          :vData=ramOptions
           ref="ramSlider"
           :marks="true"
           dotSize=20
@@ -43,7 +43,7 @@
           :min=0.5
           :max=16
           tooltip="always"
-          :tooltip-formatter="formatSliderRAM"
+          :tooltip-formatter=formatSliderRAM
           tooltipPlacement="top"
           :tooltip-style="styles.tooltip"
           :process-style="styles.process"
@@ -53,20 +53,53 @@
         />
       </div>
       <div class="box">
-        <span class="box__title">Disk (GB)</span>
+        <span class="box__title">Disk (GiB)</span>
         <vue-slider
-          v-model="storageValue"
+          v-model=storageValue
           ref="ssdSlider"
           dotSize=20
           width="100%"
           contained=true
           :min=10
           :max=512
-          :vData="ssdOptions"
+          :vData=ssdOptions
           :marks="true"
           adsorb
           tooltip="always"
-          :tooltip-formatter="'{value} GB'"
+          :tooltip-formatter="'{value} GiB'"
+          tooltipPlacement="top"
+          :tooltip-style="styles.tooltip"
+          :process-style="styles.process"
+          :dot-style="styles.dots"
+          :label-style="styles.labels"
+          :step-active-style="styles.activeStep"
+        />
+      </div>
+      <div class="box">
+        <span class="box__title">Bandwidth (Mbps)</span>
+        <vue-slider
+          v-model=bandwidthValue
+          ref="badwidthSlider"
+          dotSize=20
+          width="100%"
+          contained=true
+          :min=10
+          :max=100
+          :marks="{
+            '10': '10',
+            '20': '20',
+            '30': '30',
+            '40': '40',
+            '50': '50',
+            '60': '60',
+            '70': '70',
+            '80': '80',
+            '90': '90',
+            '100': '100'
+          }"
+          adsorb
+          tooltip="always"
+          :tooltip-formatter="'{value} Mbps'"
           tooltipPlacement="top"
           :tooltip-style="styles.tooltip"
           :process-style="styles.process"
@@ -90,7 +123,7 @@
     <!-- uses two rows to show current vs new specs and cost -->
     <div v-if="this.current" class="mt-5">
       <!-- eslint-disable-next-line max-len -->
-      <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 lg:flex-row">
+      <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 xl:flex-row">
         <div class="flex flex-col items-baseline">
           <span class="text-green">Current Server</span>
           <div class="specs_and_cost flex">
@@ -99,6 +132,8 @@
             <span class="text-lg flex-shrink-0">{{ formatMiB(current.spec.ram) }} RAM</span>
             <span class="dot" />
             <span class="text-lg flex-shrink-0">{{ formatMiB(current.spec.disk) }} Disk</span>
+            <span class="dot" />
+            <span class="text-lg flex-shrink-0">{{ current.spec.bandwidth || 10 }} Mbps Bandwidth</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
@@ -110,7 +145,7 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 rounded-md bg-gray-50 lg:flex-row">
+      <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 rounded-md bg-gray-50 xl:flex-row">
         <div class="flex flex-col items-baseline">
           <span class="text-green">After Resize</span>
           <div class="specs_and_cost flex">
@@ -119,6 +154,8 @@
             <span class="text-lg flex-shrink-0">{{ formatMiB(spec.ram) }} RAM</span>
             <span class="dot" />
             <span class="text-lg flex-shrink-0">{{ formatMiB(spec.disk) }} Disk</span>
+            <span class="dot" />
+            <span class="text-lg flex-shrink-0">{{ spec.bandwidth }} Mbps Bandwidth</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
@@ -134,7 +171,7 @@
 
     <!-- selected results shown on deploy screen -->
     <!-- eslint-disable-next-line max-len -->
-    <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 lg:space-y-0 lg:flex-row pt-7">
+    <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 xl:space-y-0 xl:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Your server</span>
         <div class="specs_and_cost flex">
@@ -143,6 +180,8 @@
           <span class="text-lg flex-shrink-0">{{ formatMiB(spec.ram) }} RAM</span>
           <span class="dot" />
           <span class="text-lg flex-shrink-0">{{ formatMiB(spec.disk) }} Disk</span>
+          <span class="dot" />
+          <span class="text-lg flex-shrink-0">{{ spec.bandwidth }} Mbps Bandwidth</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">
@@ -174,26 +213,27 @@ export default {
   },
   data() {
     return {
+      bandwidthValue: null,
       cpuValue: null,
       ramValue: null,
       storageValue: null,
       ramOptions: [
-        { value:'0.5', label:'512MB' },
-        { value:'1', label:'1GB' },
-        { value:'2', label:'2GB' },
-        { value:'4', label:'4GB' },
-        { value:'6', label:'6GB' },
-        { value:'8', label:'8GB' },
-        { value:'16', label:'16GB' }
+        { value:'0.5', label:'512MiB' },
+        { value:'1', label:'1GiB' },
+        { value:'2', label:'2GiB' },
+        { value:'4', label:'4GiB' },
+        { value:'6', label:'6GiB' },
+        { value:'8', label:'8GiB' },
+        { value:'16', label:'16GiB' }
       ],
       ssdOptions: [
-        { value:'10', label:'10GB' },
-        { value:'16', label:'16GB' },
-        { value:'32', label:'32GB' },
-        { value:'64', label:'64GB' },
-        { value:'128', label:'128GB' },
-        { value:'256', label:'256GB' },
-        { value:'512', label:'512GB' }
+        { value:'10', label:'10GiB' },
+        { value:'16', label:'16GiB' },
+        { value:'32', label:'32GiB' },
+        { value:'64', label:'64GiB' },
+        { value:'128', label:'128GiB' },
+        { value:'256', label:'256GiB' },
+        { value:'512', label:'512GiB' }
       ],
       styles: {
         activeStep: { background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' },
@@ -227,7 +267,7 @@ export default {
     },
     spec() {
       return {
-        bandwidth: 10,
+        bandwidth: this.bandwidthValue,
         cpus: this.cpuValue,
         disk: this.storageValue * 1024,
         ram: this.ramValue * 1024
@@ -241,13 +281,13 @@ export default {
     },
     formatMiB(MiB) {
       if (MiB < 1024) {
-        return `${MiB} MB`
+        return `${MiB} MiB`
       }
-      return `${MiB / 1024} GB`
+      return `${MiB / 1024} GiB`
     },
     formatSliderRAM(sliderRAM) {
-      if (sliderRAM < 1) return `${sliderRAM * 1024} MB`
-      else return `${sliderRAM} GB`
+      if (sliderRAM < 1) return `${sliderRAM * 1024} MiB`
+      else return `${sliderRAM} GiB`
     },
     resetDiskMinimum() {
       if (!this.current) return
@@ -257,6 +297,7 @@ export default {
     }
   },
   mounted() {
+    this.bandwidthValue = this.current ? this.current.spec.bandwidth || 10 : 10
     this.cpuValue = this.current ? this.current.spec.cpus : 1
     this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : 0.5
     this.storageValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
@@ -272,7 +313,7 @@ export default {
 <style scoped>
 .specs__grid {
   @apply mt-10 w-full grid grid-cols-1 gap-x-4 gap-y-10;
-  @apply sm:grid-cols-1 lg:grid-cols-3;
+  @apply sm:grid-cols-1 lg:grid-cols-2;
 }
 
 .specs_and_cost {
