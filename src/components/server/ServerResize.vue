@@ -12,7 +12,7 @@
     <div class="flex flex-col relative my-5 space-y-2">
       <button
         @click="toggleConfirmationModal"
-        :disabled=!canResize
+        :disabled=!canSubmitResize
         class="button button--success w-full md:max-w-xs"
       >
         <span v-if="isLoading">Resizing</span>
@@ -75,7 +75,7 @@ export default {
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['account', 'session']),
-    canResize() {
+    canSubmitResize() {
       if (this.balanceWarning || this.balanceSuspend) if (this.haveSpecsIncreased) return false
       // eslint-disable-next-line max-len
       if (this.isLoading || !this.haveSpecsChanged || this.diskSizeDecreased || this.disableActions || this.balanceSuspend) return false
