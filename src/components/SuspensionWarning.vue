@@ -48,7 +48,7 @@ export default {
       const warningThreshold = this.balance.threshold.warning
 
       /* eslint-disable max-len */
-      if (this.account.suspended) return 'You have unpaid invoices. Please top up to reactive your services. Failure to pay will result in your services being permanently deleted.'
+      if (this.account.suspended) return 'You have unpaid invoices. Please top up to reactivate your services. Failure to pay will result in your services being permanently deleted.'
       if (this.balanceSuspend) return 'Your balance is less than your current spend. Your services will be suspended if you don\'t top up.'
       if (this.balanceWarning) return `Your balance ${this.balance.total <= warningThreshold ? 'is' : 'at the end of the day will be'} less than $${warningThreshold}. Your services may be suspended if you don't top up.`
       return ''

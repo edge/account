@@ -76,14 +76,10 @@ export default {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['account', 'session']),
     canResize() {
-      let canResize = true
-      if (!this.balanceWarning && !this.balanceSuspend) if (this.costsIncreased) canResize = false
+      if (this.balanceWarning || this.balanceSuspend) if (this.haveSpecsIncreased) return false
       // eslint-disable-next-line max-len
-      if (this.isLoading || !this.haveSpecsChanged || this.diskSizeDecreased || this.disableActions || this.balanceSuspend) canResize = false
-      return canResize
-    },
-    costsIncreased() {
-      return this.newHourlyCost > this.currentHourlyCost
+      if (this.isLoading || !this.haveSpecsChanged || this.diskSizeDecreased || this.disableActions || this.balanceSuspend) return false
+      return true
     },
     currentHourlyCost() {
       return (
@@ -104,6 +100,12 @@ export default {
       const diskChanged = this.currentSpec.disk !== this.newSpec.disk
       const ramChanged = this.currentSpec.ram !== this.newSpec.ram
       return cpusChanged || diskChanged || ramChanged
+    },
+    haveSpecsIncreased() {
+      return ['ram', 'disk', 'cpus'].some(spec => {
+        console.log(`${spec}: ${this.newSpec[spec] > this.currentSpec[spec]}`)
+        return this.newSpec[spec] > this.currentSpec[spec]
+      })
     },
     newHourlyCost() {
       return (

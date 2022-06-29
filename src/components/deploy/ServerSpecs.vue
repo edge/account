@@ -75,6 +75,29 @@
           :step-active-style="styles.activeStep"
         />
       </div>
+      <div class="box">
+        <span class="box__title">Bandwidth (MB/s)</span>
+        <vue-slider
+          v-model="storageValue"
+          ref="ssdSlider"
+          dotSize=20
+          width="100%"
+          contained=true
+          :min=1
+          :max=100
+          :vData="ssdOptions"
+          :marks="true"
+          adsorb
+          tooltip="always"
+          :tooltip-formatter="'{value} GB'"
+          tooltipPlacement="top"
+          :tooltip-style="styles.tooltip"
+          :process-style="styles.process"
+          :dot-style="styles.dots"
+          :label-style="styles.labels"
+          :step-active-style="styles.activeStep"
+        />
+      </div>
     </div>
     <!-- disk size change warning -->
     <span v-show="diskValueIncreased || diskValueDecreased" class="block mt-4 text-red">
