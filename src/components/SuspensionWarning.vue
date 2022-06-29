@@ -51,15 +51,6 @@ export default {
       if (this.balanceWarning) return `Your balance ${this.balance.total <= warningThreshold ? 'is' : 'at the end of the day will be'} less than $${warningThreshold}. Your services may be suspended if you don't top up.`
       return ''
       /* eslint-enable max-len */
-    },
-    warning() {
-      if (!this.balance) return
-      // eslint-disable-next-line max-len
-      return this.balance.available > this.balance.threshold.suspend && this.balance.available <= this.balance.threshold.warning
-    },
-    suspend() {
-      if (!this.balance) return
-      return this.balance.available <= this.balance.threshold.suspend
     }
   },
   methods: {
