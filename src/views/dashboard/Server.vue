@@ -14,8 +14,8 @@
 
     <!-- overview -->
     <div class="flex items-center mt-3 space-x-3 text-gray-500 md:justify-between sm:mt-4 collapse status-row">
-      <div class="relative flex-1 overflow-hidden">
-        <div class="flex items-center justify-start space-x-2 overflow-auto collapse server-info">
+      <div class="relative flex-1">
+        <div class="flex items-center justify-start space-x-2 collapse server-info">
           <div class="flex items-center flex-shrink-0 space-x-1 text-gray-900">
             <DistroIcon
               :os="os.group"
@@ -32,7 +32,14 @@
             <span class="server-detail">{{ formattedRAM }} RAM</span>
           </div>
           <span class="divider"/>
-          <ServerStatus :server=server />
+          <div class="flex items-center space-x-1">
+            <ServerStatus :server=server />
+            <!-- eslint-disable-next-line max-len -->
+            <Tooltip v-if="server.suspended" position="right" theme="error" text="Your server has been suspended due to unpaid invoices. When you top up your account it will automatically restart."
+            >
+              <InformationCircleIcon class="w-4" />
+            </Tooltip>
+          </div>
         </div>
       </div>
       <div class="flex-shrink-0">
@@ -214,6 +221,7 @@
 
 import * as utils from '../../account-utils'
 import DistroIcon from '@/components/icons/DistroIcon'
+import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ProgressBar from '@/components/ProgressBar'
 import ServerBackups from '@/components/server/ServerBackups'
@@ -225,6 +233,7 @@ import ServerMetrics from '@/components/server/ServerMetrics'
 import ServerPowerToggle from '@/components/server/ServerPowerToggle'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
+import Tooltip from '@/components/Tooltip'
 import moment from 'moment'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { mapActions, mapState } from 'vuex'
@@ -250,11 +259,12 @@ export default {
   },
   components: {
     DistroIcon,
-    ServerDestroy,
+    InformationCircleIcon,
     LoadingSpinner,
     ProgressBar,
     ServerBackups,
     // ServerConsole,
+    ServerDestroy,
     ServerHistory,
     // ServerNetwork,
     ServerMetrics,
@@ -265,7 +275,8 @@ export default {
     TabList,
     Tab,
     TabPanels,
-    TabPanel
+    TabPanel,
+    Tooltip
   },
   computed: {
     ...mapState(['account', 'session', 'tasks']),
@@ -475,6 +486,24 @@ export default {
   }
   .collapse .divider {
     @apply hidden;
+  }
+}
+
+@screen md {
+  .collapse.server-info {
+    @apply flex-col items-start space-x-0 space-y-1;
+  }
+  .collapse.server-info .divider {
+    @apply hidden;
+  }
+}
+
+@screen lg {
+  .collapse.server-info {
+    @apply flex-row items-center space-x-2 space-y-0;
+  }
+  .collapse.server-info .divider {
+    @apply block;
   }
 }
 </style>
