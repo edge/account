@@ -92,6 +92,9 @@ const store = createStore({
     }
   },
   getters: {
+    balanceSuspend: (state) => state.balance && state.balance.available <= state.balance.threshold.suspend,
+    // eslint-disable-next-line max-len
+    balanceWarning: (state, getters) => state.balance && !getters.balanceSuspend && state.balance.available < state.balance.threshold.warning,
     // eslint-disable-next-line max-len
     tasksByServerId: (state) => (serverId) => state.tasks.filter(task => task.entity === `servers/${serverId}`)
   }
