@@ -50,6 +50,7 @@ export default {
 
     // poll all active tasks and balance
     this.iTasks = setInterval(() => {
+      this.$store.dispatch('updateAccount')
       this.$store.dispatch('updateTasks')
       this.$store.dispatch('updateBalance')
     }, STORE_REFRESH_INTERVAL)
