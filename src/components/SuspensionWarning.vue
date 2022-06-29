@@ -1,5 +1,5 @@
 <template>
-  <div v-if="message" class="mb-8 w-full">
+  <div v-if="message" class="w-full sticky top-16 md:top-20 z-30">
     <div class="suspension__warning"
       :class="[
         balanceSuspend ? 'bg-red text-white' : '',
@@ -7,11 +7,13 @@
       ]"
     >
       <div><ExclamationIcon class="w-8"/></div>
-      <span>{{ message }}</span>
-      <button @click=toggleTopUpModal class="button button--success button--small h-10 w-max">
-        Top Up
-        <div><PlusIcon class="w-4 ml-2"/></div>
-      </button>
+      <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
+        <span>{{ message }}</span>
+        <button @click=toggleTopUpModal class="button button--solid button--small h-8 w-max flex-shrink-0">
+          Top Up
+          <div><PlusIcon class="w-4 ml-2"/></div>
+        </button>
+      </div>
     </div>
     <TopUpModal
       v-show=showTopUpModal
@@ -63,7 +65,7 @@ export default {
 
 <style scoped>
 .suspension__warning {
-  @apply fixed z-30 flex items-center space-x-4 py-4 px-8;
+  @apply flex sm:items-center space-x-4 py-4 px-8;
   width: inherit;
 }
 </style>
