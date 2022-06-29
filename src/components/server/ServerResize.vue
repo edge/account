@@ -47,7 +47,7 @@ import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ResizeConfirmation from '@/components/confirmations/ResizeConfirmation'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'ServerResize',
@@ -73,9 +73,17 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['account', 'session']),
     canResize() {
-      return !this.isLoading && this.haveSpecsChanged && !this.diskSizeDecreased && !this.disableActions
+      let canResize = true
+      if (!this.balanceWarning && !this.balanceSuspend) if (this.costsIncreased) canResize = false
+      // eslint-disable-next-line max-len
+      if (this.isLoading || !this.haveSpecsChanged || this.diskSizeDecreased || this.disableActions || this.balanceSuspend) canResize = false
+      return canResize
+    },
+    costsIncreased() {
+      return this.newHourlyCost > this.currentHourlyCost
     },
     currentHourlyCost() {
       return (

@@ -91,8 +91,8 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import ServerBackupItem from '@/components/server/ServerBackupItem'
-import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'ServerBackups',
@@ -128,9 +128,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['balanceSuspend']),
     ...mapState(['session']),
     canCreate() {
-      return !this.isCreating && !this.disableActions && !this.v$.comment.$invalid
+      return !this.isCreating && !this.disableActions && !this.v$.comment.$invalid && !this.balanceSuspend
     },
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]

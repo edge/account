@@ -4,7 +4,7 @@
       @click="toggleServer"
       :class="enabled ? 'bg-green' : 'bg-gray-300'"
       class="switch"
-      :disabled="toggling || disableActions"
+      :disabled="toggling || disableActions || disablePowerOn"
     >
       <span class="sr-only">Use setting</span>
       <span
@@ -37,7 +37,7 @@ import * as utils from '../../account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import StopConfirmation from '@/components/confirmations/StopConfirmation'
 import { Switch } from '@headlessui/vue'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'ServerPowerToggle',
@@ -53,9 +53,13 @@ export default {
     Switch
   },
   computed: {
+    ...mapGetters(['balanceSuspend']),
     ...mapState(['session']),
     destroying() {
       return this.activeTasks.some(task => task.action === 'destroy')
+    },
+    disablePowerOn() {
+      return !this.enabled && this.balanceSuspend
     },
     disablingTaskInProgress() {
       // server status and active tasks aren't always 100% in sync
