@@ -28,7 +28,7 @@
     <td class="tableBody__cell actions">
       <div class="flex items-center w-full space-x-2 action_buttons">
         <button
-          :disabled="disableActions"
+          :disabled="disableActions || balanceSuspend"
           class="tableButton restore"
           @click.prevent="toggleRestoreConfirmationModal"
         >
@@ -83,7 +83,6 @@ import DestroyBackupConfirmation from '@/components/confirmations/DestroyBackupC
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import RestoreBackupConfirmation from '@/components/confirmations/RestoreBackupConfirmation'
 import Tooltip from '@/components/Tooltip'
-import { mapState } from 'vuex'
 import moment from 'moment'
 import {
   CalendarIcon,
@@ -92,6 +91,7 @@ import {
   RefreshIcon,
   TrashIcon
 } from '@heroicons/vue/outline'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'ServerBackupItem',
@@ -123,6 +123,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['balanceSuspend']),
     ...mapState(['session']),
     backupId() {
       return this.backup._key

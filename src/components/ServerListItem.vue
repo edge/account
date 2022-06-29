@@ -94,7 +94,7 @@ export default {
     formattedRAM() {
       const ram = this.server.spec.ram
       if (ram < 1024) return `${ram} MB`
-      return `${this.server.spec.disk / 1024} GB`
+      return `${this.server.spec.ram / 1024} GB`
     },
     isActive() {
       return (!this.disablingTaskInProgress) && this.server.status === 'active'

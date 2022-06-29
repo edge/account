@@ -3,6 +3,7 @@
     <SideNavigation />
     <main class="flex flex-col w-full mainContent">
       <TopNavigation />
+      <SuspensionWarning />
       <router-view />
     </main>
   </div>
@@ -10,10 +11,11 @@
 
 <script>
 import SideNavigation from '@/components/SideNavigation'
+import SuspensionWarning from '@/components/SuspensionWarning'
 import TopNavigation from '@/components/TopNavigation'
 import { mapState } from 'vuex'
 
-const TASK_REFRESH_INTERVAL = 5 * 1000
+const STORE_REFRESH_INTERVAL = 5 * 1000
 
 export default {
   name: 'Dashboard',
@@ -30,6 +32,7 @@ export default {
   },
   components: {
     SideNavigation,
+    SuspensionWarning,
     TopNavigation
   },
   methods: {
@@ -41,11 +44,16 @@ export default {
     }
   },
   mounted() {
-    // get any active tasks on page load
+    // get any active tasks and balance on page load
     this.$store.dispatch('getActiveTasks')
+    this.$store.dispatch('updateBalance')
 
-    // poll all active tasks
-    this.iTasks = setInterval(() => this.$store.dispatch('updateTasks'), TASK_REFRESH_INTERVAL)
+    // poll all active tasks and balance
+    this.iTasks = setInterval(() => {
+      this.$store.dispatch('updateAccount')
+      this.$store.dispatch('updateTasks')
+      this.$store.dispatch('updateBalance')
+    }, STORE_REFRESH_INTERVAL)
   },
   unmounted() {
     clearInterval(this.iTasks)

@@ -82,7 +82,7 @@
           :disabled="!canDeploy"
           class="button button--success w-full md:max-w-xs"
         >
-          <div v-if=isSaving class="flex">
+          <div v-if=isLoading class="flex">
             <span>Deploying</span>
             <span class="ml-2"><LoadingSpinner /></span>
           </div>
@@ -108,8 +108,9 @@ import Password from '@/components/deploy/Password'
 import ServerName from '@/components/deploy/ServerName'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 // import Toggle from '@vueform/toggle'
-import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
+import { mapGetters, mapState } from 'vuex'
+
 
 export default {
   name: 'Deploy',
@@ -134,7 +135,7 @@ export default {
       serverNameUpdated: false,
       hostname: null,
       httpError: '',
-      isSaving: false,
+      isLoading: false,
       selectedRegion: null,
       serverOptions: {
         region: null,
@@ -181,6 +182,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['account', 'session', 'tasks']),
     hourlyCost() {
       if (!this.selectedRegion) return 0
@@ -192,15 +194,12 @@ export default {
       return hourlyCost
     },
     canDeploy() {
-      return !this.v$.serverOptions.$invalid || this.isSaving || this.deploying
-    },
-    deploying() {
-      return this.tasks.some(task => task.action === 'create')
+      return !this.v$.serverOptions.$invalid && !this.isLoading && !this.balanceWarning && !this.balanceSuspend
     }
   },
   methods: {
     async deploy() {
-      this.isSaving = true
+      this.isLoading = true
       try {
         const response = await utils.servers.createServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -211,12 +210,12 @@ export default {
         // add task to store and redirect to server page
         this.$store.commit('addTask', response.task)
         this.$router.push({ name: 'Server', params: { id: response.server._key }})
-        this.isSaving = false
+        this.isLoading = false
       }
       catch (error) {
         setTimeout(() => {
           this.httpError = error
-          this.isSaving = false
+          this.isLoading = false
         }, 500)
       }
     },

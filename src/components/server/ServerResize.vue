@@ -12,7 +12,7 @@
     <div class="flex flex-col relative my-5 space-y-2">
       <button
         @click="toggleConfirmationModal"
-        :disabled=!canResize
+        :disabled=!canSubmitResize
         class="button button--success w-full md:max-w-xs"
       >
         <span v-if="isLoading">Resizing</span>
@@ -47,7 +47,7 @@ import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ResizeConfirmation from '@/components/confirmations/ResizeConfirmation'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'ServerResize',
@@ -73,9 +73,13 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['account', 'session']),
-    canResize() {
-      return !this.isLoading && this.haveSpecsChanged && !this.diskSizeDecreased && !this.disableActions
+    canSubmitResize() {
+      if (this.balanceWarning || this.balanceSuspend) if (this.haveSpecsIncreased) return false
+      // eslint-disable-next-line max-len
+      if (this.isLoading || !this.haveSpecsChanged || this.diskSizeDecreased || this.disableActions || this.balanceSuspend) return false
+      return true
     },
     currentHourlyCost() {
       return (
@@ -96,6 +100,12 @@ export default {
       const diskChanged = this.currentSpec.disk !== this.newSpec.disk
       const ramChanged = this.currentSpec.ram !== this.newSpec.ram
       return cpusChanged || diskChanged || ramChanged
+    },
+    haveSpecsIncreased() {
+      return ['ram', 'disk', 'cpus'].some(spec => {
+        console.log(`${spec}: ${this.newSpec[spec] > this.currentSpec[spec]}`)
+        return this.newSpec[spec] > this.currentSpec[spec]
+      })
     },
     newHourlyCost() {
       return (
