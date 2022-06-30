@@ -26,10 +26,11 @@ export const enableRecovery = async (host, sessionId, address) => {
   return response.body
 }
 
-export const disable2FA = async (host, sessionId) => {
+export const disable2FA = async (host, sessionId, body) => {
   const url = `${host}/account/2fa`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(body)
   return response.body
 }
 

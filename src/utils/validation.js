@@ -16,6 +16,14 @@ const accountNumberRegexp = /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/
 // eslint-disable-next-line max-len
 export const accountNumberInput = helpers.withMessage('Your account number is 16 digits', v => accountNumberRegexp.test(v))
 
+
+/**
+ * 8-digit alphanumeric backup code validator.
+ */
+const backupCodeRegexp = /^[A-Za-z0-9]{8}$/
+// eslint-disable-next-line max-len
+export const backupCode = helpers.withMessage('The backup code is an 8-digit alphanumeric code', v => backupCodeRegexp.test(v))
+
 /**
  * Email validator.
  */
@@ -26,7 +34,6 @@ export const email = helpers.withMessage('Please enter a valid email', _email)
  */
 const confCodeRegexp = /^\d{1}\s\d{1}\s\d{1}\s\d{1}\s\d{1}\s\d{1}$/
 export const confirmationCode = helpers.withMessage('The confirmation code is 6 digits', v => confCodeRegexp.test(v))
-
 
 /**
  * Server name validators.

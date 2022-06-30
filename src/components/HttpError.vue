@@ -1,6 +1,6 @@
 <template>
-  <div v-if="error" class="flex items-center">
-    <ExclamationIcon class="w-3.5 mr-2 text-red" />
+  <div v-if="error" class="flex items-center errorMessage">
+    <ExclamationIcon class="w-3.5 text-red" />
     <span class="errorMessage__text text-red">{{ formattedError }}</span>
   </div>
 </template>
@@ -9,7 +9,9 @@
 import { ExclamationIcon } from '@heroicons/vue/outline'
 
 const paramLookup = {
+  'backupCode': 'Backup Code',
   'comment': 'Comment',
+  'otp': 'TOTP',
   'region': 'Region',
   'spec.cpus': 'vCPU',
   'spec.disk': 'Disk',

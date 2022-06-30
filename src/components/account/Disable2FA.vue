@@ -1,28 +1,88 @@
 <template>
-  <div class="flex flex-col text-gray-500">
-    <div class="flex items-center mb-2">
-      <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
-      <span>Two-factor authentication is enabled.</span>
-    </div>
-    <span class="mb-4">To disable two-factor authentication, please click the button below:</span>
-    <button
-      class="button button--error sm:w-52"
-      @click=toggleConfirmationModal
-    >
-      <div v-if="isLoading" class="flex items-center">
-        <span>Disabling</span>
-        <span class="ml-2"><LoadingSpinner /></span>
+  <div>
+    <div v-if="step === 1" class="flex flex-col text-gray-500">
+      <div class="flex items-center mb-2">
+        <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
+        <span>Two-factor authentication is enabled.</span>
       </div>
-      <span v-else>Disable 2FA</span>
-    </button>
-    <!-- error message  -->
-    <HttpError :error=httpError />
-    <!-- disable 2fa confirmation modal -->
-    <Disable2FAConfirmation
-      v-show=showConfirmationModal
-      @modal-confirm=disable2FA
-      @modal-close=toggleConfirmationModal
-    />
+      <span class="mb-4">To disable two-factor authentication, please click the button below:</span>
+      <button
+        class="button button--error sm:w-52"
+        @click="() => step = 2"
+      >
+        <div v-if="isLoading" class="flex items-center">
+          <span>Disabling</span>
+          <span class="ml-2"><LoadingSpinner /></span>
+        </div>
+        <span v-else>Disable 2FA</span>
+      </button>
+    </div>
+    <div v-if="step === 2">
+      <!-- instructions -->
+      <span v-if="useBackupCode" class="text-gray-500">
+        Please enter one of your backup codes to disable 2FA. This backup code will become invalid after use.
+      </span>
+      <span v-else class="text-gray-500">
+        Please enter the TOTP code in your authenticator app to disable 2FA.
+      </span>
+
+      <!-- backup code/otp toggle button -->
+      <!-- eslint-disable-next-line max-len -->
+      <p v-if="useBackupCode" class="text-gray-500 mt-4">Go back to <button @click="toggleUseBackupCode" class="underline">use your 2FA device</button>.</p>
+      <!-- eslint-disable-next-line max-len -->
+      <p v-else class="text-gray-500 mt-4">Lost your authenticator device? You can <button @click="toggleUseBackupCode" class="underline">enter a backup code</button> instead.</p>
+
+      <!-- confirmation code and button -->
+      <div class="input-field flex items-center w-full">
+        <input
+          v-if="useBackupCode"
+          v-model="v$.backupCode.$model"
+          label="Confirmation code"
+          autocomplete="off"
+          class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+          v-mask="'NNNNNNNN'"
+          placeholder="1a2bc34d"
+          @keypress="disableOnEnter"
+        />
+        <input
+          v-else
+          v-model="v$.confirmationCode.$model"
+          label="Confirmation code"
+          autocomplete="off"
+          class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+          v-mask="'# # # # # #'"
+          placeholder="1 2 3 4 5 6"
+          @keypress="disableOnEnter"
+        />
+        <button
+          class="order-2 rounded-l-none text-sm py-3 button button--error py-2 w-32"
+          @click.prevent="disable2FA"
+          :disabled="!canDisable"
+        >
+          <div v-if="isLoading" class="flex flex-row items-center">
+            <span>Disabling</span>
+            <span class="ml-2"><LoadingSpinner /></span>
+          </div>
+          <span v-else>Disable</span>
+        </button>
+      </div>
+      <!-- error message  -->
+      <div v-if="useBackupCode"><div class="flex items-center errorMessage mt-2"
+        v-for="error of v$.backupCode.$errors"
+        :key="error.$uid"
+      >
+        <ExclamationIcon class="w-3.5 h-3.5" />
+        <span class="errorMessage__text">{{ error.$message }}</span>
+      </div></div>
+      <div v-else><div class="flex items-center errorMessage mt-2"
+        v-for="error of v$.confirmationCode.$errors"
+        :key="error.$uid"
+      >
+        <ExclamationIcon class="w-3.5 h-3.5" />
+        <span class="errorMessage__text">{{ error.$message }}</span>
+      </div></div>
+      <div class="mt-2"><HttpError :error=httpError />      </div>
+    </div>
   </div>
 </template>
 
@@ -30,38 +90,67 @@
 /* global process */
 
 import * as utils from '../../account-utils/index'
+import * as validation from '../../utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import Disable2FAConfirmation from '@/components/confirmations/Disable2FAConfirmation'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import useVuelidate from '@vuelidate/core'
 import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
     BadgeCheckIcon,
-    Disable2FAConfirmation,
+    ExclamationIcon,
     HttpError,
     LoadingSpinner
   },
   data() {
     return {
+      confirmationCode: '',
       httpError: '',
       isLoading: false,
-      showConfirmationModal: false
+      backupCode: '',
+      step: 1,
+      useBackupCode: false
+    }
+  },
+  validations() {
+    return {
+      confirmationCode: [
+        validation.confirmationCode
+      ],
+      backupCode : [
+        validation.backupCode
+      ]
     }
   },
   computed: {
-    ...mapState(['session'])
+    ...mapState(['session']),
+    canDisable() {
+      if (this.isLoading) return false
+      if (this.useBackupCode) return !this.v$.backupCode.$invalid
+      return !this.v$.confirmationCode.$invalid
+    },
+    codeModel() {
+      return this.useBackupCode ? this.v$.confirmationCode.$model : this.v$.confirmationCode.$model
+    },
+    otp() {
+      return this.confirmationCode.split(' ').join('')
+    }
   },
   methods: {
     ...mapActions(['updateAccount']),
     async disable2FA() {
       this.isLoading = true
       try {
-        this.toggleConfirmationModal()
+        const body = {}
+        this.useBackupCode ? body.backupCode = this.backupCode : body.otp = this.otp
+
         await utils.accounts.disable2FA(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
+          this.session._key,
+          body
         )
         await this.updateAccount()
         this.isLoading = false
@@ -73,8 +162,29 @@ export default {
         }, 500)
       }
     },
-    toggleConfirmationModal() {
-      this.showConfirmationModal = !this.showConfirmationModal
+    disableOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.disable2FA()
+    },
+    async toggleUseBackupCode() {
+      this.backupCode = ''
+      this.confirmationCode = ''
+      await this.v$.$reset()
+      this.useBackupCode = !this.useBackupCode
+    }
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
+  },
+  watch: {
+    confirmationCode() {
+      this.httpError = ''
+    },
+    backupCode() {
+      this.httpError = ''
     }
   }
 }
@@ -85,7 +195,11 @@ export default {
   @apply flex justify-center items-center mt-2;
 }
 
-@media (max-width: 400px) {
+.input-field {
+  max-width: 548px;
+}
+
+@media (max-width: 450px) {
   /* split input and button into two rows */
   .input-field {
     @apply flex-col;
