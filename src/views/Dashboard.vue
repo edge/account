@@ -16,6 +16,7 @@ import TopNavigation from '@/components/TopNavigation'
 import { mapState } from 'vuex'
 
 const STORE_REFRESH_INTERVAL = 5 * 1000
+const HEARTBEAT_INTERVAL = 10 * 60 * 1000
 
 export default {
   name: 'Dashboard',
@@ -24,7 +25,8 @@ export default {
   },
   data() {
     return {
-      iTasks: null
+      iAccount: null,
+      iHeartbeat: null
     }
   },
   computed: {
@@ -49,16 +51,22 @@ export default {
     this.$store.dispatch('updateBalance')
     this.$store.dispatch('updateServerCount')
 
-    // poll all active tasks and balance
-    this.iTasks = setInterval(() => {
+    // poll all active tasks, balance and server count
+    this.iAccount = setInterval(() => {
       this.$store.dispatch('updateAccount')
       this.$store.dispatch('updateTasks')
       this.$store.dispatch('updateBalance')
       this.$store.dispatch('updateServerCount')
     }, STORE_REFRESH_INTERVAL)
+
+    // keep session alive
+    this.iHeartbeat = setInterval(() => {
+      this.$store.dispatch('sessionHeartbeat')
+    }, HEARTBEAT_INTERVAL)
   },
   unmounted() {
-    clearInterval(this.iTasks)
+    clearInterval(this.iAccount)
+    clearInterval(this.iHeartbeat)
   },
   watch: {
     tasks() {

@@ -52,6 +52,13 @@ const store = createStore({
       )
       commit('setTasks', response.results)
     },
+    async sessionHeartbeat({ commit, state }) {
+      const session = await utils.sessions.putSession(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        state.session._key
+      )
+      commit('setSession', session)
+    },
     signIn({ commit }, payload) {
       commit('setAccount', payload.account)
       commit('setSession', payload.session)

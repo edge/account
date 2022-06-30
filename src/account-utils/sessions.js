@@ -27,3 +27,11 @@ export const getSession = async (host, sessionId) => {
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
+
+// get a session (i.e. to check if authorized)
+export const putSession = async (host, sessionId) => {
+  const url = `${host}/account/session`
+  const response = await superagent.put(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
