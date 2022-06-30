@@ -2,7 +2,7 @@
   <div v-if="message" class="w-full sticky top-16 md:top-20 z-30">
     <div class="suspension__warning"
       :class="[
-        balanceSuspend ? 'bg-red text-white' : '',
+        balanceSuspend && serverCount ? 'bg-red text-white' : '',
         balanceWarning || !serverCount ? 'bg-yellow-300 text-black' : ''
       ]"
     >
