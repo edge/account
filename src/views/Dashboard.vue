@@ -3,7 +3,7 @@
     <SideNavigation />
     <main class="flex flex-col w-full mainContent">
       <TopNavigation />
-      <SuspensionWarning />
+      <SuspensionWarning v-if="account" />
       <router-view />
     </main>
   </div>
@@ -30,7 +30,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['tasks'])
+    ...mapState(['account', 'tasks'])
   },
   components: {
     SideNavigation,
