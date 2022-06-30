@@ -3,7 +3,7 @@
     <div class="suspension__warning"
       :class="[
         balanceSuspend ? 'bg-red text-white' : '',
-        balanceWarning ? 'bg-yellow-300 text-black' : ''
+        balanceWarning || !serverCount ? 'bg-yellow-300 text-black' : ''
       ]"
     >
       <div><ExclamationIcon class="w-8"/></div>
@@ -41,13 +41,14 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
-    ...mapState(['account', 'balance']),
+    ...mapState(['account', 'balance', 'serverCount']),
     message() {
       if (!this.balance) return
 
       const warningThreshold = this.balance.threshold.warning
 
       /* eslint-disable max-len */
+      if (!this.serverCount) return `Top up your account to at least $${warningThreshold} to enable services`
       if (this.account.suspended) return 'You have unpaid invoices. Please top up to reactivate your services. Failure to pay will result in your services being permanently deleted.'
       if (this.balanceSuspend) return 'Your balance is less than your current spend. Your services will be suspended if you don\'t top up.'
       if (this.balanceWarning) return `Your balance ${this.balance.total <= warningThreshold ? 'is' : 'at the end of the day will be'} less than $${warningThreshold}. Your services may be suspended if you don't top up.`

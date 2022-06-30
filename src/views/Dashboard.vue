@@ -47,12 +47,14 @@ export default {
     // get any active tasks and balance on page load
     this.$store.dispatch('getActiveTasks')
     this.$store.dispatch('updateBalance')
+    this.$store.dispatch('updateServerCount')
 
     // poll all active tasks and balance
     this.iTasks = setInterval(() => {
       this.$store.dispatch('updateAccount')
       this.$store.dispatch('updateTasks')
       this.$store.dispatch('updateBalance')
+      this.$store.dispatch('updateServerCount')
     }, STORE_REFRESH_INTERVAL)
   },
   unmounted() {
