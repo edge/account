@@ -73,17 +73,62 @@
     <!-- 2fa check -->
     <div v-else class="flex flex-col">
       <div class="flex flex-col">
-        <div>
-          <ShieldExclamationIcon class="h-20 text-green mb-4" />
-        </div>
+        <div><ShieldExclamationIcon class="h-20 text-green mb-4" /></div>
         <span class="text-lg mb-2">Authenticate your account.</span>
-        <span class="text-gray mb-2">Please enter the 6-digit code from your two-factor authentication app</span>
+        <span class="text-gray mb-2">Please enter the
+          <!-- eslint-disable-next-line max-len -->
+          <span v-if="useBackupCode">one of your 8-digit alphanumeric backup codes. The code can only be used once.</span>
+          <span v-else>the 6-digit code from your two-factor authentication app.</span>
+        </span>
+
+        <!-- otp / backup code input -->
+        <div v-if="useBackupCode" class="input-field flex items-center w-full pt-2">
+          <input
+            v-model="v$.backupCode.$model"
+            label="Confirmation code"
+            autocomplete="off"
+            class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+            v-mask="'NNNNNNNN'"
+            placeholder="1a2bc34d"
+            @keypress="signInOnEnter"
+          />
+          <button
+            class="order-2 rounded-l-none text-sm py-3 button button--error py-2 w-36"
+            @click.prevent="signIn"
+            :disabled="v$.backupCode.$invalid"
+          >
+            <div v-if="isLoading" class="flex flex-row items-center">
+              <span>Signing In</span>
+              <span class="ml-2"><LoadingSpinner /></span>
+            </div>
+            <span v-else>Sign In</span>
+          </button>
+        </div>
         <AuthCodeInput
-          :error="errors.otpSecret"
+          v-else
+          :error="httpError"
           :isCodeValid="is2FACodeValid"
           :onComplete="onUpdateOtp"
           :resetErrors="resetOtpErrors"
         />
+        <!-- error message  -->
+        <div v-if="useBackupCode"><div class="flex items-center errorMessage mt-2"
+          v-for="error of v$.backupCode.$errors"
+          :key="error.$uid"
+        >
+          <ExclamationIcon class="w-3.5 h-3.5" />
+          <span class="errorMessage__text">{{ error.$message }}</span>
+        </div>
+        <div class="mt-2"><HttpError :error=httpError /></div>
+        </div>
+
+        <button v-if="useBackupCode" @click="toggleUseBackupCode" class="underline mt-2">
+          Go back to use authenticator device
+        </button>
+        <button v-else @click="toggleUseBackupCode" class="underline mt-2">
+          Lost my authenticator device
+        </button>
+
         <div class="flex flex-col mt-6">
           <button
             @click.prevent="returnToSignIn"
@@ -103,6 +148,7 @@
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import useVuelidate from '@vuelidate/core'
@@ -116,6 +162,7 @@ export default {
   components: {
     AuthCodeInput,
     ExclamationIcon,
+    HttpError,
     LoadingSpinner,
     Logo,
     ShieldExclamationIcon
@@ -123,20 +170,27 @@ export default {
   data() {
     return {
       accountNumberInput: '',
+      backupCode: '',
       errors: {
         accountNumberInput: '',
+        backupCode: '',
         otpSecret: ''
       },
+      httpError: null,
       is2FACodeValid: false,
       isLoading: false,
       otpSecret: '',
-      requires2FA: false
+      requires2FA: false,
+      useBackupCode: false
     }
   },
   validations() {
     return {
       accountNumberInput: [
         validation.accountNumberInput
+      ],
+      backupCode: [
+        validation.backupCode
       ]
     }
   },
@@ -146,6 +200,12 @@ export default {
     },
     canSignIn() {
       return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput && !this.isLoading
+    },
+    signInBody() {
+      const body = { account: this.accountNumber }
+      if (this.useBackupCode) body.backupCode = this.backupCode
+      if (this.otpSecret) body.otp = this.otpSecret
+      return body
     }
   },
   methods: {
@@ -166,14 +226,14 @@ export default {
     },
     async signIn() {
       if (this.v$.accountNumberInput.$invalid) return
+      if (this.requires2FA && this.useBackupCode && this.v$.backupCode.$invalid) return
 
       this.isLoading = true
 
       try {
         const session = await utils.sessions.createSession(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.accountNumber,
-          this.otpSecret
+          this.signInBody
         )
         if (session._key) {
           const account = await utils.accounts.getAccount(
@@ -189,7 +249,12 @@ export default {
         }
       }
       catch (error) {
-        if (this.requires2FA) this.errors.otpSecret = 'Verification code invalid'
+        if (this.requires2FA) {
+          setTimeout(() => {
+            this.httpError = error
+            this.isLoading = false
+          }, 500)
+        }
         if (error.response) {
           if (error.response && error.response.status === 401) {
             this.requires2FA = true
@@ -208,6 +273,13 @@ export default {
       if (event.charCode !== 13) return
       event.preventDefault()
       this.signIn()
+    },
+    async toggleUseBackupCode() {
+      this.backupCode = ''
+      this.otpSecret = ''
+      this.httpError = ''
+      await this.v$.$reset()
+      this.useBackupCode = !this.useBackupCode
     }
   },
   setup() {
@@ -219,6 +291,12 @@ export default {
     accountNumberInput() {
       // reset account number error (i.e. invalid account) when input is changed
       this.errors.accountNumberInput = ''
+    },
+    backupCode() {
+      this.httpError = ''
+    },
+    otpSecret() {
+      this.httpError = ''
     }
   }
 }
@@ -227,6 +305,21 @@ export default {
 @media (max-width: 275px) {
   .account-number {
     @apply text-sm p-3;
+  }
+}
+
+@media (max-width: 450px) {
+  /* split input and button into two rows */
+  .input-field {
+    @apply flex-col;
+  }
+
+  .input-field input {
+    @apply w-full border-r rounded-r-md mb-2;
+  }
+
+  .input-field .button {
+    @apply w-full rounded-l-md;
   }
 }
 </style>

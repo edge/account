@@ -68,21 +68,18 @@
         :disabled="submitting"
       />
     </form>
-    <div v-if="error" class="flex items-center errorMessage mt-2">
-      <ExclamationIcon class="w-3.5 h-3.5" />
-      <span class="errorMessage__text">{{ error }}</span>
-    </div>
+    <div class="mt-2"><HttpError :error="error" /></div>
   </div>
 </template>
 
 <script>
-import { ExclamationIcon } from '@heroicons/vue/outline'
+import HttpError from '@/components/HttpError'
 
 export default {
   name: 'AuthCodeInput',
   props: ['error', 'isCodeValid', 'onComplete', 'resetErrors'],
   components: {
-    ExclamationIcon
+    HttpError
   },
   data() {
     return {

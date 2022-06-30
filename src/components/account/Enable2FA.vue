@@ -149,7 +149,6 @@ export default {
   methods: {
     ...mapActions(['updateAccount']),
     confirmStoredCodes() {
-      console.log('confirm stored')
       this.$store.dispatch('removeBackupCodes')
     },
     async enable2FA() {
