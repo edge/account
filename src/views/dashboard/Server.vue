@@ -289,12 +289,12 @@ export default {
       return this.activeTasks.length > 0 || this.isDestroyed
     },
     formattedDisk() {
-      return `${this.server.spec.disk / 1024} GB`
+      return `${this.server.spec.disk / 1024} GiB`
     },
     formattedRAM() {
       const ram = this.server.spec.ram
-      if (ram < 1024) return `${ram} MB`
-      return `${ram / 1024} GB`
+      if (ram < 1024) return `${ram} MiB`
+      return `${ram / 1024} GiB`
     },
     isCreating() {
       return this.activeTasks.some(task => task.action === 'create')

@@ -91,12 +91,12 @@ export default {
       // return `https://hatscripts.github.io/circle-flags/flags/${region.flag}.svg`
     },
     formattedDisk() {
-      return `${this.server.spec.disk / 1024} GB`
+      return `${this.server.spec.disk / 1024} GiB`
     },
     formattedRAM() {
       const ram = this.server.spec.ram
-      if (ram < 1024) return `${ram} MB`
-      return `${this.server.spec.ram / 1024} GB`
+      if (ram < 1024) return `${ram} MiB`
+      return `${this.server.spec.ram / 1024} GiB`
     },
     isActive() {
       return (!this.disablingTaskInProgress) && this.server.status === 'active'
@@ -198,7 +198,7 @@ export default {
 }
 
 /* tablet sized screens up to desktop */
-@media (min-width: 450px) {
+@media (min-width: 470px) {
   .serverList__item {
     @apply grid-rows-3 gap-x-10;
     grid-template-columns: auto;
@@ -268,7 +268,7 @@ export default {
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 370px) {
   .serverList__stats {
     @apply flex-col space-x-0;
   }
