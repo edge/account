@@ -34,6 +34,8 @@
           <span>{{ formattedDisk }} Disk</span>
           <span class="divider"></span>
           <span>{{ formattedRAM }} RAM</span>
+          <span class="divider"></span>
+          <span>{{ server.spec.bandwidth }} Mbps</span>
         </div>
       </div>
       <!-- region -->
@@ -240,7 +242,7 @@ export default {
   }
   .specs {
     @apply flex-shrink-0;
-    flex-basis: 230px;
+    flex-basis: 300px;
   }
   .zone {
     @apply col-start-3 row-start-1 flex-shrink-0;
@@ -266,7 +268,7 @@ export default {
   }
 }
 
-@media (max-width: 300px) {
+@media (max-width: 360px) {
   .serverList__stats {
     @apply flex-col space-x-0;
   }

@@ -133,7 +133,7 @@
             <span class="dot" />
             <span class="text-lg flex-shrink-0">{{ formatMiB(current.spec.disk) }} Disk</span>
             <span class="dot" />
-            <span class="text-lg flex-shrink-0">{{ current.spec.bandwidth || 10 }} Mbps Bandwidth</span>
+            <span class="text-lg flex-shrink-0">{{ current.spec.bandwidth || 10 }} Mbps</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
@@ -155,7 +155,7 @@
             <span class="dot" />
             <span class="text-lg flex-shrink-0">{{ formatMiB(spec.disk) }} Disk</span>
             <span class="dot" />
-            <span class="text-lg flex-shrink-0">{{ spec.bandwidth }} Mbps Bandwidth</span>
+            <span class="text-lg flex-shrink-0">{{ spec.bandwidth }} Mbps</span>
           </div>
         </div>
         <div class="flex flex-col items-baseline">
@@ -181,7 +181,7 @@
           <span class="dot" />
           <span class="text-lg flex-shrink-0">{{ formatMiB(spec.disk) }} Disk</span>
           <span class="dot" />
-          <span class="text-lg flex-shrink-0">{{ spec.bandwidth }} Mbps Bandwidth</span>
+          <span class="text-lg flex-shrink-0">{{ spec.bandwidth }} Mbps</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">

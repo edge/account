@@ -83,26 +83,23 @@ export default {
     },
     currentHourlyCost() {
       return (
-        (this.region.cost.bandwidth * (this.currentSpec.bandwidth || 10)) +
+        (this.region.cost.bandwidth * (this.currentSpec.bandwidth)) +
         (this.region.cost.ram * this.currentSpec.ram) +
         (this.region.cost.disk * this.currentSpec.disk) +
         (this.region.cost.cpus * this.currentSpec.cpus)
       )
     },
     currentSpec() {
-      return { ...this.server.spec, bandwidth: this.server.spec.bandwidth || 10 }
+      return this.server.spec
     },
     diskSizeDecreased() {
       return this.currentSpec.disk > this.newSpec.disk
     },
     haveSpecsChanged() {
-      const cpusChanged = this.currentSpec.cpus !== this.newSpec.cpus
-      const diskChanged = this.currentSpec.disk !== this.newSpec.disk
-      const ramChanged = this.currentSpec.ram !== this.newSpec.ram
-      return cpusChanged || diskChanged || ramChanged
+      return ['bandwidth', 'ram', 'disk', 'cpus'].some(spec => this.newSpec[spec] !== this.currentSpec[spec])
     },
     haveSpecsIncreased() {
-      return ['ram', 'disk', 'cpus'].some(spec => this.newSpec[spec] > this.currentSpec[spec])
+      return ['bandwidth', 'ram', 'disk', 'cpus'].some(spec => this.newSpec[spec] > this.currentSpec[spec])
     },
     newHourlyCost() {
       return (

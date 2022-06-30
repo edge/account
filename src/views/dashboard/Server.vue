@@ -30,6 +30,8 @@
             <span class="server-detail">{{ formattedDisk }} Disk</span>
             <span class="divider"/>
             <span class="server-detail">{{ formattedRAM }} RAM</span>
+            <span class="divider"/>
+            <span class="server-detail">{{ server.spec.bandwidth }} Mbps</span>
           </div>
           <span class="divider"/>
           <div class="flex items-center space-x-1">
@@ -451,15 +453,6 @@ export default {
   @apply text-red;
 }
 
-@media (max-width: 350px) {
-  .collapse .specs {
-    @apply flex-col items-start space-x-0
-  }
-
-  .collapse .specs .divider {
-    @apply hidden;
-  }
-}
 
 @media (max-width: 450px) {
   .collapse.sub-header {
@@ -468,10 +461,19 @@ export default {
   .collapse .divider {
     @apply hidden;
   }
+  .collapse .specs {
+    @apply flex-col items-start space-x-0
+  }
+  .collapse .specs .divider {
+    @apply hidden;
+  }
 }
 
-@media (min-width: 350px) and (max-width: 650px) {
+@media (min-width: 450px) and (max-width: 650px) {
   .collapse .specs .divider {
+    @apply block
+  }
+  .collapse.sub-header .divider {
     @apply block
   }
 }
@@ -480,7 +482,6 @@ export default {
   .collapse.server-info {
     @apply flex-col items-start space-x-0 space-y-1;
   }
-
   .collapse .sub-header {
     @apply flex-col space-x-0 items-start;
   }
@@ -495,6 +496,9 @@ export default {
   }
   .collapse.server-info .divider {
     @apply hidden;
+  }
+  .collapse .specs .divider {
+    @apply block
   }
 }
 
