@@ -10,6 +10,7 @@ import { createStore } from 'vuex'
 const store = createStore({
   state: {
     account: null,
+    backupCodes: null,
     balance: null,
     isAuthed: false,
     serverCount: null,
@@ -25,6 +26,9 @@ const store = createStore({
     },
     setAccount(state, account) {
       state.account = account
+    },
+    setBackupCodes(state, codes) {
+      state.backupCodes = codes
     },
     setBalance(state, balance) {
       state.balance = balance
@@ -51,6 +55,9 @@ const store = createStore({
         statusParams
       )
       commit('setTasks', response.results)
+    },
+    removeBackupCodes({ commit }) {
+      commit('setBackupCodes', null)
     },
     async sessionHeartbeat({ commit, state }) {
       const session = await utils.sessions.putSession(

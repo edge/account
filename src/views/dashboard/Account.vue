@@ -32,7 +32,7 @@
     <div class="box">
       <h4>Two-factor Authentication (2FA)</h4>
       <div>
-        <Disable2FA v-if="is2FAEnabled" />
+        <Disable2FA v-if="is2FAEnabled && !backupCodes" />
         <Enable2FA v-else />
       </div>
     </div>
@@ -71,7 +71,7 @@ export default {
     EnableRecoveryEmail
   },
   computed: {
-    ...mapState(['account']),
+    ...mapState(['account', 'backupCodes']),
     formattedAccountNumber() {
       // add space every 4 characters
       return this.account._key.replace(/.{4}/g, '$& ')

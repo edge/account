@@ -74,10 +74,10 @@
               <button
                 @click.prevent="toggleShow2FA"
                 class="w-full button"
-                :class="is2FAEnabled ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
+                :class="is2FAEnabled && !backupCodes ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
               >
                 <span>Enable Two-factor Authentication (2FA)</span>
-                <div v-if="!is2FAEnabled" class="absolute right-3">
+                <div v-if="!is2FAEnabled || backupCodes" class="absolute right-3">
                   <ChevronDownIcon v-if="show2FA"
                     class="chevron-icon"
                   />
@@ -92,7 +92,7 @@
                   />
                 </div>
               </button>
-              <div v-show="show2FA && !is2FAEnabled">
+              <div v-show="show2FA && (!is2FAEnabled || backupCodes)">
                 <div class="px-2 mb-4">
                   <Enable2FA :createAccount="true" />
                 </div>
@@ -301,7 +301,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account', 'session']),
+    ...mapState(['account', 'backupCodes', 'session']),
     is2FAEnabled() {
       if (!this.account) return false
       if(this.account.totp) return this.account.totp.enabled
@@ -370,13 +370,14 @@ export default {
       this.$router.push('/')
     },
     toggleShow2FA() {
-      if (this.is2FAEnabled) return
+      if (this.is2FAEnabled && !this.backupCodes) return
       if (this.step !== 2) {
         this.step = 2
         this.show2FA = true
         this.showRecovery = false
       }
       else {
+        console.log('test')
         this.show2FA = !this.show2FA
         if (this.show2FA) this.showRecovery = false
       }

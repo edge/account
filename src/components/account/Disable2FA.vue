@@ -1,88 +1,71 @@
 <template>
-  <div>
-    <div v-if="step === 1" class="flex flex-col text-gray-500">
-      <div class="flex items-center mb-2">
-        <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
-        <span>Two-factor authentication is enabled.</span>
-      </div>
-      <span class="mb-4">To disable two-factor authentication, please click the button below:</span>
+  <div class="flex flex-col text-gray-500 space-y-2">
+    <div class="flex items-center">
+      <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
+      <span>Two-factor authentication is enabled.</span>
+    </div>
+    <span>To disable two-factor authentication, please enter
+      <!-- eslint-disable-next-line max-len -->
+      <span v-if="useBackupCode">one of your backup codes to disable 2FA. This backup code will become invalid after use.</span>
+      <span v-else>the TOTP code in your authenticator app to disable 2FA.</span>
+    </span>
+
+    <!-- backup code/otp toggle button -->
+    <!-- eslint-disable-next-line max-len -->
+    <p v-if="useBackupCode" class="text-gray-500">Alternatively, go back to <button @click="toggleUseBackupCode" class="underline">use your 2FA device</button>.</p>
+    <!-- eslint-disable-next-line max-len -->
+    <p v-else class="text-gray-500">Lost your authenticator device? You can <button @click="toggleUseBackupCode" class="underline">enter a backup code</button> instead.</p>
+
+    <!-- confirmation code and button -->
+    <div class="input-field flex items-center w-full pt-2">
+      <input
+        v-if="useBackupCode"
+        v-model="v$.backupCode.$model"
+        label="Confirmation code"
+        autocomplete="off"
+        class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+        v-mask="'NNNNNNNN'"
+        placeholder="1a2bc34d"
+        @keypress="disableOnEnter"
+      />
+      <input
+        v-else
+        v-model="v$.confirmationCode.$model"
+        label="Confirmation code"
+        autocomplete="off"
+        class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+        v-mask="'# # # # # #'"
+        placeholder="1 2 3 4 5 6"
+        @keypress="disableOnEnter"
+      />
       <button
-        class="button button--error sm:w-52"
-        @click="() => step = 2"
+        class="order-2 rounded-l-none text-sm py-3 button button--error py-2 w-32"
+        @click.prevent="disable2FA"
+        :disabled="!canDisable"
       >
-        <div v-if="isLoading" class="flex items-center">
+        <div v-if="isLoading" class="flex flex-row items-center">
           <span>Disabling</span>
           <span class="ml-2"><LoadingSpinner /></span>
         </div>
-        <span v-else>Disable 2FA</span>
+        <span v-else>Disable</span>
       </button>
     </div>
-    <div v-if="step === 2">
-      <!-- instructions -->
-      <span v-if="useBackupCode" class="text-gray-500">
-        Please enter one of your backup codes to disable 2FA. This backup code will become invalid after use.
-      </span>
-      <span v-else class="text-gray-500">
-        Please enter the TOTP code in your authenticator app to disable 2FA.
-      </span>
-
-      <!-- backup code/otp toggle button -->
-      <!-- eslint-disable-next-line max-len -->
-      <p v-if="useBackupCode" class="text-gray-500 mt-4">Go back to <button @click="toggleUseBackupCode" class="underline">use your 2FA device</button>.</p>
-      <!-- eslint-disable-next-line max-len -->
-      <p v-else class="text-gray-500 mt-4">Lost your authenticator device? You can <button @click="toggleUseBackupCode" class="underline">enter a backup code</button> instead.</p>
-
-      <!-- confirmation code and button -->
-      <div class="input-field flex items-center w-full">
-        <input
-          v-if="useBackupCode"
-          v-model="v$.backupCode.$model"
-          label="Confirmation code"
-          autocomplete="off"
-          class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
-          v-mask="'NNNNNNNN'"
-          placeholder="1a2bc34d"
-          @keypress="disableOnEnter"
-        />
-        <input
-          v-else
-          v-model="v$.confirmationCode.$model"
-          label="Confirmation code"
-          autocomplete="off"
-          class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
-          v-mask="'# # # # # #'"
-          placeholder="1 2 3 4 5 6"
-          @keypress="disableOnEnter"
-        />
-        <button
-          class="order-2 rounded-l-none text-sm py-3 button button--error py-2 w-32"
-          @click.prevent="disable2FA"
-          :disabled="!canDisable"
-        >
-          <div v-if="isLoading" class="flex flex-row items-center">
-            <span>Disabling</span>
-            <span class="ml-2"><LoadingSpinner /></span>
-          </div>
-          <span v-else>Disable</span>
-        </button>
-      </div>
-      <!-- error message  -->
-      <div v-if="useBackupCode"><div class="flex items-center errorMessage mt-2"
-        v-for="error of v$.backupCode.$errors"
-        :key="error.$uid"
-      >
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div></div>
-      <div v-else><div class="flex items-center errorMessage mt-2"
-        v-for="error of v$.confirmationCode.$errors"
-        :key="error.$uid"
-      >
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div></div>
-      <div class="mt-2"><HttpError :error=httpError />      </div>
-    </div>
+    <!-- error message  -->
+    <div v-if="useBackupCode"><div class="flex items-center errorMessage mt-2"
+      v-for="error of v$.backupCode.$errors"
+      :key="error.$uid"
+    >
+      <ExclamationIcon class="w-3.5 h-3.5" />
+      <span class="errorMessage__text">{{ error.$message }}</span>
+    </div></div>
+    <div v-else><div class="flex items-center errorMessage mt-2"
+      v-for="error of v$.confirmationCode.$errors"
+      :key="error.$uid"
+    >
+      <ExclamationIcon class="w-3.5 h-3.5" />
+      <span class="errorMessage__text">{{ error.$message }}</span>
+    </div></div>
+    <div class="mt-2"><HttpError :error=httpError /></div>
   </div>
 </template>
 
@@ -111,7 +94,6 @@ export default {
       httpError: '',
       isLoading: false,
       backupCode: '',
-      step: 1,
       useBackupCode: false
     }
   },
