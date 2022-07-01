@@ -156,7 +156,7 @@ const intervalLookup = {
 }
 
 export default {
-  name: 'ServerOverview',
+  name: 'ServerMetrics',
   props: ['server'],
   data() {
     return {
