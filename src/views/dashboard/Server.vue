@@ -93,9 +93,17 @@
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
-                Metrics
+                Overview
               </button>
             </Tab>
+            <!-- <Tab v-slot="{selected}">
+              <button
+                class="tab"
+                :class="[selected ? 'tab--selected' : '']"
+              >
+                Metrics
+              </button>
+            </Tab> -->
             <!-- <Tab v-slot="{selected}">
               <button
                 class="tab"
@@ -149,10 +157,18 @@
           <TabPanels class="mt-5">
             <!-- overview -->
             <TabPanel>
-              <ServerMetrics
+              <ServerOverview
+                :region=region
                 :server=server
               />
             </TabPanel>
+
+            <!-- server metrics -->
+            <!-- <TabPanel>
+              <ServerMetrics
+                :server=server
+              />
+            </TabPanel> -->
 
             <!-- console -->
             <!-- <TabPanel>
@@ -164,8 +180,8 @@
               <ServerResize
                 :activeTasks=activeTasks
                 :disableActions=disableActions
-                :server=server
                 :region=region
+                :server=server
               />
             </TabPanel>
 
@@ -231,7 +247,8 @@ import ServerBackups from '@/components/server/ServerBackups'
 import ServerDestroy from '@/components/server/ServerDestroy'
 import ServerHistory from '@/components/server/ServerHistory'
 // import ServerNetwork from '@/components/server/ServerNetwork'
-import ServerMetrics from '@/components/server/ServerMetrics'
+import ServerOverview from '@/components/server/ServerOverview'
+// import ServerMetrics from '@/components/server/ServerMetrics'
 import ServerPowerToggle from '@/components/server/ServerPowerToggle'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
@@ -256,6 +273,7 @@ export default {
       loadedBackups: false,
       loading: false,
       region: null,
+      selectedIndex: 0,
       server: null
     }
   },
@@ -269,7 +287,8 @@ export default {
     ServerDestroy,
     ServerHistory,
     // ServerNetwork,
-    ServerMetrics,
+    // ServerMetrics,
+    ServerOverview,
     ServerPowerToggle,
     ServerResize,
     ServerStatus,
