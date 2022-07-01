@@ -6,31 +6,31 @@
         <!-- name, hostname, ip, region -->
         <div class="grid__col col__1">
           <div class="info__section">
-            <span class="label">Server Name: </span><span class="info">{{ server.settings.name }}</span>
+            <span class="label">Server Name</span><span class="info">{{ server.settings.name }}</span>
           </div>
           <div class="info__section">
-            <span class="label">Hostname: </span><span class="info">{{ server.settings.domain }}</span>
+            <span class="label">Hostname</span><span class="info">{{ server.settings.domain }}</span>
           </div>
           <div class="info__section">
-            <span class="label">IP Address: </span><span class="info">{{ server.network.ip[0] }}</span>
+            <span class="label">IP Address</span><span class="info">{{ server.network.ip[0] }}</span>
           </div>
           <div class="info__section">
-            <span class="label">Region: </span><span class="info">{{ region && region.name }}</span>
+            <span class="label">Region</span><span class="info">{{ region && region.name }}</span>
           </div>
         </div>
         <!-- status, os, created, updated -->
         <div class="grid__col col__2">
           <div class="info__section">
-            <span class="label">Status: </span><span class="info"><ServerStatus :server="server" /></span>
+            <span class="label">Status</span><span class="info"><ServerStatus :server="server" /></span>
           </div>
           <div class="info__section">
-            <span class="label">OS: </span><span class="info">{{ server.settings.os.version }}</span>
+            <span class="label">OS</span><span class="info">{{ server.settings.os.version }}</span>
           </div>
           <div class="info__section">
-            <span class="label">Created: </span><span class="info">{{ created }}</span>
+            <span class="label">Created</span><span class="info">{{ created }}</span>
           </div>
           <div class="info__section">
-            <span class="label">Last Updated: </span><span class="info">{{ updated }}</span>
+            <span class="label">Last Updated</span><span class="info">{{ updated }}</span>
           </div>
         </div>
       </div>
@@ -40,16 +40,16 @@
       <!-- vcpus, ram, disk, bandwidth -->
       <div class="overview__grid">
         <div class="info__section">
-          <span class="label">vCPUs: </span><span class="info">{{ server.spec.cpus }}</span>
+          <span class="label">vCPUs</span><span class="info">{{ server.spec.cpus }}</span>
         </div>
         <div class="info__section">
-          <span class="label">RAM: </span><span class="info">{{ formattedRAM }}</span>
+          <span class="label">RAM</span><span class="info">{{ formattedRAM }}</span>
         </div>
         <div class="info__section">
-          <span class="label">Disk: </span><span class="info">{{ formattedDisk }}</span>
+          <span class="label">Disk</span><span class="info">{{ formattedDisk }}</span>
         </div>
         <div class="info__section">
-          <span class="label">Bandwidth: </span><span class="info">{{ server.spec.bandwidth }} Mbps</span>
+          <span class="label">Bandwidth</span><span class="info">{{ server.spec.bandwidth }} Mbps</span>
         </div>
       </div>
     </div>
@@ -58,10 +58,10 @@
       <!-- hourly and daily costs -->
       <div class="overview__grid">
         <div class="info__section">
-          <span class="label">Daily: </span><span class="info">$ {{ formattedHourlyCost }}</span>
+          <span class="label">Daily</span><span class="info">$ {{ formattedHourlyCost }}</span>
         </div>
         <div class="info__section">
-          <span class="label">Hourly: </span><span class="info">$ {{ formattedDailyCost }}</span>
+          <span class="label">Hourly</span><span class="info">$ {{ formattedDailyCost }}</span>
         </div>
       </div>
     </div>
