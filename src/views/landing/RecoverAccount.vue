@@ -11,7 +11,7 @@
           label="Email address"
           type="email"
           autocomplete="off"
-          class="border border-gray flex-1 px-3 py-2 text-lg rounded-md focus:outline-none"
+          class="border border-gray flex-1 px-3 py-2 text-lg rounded-md focus:outline-none max-w-full"
           placeholder="Enter your email address"
           @keypress="requestOnEnter"
         />
@@ -271,6 +271,11 @@ export default {
   setup() {
     return {
       v$: useVuelidate()
+    }
+  },
+  watch: {
+    email() {
+      this.errors.email = ''
     }
   }
 }
