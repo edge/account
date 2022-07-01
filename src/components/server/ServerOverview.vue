@@ -181,23 +181,28 @@ export default {
     @apply grid-cols-2
   } */
 }
-
 @screen lg {
+  .server__specs .overview__grid {
+    @apply grid-cols-4
+  }
+}
+@screen xl {
   .server__details .overview__grid {
     @apply grid-cols-2
   }
-
   .server__specs .overview__grid {
-    @apply grid-cols-4
+    @apply grid-cols-2
   }
   .server__specs .label {
     @apply w-max;
   }
-}
-
-@screen xl {
   .server__costs .label {
     @apply w-max;
+  }
+}
+@screen 2xl {
+  .server__specs .overview__grid {
+    @apply grid-cols-4
   }
 }
 </style>
