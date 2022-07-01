@@ -296,9 +296,9 @@ export default {
   @apply opacity-100;
 }
 
-@media (max-width: 275px) {
+@media (max-width: 350px) {
   .account-number {
-    @apply text-sm p-3;
+    @apply text-lg p-3;
   }
 }
 </style>
