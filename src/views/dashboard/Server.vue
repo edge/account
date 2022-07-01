@@ -3,8 +3,6 @@
     <!-- title -->
     <h1 class="mb-0 leading-none">{{ server.settings.name ||server.settings.hostname }}</h1>
 
-    <span v-if="disableActions"></span>
-
     <!-- ip and domain -->
     <div class="flex items-center space-x-2 mt-1 text-gray-500 truncate collapse sub-header">
       <span>{{ serverIp }}</span>
@@ -319,7 +317,7 @@ export default {
       return this.activeTasks.some(task => task.action === 'create')
     },
     isDestroyed() {
-      return this.server.status === 'deleted'
+      return this.server.status === 'deleted' || this.activeTasks.some(task => task.action !== 'destroy')
     },
     isDestroying() {
       return this.activeTasks.some(task => task.action === 'destroy')
