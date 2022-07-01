@@ -8,8 +8,8 @@ const themes = {
     color: colors.white,
 
     '&:hover, &.hover': {
-      backgroundColor: colors.green[200],
-      borderColor: colors.green[200],
+      backgroundColor: colors.green[300],
+      borderColor: colors.green[300],
       color: colors.white
     },
 
@@ -48,8 +48,8 @@ const themes = {
     }
   },
   success: {
-    backgroundColor: colors.green[200],
-    borderColor: colors.green[200],
+    backgroundColor: colors.green.DEFAULT,
+    borderColor: colors.green.DEFAULT,
     color: colors.white,
 
     '&:hover, &.hover': {
@@ -64,12 +64,12 @@ const themes = {
     }
   },
   'outline-success': {
-    borderColor: colors.green[200],
+    borderColor: colors.green.DEFAULT,
     color: colors.white,
 
     '&:hover, &.hover': {
-      borderColor: colors.green[200],
-      backgroundColor: colors.green[200]
+      borderColor: colors.green.DEFAULT,
+      backgroundColor: colors.green.DEFAULT
     },
 
     '&:disabled, &.disabled': {
