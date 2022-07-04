@@ -7,8 +7,8 @@
         <div class="details__section">
           <span class="details__title">Account No:</span>
           <div class="flex items-center">
-            <span v-if="showAccountNumber" class="details__info">{{ formattedAccountNumber }}</span>
-            <span v-else class="details__info">XXXX XXXX XXXX XXXX</span>
+            <span v-if="showAccountNumber" class="details__info monospace">{{ formattedAccountNumber }}</span>
+            <span v-else class="details__info monospace">XXXX XXXX XXXX {{ formattedAccountNumber.slice(-5) }}</span>
             <button
               @click.prevent="toggleShowAccountNumber"
               class="text-gray-400 hover:text-green"
@@ -22,7 +22,7 @@
           <span class="details__title">Wallet:</span>
           <div class="flex items-center relative">
             <a :href="explorerUrlWallet" target="_blank" rel="noreferrer" class="link truncate">
-              <span class="details__info truncate">{{ account.wallet.address }}</span>
+              <span class="details__info monospace truncate">{{ account.wallet.address }}</span>
             </a>
             <button
               @click.prevent="copyToClipboard"
@@ -69,14 +69,12 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import { PlusIcon } from '@heroicons/vue/outline'
 import TopUpModal from '@/components/billing/TopUpModal'
 import { mapState } from 'vuex'
-import superagent from 'superagent'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
 export default {
@@ -95,7 +93,6 @@ export default {
   },
   data() {
     return {
-      balance: null,
       copied: false,
       iBalance: null,
       rate: null,
@@ -104,7 +101,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account', 'session']),
+    ...mapState(['account', 'balance', 'session']),
     explorerUrlWallet() {
       return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.account.wallet.address}`
     },
@@ -113,19 +110,19 @@ export default {
       return this.account._key.replace(/.{4}/g, '$& ')
     },
     formattedBalance() {
-      return (this.balance / 1e6).toLocaleString(undefined, {
+      return this.balance && (this.balance.total.xe / 1e6).toLocaleString(undefined, {
         maximumFractionDigits: 6,
         minimumFractionDigits: 6
       })
     },
     formattedUSDBalance() {
-      return (this.rate * this.balance / 1e6).toLocaleString(undefined, {
+      return (this.rate * this.usdBalance / 1e6).toLocaleString(undefined, {
         maximumFractionDigits: 2,
         minimumFractionDigits: 2
       })
     },
     usdBalance() {
-      return this.rate * this.balance / 1e6
+      return this.balance && this.balance.total.usd
     }
   },
   methods: {
@@ -141,30 +138,7 @@ export default {
     },
     toggleTopUpModal() {
       this.showTopUpModal = !this.showTopUpModal
-    },
-    async updateBalance() {
-      const info = await utils.accounts.getWallet(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
-      this.balance = info.balance
-      await this.updateUSDRate()
-    },
-    async updateUSDRate() {
-      const url = `${process.env.VUE_APP_INDEX_URL}/token/current`
-      const response = await superagent.get(url)
-      this.rate = response.body.usdPerXE
     }
-  },
-  mounted() {
-    this.updateBalance()
-    this.iBalance = setInterval(() => {
-      this.updateBalance()
-    }, 5000)
-  },
-  unmounted() {
-    clearInterval(this.iBalance)
-    this.iBalance = null
   }
 }
 </script>
