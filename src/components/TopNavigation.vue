@@ -70,7 +70,7 @@ export default {
 </script>
 <style scoped>
   .topNavigation {
-    @apply sticky top-0 z-40 flex items-center justify-between w-full px-3 h-16 bg-white border-b border-gray-300;
+    @apply top-0 z-40 flex items-center justify-between w-full px-3 h-16 bg-white border-b border-gray-300;
     @apply md:px-5 lg:px-8 md:h-20 md:bg-gray-200 md:justify-end;
   }
   .topNavigation__left {

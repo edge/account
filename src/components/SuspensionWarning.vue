@@ -1,5 +1,5 @@
 <template>
-  <div v-if="message" class="w-full sticky top-16 md:top-20 z-30">
+  <div v-if="message" class="w-full md:top-20">
     <div class="suspension__warning"
       :class="[
         balanceSuspend && serverCount ? 'bg-red text-white' : '',
@@ -7,11 +7,10 @@
       ]"
     >
       <div><ExclamationIcon class="w-8"/></div>
-      <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
+      <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
         <span>{{ message }}</span>
         <button @click=toggleTopUpModal class="button button--solid button--small h-8 w-max flex-shrink-0">
           Top Up
-          <div><PlusIcon class="w-4 ml-2"/></div>
         </button>
       </div>
     </div>
@@ -23,15 +22,14 @@
 </template>
 
 <script>
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import TopUpModal from '@/components/billing/TopUpModal'
-import { ExclamationIcon, PlusIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'SuspensionMessage',
   components: {
     ExclamationIcon,
-    PlusIcon,
     TopUpModal
   },
   data() {
