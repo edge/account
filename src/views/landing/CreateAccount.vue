@@ -7,7 +7,7 @@
 
     <div>
       <p class="pr-5 text-lg">
-        <span>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</span>
+        <span>All you need to sign in to Edge is a secret account number, known only to you.</span>
       </p>
 
       <div>
