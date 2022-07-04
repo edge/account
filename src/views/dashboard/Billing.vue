@@ -116,10 +116,7 @@ export default {
       })
     },
     formattedUSDBalance() {
-      return this.usdBalance && this.usdBalance.toLocaleString(undefined, {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 2
-      })
+      return this.usdBalance && (Math.floor(this.usdBalance * 100) / 100).toFixed(2)
     },
     usdBalance() {
       return this.balance && this.balance.total.usd
