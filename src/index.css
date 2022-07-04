@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Common styles
+ */
+html {
+  @apply text-gray-800;
+}
+
+.monospace {
+ font-family: 'Roboto Mono', monospace;
+}
+
+
+/* 
+  FORM STYLES
+*/
+.input-group {
+  @apply relative flex flex-col space-y-1;
+}
+
+/* input */
+.input-group .input--floating {
+  @apply pb-px text-lg border-b border-gray-400 text-gray-600;
+  @apply focus:outline-none focus:border-green focus:text-green;
+}
+.input-group__error .input--floating {
+  @apply border-red text-red;
+  @apply focus:border-red;
+}
+
+/* label */
+.input-group .label, .input-group label {
+  @apply text-gray-500;
+}
+.input-group__error  .label, .input-group__error  label {
+  @apply text-red;
+}
+
+/* error */
+.errorMessage {
+  @apply flex items-center space-x-1 text-xs font-medium text-red;
+}
+
+/* 
+  TYPOGRAPHY
+*/
+.loose {
+  @apply tracking-widest text-sm;
+}

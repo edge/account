@@ -1,0 +1,26 @@
+#!/usr/bin/env groovy
+// Copyright (C) 2022 Edge Network Technologies Limited
+// Use of this source code is governed by a GNU GPL-style license
+// that can be found in the LICENSE.md file. All rights reserved.
+
+def buildAndPushImage(registryCredential, repository, buildArgs) {
+  docker.withRegistry("https://registry.edge.network", registryCredential) {
+    def image = docker.build("registry.edge.network/$repository", "$buildArgs .")
+    image.push()
+  }
+}
+
+pipeline {
+  agent {
+    label 'local'
+  }
+  stages {
+    stage('Build') {
+      steps {
+        script {
+          buildAndPushImage(REGISTRY_CREDENTIAL, NAME, "--build-arg ACCOUNT_API_URL=$ACCOUNT_API_URL --build-arg EXPLORER_URL=$EXPLORER_URL --build-arg INDEX_URL=$INDEX_URL")
+        }
+      }
+    }
+  }
+}

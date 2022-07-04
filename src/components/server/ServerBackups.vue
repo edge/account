@@ -1,0 +1,258 @@
+<template>
+  <div class="flex flex-col pb-20 space-y-5">
+    <div class="box">
+      <h4>Create a backup</h4>
+      <!-- eslint-disable-next-line max-len -->
+      <p class="mt-3 text-gray-500">A backup copy is a disk image of the virtual machine, which is used for recovery in case the original data are lost.</p>
+      <div class="flex flex-col w-full mt-5 lg:space-x-4 lg:items-end lg:flex-row">
+        <div class="flex-1 w-full lg:w-auto input-group">
+          <label class="label">Backup name</label>
+          <input
+            type="text"
+            v-model=comment
+            placeholder="Add backup name here"
+            class="bg-transparent input input--floating"
+            @keypress="createOnEnter"
+          />
+        </div>
+        <div>
+          <button @click="createBackup"
+            :disabled="!canCreate"
+            class="mt-5 lg:mt-0 button button--success w-full sm:max-w-xs"
+          >
+            <div v-if="isCreating" class="flex items-center">
+              <span>Creating</span>
+              <span class="ml-2"><LoadingSpinner /></span>
+            </div>
+            <span v-else>Create backup</span>
+          </button>
+        </div>
+      </div>
+      <HttpError :error=httpError class="mt-2" />
+    </div>
+    <div class="box">
+      <h4>Existing backups</h4>
+      <!-- desktop table view -->
+      <div class="mt-4 overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
+        <table class="divide-y divide-gray-200">
+          <thead class="hidden lg:table-header-group tableHead">
+            <tr>
+              <th scope="col" class="tableHead__cell" width="120">
+                Date
+              </th>
+              <th scope="col" class="tableHead__cell lg:hidden xl:table-cell" width="90">
+                Time
+              </th>
+              <th scope="col" class="tableHead__cell" width="">
+                Name
+              </th>
+              <th scope="col" class="tableHead__cell" width="">
+                Status
+              </th>
+              <th scope="col" class="tableHead__cell actions" width="250"></th>
+            </tr>
+          </thead>
+          <tbody class="tableBody">
+            <LoadingTableDataRow v-if="!backups" colspan="5"/>
+            <tr v-else-if="!backups.length">
+              <td colspan="5" class="tableBody__cell text-center text-gray-500">No backups</td>
+            </tr>
+            <ServerBackupItem
+              v-else
+              v-for="backup in backups"
+              :activeTasks=activeTasks
+              :attemptingAction=attemptingAction
+              :backup=backup
+              :disableActions=disableBackupActions
+              :key="backup.name"
+              :onAttemptAction=updateAttemptingAction
+            />
+          </tbody>
+        </table>
+      </div>
+      <Pagination
+        :border="true"
+        :currentPage=currentPage
+        :limit=limit
+        :totalCount="metadata.totalCount"
+        @change-page=changePage
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+/* global process */
+
+import * as utils from '../../account-utils'
+import * as validation from '../../utils/validation'
+import HttpError from '@/components/HttpError'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import LoadingTableDataRow from '@/components/LoadingTableDataRow'
+import Pagination from '@/components/Pagination'
+import ServerBackupItem from '@/components/server/ServerBackupItem'
+import useVuelidate from '@vuelidate/core'
+import { mapGetters, mapState } from 'vuex'
+
+export default {
+  name: 'ServerBackups',
+  components: {
+    HttpError,
+    LoadingSpinner,
+    LoadingTableDataRow,
+    Pagination,
+    ServerBackupItem
+  },
+  props: [
+    'activeTasks',
+    'disableActions',
+    'server'
+  ],
+  data: function () {
+    return {
+      attemptingAction: false,
+      backups: null,
+      comment: '',
+      httpError: null,
+      iBackups: null,
+      isCreating: false,
+      isUpdating: false,
+      limit: 10,
+      metadata: { totalCount: 0 },
+      pageHistory: [1]
+    }
+  },
+  validations() {
+    return {
+      comment: [validation.serverCommentLength]
+    }
+  },
+  computed: {
+    ...mapGetters(['balanceSuspend']),
+    ...mapState(['session']),
+    canCreate() {
+      return !this.isCreating && !this.disableActions && !this.v$.comment.$invalid && !this.balanceSuspend
+    },
+    currentPage() {
+      return this.pageHistory[this.pageHistory.length - 1]
+    },
+    disableBackupActions() {
+      return this.disableActions || this.attemptingAction
+    },
+    serverId() {
+      return this.$route.params.id
+    }
+  },
+  methods: {
+    changePage(newPage) {
+      this.pageHistory = [...this.pageHistory, newPage]
+    },
+    clearAllErrors() {
+      this.httpError = null
+    },
+    async createBackup() {
+      this.isCreating = true
+      try {
+        this.httpError = null
+        const response = await utils.servers.createBackup(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId,
+          this.comment
+        )
+        this.$emit('update-backups')
+        this.$store.commit('addTask', response.task)
+        this.comment = ''
+        this.isCreating = false
+      }
+      catch (error) {
+        setTimeout(() => {
+          this.httpError = error
+          this.comment = ''
+          this.isCreating = false
+        }, 500)
+      }
+    },
+    createOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.createBackup()
+    },
+    updateAttemptingAction(newState) {
+      this.attemptingAction = newState
+    },
+    async updateBackups() {
+      const response = await utils.servers.getBackups(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId,
+        {
+          limit: this.limit,
+          page: this.currentPage
+        }
+      )
+      this.backups = response.results
+      this.metadata = response.metadata
+      this.loadedBackups = true
+    }
+  },
+  mounted() {
+    this.updateBackups()
+    this.iBackups = setInterval(() => {
+      this.updateBackups()
+    }, 5000)
+  },
+  unmounted() {
+    clearInterval(this.iBackups)
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
+  },
+  watch: {
+    pageHistory() {
+      this.updateBackups()
+    }
+  }
+}
+</script>
+<style scoped>
+.box {
+  @apply rounded-lg bg-white w-full overflow-auto p-4 md:p-6;
+}
+.tableHead {
+  @apply border-gray-300 border-b rounded-lg w-full bg-gray-50;
+}
+.tableHead__cell {
+  @apply pl-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
+}
+.tableBody {
+  @apply bg-white divide-y divide-gray-200;
+}
+
+table {
+  @apply table-fixed w-full;
+}
+table, tbody {
+  @apply block;
+}
+
+@screen lg {
+  table {
+    @apply table;
+  }
+
+  tbody {
+    @apply table-row-group;
+  }
+
+  tr {
+    @apply table-row py-0;
+  }
+
+  .tableBody__cell {
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
+  }
+}
+</style>
