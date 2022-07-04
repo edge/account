@@ -10,7 +10,8 @@
       <!-- account number display -->
       <div class="account-number-wrapper">
         <span v-if="showAccountNumber" class="account-number monospace">{{ formattedAccountNumber }}</span>
-        <span v-else class="account-number masked monospace">XXXX XXXX XXXX XXXX</span>
+        <!-- eslint-disable-next-line max-len -->
+        <span v-else class="account-number masked monospace">XXXX XXXX XXXX {{ formattedAccountNumber.slice(-5) }}</span>
         <!-- hide/show account number button button -->
         <button
           @click.prevent="toggleShowAccountNumber"
