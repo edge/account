@@ -116,7 +116,7 @@ export default {
       })
     },
     formattedUSDBalance() {
-      return (this.rate * this.usdBalance / 1e6).toLocaleString(undefined, {
+      return this.usdBalance && this.usdBalance.toLocaleString(undefined, {
         maximumFractionDigits: 2,
         minimumFractionDigits: 2
       })
