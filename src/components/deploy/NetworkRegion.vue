@@ -11,7 +11,7 @@
         :key="region.name"
         :value="region"
         v-slot="{ active, checked, disabled }"
-        :disabled="region.status !== 'active'"
+        :disabled="region.status !== 'active' || isRegionAtCapacity(region)"
       >
         <div
           :class="[
@@ -82,6 +82,14 @@ export default {
     }
   },
   methods: {
+    isRegionAtCapacity(region) {
+      const capacity = region.capacity
+      const usage = region.usage
+      for (const spec in capacity) {
+        if (usage[spec] >= capacity[spec]) return true
+      }
+      return false
+    },
     async updateRegions() {
       const regions = await utils.region.getRegions(
         process.env.VUE_APP_ACCOUNT_API_URL,
