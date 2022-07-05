@@ -39,7 +39,7 @@
     </template>
     <template v-slot:buttons>
       <button
-        class="w-full mt-3 button button--small button--outline sm:mt-0"
+        class="w-full mt-3 button button--small button--success sm:mt-0"
         @click="close"
       >
         Close
