@@ -5,7 +5,7 @@
         <div class="icon"><slot name="icon" /></div>
         <div class="mt-2 mb-4"><slot name="header" /></div>
       </div>
-      <div class="my-4 px-8 text-sm text-gray-500">
+      <div class="my-8 px-8 text-sm text-gray-500">
         <slot name="body" />
         <div class="w-full my-8 sm:flex sm:space-x-4">
           <slot name="buttons" />
@@ -35,6 +35,6 @@ export default {
   @apply flex items-center justify-center flex-shrink-0 mx-auto text-red rounded-full mb-2 mt-4 sm:mb-0 sm:mx-0;
 }
 .header {
-  @apply flex flex-col w-full items-center text-2xl text-red border-b border-gray-400;
+  @apply flex flex-col w-full items-center text-2xl text-red border-b border-gray-300 bg-gray-200;
 }
 </style>
