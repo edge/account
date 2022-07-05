@@ -20,7 +20,7 @@
             (<button @click="toggleTopUpModal" class="text-green hover:underline">Top Up</button>)
           </span>
         </span>
-        <span>{{ formattedBalance }} XE / $ {{ formattedUSDBalance }} USD </span>
+        <span>{{ formattedBalance }} XE / {{ formattedUSDBalance }} USD </span>
         <span class="hidden lg:block">
           (<button @click="toggleTopUpModal" class="text-green hover:underline">Top Up</button>)
         </span>
