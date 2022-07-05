@@ -24,7 +24,7 @@
 
           <div class="flex items-center space-x-2">
             <div class="currency symbol flex justify-between">
-              <input type="number" class="w-36" v-model="inputAmount" placeholder="5.00" @focusout="formatInput" />
+              <input type="number" class="w-36" v-model="inputAmount" @focusout="formatInput" />
               {{ usdToXe ? 'USD' : 'XE' }}
             </div>
             <button @click="flipConversion" class="hover:text-green">
@@ -96,6 +96,7 @@ export default {
       this.usdToXe = !this.usdToXe
     },
     formatInput() {
+      if (!this.inputAmount) this.inputAmount = 0
       if (this.usdToXe) this.inputAmount = this.formattedUSD
       else this.inputAmount = this.formattedXE
     }
