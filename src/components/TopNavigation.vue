@@ -33,7 +33,7 @@
       </span>
     </div>
     <TopUpModal
-      v-show=showTopUpModal
+      v-if=showTopUpModal
       @modal-close=toggleTopUpModal
     />
     <MobileNavigation v-if="account" :closeNav=closeMobileNav />
