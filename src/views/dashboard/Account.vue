@@ -10,7 +10,8 @@
       <!-- account number display -->
       <div class="account-number-wrapper">
         <span v-if="showAccountNumber" class="account-number monospace">{{ formattedAccountNumber }}</span>
-        <span v-else class="account-number masked monospace">XXXX XXXX XXXX XXXX</span>
+        <!-- eslint-disable-next-line max-len -->
+        <span v-else class="account-number masked monospace">XXXX XXXX XXXX {{ formattedAccountNumber.slice(-5) }}</span>
         <!-- hide/show account number button button -->
         <button
           @click.prevent="toggleShowAccountNumber"
@@ -19,14 +20,6 @@
           <EyeIcon v-if="showAccountNumber" class="ml-2 w-5 h-5" />
           <EyeOffIcon v-if="!showAccountNumber" class="ml-2 w-5 h-5" />
         </button>
-        <!-- copy to clipboard button -->
-        <button
-          @click.prevent="copyToClipboard"
-          class="ml-2 text-gray-400 hover:text-green"
-        >
-          <DuplicateIcon class="w-6 h-6" />
-        </button>
-        <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
       </div>
     </div>
     <div class="box">
@@ -50,7 +43,6 @@
 <script>
 import Disable2FA from '@/components/account/Disable2FA'
 import DisableRecoveryEmail from '@/components/account/DisableRecoveryEmail'
-import { DuplicateIcon } from '@heroicons/vue/outline'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
 import { mapState } from 'vuex'
@@ -64,7 +56,6 @@ export default {
   components: {
     Disable2FA,
     DisableRecoveryEmail,
-    DuplicateIcon,
     EyeIcon,
     EyeOffIcon,
     Enable2FA,
@@ -122,13 +113,5 @@ export default {
 }
 .account-number.masked {
   @apply text-gray;
-}
-
-.copied {
-  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
-  @apply transition-opacity duration-200 ease-in;
-}
-.copied.visible {
-  @apply opacity-100;
 }
 </style>

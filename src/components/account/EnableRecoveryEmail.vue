@@ -12,7 +12,8 @@
           label="Email address"
           type="email"
           autocomplete="off"
-          class="overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+          class="overflow-hidden flex-1 px-3 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+          :class="createAccount ? 'smaller-font' : 'text-lg py-2'"
           placeholder="Enter email address"
           @keypress="enableOnEnter"
         />
@@ -139,7 +140,7 @@ export default {
       ]
     }
   },
-  props: ['fullScreen'],
+  props: ['createAccount'],
   computed: {
     ...mapState(['account', 'session']),
     canEnable() {
@@ -260,5 +261,11 @@ export default {
   .input-field .button {
     @apply w-full rounded-l-md;
   }
+}
+
+.input-field .smaller-font {
+  @apply text-md;
+  padding-top: calc(0.75rem - 1px);
+  padding-block: calc(0.75rem - 1px);
 }
 </style>

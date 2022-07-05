@@ -7,7 +7,7 @@
 
     <div>
       <p class="pr-5 text-lg">
-        <span>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</span>
+        <span>All you need to sign in to Edge is a secret account number, known only to you.</span>
       </p>
 
       <div>
@@ -68,7 +68,7 @@
             <span>Secure your account</span>
           </div>
 
-          <div class="step-content" v-if="step === 2 && !isAccountSecured">
+          <div class="step-content" v-if="step === 2">
             <!-- 2fa section -->
             <div class="my-4 bg-gray-200 rounded-lg">
               <button
@@ -123,7 +123,7 @@
               </button>
               <div v-show="showRecovery && !isRecoveryEnabled">
                 <div class="px-2 mt-2">
-                  <EnableRecoveryEmail />
+                  <EnableRecoveryEmail :createAccount="true" />
                 </div>
               </div>
             </div>
@@ -168,7 +168,7 @@
           </div>
 
           <!-- credit icons -->
-          <div class="step-content" v-if="step === 3 || isAccountSecured">
+          <div class="step-content" v-if="step === 3">
             <div class="flex flex-col space-y-6 my-4">
               <!-- eslint-disable-next-line max-len -->
               <span>To top up your account, please transfer XE to the following wallet address. It may take up to 10 minutes for the balance to update.</span>
@@ -393,6 +393,14 @@ export default {
         this.showRecovery = !this.showRecovery
         if(this.showRecovery) this.show2FA = false
       }
+    }
+  },
+  watch: {
+    is2FAEnabled(new2FAEnabled) {
+      if (new2FAEnabled && this.isRecoveryEnabled) this.step = 3
+    },
+    isRecoveryEnabled(newRecoveryEnabled) {
+      if (newRecoveryEnabled && this.is2FAEnabled) this.step = 3
     }
   }
 }
