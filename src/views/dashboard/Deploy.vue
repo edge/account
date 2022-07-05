@@ -88,7 +88,19 @@
           </div>
           <span v-else>Deploy</span>
         </button>
+
         <HttpError :error=httpError />
+        <!-- <div class="server__error">
+          <span>Something went wrong</span>
+          <span>There was an issue while deplying this server.</span>
+        </div> -->
+
+        <div v-if="invalidSpecs.length" class="mt-2 text-red flex flex-col">
+          <span v-if="!invalidSpecs.includes('servers')">This region doesn't have capacity for your new server.</span>
+          <span v-for="invalidSpec in invalidSpecs" :key="invalidSpec">
+            {{ formatRegionLimitError(invalidSpec) }}
+          </span>
+        </div>
       </div>
     </form>
   </div>
@@ -117,7 +129,6 @@ export default {
   title() {
     return 'Edge Account Portal » Deploy a new server'
   },
-  props: ['region'],
   components: {
     Domain,
     HttpError,
@@ -173,6 +184,7 @@ export default {
           password: [validation.serverPassword]
         },
         spec: {
+          bandwidth: [validation.required],
           cpus: [validation.required],
           disk: [validation.required],
           ram: [validation.required]
@@ -194,7 +206,21 @@ export default {
       return hourlyCost
     },
     canDeploy() {
-      return !this.v$.serverOptions.$invalid && !this.isLoading && !this.balanceWarning && !this.balanceSuspend
+      return !this.v$.serverOptions.$invalid &&
+        !this.isLoading &&
+        !this.balanceWarning &&
+        !this.balanceSuspend &&
+        !this.invalidSpecs.length
+    },
+    invalidSpecs() {
+      if (!this.selectedRegion) return []
+      const capacity = this.selectedRegion.capacity
+      const usage = this.selectedRegion.usage
+      const newServer = this.serverOptions.spec
+
+      if (usage.servers >= capacity.servers) return ['servers']
+
+      return ['cpus', 'disk', 'ram'].filter(spec => newServer[spec] + usage[spec] > capacity[spec])
     }
   },
   methods: {
@@ -218,6 +244,35 @@ export default {
           this.isLoading = false
         }, 500)
       }
+    },
+    formatMiB(MiB) {
+      if (MiB < 1024) {
+        return `${MiB} MiB`
+      }
+      return `${MiB / 1024} GiB`
+    },
+    getAvailableSpec(spec) {
+      return this.selectedRegion.capacity[spec] - this.selectedRegion.usage[spec]
+    },
+    formatRegionLimitError(spec) {
+      if (spec === 'servers') return 'No more servers available in this region.'
+
+      const specLookup = {
+        'cpus': 'vCPU',
+        'disk': 'Disk',
+        'ram': 'RAM'
+      }
+
+      let requestedAmount = this.serverOptions.spec[spec]
+      let availableAmount = this.getAvailableSpec(spec)
+      if (availableAmount < 0) availableAmount = 0
+
+      if (spec === 'ram' || spec === 'disk') {
+        requestedAmount = this.formatMiB(requestedAmount)
+        availableAmount = this.formatMiB(availableAmount)
+      }
+
+      return `${specLookup[spec]}: ${requestedAmount} requested · ${availableAmount} available`
     },
     async getHostname() {
       const response = await utils.servers.getHostname(
@@ -294,9 +349,14 @@ export default {
   }
 }
 </script>
+
 <style src="@vueform/toggle/themes/default.css"></style>
 <style scoped>
-  .box {
-    @apply w-full p-6 bg-white rounded-lg;
-  }
+.box {
+  @apply w-full p-6 bg-white rounded-lg;
+}
+
+.server__error {
+  @apply bg-red text-white w-full h-20 rounded;
+}
 </style>
