@@ -22,12 +22,12 @@
         <div class="flex flex-col space-y-2">
           <span>Use this converter to calculate how much XE to transfer.</span>
 
-          <div class="flex items-center space-x-2">
+          <div class="converter flex items-center space-x-2">
             <div class="currency symbol flex justify-between">
               <input type="number" class="w-36" v-model="inputAmount" @focusout="formatInput" />
               {{ usdToXe ? 'USD' : 'XE' }}
             </div>
-            <button @click="flipConversion" class="hover:text-green">
+            <button @click="flipConversion" class="converter__toggle hover:text-green">
               <SwitchHorizontalIcon class="w-5"/>
             </button>
             <div class="currency flex justify-between">
@@ -124,18 +124,32 @@ export default {
   @apply border border-gray-500 rounded w-1/2 py-2 px-4;
 }
 
+/* remove input defualy focus and arrows */
 input:focus {
   outline: none;
 }
-
+/* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+@media (max-width: 500px) {
+  .converter {
+    @apply grid space-x-0 gap-y-2 gap-x-4;
+    grid-template-columns: auto 20px;
+
+  }
+  .converter .currency {
+    @apply w-full
+  }
+  .converter .converter__toggle {
+    @apply row-span-2;
+  }
 }
 </style>
