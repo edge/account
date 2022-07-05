@@ -19,6 +19,11 @@
           </div>
           <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
         </div>
+        <div class="flex items-center space-x-2">
+          <div class="currency symbol flex justify-between"><input type="number" class="w-20"/>XE</div>
+          <SwitchHorizontalIcon class="w-5"/>
+          <div class="currency flex justify-between">5.00 <span>USD</span></div>
+        </div>
       </div>
     </template>
     <template v-slot:buttons>
@@ -33,8 +38,8 @@
 </template>
 
 <script>
-import { DuplicateIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
+import { DuplicateIcon, SwitchHorizontalIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 
 export default {
@@ -46,10 +51,11 @@ export default {
   },
   components: {
     DuplicateIcon,
-    Modal
+    Modal,
+    SwitchHorizontalIcon
   },
   computed: {
-    ...mapState(['account'])
+    ...mapState(['account', 'balance'])
   },
   methods: {
     close() {
@@ -80,5 +86,9 @@ export default {
 }
 .copied.visible {
   @apply opacity-100;
+}
+
+.currency {
+  @apply border border-gray-500 rounded w-1/2 py-2 px-4;
 }
 </style>
