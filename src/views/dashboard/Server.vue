@@ -180,6 +180,7 @@
                 :disableActions=disableActions
                 :region=region
                 :server=server
+                @update-region=updateRegion
               />
             </TabPanel>
 
@@ -317,7 +318,7 @@ export default {
       return this.activeTasks.some(task => task.action === 'create')
     },
     isDestroyed() {
-      return this.server.status === 'deleted' || this.activeTasks.some(task => task.action === 'destroy')
+      return this.server.status === 'deleted' && !this.activeTasks.some(task => task.action === 'destroy')
     },
     isDestroying() {
       return this.activeTasks.some(task => task.action === 'destroy')

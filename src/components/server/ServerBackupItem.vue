@@ -61,14 +61,14 @@
   </tr>
   <!-- destroy and restore confirmation modals -->
   <DestroyBackupConfirmation
-    v-show=showDestroyConfirmationModal
+    v-if=showDestroyConfirmationModal
     :backup=backup
     @modal-confirm=deleteBackup
     @modal-close=toggleDestroyConfirmationModal
   />
   <!-- eslint-disable-next-line vue/no-multiple-template-root-->
   <RestoreBackupConfirmation
-    v-show=showRestoreConfirmationModal
+    v-if=showRestoreConfirmationModal
     :backup=backup
     @modal-confirm=restoreBackup
     @modal-close=toggleRestoreConfirmationModal

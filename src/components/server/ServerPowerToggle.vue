@@ -22,7 +22,7 @@
     </Switch>
     <!-- stop confirmation modal -->
     <StopConfirmation
-      v-show=showConfirmationModal
+      v-if=showConfirmationModal
       @modal-confirm=stopServer
       @modal-close=toggleConfirmationModal
       :serverName="server.settings.name || server.settings.hostname"

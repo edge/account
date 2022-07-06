@@ -17,12 +17,12 @@
         <span>
           <span class="font-bold">Balance: </span>
           <span class="lg:hidden">
-            (<button @click="toggleTopUpModal" class="text-green hover:underline">Top Up</button>)
+            (<button @click="toggleTopUpModal" class="text-green hover:underline">Add Funds</button>)
           </span>
         </span>
         <span>{{ formattedBalance }} XE / {{ formattedUSDBalance }} USD </span>
         <span class="hidden lg:block">
-          (<button @click="toggleTopUpModal" class="text-green hover:underline">Top Up</button>)
+          (<button @click="toggleTopUpModal" class="text-green hover:underline">Add Funds</button>)
         </span>
       </div>
       <span class="topNavigation__right">

@@ -40,8 +40,7 @@
             <span class="details__info">{{ formattedUSDBalance }} <span class="currency">USD</span></span>
           </div>
           <button @click=toggleTopUpModal class="button button--success button--small h-10">
-            Top Up Account
-            <div><PlusIcon class="w-4 ml-2"/></div>
+            Add Funds
           </button>
         </div>
       </div>
@@ -72,7 +71,6 @@
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
-import { PlusIcon } from '@heroicons/vue/outline'
 import TopUpModal from '@/components/billing/TopUpModal'
 import { mapState } from 'vuex'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
@@ -88,7 +86,6 @@ export default {
     DuplicateIcon,
     EyeIcon,
     EyeOffIcon,
-    PlusIcon,
     TopUpModal
   },
   data() {

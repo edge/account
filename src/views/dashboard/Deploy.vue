@@ -5,21 +5,29 @@
       <!-- network region -->
       <div class="box">
         <h4>Network region</h4>
-        <NetworkRegion @region-changed="region => updateRegion(region)" />
+        <NetworkRegion
+          @region-changed="updateRegion"
+        />
       </div>
 
       <!-- operating system -->
       <div class="box">
         <h4>Operating System</h4>
-        <OperatingSystem @os-changed="osId => updateOS(osId)" />
+        <OperatingSystem
+          :isRegionDisabled="isRegionDisabled"
+          @os-changed="updateOS"
+        />
       </div>
 
       <!-- server specs - cpu / ram / storage -->
       <div class="box">
         <h4>Server specs</h4>
         <ServerSpecs
+          v-if="selectedRegion"
           :hourlyCost=hourlyCost
-          @specs-changed="(spec) => updateSpec(spec)"
+          :isRegionDisabled="isRegionDisabled"
+          :region=selectedRegion
+          @specs-changed="updateSpec"
         />
       </div>
 
@@ -38,7 +46,11 @@
 
       <!-- server name -->
       <div class="box">
-        <ServerName @name-changed="serverName => updateServerName(serverName)" :hostname=hostname />
+        <ServerName
+          @name-changed="updateServerName"
+          :hostname=hostname
+          :isRegionDisabled="isRegionDisabled"
+        />
         <div v-if="serverNameUpdated" class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.name.$errors"
@@ -49,7 +61,11 @@
           </span>
         </div>
 
-        <Domain @domain-changed="domain => updateDomain(domain)" :hostname="hostname" />
+        <Domain
+          @domain-changed="updateDomain"
+          :hostname="hostname"
+          :isRegionDisabled="isRegionDisabled"
+        />
         <div v-if="serverDomainUpdated" class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.domain.$errors"
@@ -63,7 +79,10 @@
 
       <!-- password -->
       <div class="box">
-        <Password @password-changed="password => updatePassword(password)" />
+        <Password
+          @password-changed="updatePassword"
+          :isRegionDisabled="isRegionDisabled"
+        />
         <div class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.password.$errors"
@@ -88,7 +107,13 @@
           </div>
           <span v-else>Deploy</span>
         </button>
+
         <HttpError :error=httpError />
+        <div v-if=showSomethingWentWrong class="server__error">
+          <span class="font-bold">Something went wrong</span>
+          <!-- eslint-disable-next-line max-len -->
+          <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
+        </div>
       </div>
     </form>
   </div>
@@ -117,7 +142,6 @@ export default {
   title() {
     return 'Edge Account Portal » Deploy a new server'
   },
-  props: ['region'],
   components: {
     Domain,
     HttpError,
@@ -131,12 +155,13 @@ export default {
   },
   data() {
     return {
-      serverDomainUpdated: false,
-      serverNameUpdated: false,
+      areSpecsValid: true,
       hostname: null,
       httpError: '',
       isLoading: false,
       selectedRegion: null,
+      serverDomainUpdated: false,
+      serverNameUpdated: false,
       serverOptions: {
         region: null,
         settings: {
@@ -153,7 +178,8 @@ export default {
           disk: null,
           ram: null
         }
-      }
+      },
+      showSomethingWentWrong: false
     }
   },
   validations() {
@@ -173,6 +199,7 @@ export default {
           password: [validation.serverPassword]
         },
         spec: {
+          bandwidth: [validation.required],
           cpus: [validation.required],
           disk: [validation.required],
           ram: [validation.required]
@@ -194,7 +221,21 @@ export default {
       return hourlyCost
     },
     canDeploy() {
-      return !this.v$.serverOptions.$invalid && !this.isLoading && !this.balanceWarning && !this.balanceSuspend
+      return !this.v$.serverOptions.$invalid &&
+        !this.isLoading &&
+        !this.balanceWarning &&
+        !this.balanceSuspend &&
+        !this.isRegionDisabled &&
+        this.areSpecsValid
+    },
+    isRegionDisabled() {
+      if (!this.selectedRegion) return false
+      const capacity = this.selectedRegion.capacity
+      const usage = this.selectedRegion.usage
+      for (const spec in capacity) {
+        if (usage[spec] >= capacity[spec]) return true
+      }
+      return this.selectedRegion.status !== 'active'
     }
   },
   methods: {
@@ -214,10 +255,20 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          this.httpError = error
+          if (error.status === 500) this.showSomethingWentWrong = true
+          else this.httpError = error
           this.isLoading = false
         }, 500)
       }
+    },
+    formatMiB(MiB) {
+      if (MiB < 1024) {
+        return `${MiB} MiB`
+      }
+      return `${MiB / 1024} GiB`
+    },
+    getMaxAvailableSpec(spec) {
+      return this.selectedRegion.capacity[spec] - this.selectedRegion.usage[spec]
     },
     async getHostname() {
       const response = await utils.servers.getHostname(
@@ -277,7 +328,8 @@ export default {
         region: region._key
       }
     },
-    updateSpec(spec) {
+    updateSpec(spec, areValid) {
+      this.areSpecsValid = areValid
       this.serverOptions = {
         ...this.serverOptions,
         spec
@@ -291,12 +343,28 @@ export default {
     return {
       v$: useVuelidate()
     }
+  },
+  watch: {
+    httpError() {
+      this.updateRegion()
+    },
+    serverOptions() {
+      this.showSomethingWentWrong = false
+    },
+    showSomethingWentWrong() {
+      this.updateRegion()
+    }
   }
 }
 </script>
+
 <style src="@vueform/toggle/themes/default.css"></style>
 <style scoped>
-  .box {
-    @apply w-full p-6 bg-white rounded-lg;
-  }
+.box {
+  @apply w-full p-6 bg-white rounded-lg;
+}
+
+.server__error {
+  @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
+}
 </style>

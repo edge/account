@@ -3,9 +3,10 @@
     <div class="box">
       <h4>Resize your server</h4>
       <ServerSpecs
+        :current=server
         :currentHourlyCost=currentHourlyCost
         :hourlyCost=newHourlyCost
-        :current=server
+        :region=region
         @specs-changed="updateNewSpec"
       />
     </div>
@@ -22,10 +23,15 @@
         </span>
       </button>
       <HttpError :error=httpError />
+      <div v-if=showSomethingWentWrong class="server__error">
+        <span class="font-bold">Something went wrong</span>
+        <!-- eslint-disable-next-line max-len -->
+        <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
+      </div>
     </div>
     <!-- resize confirmation modal -->
     <ResizeConfirmation
-      v-show=showConfirmationModal
+      v-if=showConfirmationModal
       ref="destroyConfirmation"
       @modal-confirm=resizeServer
       @modal-close=toggleConfirmationModal
@@ -60,6 +66,7 @@ export default {
   },
   data: function () {
     return {
+      areSpecsValid: true,
       httpError: '',
       isLoading: false,
       lastResizeTask: null,
@@ -69,7 +76,8 @@ export default {
         disk: null,
         ram: null
       },
-      showConfirmationModal: false
+      showConfirmationModal: false,
+      showSomethingWentWrong: false
     }
   },
   computed: {
@@ -78,7 +86,14 @@ export default {
     canSubmitResize() {
       if (this.balanceWarning || this.balanceSuspend) if (this.haveSpecsIncreased) return false
       // eslint-disable-next-line max-len
-      if (this.isLoading || !this.haveSpecsChanged || this.diskSizeDecreased || this.disableActions || this.balanceSuspend) return false
+      if (
+        this.isLoading
+        || !this.haveSpecsChanged
+        || this.diskSizeDecreased
+        || this.disableActions
+        || this.balanceSuspend
+        || !this.areSpecsValid
+      ) return false
       return true
     },
     currentHourlyCost() {
@@ -139,7 +154,8 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          this.httpError = error
+          if (error.status === 500) this.showSomethingWentWrong = true
+          else this.httpError = error
           this.isLoading = false
         }, 500)
       }
@@ -147,17 +163,33 @@ export default {
     toggleConfirmationModal() {
       this.showConfirmationModal = !this.showConfirmationModal
     },
-    updateNewSpec(newSpec) {
+    updateNewSpec(newSpec, isValid) {
       this.newSpec = newSpec
+      this.areSpecsValid = isValid
     }
   },
   mounted() {
     this.getLastResize()
+  },
+  watch: {
+    httpError() {
+      this.$emit('update-region')
+    },
+    newSpec() {
+      this.showSomethingWentWrong = false
+    },
+    showSomethingWentWrong() {
+      this.$emit('update-region')
+    }
   }
 }
 </script>
 <style scoped>
-  .box {
-    @apply p-4 md:p-6 bg-white rounded-lg w-full;
-  }
+.box {
+  @apply p-4 md:p-6 bg-white rounded-lg w-full;
+}
+
+.server__error {
+  @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
+}
 </style>

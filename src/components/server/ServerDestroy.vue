@@ -36,7 +36,7 @@
     </div>
     <!-- destroy confirmation modal -->
     <DestroyConfirmation
-      v-show=showConfirmationModal
+      v-if=showConfirmationModal
       ref="destroyConfirmation"
       @modal-confirm=destroyServer
       @modal-close=toggleConfirmationModal
