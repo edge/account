@@ -6,7 +6,7 @@
           <span class="box__title">vCPU</span>
           <vue-slider
             :disabled=isRegionDisabled
-            v-model=cpuValue
+            v-model=cpusValue
             dotSize=20
             width="100%"
             contained=true
@@ -70,14 +70,14 @@
           <span class="box__title">Disk (GiB)</span>
           <vue-slider
             :disabled=isRegionDisabled
-            v-model=storageValue
+            v-model=diskValue
             ref="ssdSlider"
             dotSize=20
             width="100%"
             contained=true
             :min=10
             :max=512
-            :vData=ssdOptions
+            :vData=diskOptions
             :marks="true"
             adsorb
             tooltip="always"
@@ -171,7 +171,7 @@
         <div class="flex flex-col items-baseline">
           <span class="text-green">After Resize</span>
           <div class="specs_and_cost flex">
-            <span class="text-lg flex-shrink-0">{{ cpuValue }} vCPU</span>
+            <span class="text-lg flex-shrink-0">{{ cpusValue }} vCPU</span>
             <span class="dot" />
             <span class="text-lg flex-shrink-0">{{ formatMiB(spec.ram) }} RAM</span>
             <span class="dot" />
@@ -197,7 +197,7 @@
       <div class="flex flex-col items-baseline">
         <span class="text-green">Your server</span>
         <div class="specs_and_cost flex">
-          <span class="text-lg flex-shrink-0">{{ cpuValue }} vCPU</span>
+          <span class="text-lg flex-shrink-0">{{ cpusValue }} vCPU</span>
           <span class="dot" />
           <span class="text-lg flex-shrink-0">{{ formatMiB(spec.ram) }} RAM</span>
           <span class="dot" />
@@ -238,9 +238,9 @@ export default {
   data() {
     return {
       bandwidthValue: null,
-      cpuValue: null,
+      cpusValue: null,
       ramValue: null,
-      storageValue: null,
+      diskValue: null,
       ramOptions: [
         { value:'0.5', label:'512MiB' },
         { value:'1', label:'1GiB' },
@@ -250,7 +250,7 @@ export default {
         { value:'8', label:'8GiB' },
         { value:'16', label:'16GiB' }
       ],
-      ssdOptions: [
+      diskOptions: [
         { value:'10', label:'10GiB' },
         { value:'16', label:'16GiB' },
         { value:'32', label:'32GiB' },
@@ -292,8 +292,8 @@ export default {
     spec() {
       return {
         bandwidth: this.bandwidthValue,
-        cpus: this.cpuValue,
-        disk: this.storageValue * 1024,
+        cpus: this.cpusValue,
+        disk: this.diskValue * 1024,
         ram: this.ramValue * 1024
       }
     }
@@ -323,23 +323,20 @@ export default {
       return max
     },
     hasExceededCapacity(spec) {
-      const max = this.getMaxAvailableInput(spec)
-      if (spec === 'cpus') return this.cpuValue > max
-      if (spec === 'disk') return this.storageValue > max
-      if (spec === 'ram') return this.ramValue > max
+      return this[`${spec}Value`] > this.getMaxAvailableInput(spec)
     },
     resetToMinimumDisk() {
       if (!this.current) return
-      if (this.storageValue * 1024 < this.current.spec.disk) {
-        this.storageValue = (this.current.spec.disk / 1024).toString()
+      if (this.diskValue * 1024 < this.current.spec.disk) {
+        this.diskValue = (this.current.spec.disk / 1024).toString()
       }
     },
     resetToMaxSpec(spec) {
       const max = this.getMaxAvailableInput(spec)
-      if (spec === 'cpus') this.cpuValue = max
+      if (spec === 'cpus') this.cpusValue = max
       if (spec === 'disk') {
-        const values = this.ssdOptions.map(option => option.value).reverse()
-        this.storageValue = values.find(value => value <= max)
+        const values = this.diskOptions.map(option => option.value).reverse()
+        this.diskValue = values.find(value => value <= max)
       }
       if (spec === 'ram') {
         const values = this.ramOptions.map(option => option.value).reverse()
@@ -349,9 +346,9 @@ export default {
   },
   mounted() {
     this.bandwidthValue = this.current ? this.current.spec.bandwidth || 10 : 10
-    this.cpuValue = this.current ? this.current.spec.cpus : 1
+    this.cpusValue = this.current ? this.current.spec.cpus : 1
     this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : 0.5
-    this.storageValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
+    this.diskValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
   },
   watch: {
     spec() {
