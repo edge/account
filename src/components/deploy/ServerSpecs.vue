@@ -1,112 +1,135 @@
 <template>
   <div>
     <div class="specs__grid">
-      <div class="box">
-        <span class="box__title">vCPU</span>
-        <vue-slider
-          v-model=cpuValue
-          dotSize=20
-          width="100%"
-          contained=true
-          :min=1
-          :max=16
-          :minStart="3"
-          :marks="{
-            '1': '1',
-            '4': '4',
-            '8': '8',
-            '12': '12',
-            '16': '16'
-          }"
-          adsorb
-          tooltip="always"
-          :tooltip-formatter="'{value} vCPU'"
-          tooltipPlacement="top"
-          :tooltip-style="styles.tooltip"
-          :process-style="styles.process"
-          :dot-style="styles.dots"
-          :label-style="styles.labels"
-          :step-active-style="styles.activeStep"
-        />
+      <div class="flex flex-col">
+        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
+          <span class="box__title">vCPU</span>
+          <vue-slider
+            :disabled=isRegionDisabled
+            v-model=cpuValue
+            dotSize=20
+            width="100%"
+            contained=true
+            :min=1
+            :max=16
+            :marks="{
+              '1': '1',
+              '4': '4',
+              '8': '8',
+              '12': '12',
+              '16': '16'
+            }"
+            adsorb
+            tooltip="always"
+            :tooltip-formatter="'{value} vCPU'"
+            tooltipPlacement="top"
+            :tooltip-style="styles.tooltip"
+            :process-style="styles.process"
+            :dot-style="styles.dots"
+            :label-style="styles.labels"
+            :step-active-style="styles.activeStep"
+          />
+        </div>
+        <span v-if="hasExceededCapacity('cpus') && !isRegionDisabled" class="capacity__warning">
+          vCPU is limited as the region you have selected is close to capacity.
+          <button @click.prevent="resetToMaxSpec('cpus')" class="underline">Set to max available.</button>
+        </span>
       </div>
-      <div class="box">
-        <span class="box__title">RAM (GiB)</span>
-        <vue-slider
-          v-model=ramValue
-          :vData=ramOptions
-          ref="ramSlider"
-          :marks="true"
-          dotSize=20
-          adsorb
-          width="100%"
-          contained=true
-          :min=0.5
-          :max=16
-          tooltip="always"
-          :tooltip-formatter=formatSliderRAM
-          tooltipPlacement="top"
-          :tooltip-style="styles.tooltip"
-          :process-style="styles.process"
-          :dot-style="styles.dots"
-          :label-style="styles.labels"
-          :step-active-style="styles.activeStep"
-        />
+      <div class="flex flex-col">
+        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
+          <span class="box__title">RAM (GiB)</span>
+          <vue-slider
+            :disabled=isRegionDisabled
+            v-model=ramValue
+            :vData=ramOptions
+            ref="ramSlider"
+            :marks="true"
+            dotSize=20
+            adsorb
+            width="100%"
+            contained=true
+            :min=0.5
+            :max=1
+            tooltip="always"
+            :tooltip-formatter=formatSliderRAM
+            tooltipPlacement="top"
+            :tooltip-style="styles.tooltip"
+            :process-style="styles.process"
+            :dot-style="styles.dots"
+            :label-style="styles.labels"
+            :step-active-style="styles.activeStep"
+          />
+        </div>
+        <span v-if="hasExceededCapacity('ram') && !isRegionDisabled" class="capacity__warning">
+          RAM is limited as the region you have selected is close to capacity.
+          <button @click.prevent="resetToMaxSpec('ram')" class="underline">Set to max available.</button>
+        </span>
       </div>
-      <div class="box">
-        <span class="box__title">Disk (GiB)</span>
-        <vue-slider
-          v-model=storageValue
-          ref="ssdSlider"
-          dotSize=20
-          width="100%"
-          contained=true
-          :min=10
-          :max=512
-          :vData=ssdOptions
-          :marks="true"
-          adsorb
-          tooltip="always"
-          :tooltip-formatter="'{value} GiB'"
-          tooltipPlacement="top"
-          :tooltip-style="styles.tooltip"
-          :process-style="styles.process"
-          :dot-style="styles.dots"
-          :label-style="styles.labels"
-          :step-active-style="styles.activeStep"
-        />
+      <div class="flex flex-col">
+        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
+          <span class="box__title">Disk (GiB)</span>
+          <vue-slider
+            :disabled=isRegionDisabled
+            v-model=storageValue
+            ref="ssdSlider"
+            dotSize=20
+            width="100%"
+            contained=true
+            :min=10
+            :max=512
+            :vData=ssdOptions
+            :marks="true"
+            adsorb
+            tooltip="always"
+            :tooltip-formatter="'{value} GiB'"
+            tooltipPlacement="top"
+            :tooltip-style="styles.tooltip"
+            :process-style="styles.process"
+            :dot-style="styles.dots"
+            :label-style="styles.labels"
+            :step-active-style="styles.activeStep"
+          />
+        </div>
+        <span v-if="hasExceededCapacity('disk') && !isRegionDisabled" class="capacity__warning">
+          Disk size is limited as the region you have selected is close to capacity.
+          <button @click.prevent="resetToMaxSpec('disk')" class="underline">Set to max available.</button>
+        </span>
       </div>
-      <div class="box">
-        <span class="box__title">Bandwidth (Mbps)</span>
-        <vue-slider
-          v-model=bandwidthValue
-          ref="badwidthSlider"
-          dotSize=20
-          width="100%"
-          contained=true
-          :min=10
-          :max=100
-          :marks="{
-            '10': '10',
-            '20': '20',
-            '30': '30',
-            '40': '40',
-            '50': '50',
-            '60': '60',
-            '70': '70',
-            '80': '80',
-            '90': '90',
-            '100': '100'
-          }"
-          adsorb
-          tooltip="always"
-          :tooltip-formatter="'{value} Mbps'"
-          tooltipPlacement="top"
-          :tooltip-style="styles.tooltip"
-          :process-style="styles.process"
-          :dot-style="styles.dots"
-          :label-style="styles.labels"
-          :step-active-style="styles.activeStep"
-        />
+      <div class="flex flex-col">
+        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
+          <span class="box__title">Bandwidth (Mbps)</span>
+          <vue-slider
+            :disabled=isRegionDisabled
+            v-model=bandwidthValue
+            ref="badwidthSlider"
+            dotSize=20
+            width="100%"
+            contained=true
+            :min=10
+            :max=100
+            :marks="{
+              '10': '10',
+              '20': '20',
+              '30': '30',
+              '40': '40',
+              '50': '50',
+              '60': '60',
+              '70': '70',
+              '80': '80',
+              '90': '90',
+              '100': '100'
+            }"
+            adsorb
+            tooltip="always"
+            :tooltip-formatter="'{value} Mbps'"
+            tooltipPlacement="top"
+            :tooltip-style="styles.tooltip"
+            :process-style="styles.process"
+            :dot-style="styles.dots"
+            :label-style="styles.labels"
+            :step-active-style="styles.activeStep"
+          />
+        </div>
       </div>
     </div>
     <!-- disk size change warning -->
@@ -115,7 +138,7 @@
       <!-- eslint-disable-next-line max-len -->
       <span v-if=diskValueIncreased>Your server's filesystem will be expanded. This disk resize is not reversible.</span>
       <span v-else>Disk size cannot be decreased in size.
-        <span class="underline cursor-pointer" @click="resetDiskMinimum">Reset</span>
+        <button class="underline" @click="resetToMinimumDisk">Reset</button>
       </span>
     </span>
 
@@ -206,6 +229,8 @@ export default {
     'hourlyCost',
     'currentHourlyCost',
     'current',
+    'isRegionDisabled',
+    'region',
     'selectedSpecs'
   ],
   components: {
@@ -251,6 +276,9 @@ export default {
     currentDailyCostFormatted() {
       return this.formatCost(this.currentHourlyCost * 24, 2)
     },
+    dailyCostFormatted() {
+      return this.formatCost(this.hourlyCost * 24, 2)
+    },
     diskValueDecreased() {
       if (this.current) return this.spec.disk < this.current.spec.disk
       return false
@@ -261,9 +289,6 @@ export default {
     },
     hourlyCostFormatted() {
       return this.formatCost(this.hourlyCost, 4)
-    },
-    dailyCostFormatted() {
-      return this.formatCost(this.hourlyCost * 24, 2)
     },
     spec() {
       return {
@@ -289,10 +314,33 @@ export default {
       if (sliderRAM < 1) return `${sliderRAM * 1024} MiB`
       else return `${sliderRAM} GiB`
     },
-    resetDiskMinimum() {
+    getMaxAvailableInput(spec) {
+      const max = this.region.capacity[spec] - this.region.usage[spec]
+      if (spec === 'disk' || spec === 'ram') return max / 1024
+      return max
+    },
+    hasExceededCapacity(spec) {
+      const max = this.getMaxAvailableInput(spec)
+      if (spec === 'cpus') return this.cpuValue > max
+      if (spec === 'disk') return this.storageValue > max
+      if (spec === 'ram') return this.ramValue > max
+    },
+    resetToMinimumDisk() {
       if (!this.current) return
       if (this.storageValue * 1024 < this.current.spec.disk) {
         this.storageValue = (this.current.spec.disk / 1024).toString()
+      }
+    },
+    resetToMaxSpec(spec) {
+      const max = this.getMaxAvailableInput(spec)
+      if (spec === 'cpus') this.cpuValue = max
+      if (spec === 'disk') {
+        const values = this.ssdOptions.map(option => option.value).reverse()
+        this.storageValue = values.find(value => value <= max)
+      }
+      if (spec === 'ram') {
+        const values = this.ramOptions.map(option => option.value).reverse()
+        this.ramValue = values.find(value => value <= max)
       }
     }
   },
@@ -327,9 +375,16 @@ export default {
 .box {
   @apply relative flex space-x-3 items-start justify-center pr-5 pl-2 pt-14 pb-8 border border-gray-300 rounded-md;
 }
+.box.disabled {
+  @apply cursor-not-allowed opacity-50;
+}
 
 .box__title {
   @apply absolute top-0 inline-block px-3 text-gray-500 transform -translate-y-1/2 bg-white;
+}
+
+.capacity__warning {
+  @apply bg-gray-200 mt-2 p-2 rounded text-red;
 }
 
 @media (max-width: 420px) {
