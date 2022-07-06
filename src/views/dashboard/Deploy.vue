@@ -109,10 +109,11 @@
         </button>
 
         <HttpError :error=httpError />
-        <!-- <div class="server__error">
-          <span>Something went wrong</span>
-          <span>There was an issue while deplying this server.</span>
-        </div> -->
+        <div v-if=showSomethingWentWrong class="server__error">
+          <span class="font-bold">Something went wrong</span>
+          <!-- eslint-disable-next-line max-len -->
+          <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
+        </div>
       </div>
     </form>
   </div>
@@ -177,7 +178,8 @@ export default {
           disk: null,
           ram: null
         }
-      }
+      },
+      showSomethingWentWrong: false
     }
   },
   validations() {
@@ -253,7 +255,8 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          this.httpError = error
+          if (error.status === 500) this.showSomethingWentWrong = true
+          else this.httpError = error
           this.isLoading = false
         }, 500)
       }
@@ -340,6 +343,14 @@ export default {
     return {
       v$: useVuelidate()
     }
+  },
+  watch: {
+    serverOptions() {
+      this.showSomethingWentWrong = false
+    },
+    showSomethingWentWrong() {
+      this.updateRegion()
+    }
   }
 }
 </script>
@@ -351,6 +362,6 @@ export default {
 }
 
 .server__error {
-  @apply bg-red text-white w-full h-20 rounded;
+  @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
 }
 </style>

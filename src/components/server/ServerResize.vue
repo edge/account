@@ -23,6 +23,11 @@
         </span>
       </button>
       <HttpError :error=httpError />
+      <div v-if=showSomethingWentWrong class="server__error">
+        <span class="font-bold">Something went wrong</span>
+        <!-- eslint-disable-next-line max-len -->
+        <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
+      </div>
     </div>
     <!-- resize confirmation modal -->
     <ResizeConfirmation
@@ -71,7 +76,8 @@ export default {
         disk: null,
         ram: null
       },
-      showConfirmationModal: false
+      showConfirmationModal: false,
+      showSomethingWentWrong: false
     }
   },
   computed: {
@@ -148,7 +154,8 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          this.httpError = error
+          if (error.status === 500) this.showSomethingWentWrong = true
+          else this.httpError = error
           this.isLoading = false
         }, 500)
       }
@@ -163,11 +170,23 @@ export default {
   },
   mounted() {
     this.getLastResize()
+  },
+  watch: {
+    newSpec() {
+      this.showSomethingWentWrong = false
+    },
+    showSomethingWentWrong() {
+      this.$emit('update-region')
+    }
   }
 }
 </script>
 <style scoped>
-  .box {
-    @apply p-4 md:p-6 bg-white rounded-lg w-full;
-  }
+.box {
+  @apply p-4 md:p-6 bg-white rounded-lg w-full;
+}
+
+.server__error {
+  @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
+}
 </style>
