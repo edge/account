@@ -31,7 +31,7 @@
     </div>
     <!-- resize confirmation modal -->
     <ResizeConfirmation
-      v-show=showConfirmationModal
+      v-if=showConfirmationModal
       ref="destroyConfirmation"
       @modal-confirm=resizeServer
       @modal-close=toggleConfirmationModal

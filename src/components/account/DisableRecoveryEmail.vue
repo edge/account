@@ -18,7 +18,7 @@
     <HttpError :error=httpError />
     <!-- disable recovery email confirmation modal -->
     <DisableRecoveryConfirmation
-      v-show=showConfirmationModal
+      v-if=showConfirmationModal
       @modal-confirm=disableRecovery
       @modal-close=toggleConfirmationModal
     />

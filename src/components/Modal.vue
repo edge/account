@@ -18,7 +18,20 @@
 <script>
 
 export default {
-  name: 'Modal'
+  name: 'Modal',
+  methods: {
+    closeOnEscape(e) {
+      if (e.key === 'Escape') {
+        this.$emit('modal-close')
+      }
+    }
+  },
+  mounted() {
+    window.addEventListener('keydown', this.closeOnEscape)
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.closeOnEscape)
+  }
 }
 </script>
 
