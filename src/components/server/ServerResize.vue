@@ -3,9 +3,11 @@
     <div class="box">
       <h4>Resize your server</h4>
       <ServerSpecs
+        :current=server
         :currentHourlyCost=currentHourlyCost
         :hourlyCost=newHourlyCost
-        :current=server
+        :isRegionDisabled=isRegionDisabled
+        :region=region
         @specs-changed="updateNewSpec"
       />
     </div>
@@ -60,6 +62,7 @@ export default {
   },
   data: function () {
     return {
+      areSpecsValid: true,
       httpError: '',
       isLoading: false,
       lastResizeTask: null,
@@ -78,7 +81,14 @@ export default {
     canSubmitResize() {
       if (this.balanceWarning || this.balanceSuspend) if (this.haveSpecsIncreased) return false
       // eslint-disable-next-line max-len
-      if (this.isLoading || !this.haveSpecsChanged || this.diskSizeDecreased || this.disableActions || this.balanceSuspend) return false
+      if (
+        this.isLoading
+        || !this.haveSpecsChanged
+        || this.diskSizeDecreased
+        || this.disableActions
+        || this.balanceSuspend
+        || !this.areSpecsValid
+      ) return false
       return true
     },
     currentHourlyCost() {
@@ -100,6 +110,15 @@ export default {
     },
     haveSpecsIncreased() {
       return ['bandwidth', 'ram', 'disk', 'cpus'].some(spec => this.newSpec[spec] > this.currentSpec[spec])
+    },
+    isRegionDisabled() {
+      if (!this.region) return false
+      const capacity = this.region.capacity
+      const usage = this.region.usage
+      for (const spec in capacity) {
+        if (usage[spec] >= capacity[spec]) return true
+      }
+      return this.region.status !== 'active'
     },
     newHourlyCost() {
       return (
@@ -147,8 +166,10 @@ export default {
     toggleConfirmationModal() {
       this.showConfirmationModal = !this.showConfirmationModal
     },
-    updateNewSpec(newSpec) {
+    updateNewSpec(newSpec, isValid) {
+      console.log(isValid)
       this.newSpec = newSpec
+      this.areSpecsValid = isValid
     }
   },
   mounted() {

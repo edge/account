@@ -6,7 +6,7 @@
       <div class="box">
         <h4>Network region</h4>
         <NetworkRegion
-          @region-changed="region => updateRegion(region)"
+          @region-changed="updateRegion"
         />
       </div>
 
@@ -15,7 +15,7 @@
         <h4>Operating System</h4>
         <OperatingSystem
           :isRegionDisabled="isRegionDisabled"
-          @os-changed="osId => updateOS(osId)"
+          @os-changed="updateOS"
         />
       </div>
 
@@ -27,7 +27,7 @@
           :hourlyCost=hourlyCost
           :isRegionDisabled="isRegionDisabled"
           :region=selectedRegion
-          @specs-changed="(spec) => updateSpec(spec)"
+          @specs-changed="updateSpec"
         />
       </div>
 
@@ -47,7 +47,7 @@
       <!-- server name -->
       <div class="box">
         <ServerName
-          @name-changed="serverName => updateServerName(serverName)"
+          @name-changed="updateServerName"
           :hostname=hostname
           :isRegionDisabled="isRegionDisabled"
         />
@@ -62,7 +62,7 @@
         </div>
 
         <Domain
-          @domain-changed="domain => updateDomain(domain)"
+          @domain-changed="updateDomain"
           :hostname="hostname"
           :isRegionDisabled="isRegionDisabled"
         />
@@ -80,7 +80,7 @@
       <!-- password -->
       <div class="box">
         <Password
-          @password-changed="password => updatePassword(password)"
+          @password-changed="updatePassword"
           :isRegionDisabled="isRegionDisabled"
         />
         <div class="flex flex-col">
@@ -154,12 +154,13 @@ export default {
   },
   data() {
     return {
-      serverDomainUpdated: false,
-      serverNameUpdated: false,
+      areSpecsValid: true,
       hostname: null,
       httpError: '',
       isLoading: false,
       selectedRegion: null,
+      serverDomainUpdated: false,
+      serverNameUpdated: false,
       serverOptions: {
         region: null,
         settings: {
@@ -223,14 +224,7 @@ export default {
         !this.balanceWarning &&
         !this.balanceSuspend &&
         !this.isRegionDisabled &&
-        !this.invalidSpecs
-    },
-    invalidSpecs() {
-      if (!this.selectedRegion) return []
-      const capacity = this.selectedRegion.capacity
-      const usage = this.selectedRegion.usage
-      const newServer = this.serverOptions.spec
-      return ['cpus', 'disk', 'ram'].some(spec => newServer[spec] + usage[spec] > capacity[spec])
+        this.areSpecsValid
     },
     isRegionDisabled() {
       if (!this.selectedRegion) return false
@@ -331,7 +325,8 @@ export default {
         region: region._key
       }
     },
-    updateSpec(spec) {
+    updateSpec(spec, areValid) {
+      this.areSpecsValid = areValid
       this.serverOptions = {
         ...this.serverOptions,
         spec

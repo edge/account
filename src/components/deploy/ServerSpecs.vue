@@ -30,7 +30,7 @@
             :step-active-style="styles.activeStep"
           />
         </div>
-        <span v-if="hasExceededCapacity('cpus') && !isRegionDisabled" class="capacity__warning">
+        <span v-if="hasExceededCapacity('cpus') && !isRegionDisabled" class="spec__warning">
           vCPU is limited as the region you have selected is close to capacity.
           <button @click.prevent="resetToMaxSpec('cpus')" class="underline">Set to max available.</button>
         </span>
@@ -60,7 +60,7 @@
             :step-active-style="styles.activeStep"
           />
         </div>
-        <span v-if="hasExceededCapacity('ram') && !isRegionDisabled" class="capacity__warning">
+        <span v-if="hasExceededCapacity('ram') && !isRegionDisabled" class="spec__warning">
           RAM is limited as the region you have selected is close to capacity.
           <button @click.prevent="resetToMaxSpec('ram')" class="underline">Set to max available.</button>
         </span>
@@ -90,9 +90,17 @@
             :step-active-style="styles.activeStep"
           />
         </div>
-        <span v-if="hasExceededCapacity('disk') && !isRegionDisabled" class="capacity__warning">
+        <span v-if="hasExceededCapacity('disk') && !isRegionDisabled" class="spec__warning">
           Disk size is limited as the region you have selected is close to capacity.
           <button @click.prevent="resetToMaxSpec('disk')" class="underline">Set to max available.</button>
+        </span>
+        <!-- disk size change warning -->
+        <span v-show="diskValueIncreased || diskValueDecreased" class="spec__warning">
+          <!-- eslint-disable-next-line max-len -->
+          <span v-if=diskValueIncreased>Your server's filesystem will be expanded. This disk resize is not reversible.</span>
+          <span v-else>Disk size cannot be decreased in size.
+            <button class="underline" @click="resetToMinimumDisk">Reset</button>
+          </span>
         </span>
       </div>
       <div class="flex flex-col">
@@ -132,19 +140,10 @@
         </div>
       </div>
     </div>
-    <!-- disk size change warning -->
-    <span v-show="diskValueIncreased || diskValueDecreased" class="block mt-4 text-red">
-      <span class="font-medium">Note: </span>
-      <!-- eslint-disable-next-line max-len -->
-      <span v-if=diskValueIncreased>Your server's filesystem will be expanded. This disk resize is not reversible.</span>
-      <span v-else>Disk size cannot be decreased in size.
-        <button class="underline" @click="resetToMinimumDisk">Reset</button>
-      </span>
-    </span>
 
     <!-- selected results shown on resize screen -->
     <!-- uses two rows to show current vs new specs and cost -->
-    <div v-if="this.current" class="mt-5">
+    <div v-if="current" class="mt-5">
       <!-- eslint-disable-next-line max-len -->
       <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 xl:flex-row">
         <div class="flex flex-col items-baseline">
@@ -300,6 +299,9 @@ export default {
     }
   },
   methods: {
+    areAllSpecsValid() {
+      return !['cpus', 'disk', 'ram'].some(spec => this.hasExceededCapacity(spec))
+    },
     formatCost(cost, decimalPlaces) {
       const mult = 10**decimalPlaces
       return (Math.round(cost * mult) / mult).toFixed(decimalPlaces)
@@ -315,7 +317,8 @@ export default {
       else return `${sliderRAM} GiB`
     },
     getMaxAvailableInput(spec) {
-      const max = this.region.capacity[spec] - this.region.usage[spec]
+      let max = this.region.capacity[spec] - this.region.usage[spec]
+      if (this.current) max += this.current.spec[spec]
       if (spec === 'disk' || spec === 'ram') return max / 1024
       return max
     },
@@ -352,7 +355,7 @@ export default {
   },
   watch: {
     spec() {
-      this.$emit('specs-changed', this.spec)
+      this.$emit('specs-changed', this.spec, this.areAllSpecsValid())
     }
   }
 }
@@ -383,7 +386,7 @@ export default {
   @apply absolute top-0 inline-block px-3 text-gray-500 transform -translate-y-1/2 bg-white;
 }
 
-.capacity__warning {
+.spec__warning {
   @apply bg-gray-200 mt-2 p-2 rounded text-red;
 }
 
