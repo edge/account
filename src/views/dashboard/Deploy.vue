@@ -345,6 +345,9 @@ export default {
     }
   },
   watch: {
+    httpError() {
+      this.updateRegion()
+    },
     serverOptions() {
       this.showSomethingWentWrong = false
     },

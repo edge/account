@@ -172,6 +172,9 @@ export default {
     this.getLastResize()
   },
   watch: {
+    httpError() {
+      this.$emit('update-region')
+    },
     newSpec() {
       this.showSomethingWentWrong = false
     },
