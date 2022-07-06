@@ -6,7 +6,6 @@
         :current=server
         :currentHourlyCost=currentHourlyCost
         :hourlyCost=newHourlyCost
-        :isRegionDisabled=isRegionDisabled
         :region=region
         @specs-changed="updateNewSpec"
       />
@@ -110,15 +109,6 @@ export default {
     },
     haveSpecsIncreased() {
       return ['bandwidth', 'ram', 'disk', 'cpus'].some(spec => this.newSpec[spec] > this.currentSpec[spec])
-    },
-    isRegionDisabled() {
-      if (!this.region) return false
-      const capacity = this.region.capacity
-      const usage = this.region.usage
-      for (const spec in capacity) {
-        if (usage[spec] >= capacity[spec]) return true
-      }
-      return this.region.status !== 'active'
     },
     newHourlyCost() {
       return (
