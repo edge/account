@@ -8,6 +8,7 @@
       <RadioGroupOption
         as="template"
         v-for="(versions, os) in osList"
+        :disabled=isRegionDisabled
         :key="os"
         :value="os"
         v-slot="{ active, checked, disabled }"
@@ -34,6 +35,7 @@
             </RadioGroupLabel>
             <div class="w-full mt-2">
               <OperatingSystemOptions
+                :disabled=isRegionDisabled
                 :versions=versions
                 @os-changed="emitSelectedOsVersion"
               />
@@ -74,6 +76,7 @@ export default {
       selectedVersion: {}
     }
   },
+  props: ['isRegionDisabled'],
   computed: {
     ...mapState(['session'])
   },

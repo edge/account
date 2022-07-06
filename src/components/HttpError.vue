@@ -13,6 +13,7 @@ const paramLookup = {
   'comment': 'Comment',
   'otp': 'TOTP',
   'region': 'Region',
+  'region.servers': 'Servers',
   'spec.cpus': 'vCPU',
   'spec.disk': 'Disk',
   'spec.ram': 'RAM',

@@ -180,6 +180,7 @@
                 :disableActions=disableActions
                 :region=region
                 :server=server
+                @update-region=updateRegion
               />
             </TabPanel>
 

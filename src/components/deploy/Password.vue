@@ -8,6 +8,8 @@
         <input
           autocomplete="off"
           class="w-full input input--floating"
+          :disabled="isRegionDisabled"
+          :class="isRegionDisabled ? 'disabled' : ''"
           placeholder="Create a password"
           required
           :type="showPassword ? 'text' : 'password'"
@@ -52,6 +54,7 @@ export default {
       showPassword: false
     }
   },
+  props: ['isRegionDisabled'],
   methods: {
     async copyToClipboard () {
       this.copying = true
@@ -79,5 +82,7 @@ export default {
 </script>
 
 <style scoped>
-
+input.disabled {
+  @apply cursor-not-allowed opacity-50;
+}
 </style>
