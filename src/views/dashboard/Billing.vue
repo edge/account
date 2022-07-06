@@ -60,7 +60,7 @@
       <BillingInvoiceTable :rate=rate :usdBalance=usdBalance />
     </div>
     <TopUpModal
-      v-show=showTopUpModal
+      v-if=showTopUpModal
       @modal-close=toggleTopUpModal
     />
   </div>

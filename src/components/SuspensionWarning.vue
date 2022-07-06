@@ -16,7 +16,7 @@
       </div>
     </div>
     <TopUpModal
-      v-show=showTopUpModal
+      v-if=showTopUpModal
       @modal-close=toggleTopUpModal
     />
   </div>

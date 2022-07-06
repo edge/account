@@ -19,37 +19,62 @@
           </div>
           <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
         </div>
+        <div class="flex flex-col space-y-2">
+          <span>Use this converter to calculate how much XE to transfer.</span>
+
+          <div class="converter flex items-center space-x-2">
+            <div class="currency symbol flex justify-between">
+              <input type="number" class="w-36" v-model="inputAmount" @focusout="formatInput" />
+              {{ usdToXe ? 'USD' : 'XE' }}
+            </div>
+            <button @click="flipConversion" class="converter__toggle hover:text-green">
+              <SwitchHorizontalIcon class="w-5"/>
+            </button>
+            <div class="currency flex justify-between">
+              {{ usdToXe ? formattedXE : formattedUSD }} <span>{{ usdToXe ? 'XE' : 'USD' }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </template>
     <template v-slot:buttons>
       <button
-        class="w-full mt-3 button button--small button--outline sm:mt-0"
+        class="w-full mt-3 button button--small button--success sm:mt-0"
         @click="close"
       >
-        Cancel
+        Close
       </button>
     </template>
   </Modal>
 </template>
 
 <script>
-import { DuplicateIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 import { mapState } from 'vuex'
+import { DuplicateIcon, SwitchHorizontalIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'TopUpModal',
   data() {
     return {
-      copied: false
+      copied: false,
+      inputAmount: 5.00,
+      usdToXe: true
     }
   },
   components: {
     DuplicateIcon,
-    Modal
+    Modal,
+    SwitchHorizontalIcon
   },
   computed: {
-    ...mapState(['account'])
+    ...mapState(['account', 'balance']),
+    formattedUSD() {
+      return this.usdToXe ? this.inputAmount.toFixed(2) : (this.inputAmount * this.balance.token.usdPerXe).toFixed(2)
+    },
+    formattedXE() {
+      return this.usdToXe ? (this.inputAmount / this.balance.token.usdPerXe).toFixed(6) : this.inputAmount.toFixed(6)
+    }
   },
   methods: {
     close() {
@@ -64,7 +89,20 @@ export default {
     },
     confirm() {
       this.$emit('modal-confirm')
+    },
+    flipConversion() {
+      if (this.usdToXe) this.inputAmount = this.formattedXE
+      else this.inputAmount = this.formattedUSD
+      this.usdToXe = !this.usdToXe
+    },
+    formatInput() {
+      if (!this.inputAmount) this.inputAmount = 0
+      if (this.usdToXe) this.inputAmount = this.formattedUSD
+      else this.inputAmount = this.formattedXE
     }
+  },
+  mounted() {
+    this.inputAmount = (5).toFixed(2)
   }
 }
 </script>
@@ -80,5 +118,38 @@ export default {
 }
 .copied.visible {
   @apply opacity-100;
+}
+
+.currency {
+  @apply border border-gray-500 rounded w-1/2 py-2 px-4;
+}
+
+/* remove input defualy focus and arrows */
+input:focus {
+  outline: none;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+@media (max-width: 500px) {
+  .converter {
+    @apply grid space-x-0 gap-y-2 gap-x-4;
+    grid-template-columns: auto 20px;
+
+  }
+  .converter .currency {
+    @apply w-full
+  }
+  .converter .converter__toggle {
+    @apply row-span-2;
+  }
 }
 </style>
