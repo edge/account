@@ -11,7 +11,7 @@
       <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
         <span>{{ message }}</span>
         <button @click=toggleTopUpModal class="button button--solid button--small h-8 w-max flex-shrink-0">
-          Top Up
+          Add Funds
         </button>
       </div>
     </div>

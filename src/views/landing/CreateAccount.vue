@@ -171,7 +171,7 @@
           <div class="step-content" v-if="step === 3">
             <div class="flex flex-col space-y-6 my-4">
               <!-- eslint-disable-next-line max-len -->
-              <span>To top up your account, please transfer XE to the following wallet address. It may take up to 10 minutes for the balance to update.</span>
+              <span>To add funds to your account, please transfer XE to the following wallet address. It may take up to 10 minutes for the balance to update.</span>
               <div class="relative">
                 <div class="flex items-center w-full">
                   <span class="address">{{ account.wallet.address }}</span>
