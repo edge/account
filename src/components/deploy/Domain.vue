@@ -5,6 +5,8 @@
       <input
         v-model="domain"
         class="input input--floating"
+        :disabled="isRegionDisabled"
+        :class="isRegionDisabled ? 'disabled' : ''"
         placeholder="domain-name"
         type="text"
         required
@@ -17,7 +19,7 @@
 <script>
 export default {
   name: 'Domain',
-  props: ['hostname'],
+  props: ['hostname', 'isRegionDisabled'],
   data() {
     return {
       domain: ''
@@ -41,3 +43,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+input.disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+</style>

@@ -5,20 +5,28 @@
       <!-- network region -->
       <div class="box">
         <h4>Network region</h4>
-        <NetworkRegion @region-changed="region => updateRegion(region)" />
+        <NetworkRegion
+          @region-changed="region => updateRegion(region)"
+        />
       </div>
 
       <!-- operating system -->
       <div class="box">
         <h4>Operating System</h4>
-        <OperatingSystem @os-changed="osId => updateOS(osId)" />
+        <OperatingSystem
+          :isRegionDisabled="isRegionDisabled"
+          @os-changed="osId => updateOS(osId)"
+        />
       </div>
 
       <!-- server specs - cpu / ram / storage -->
       <div class="box">
         <h4>Server specs</h4>
         <ServerSpecs
+          v-if="selectedRegion"
           :hourlyCost=hourlyCost
+          :isRegionDisabled="isRegionDisabled"
+          :region=selectedRegion
           @specs-changed="(spec) => updateSpec(spec)"
         />
       </div>
@@ -38,7 +46,11 @@
 
       <!-- server name -->
       <div class="box">
-        <ServerName @name-changed="serverName => updateServerName(serverName)" :hostname=hostname />
+        <ServerName
+          @name-changed="serverName => updateServerName(serverName)"
+          :hostname=hostname
+          :isRegionDisabled="isRegionDisabled"
+        />
         <div v-if="serverNameUpdated" class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.name.$errors"
@@ -49,7 +61,11 @@
           </span>
         </div>
 
-        <Domain @domain-changed="domain => updateDomain(domain)" :hostname="hostname" />
+        <Domain
+          @domain-changed="domain => updateDomain(domain)"
+          :hostname="hostname"
+          :isRegionDisabled="isRegionDisabled"
+        />
         <div v-if="serverDomainUpdated" class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.domain.$errors"
@@ -63,7 +79,10 @@
 
       <!-- password -->
       <div class="box">
-        <Password @password-changed="password => updatePassword(password)" />
+        <Password
+          @password-changed="password => updatePassword(password)"
+          :isRegionDisabled="isRegionDisabled"
+        />
         <div class="flex flex-col">
           <span
             v-for="error in v$.serverOptions.settings.password.$errors"
@@ -94,13 +113,6 @@
           <span>Something went wrong</span>
           <span>There was an issue while deplying this server.</span>
         </div> -->
-
-        <div v-if="invalidSpecs.length" class="mt-2 text-red flex flex-col">
-          <span v-if="!invalidSpecs.includes('servers')">This region doesn't have capacity for your new server.</span>
-          <span v-for="invalidSpec in invalidSpecs" :key="invalidSpec">
-            {{ formatRegionLimitError(invalidSpec) }}
-          </span>
-        </div>
       </div>
     </form>
   </div>
@@ -210,17 +222,24 @@ export default {
         !this.isLoading &&
         !this.balanceWarning &&
         !this.balanceSuspend &&
-        !this.invalidSpecs.length
+        !this.isRegionDisabled &&
+        !this.invalidSpecs
     },
     invalidSpecs() {
       if (!this.selectedRegion) return []
       const capacity = this.selectedRegion.capacity
       const usage = this.selectedRegion.usage
       const newServer = this.serverOptions.spec
-
-      if (usage.servers >= capacity.servers) return ['servers']
-
-      return ['cpus', 'disk', 'ram'].filter(spec => newServer[spec] + usage[spec] > capacity[spec])
+      return ['cpus', 'disk', 'ram'].some(spec => newServer[spec] + usage[spec] > capacity[spec])
+    },
+    isRegionDisabled() {
+      if (!this.selectedRegion) return false
+      const capacity = this.selectedRegion.capacity
+      const usage = this.selectedRegion.usage
+      for (const spec in capacity) {
+        if (usage[spec] >= capacity[spec]) return true
+      }
+      return this.selectedRegion.status !== 'active'
     }
   },
   methods: {
@@ -251,28 +270,8 @@ export default {
       }
       return `${MiB / 1024} GiB`
     },
-    getAvailableSpec(spec) {
+    getMaxAvailableSpec(spec) {
       return this.selectedRegion.capacity[spec] - this.selectedRegion.usage[spec]
-    },
-    formatRegionLimitError(spec) {
-      if (spec === 'servers') return 'No more servers available in this region.'
-
-      const specLookup = {
-        'cpus': 'vCPU',
-        'disk': 'Disk',
-        'ram': 'RAM'
-      }
-
-      let requestedAmount = this.serverOptions.spec[spec]
-      let availableAmount = this.getAvailableSpec(spec)
-      if (availableAmount < 0) availableAmount = 0
-
-      if (spec === 'ram' || spec === 'disk') {
-        requestedAmount = this.formatMiB(requestedAmount)
-        availableAmount = this.formatMiB(availableAmount)
-      }
-
-      return `${specLookup[spec]}: ${requestedAmount} requested · ${availableAmount} available`
     },
     async getHostname() {
       const response = await utils.servers.getHostname(
