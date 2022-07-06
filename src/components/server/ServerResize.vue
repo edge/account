@@ -157,7 +157,6 @@ export default {
       this.showConfirmationModal = !this.showConfirmationModal
     },
     updateNewSpec(newSpec, isValid) {
-      console.log(isValid)
       this.newSpec = newSpec
       this.areSpecsValid = isValid
     }
