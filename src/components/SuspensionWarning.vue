@@ -3,11 +3,12 @@
     <div class="suspension__warning"
       :class="[
         balanceSuspend && serverCount ? 'bg-red text-white' : '',
-        balanceWarning ? 'bg-yellow-300 text-black' : '',
-        !serverCount ? 'bg-blue-100 text-black' : ''
+        balanceWarning && serverCount ? 'bg-yellow-300 text-black' : '',
+        !hasConsumption ? 'bg-blue-100 text-black' : ''
       ]"
     >
-      <div><ExclamationIcon class="w-8"/></div>
+      <div v-if="hasConsumption"><ExclamationIcon class="w-8"/></div>
+      <div v-else><CashIcon class="w-8"/></div>
       <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
         <span>{{ message }}</span>
         <button @click=toggleTopUpModal class="button button--solid button--small h-8 w-max flex-shrink-0">
@@ -23,13 +24,14 @@
 </template>
 
 <script>
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import TopUpModal from '@/components/billing/TopUpModal'
+import { CashIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'SuspensionMessage',
   components: {
+    CashIcon,
     ExclamationIcon,
     TopUpModal
   },
@@ -41,13 +43,16 @@ export default {
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['account', 'balance', 'serverCount']),
+    hasConsumption() {
+      return this.balance.reserved.xe || this.serverCount
+    },
     message() {
       if (!this.balance) return
 
       const warningThreshold = this.balance.threshold.warning.usd
 
       /* eslint-disable max-len */
-      if (!this.serverCount && (this.balanceSuspend || this.balanceWarning)) return `Please top up your account to at least $${warningThreshold} to enable services.`
+      if (!this.hasConsumption && (this.balanceSuspend || this.balanceWarning)) return `Please top up your account to at least $${warningThreshold} to enable services.`
       if (this.account.suspended) return 'You have unpaid invoices. Please top up to reactivate your services. Failure to pay will result in your services being permanently deleted.'
       if (this.balanceSuspend) return 'Your balance is less than your current spend. Your services will be suspended if you don\'t top up.'
       if (this.balanceWarning) return `Your balance ${this.balance.total <= warningThreshold ? 'is' : 'at the end of the day will be'} less than $${warningThreshold}. Your services may be suspended if you don't top up.`
