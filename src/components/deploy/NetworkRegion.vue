@@ -44,7 +44,8 @@
             <img :src='flagSrc' width="40" class="rounded-sm" />
           </div>
         </RadioGroupOption>
-        <span v-if="isRegionDisabled(region)" class="capacity__warning">This region has reached capacity.</span>
+        <span v-if="isRegionAtCapacity(region)" class="capacity__warning">This region has reached capacity.</span>
+        <span v-else-if="isRegionDisabled(region)" class="capacity__warning">This region has been disabled.</span>
       </div>
     </div>
   </RadioGroup>
@@ -87,13 +88,17 @@ export default {
     }
   },
   methods: {
-    isRegionDisabled(region) {
+    isRegionAtCapacity(region) {
       const capacity = region.capacity
       const usage = region.usage
       for (const spec in capacity) {
         if (usage[spec] >= capacity[spec]) return true
       }
-      return region.status !== 'active'
+      return false
+    },
+    isRegionDisabled(region) {
+      this.isRegionAtCapacity(region)
+      return !region.active
     },
     async updateRegions() {
       const regions = await utils.region.getRegions(
@@ -102,7 +107,7 @@ export default {
       )
       this.regions = regions.results
       // pre-select first active region
-      this.selected = regions.results.find(region => region.status === 'active')
+      this.selected = regions.results.find(region => region.active)
     }
   },
   mounted() {

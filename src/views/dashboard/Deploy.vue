@@ -109,7 +109,7 @@
         </button>
 
         <HttpError :error=httpError />
-        <div v-if=showSomethingWentWrong class="server__error">
+        <div v-if=internalServerError class="server__error">
           <span class="font-bold">Something went wrong</span>
           <!-- eslint-disable-next-line max-len -->
           <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
@@ -159,6 +159,7 @@ export default {
       hostname: null,
       httpError: '',
       isLoading: false,
+      internalServerError: false,
       selectedRegion: null,
       serverDomainUpdated: false,
       serverNameUpdated: false,
@@ -178,8 +179,7 @@ export default {
           disk: null,
           ram: null
         }
-      },
-      showSomethingWentWrong: false
+      }
     }
   },
   validations() {
@@ -235,7 +235,7 @@ export default {
       for (const spec in capacity) {
         if (usage[spec] >= capacity[spec]) return true
       }
-      return this.selectedRegion.status !== 'active'
+      return !this.selectedRegion.active
     }
   },
   methods: {
@@ -255,7 +255,7 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          if (error.status === 500) this.showSomethingWentWrong = true
+          if (error.status === 500) this.internalServerError = true
           else this.httpError = error
           this.isLoading = false
         }, 500)
@@ -349,9 +349,9 @@ export default {
       this.updateRegion()
     },
     serverOptions() {
-      this.showSomethingWentWrong = false
+      this.internalServerError = false
     },
-    showSomethingWentWrong() {
+    internalServerError() {
       this.updateRegion()
     }
   }

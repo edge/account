@@ -23,7 +23,7 @@
         </span>
       </button>
       <HttpError :error=httpError />
-      <div v-if=showSomethingWentWrong class="server__error">
+      <div v-if=internalServerError class="server__error">
         <span class="font-bold">Something went wrong</span>
         <!-- eslint-disable-next-line max-len -->
         <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
@@ -68,6 +68,7 @@ export default {
     return {
       areSpecsValid: true,
       httpError: '',
+      internalServerError: false,
       isLoading: false,
       lastResizeTask: null,
       newSpec: {
@@ -76,8 +77,7 @@ export default {
         disk: null,
         ram: null
       },
-      showConfirmationModal: false,
-      showSomethingWentWrong: false
+      showConfirmationModal: false
     }
   },
   computed: {
@@ -154,7 +154,7 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          if (error.status === 500) this.showSomethingWentWrong = true
+          if (error.status === 500) this.internalServerError = true
           else this.httpError = error
           this.isLoading = false
         }, 500)
@@ -176,9 +176,9 @@ export default {
       this.$emit('update-region')
     },
     newSpec() {
-      this.showSomethingWentWrong = false
+      this.internalServerError = false
     },
-    showSomethingWentWrong() {
+    internalServerError() {
       this.$emit('update-region')
     }
   }

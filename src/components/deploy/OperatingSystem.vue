@@ -92,6 +92,7 @@ export default {
         )
         this.osVersionList = os.results
         this.osList = os.results.reduce((o, d) => {
+          if (!d.active) return
           if (!o[d.group]) {
             o[d.group] = []
             this.selectedVersion[d.group] = null
