@@ -50,6 +50,7 @@ export default {
     this.$store.dispatch('getActiveTasks')
     this.$store.dispatch('updateBalance')
     this.$store.dispatch('updateServerCount')
+    this.$store.dispatch('updateTxCount')
 
     // poll all active tasks, balance and server count
     this.iAccount = setInterval(() => {
@@ -57,6 +58,7 @@ export default {
       this.$store.dispatch('updateTasks')
       this.$store.dispatch('updateBalance')
       this.$store.dispatch('updateServerCount')
+      this.$store.dispatch('updateTxCount')
     }, STORE_REFRESH_INTERVAL)
 
     // keep session alive

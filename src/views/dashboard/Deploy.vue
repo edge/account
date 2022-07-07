@@ -109,6 +109,11 @@
         </button>
 
         <HttpError :error=httpError />
+        <!-- eslint-disable-next-line max-len -->
+        <span v-if="balanceSuspend || balanceWarning" class="text-red">
+          You are unable to deploy a new server while your balance is below ${{ balance.threshold.warning.usd }}.
+          Please add funds to enable this service.
+        </span>
         <div v-if=internalServerError class="server__error">
           <span class="font-bold">Something went wrong</span>
           <!-- eslint-disable-next-line max-len -->
@@ -210,7 +215,7 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
-    ...mapState(['account', 'session', 'tasks']),
+    ...mapState(['account', 'balance', 'session', 'tasks']),
     hourlyCost() {
       if (!this.selectedRegion) return 0
       const { bandwidth, cpus, disk, ram } = this.selectedRegion.cost

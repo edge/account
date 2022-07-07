@@ -4,6 +4,7 @@
 
 /* global process */
 
+import * as index from '@edge/index-utils'
 import * as utils from './account-utils/index'
 import { createStore } from 'vuex'
 
@@ -15,7 +16,8 @@ const store = createStore({
     isAuthed: false,
     serverCount: null,
     session: null,
-    tasks: []
+    tasks: [],
+    txCount: null
   },
   mutations: {
     addTask(state, newTask) {
@@ -44,6 +46,9 @@ const store = createStore({
     },
     setTasks(state, tasks) {
       state.tasks = tasks
+    },
+    setTxCount(state, txCount) {
+      state.txCount = txCount
     }
   },
   actions: {
@@ -92,6 +97,7 @@ const store = createStore({
         state.session._key
       )
       commit('setBalance', response)
+
     },
     async updateServerCount({ commit, state }) {
       const response = await utils.servers.getServers(
@@ -100,6 +106,14 @@ const store = createStore({
         { limit: 1}
       )
       commit('setServerCount', response.metadata.totalCount)
+    },
+    async updateTxCount({ commit, state }) {
+      const response = await index.tx.transactions(
+        process.env.VUE_APP_INDEX_URL,
+        state.account.wallet.address,
+        { limit: 1}
+      )
+      commit('setTxCount', response.metadata.totalCount)
     },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks
@@ -118,9 +132,9 @@ const store = createStore({
     }
   },
   getters: {
-    balanceSuspend: (state) => state.balance && state.balance.available <= state.balance.threshold.suspend.usd,
+    balanceSuspend: (state) => state.balance && state.balance.available.usd <= state.balance.threshold.suspend.usd,
     // eslint-disable-next-line max-len
-    balanceWarning: (state, getters) => state.balance && !getters.balanceSuspend && state.balance.available < state.balance.threshold.warning.usd,
+    balanceWarning: (state, getters) => state.balance && !getters.balanceSuspend && state.balance.available.usd < state.balance.threshold.warning.usd,
     // eslint-disable-next-line max-len
     tasksByServerId: (state) => (serverId) => state.tasks.filter(task => task.entity === `servers/${serverId}`)
   }
