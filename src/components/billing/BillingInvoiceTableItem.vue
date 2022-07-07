@@ -47,13 +47,18 @@
       <span class="truncate">{{ formattedAmount }} <span class="lg:hidden">USD</span></span>
     </td>
     <td class="tableBody__cell table__button col-span-2">
-      <button
-        class="button button--extraSmall button--success w-full lg:w-max"
-        @click=downloadInvoice
-      >
-        <span class="leading-5">PDF</span>
-        <div><DocumentDownloadIcon class="ml-2 w-5"/></div>
-      </button>
+      <div class="flex items-center w-full space-x-2 action_buttons">
+        <button
+          class="button button--extraSmall button--success w-full lg:w-max"
+          @click=downloadInvoice
+        >
+          <span class="leading-5">PDF</span>
+          <div><DocumentDownloadIcon class="ml-2 w-5"/></div>
+        </button>
+        <Tooltip v-if="downloadError" :text="'Something wen\'t wrong'" theme="error" position="left">
+          <ExclamationIcon class="w-5 mt-1 text-red" />
+        </Tooltip>
+      </div>
     </td>
   </tr>
 </template>
@@ -65,13 +70,19 @@ import * as utils from '../../account-utils'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import moment from 'moment'
-import { CalendarIcon, DocumentDownloadIcon } from '@heroicons/vue/outline'
+import { CalendarIcon, DocumentDownloadIcon, ExclamationIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'BillingInvoiceTableItem',
+  data() {
+    return {
+      downloadError: false
+    }
+  },
   components: {
     CalendarIcon,
     DocumentDownloadIcon,
+    ExclamationIcon,
     Tooltip
   },
   props: ['invoice', 'rate', 'usdBalance'],
@@ -107,6 +118,7 @@ export default {
   methods: {
     async downloadInvoice() {
       try {
+        this.downloadError = false
         const url = `${process.env.VUE_APP_ACCOUNT_API_URL}/billing/invoices/${this.invoice._key}/download`
         const response = await fetch(url, {
           headers: {
@@ -135,7 +147,7 @@ export default {
         setTimeout(() => window.URL.revokeObjectURL(objectUrl), 100)
       }
       catch (error) {
-        console.error(error)
+        this.downloadError = true
       }
     },
     async unholdInvoice() {
@@ -169,6 +181,10 @@ tr {
   text-overflow: unset
 }
 
+.tableBody__cell.table__button {
+  @apply overflow-visible;
+}
+
 .table__icon {
   @apply w-4;
 }
@@ -183,6 +199,10 @@ tr {
   }
   .tableBody__cell.table__button {
     @apply py-0;
+  }
+
+  .action_buttons {
+    @apply space-x-2
   }
 }
 

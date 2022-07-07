@@ -16,7 +16,7 @@
             <th scope="col" class="tableHead__cell">
               Amount (USD)
             </th>
-            <th scope="col" class="tableHead__cell" width="120"></th>
+            <th scope="col" class="tableHead__cell" width="130"></th>
           </tr>
         </thead>
         <tbody class="tableBody">
