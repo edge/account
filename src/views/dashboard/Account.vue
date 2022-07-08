@@ -68,12 +68,10 @@ export default {
       return this.account._key.replace(/.{4}/g, '$& ')
     },
     is2FAEnabled() {
-      if (this.account.totp) return this.account.totp.enabled
-      return false
+      return this.account.totp && this.account.totp.enabled
     },
     isRecoveryEnabled() {
-      if (this.account.recovery) return this.account.recovery.email.verified
-      return false
+      return this.account.recovery && this.account.recovery.email.verified
     }
   },
   data() {

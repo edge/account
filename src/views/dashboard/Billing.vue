@@ -107,16 +107,16 @@ export default {
       return this.account._key.replace(/.{4}/g, '$& ')
     },
     formattedBalance() {
-      return this.balance && (this.balance.total.xe / 1e6).toLocaleString(undefined, {
+      return (this.balance.total.xe / 1e6).toLocaleString(undefined, {
         maximumFractionDigits: 6,
         minimumFractionDigits: 6
       })
     },
     formattedUSDBalance() {
-      return this.usdBalance && (Math.floor(this.usdBalance * 100) / 100).toFixed(2)
+      return (Math.floor(this.usdBalance * 100) / 100).toFixed(2)
     },
     usdBalance() {
-      return this.balance && this.balance.total.usd
+      return this.balance.total.usd
     }
   },
   methods: {
