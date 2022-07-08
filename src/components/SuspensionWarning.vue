@@ -45,13 +45,6 @@ export default {
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['account', 'balance', 'serverCount', 'txCount']),
-    bannerClass() {
-      if (this.hasConsumption) {
-        if (this.balanceSuspend) return 'bg-red text-white'
-        if (this.balanceWarning) return 'bg-yellow-300 text-black'
-      }
-      return 'bg-blue-100 text-black'
-    },
     warning() {
       if (!this.balance) return null
 

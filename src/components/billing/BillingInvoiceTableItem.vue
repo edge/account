@@ -42,7 +42,7 @@
         >
           <span>- <span class="underline">Pay Now</span></span>
         </button>
-        <Tooltip v-if="unholdError" :text="'Something wen\'t wrong'" theme="error" position="left">
+        <Tooltip v-if="unholdError" text="Something went wrong" theme="error" position="left">
           <ExclamationIcon class="w-5 text-red" />
         </Tooltip>
       </div>
@@ -60,7 +60,7 @@
           <span class="leading-5">PDF</span>
           <div><DocumentDownloadIcon class="ml-2 w-5"/></div>
         </button>
-        <Tooltip v-if="downloadError" :text="'Something wen\'t wrong'" theme="error" position="left">
+        <Tooltip v-if="downloadError" :text="'Something went wrong'" theme="error" position="left">
           <ExclamationIcon class="w-5 text-red" />
         </Tooltip>
       </div>
