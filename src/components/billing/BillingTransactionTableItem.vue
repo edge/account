@@ -55,8 +55,8 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import { mapState } from 'vuex'
-import moment from 'moment'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -87,10 +87,10 @@ export default {
       return `${process.env.VUE_APP_EXPLORER_URL}/transaction/${this.tx.hash}`
     },
     formattedAmount() {
-      return (this.tx.amount / 1e6).toFixed(6)
+      return format.xe(this.tx.amount)
     },
     formattedDate() {
-      return moment(this.tx.timestamp).format('LL')
+      return format.date(this.tx.timestamp)
     },
     isConfirmed() {
       return this.tx.confirmations >= 10

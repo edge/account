@@ -97,8 +97,7 @@ export default {
       return false
     },
     isRegionDisabled(region) {
-      this.isRegionAtCapacity(region)
-      return !region.active
+      return this.isRegionAtCapacity(region) || !region.active
     },
     async updateRegions() {
       const regions = await utils.region.getRegions(

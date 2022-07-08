@@ -145,6 +145,7 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
@@ -196,7 +197,7 @@ export default {
   },
   computed: {
     accountNumber() {
-      return this.accountNumberInput.split(' ').join('')
+      return format.removeSpaces(this.accountNumberInput)
     },
     canSignIn() {
       return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput && !this.isLoading

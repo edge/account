@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import * as format from '../utils/format'
 import BurgerButton from '@/components/BurgerButton'
 import Logo from '@/components/Logo'
 import MobileNavigation from '@/components/MobileNavigation'
@@ -74,13 +75,10 @@ export default {
   computed: {
     ...mapState(['account', 'balance', 'session']),
     formattedBalance() {
-      return this.balance && (this.balance.total.xe / 1e6).toLocaleString(undefined, {
-        maximumFractionDigits: 6,
-        minimumFractionDigits: 6
-      })
+      return this.balance && format.xe(this.balance.total.xe)
     },
     formattedUSDBalance() {
-      return this.usdBalance && (Math.floor(this.usdBalance * 100) / 100).toFixed(2)
+      return this.usdBalance && format.usd(this.usdBalance, 2)
     },
     usdBalance() {
       return this.balance && this.balance.total.usd

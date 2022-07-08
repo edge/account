@@ -69,8 +69,8 @@
 </template>
 
 <script>
+import * as format from '../../utils/format'
 import ServerStatus from '@/components/server/ServerStatus'
-import moment from 'moment'
 
 export default {
   name: 'ServerOverview',
@@ -88,16 +88,16 @@ export default {
       return this.formatTimestamp(this.server.created)
     },
     formattedDailyCost() {
-      return this.formatCost(this.hourlyCost * 24, 2)
+      return format.usd(this.hourlyCost * 24, 2)
     },
     formattedDisk() {
-      return this.formatMiB(this.server.spec.disk)
+      return format.mib(this.server.spec.disk)
     },
     formattedHourlyCost() {
-      return this.formatCost(this.hourlyCost, 4)
+      return format.usd(this.hourlyCost, 4)
     },
     formattedRAM() {
-      return this.formatMiB(this.server.spec.ram)
+      return format.mib(this.server.spec.ram)
     },
     hourlyCost() {
       return this.region && (
@@ -112,19 +112,8 @@ export default {
     }
   },
   methods: {
-    formatCost(cost, decimalPlaces) {
-      const mult = 10**decimalPlaces
-      return (Math.round(cost * mult) / mult).toFixed(decimalPlaces)
-    },
-    formatMiB(MiB) {
-      if (MiB < 1024) {
-        return `${MiB} MiB`
-      }
-      return `${MiB / 1024} GiB`
-    },
     formatTimestamp(ts) {
-      const mnt = moment(ts)
-      return `${mnt.format('LT')}, ${mnt.format('LL')}`
+      return `${format.time(ts)}, ${format.date(ts)}`
     }
   }
 }
