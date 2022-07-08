@@ -70,13 +70,13 @@ export default {
           message: 'Your balance is less than your current spend. Any services you are using will be suspended if you don\'t top up.'
         }
       }
-      else if (this.balance.total.usd < warningThreshold && !this.serverCount && this.balance.reserved > 0) {
+      else if (this.balance.total.usd < warningThreshold && !this.serverCount && this.txCount) {
         return {
           class: bannerClass.yellow,
           message: `Your balance is less than $${warningThreshold}. Please top up to re-enabled services.`
         }
       }
-      else if (this.balanceWarning && !this.serverCount && this.balance.reserved > 0) {
+      else if (this.balanceWarning && !this.serverCount && this.txCount) {
         return {
           class: bannerClass.yellow,
           message: `Your balance at the end of the day will be less than $${warningThreshold}. Please top up to re-enabled services.`
@@ -94,7 +94,7 @@ export default {
           message: `Your balance at the end of the day will be less than $${warningThreshold}. Any services you are using may be suspended if you don't top up your account.`
         }
       }
-      else if (!this.txCount) {
+      else if (this.balanceWarning && !this.txCount) {
         return {
           class: bannerClass.blue,
           message: `Please top up your account to at least $${warningThreshold} to enable services.`
