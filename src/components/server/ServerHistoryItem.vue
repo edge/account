@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import * as format from '../../utils/format'
 import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'
 
 const actionLookup = {
@@ -56,13 +56,13 @@ export default {
       return this.task.action.slice(0, 1).toUpperCase() + this.task.action.slice(1)
     },
     formattedDate() {
-      return moment(this.task.created).format('LL')
+      return format.date(this.task.created)
     },
     formattedEvent() {
       return actionLookup[this.task.action]
     },
     formattedTime() {
-      return moment(this.task.created).format('LTS')
+      return format.time(this.task.created, true)
     },
     isComplete() {
       return this.task.status === 'complete'

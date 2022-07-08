@@ -126,6 +126,7 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
@@ -178,8 +179,7 @@ export default {
       return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput
     },
     formattedAccountNumber() {
-      // add space every 4 characters
-      return this.accountNumber.toString().replace(/.{4}/g, '$& ')
+      return format.accountNumber(this.accountNumber)
     }
   },
   methods: {

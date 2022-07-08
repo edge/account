@@ -4,7 +4,6 @@
 
 /* global process */
 
-import * as index from '@edge/index-utils'
 import * as utils from './account-utils/index'
 import { createStore } from 'vuex'
 
@@ -16,8 +15,7 @@ const store = createStore({
     isAuthed: false,
     serverCount: null,
     session: null,
-    tasks: [],
-    txCount: null
+    tasks: []
   },
   mutations: {
     addTask(state, newTask) {
@@ -46,9 +44,6 @@ const store = createStore({
     },
     setTasks(state, tasks) {
       state.tasks = tasks
-    },
-    setTxCount(state, txCount) {
-      state.txCount = txCount
     }
   },
   actions: {
@@ -106,14 +101,6 @@ const store = createStore({
         { limit: 1}
       )
       commit('setServerCount', response.metadata.totalCount)
-    },
-    async updateTxCount({ commit, state }) {
-      const response = await index.tx.transactions(
-        process.env.VUE_APP_INDEX_URL,
-        state.account.wallet.address,
-        { limit: 1}
-      )
-      commit('setTxCount', response.metadata.totalCount)
     },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks

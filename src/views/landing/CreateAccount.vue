@@ -248,6 +248,7 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import * as utils from '../../account-utils/index'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
@@ -319,8 +320,7 @@ export default {
       return false
     },
     formattedAccountNumber() {
-      // add space every 4 characters
-      return this.accountNumber.toString().replace(/.{4}/g, '$& ')
+      return format.accountNumber(this.accountNumber)
     }
   },
   methods: {

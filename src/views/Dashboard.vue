@@ -3,8 +3,8 @@
     <SideNavigation />
     <main class="flex flex-col w-full mainContent">
       <TopNavigation />
-      <SuspensionWarning v-if="account" />
-      <router-view />
+      <SuspensionWarning v-if="loaded" />
+      <router-view v-if="loaded" />
     </main>
   </div>
 </template>
@@ -30,7 +30,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account', 'tasks'])
+    ...mapState(['account', 'balance', 'serverCount', 'tasks']),
+    loaded() {
+      return this.account && this.balance && this.serverCount
+    }
   },
   components: {
     SideNavigation,
@@ -48,17 +51,16 @@ export default {
   mounted() {
     // get any active tasks and balance on page load
     this.$store.dispatch('getActiveTasks')
+    this.$store.dispatch('updateAccount')
     this.$store.dispatch('updateBalance')
     this.$store.dispatch('updateServerCount')
-    this.$store.dispatch('updateTxCount')
 
     // poll all active tasks, balance and server count
     this.iAccount = setInterval(() => {
       this.$store.dispatch('updateAccount')
-      this.$store.dispatch('updateTasks')
       this.$store.dispatch('updateBalance')
       this.$store.dispatch('updateServerCount')
-      this.$store.dispatch('updateTxCount')
+      this.$store.dispatch('updateTasks')
     }, STORE_REFRESH_INTERVAL)
 
     // keep session alive

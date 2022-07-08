@@ -71,10 +71,10 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import * as utils from '../../account-utils'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
-import moment from 'moment'
 import { CalendarIcon, DocumentDownloadIcon, ExclamationIcon } from '@heroicons/vue/outline'
 
 export default {
@@ -98,14 +98,14 @@ export default {
       return this.invoice.amount > this.usdBalance
     },
     description() {
-      const date = moment(this.invoice.start).format('LL')
+      const date = this.formattedDate
       return `Daily Invoice ${date}`
     },
     formattedDate() {
-      return moment(this.invoice.start).format('LL')
+      return format.date(this.invoice.start)
     },
     formattedAmount() {
-      return `$ ${(Math.round(this.invoice.amount * 1e4) / 1e4).toFixed(4)}`
+      return `$${format.usd(this.invoice.amount, 4)}`
     },
     isPaid() {
       return this.invoice.status === 'paid'

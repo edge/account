@@ -220,6 +220,7 @@
 
 <script>
 import 'vue-slider-component/theme/antd.css'
+import * as format from '../../utils/format'
 import VueSlider from 'vue-slider-component'
 
 export default {
@@ -270,13 +271,13 @@ export default {
   },
   computed: {
     currentHourlyCostFormatted() {
-      return this.formatCost(this.currentHourlyCost, 4)
+      return format.usd(this.currentHourlyCost, 4)
     },
     currentDailyCostFormatted() {
-      return this.formatCost(this.currentHourlyCost * 24, 2)
+      return format.usd(this.currentHourlyCost * 24, 2)
     },
     dailyCostFormatted() {
-      return this.formatCost(this.hourlyCost * 24, 2)
+      return format.usd(this.hourlyCost * 24, 2)
     },
     diskValueDecreased() {
       if (this.current) return this.spec.disk < this.current.spec.disk
@@ -287,7 +288,7 @@ export default {
       return false
     },
     hourlyCostFormatted() {
-      return this.formatCost(this.hourlyCost, 4)
+      return format.usd(this.hourlyCost, 4)
     },
     spec() {
       return {
@@ -307,10 +308,7 @@ export default {
       return (Math.round(cost * mult) / mult).toFixed(decimalPlaces)
     },
     formatMiB(MiB) {
-      if (MiB < 1024) {
-        return `${MiB} MiB`
-      }
-      return `${MiB / 1024} GiB`
+      return format.mib(MiB)
     },
     formatSliderRAM(sliderRAM) {
       if (sliderRAM < 1) return `${sliderRAM * 1024} MiB`

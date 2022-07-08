@@ -57,6 +57,7 @@
 <script>
 /* global process */
 
+import * as format from '../utils/format'
 import * as utils from '../account-utils/index'
 import {ChevronDownIcon} from '@heroicons/vue/solid'
 import { mapState } from 'vuex'
@@ -74,7 +75,7 @@ export default {
   computed: {
     ...mapState(['account', 'session']),
     formattedAccountNumber() {
-      return `XXXX XXXX XXXX ${this.account._key.slice(-4)}`
+      return format.accountNumberMasked(this.account._key)
     }
   },
   methods: {

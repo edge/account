@@ -99,6 +99,7 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
@@ -150,7 +151,7 @@ export default {
       return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode && !this.isLoading
     },
     recoverySecret() {
-      return this.confirmationCode.split(' ').join('')
+      return format.removeSpaces(this.confirmationCode.split)
     }
   },
   mounted() {

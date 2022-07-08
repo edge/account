@@ -11,7 +11,7 @@
       <div class="account-number-wrapper">
         <span v-if="showAccountNumber" class="account-number monospace">{{ formattedAccountNumber }}</span>
         <!-- eslint-disable-next-line max-len -->
-        <span v-else class="account-number masked monospace">XXXX XXXX XXXX {{ formattedAccountNumber.slice(-5) }}</span>
+        <span v-else class="account-number masked monospace">{{ formattedAccountNumberMasked }}</span>
         <!-- hide/show account number button button -->
         <button
           @click.prevent="toggleShowAccountNumber"
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import * as format from '../../utils/format'
 import Disable2FA from '@/components/account/Disable2FA'
 import DisableRecoveryEmail from '@/components/account/DisableRecoveryEmail'
 import Enable2FA from '@/components/account/Enable2FA'
@@ -64,16 +65,16 @@ export default {
   computed: {
     ...mapState(['account', 'backupCodes']),
     formattedAccountNumber() {
-      // add space every 4 characters
-      return this.account._key.replace(/.{4}/g, '$& ')
+      return format.accountNumber(this.account._key)
+    },
+    formattedAccountNumberMasked() {
+      return format.accountNumberMasked(this.account._key)
     },
     is2FAEnabled() {
-      if (this.account.totp) return this.account.totp.enabled
-      return false
+      return this.account.totp && this.account.totp.enabled
     },
     isRecoveryEnabled() {
-      if (this.account.recovery) return this.account.recovery.email.verified
-      return false
+      return this.account.recovery && this.account.recovery.email.verified
     }
   },
   data() {

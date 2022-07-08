@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import * as format from '../utils/format'
 import Menu from '@/components/Menu'
 import NavigationTools from '@/components/NavigationTools'
 // import Search from '@/components/Search'
@@ -77,7 +78,7 @@ export default {
   computed: {
     ...mapState(['account']),
     formattedAccountNumber() {
-      return `XXXX XXXX XXXX ${this.account._key.slice(-4)}`
+      return format.accountNumberMasked(this.account._key)
     }
   }
 }
