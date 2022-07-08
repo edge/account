@@ -13,35 +13,40 @@
     </td>
     <td class="tableBody__cell status row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>
-      <span
-        class="truncate capitalize"
-        :class="isPaid ? 'text-green' : 'text-red'"
-      >
-        {{ status }}
-      </span>
-      <Tooltip
-        v-if="!canPay && onHold"
-        position="right"
-        :text="tooltipText"
-        theme="error"
-        :wide="true"
-      >
+      <div class="flex space-x-1 items-center">
+        <span
+          class="truncate capitalize"
+          :class="isPaid ? 'text-green' : 'text-red'"
+        >
+          {{ status }}
+        </span>
+        <Tooltip
+          v-if="!canPay && onHold"
+          position="right"
+          :text="tooltipText"
+          theme="error"
+          :wide="true"
+        >
+          <button
+            :disabled="true"
+            class="ml-2 text-gray-400"
+            @click=unholdInvoice
+          >
+            <span>- <span class="underline">Pay Now</span></span>
+          </button>
+        </Tooltip>
         <button
-          :disabled="true"
-          class="ml-2 text-gray-400"
+          v-else-if="onHold"
+          class="ml-2 hover:text-green"
           @click=unholdInvoice
         >
           <span>- <span class="underline">Pay Now</span></span>
         </button>
-      </Tooltip>
-      <button
-        v-else-if="onHold"
-        class="ml-2 hover:text-green"
-        @click=unholdInvoice
-      >
-        <span>- <span class="underline">Pay Now</span></span>
-      </button>
-    </td>
+        <Tooltip v-if="unholdError" :text="'Something wen\'t wrong'" theme="error" position="left">
+          <ExclamationIcon class="w-5 text-red" />
+        </Tooltip>
+      </div>
+  </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Amount:</span>
       <span class="truncate">{{ formattedAmount }} <span class="lg:hidden">USD</span></span>
@@ -56,7 +61,7 @@
           <div><DocumentDownloadIcon class="ml-2 w-5"/></div>
         </button>
         <Tooltip v-if="downloadError" :text="'Something wen\'t wrong'" theme="error" position="left">
-          <ExclamationIcon class="w-5 mt-1 text-red" />
+          <ExclamationIcon class="w-5 text-red" />
         </Tooltip>
       </div>
     </td>
@@ -76,7 +81,8 @@ export default {
   name: 'BillingInvoiceTableItem',
   data() {
     return {
-      downloadError: false
+      downloadError: false,
+      unholdError: false
     }
   },
   components: {
@@ -152,6 +158,7 @@ export default {
     },
     async unholdInvoice() {
       if (!this.onHold || !this.canPay) return
+      this.unholdError = false
       try {
         await utils.billing.unholdInvoice(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -160,7 +167,7 @@ export default {
         )
       }
       catch (error) {
-        console.error(error)
+        this.unholdError = true
       }
     }
   }
