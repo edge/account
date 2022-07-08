@@ -236,6 +236,7 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import * as utils from '../../account-utils'
 import DistroIcon from '@/components/icons/DistroIcon'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
@@ -252,11 +253,8 @@ import ServerPowerToggle from '@/components/server/ServerPowerToggle'
 import ServerResize from '@/components/server/ServerResize'
 import ServerStatus from '@/components/server/ServerStatus'
 import Tooltip from '@/components/Tooltip'
-import moment from 'moment'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { mapActions, mapState } from 'vuex'
-
-moment.locale('en-GB')
 
 export default {
   name: 'Server',
@@ -307,12 +305,10 @@ export default {
       return this.activeTasks.length > 0 || this.isDestroyed
     },
     formattedDisk() {
-      return `${this.server.spec.disk / 1024} GiB`
+      return format.mib(this.server.spec.disk)
     },
     formattedRAM() {
-      const ram = this.server.spec.ram
-      if (ram < 1024) return `${ram} MiB`
-      return `${ram / 1024} GiB`
+      return format.mib(this.server.spec.ram)
     },
     isCreating() {
       return this.activeTasks.some(task => task.action === 'create')

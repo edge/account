@@ -8,7 +8,7 @@
           <span class="details__title">Account No:</span>
           <div class="flex items-center">
             <span v-if="showAccountNumber" class="details__info monospace">{{ formattedAccountNumber }}</span>
-            <span v-else class="details__info monospace">XXXX XXXX XXXX {{ formattedAccountNumber.slice(-5) }}</span>
+            <span v-else class="details__info monospace"> {{ formattedAccountNumberMasked }}</span>
             <button
               @click.prevent="toggleShowAccountNumber"
               class="text-gray-400 hover:text-green"
@@ -68,6 +68,7 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
@@ -103,17 +104,16 @@ export default {
       return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.account.wallet.address}`
     },
     formattedAccountNumber() {
-      // add space every 4 characters
-      return this.account._key.replace(/.{4}/g, '$& ')
+      return format.accountNumber(this.account._key)
+    },
+    formattedAccountNumberMasked() {
+      return format.accountNumberMasked(this.account._key)
     },
     formattedBalance() {
-      return (this.balance.total.xe / 1e6).toLocaleString(undefined, {
-        maximumFractionDigits: 6,
-        minimumFractionDigits: 6
-      })
+      return format.xe(this.balance.total.xe)
     },
     formattedUSDBalance() {
-      return (Math.floor(this.usdBalance * 100) / 100).toFixed(2)
+      return format.usd(this.usdBalance, 2)
     },
     usdBalance() {
       return this.balance.total.usd

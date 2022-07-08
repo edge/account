@@ -78,12 +78,12 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import * as utils from '../../account-utils'
 import DestroyBackupConfirmation from '@/components/confirmations/DestroyBackupConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import RestoreBackupConfirmation from '@/components/confirmations/RestoreBackupConfirmation'
 import Tooltip from '@/components/Tooltip'
-import moment from 'moment'
 import {
   CalendarIcon,
   ClockIcon,
@@ -132,10 +132,10 @@ export default {
       return this.activeTasks.filter(task => task.data && task.data._key === this.backupId)
     },
     formattedDate() {
-      return moment(this.backup.created).format('LL')
+      return format.date(this.backup.created)
     },
     formattedTime() {
-      return moment(this.backup.created).format('LTS')
+      return format.time(this.backup.created, true)
     },
     isCreating() {
       return this.backupTasks.some(task => task.action === 'createBackup') || this.backup.status === 'creating'

@@ -72,6 +72,7 @@
 <script>
 /* global process */
 
+import * as format from '../../utils/format'
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
@@ -118,7 +119,7 @@ export default {
       return this.useBackupCode ? this.v$.confirmationCode.$model : this.v$.confirmationCode.$model
     },
     otp() {
-      return this.confirmationCode.split(' ').join('')
+      return format.removeSpaces(this.confirmationCode)
     }
   },
   methods: {
