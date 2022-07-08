@@ -20,7 +20,8 @@
           <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
         </div>
         <div class="flex flex-col space-y-2">
-          <span>Use this converter to calculate how much XE to transfer.</span>
+          <!-- eslint-disable-next-line max-len -->
+          <span>We recommend always keeping your balance above $5.00. Use this converter to calculate how much XE to transfer.</span>
 
           <div class="converter flex items-center space-x-2">
             <div class="currency symbol flex justify-between">

@@ -31,7 +31,7 @@
                 disabled ? 'disabled' : ''
               ]"
             >
-              <h4>{{ formatOsName(os) }}</h4>
+              <h4 class="capitalize">{{ formatOsName(os) }}</h4>
             </RadioGroupLabel>
             <div class="w-full mt-2">
               <OperatingSystemOptions
@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     formatOsName(os) {
-      return os.slice(0,1).toUpperCase() + os.slice(1)
+      return os === 'centos' ? 'CentOS' : os
     },
     async updateOS() {
       try {
@@ -92,6 +92,7 @@ export default {
         )
         this.osVersionList = os.results
         this.osList = os.results.reduce((o, d) => {
+          if (!d.active) return
           if (!o[d.group]) {
             o[d.group] = []
             this.selectedVersion[d.group] = null

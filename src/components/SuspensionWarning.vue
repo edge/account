@@ -1,15 +1,12 @@
 <template>
-  <div v-if="message" class="w-full md:top-20">
+  <div v-if="warning" class="w-full md:top-20">
     <div class="suspension__warning"
-      :class="[
-        balanceSuspend && serverCount ? 'bg-red text-white' : '',
-        balanceWarning ? 'bg-yellow-300 text-black' : '',
-        !serverCount ? 'bg-blue-100 text-black' : ''
-      ]"
+      :class="warning.class"
     >
-      <div><ExclamationIcon class="w-8"/></div>
+      <div v-if="txCount"><ExclamationIcon class="w-8"/></div>
+      <div v-else><CashIcon class="w-8"/></div>
       <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
-        <span>{{ message }}</span>
+        <span>{{ warning.message }}</span>
         <button @click=toggleTopUpModal class="button button--solid button--small h-8 w-max flex-shrink-0">
           Add Funds
         </button>
@@ -23,13 +20,20 @@
 </template>
 
 <script>
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import TopUpModal from '@/components/billing/TopUpModal'
+import { CashIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
+
+const bannerClass = {
+  'red': 'bg-red text-white',
+  'yellow': 'bg-yellow-300 text-black',
+  'blue': 'bg-blue-100 text-black'
+}
 
 export default {
   name: 'SuspensionMessage',
   components: {
+    CashIcon,
     ExclamationIcon,
     TopUpModal
   },
@@ -40,18 +44,56 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
-    ...mapState(['account', 'balance', 'serverCount']),
-    message() {
-      if (!this.balance) return
+    ...mapState(['account', 'balance', 'serverCount', 'txCount']),
+    warning() {
+      if (!this.balance) return null
 
       const warningThreshold = this.balance.threshold.warning.usd
 
       /* eslint-disable max-len */
-      if (!this.serverCount && (this.balanceSuspend || this.balanceWarning)) return `Please top up your account to at least $${warningThreshold} to enable services.`
-      if (this.account.suspended) return 'You have unpaid invoices. Please top up to reactivate your services. Failure to pay will result in your services being permanently deleted.'
-      if (this.balanceSuspend) return 'Your balance is less than your current spend. Your services will be suspended if you don\'t top up.'
-      if (this.balanceWarning) return `Your balance ${this.balance.total <= warningThreshold ? 'is' : 'at the end of the day will be'} less than $${warningThreshold}. Your services may be suspended if you don't top up.`
-      return ''
+      if (this.account.suspended) {
+        return {
+          class: bannerClass.red,
+          message: 'You have unpaid invoices. Please top up to reactivate your services. Failure to pay will result in your services being permanently deleted.'
+        }
+      }
+      else if (this.balanceSuspend) {
+        return {
+          class: bannerClass.red,
+          message: 'Your balance is less than your current spend. Any services you are using will be suspended if you don\'t top up.'
+        }
+      }
+      else if (this.balance.total.usd < warningThreshold && !this.serverCount && this.txCount) {
+        return {
+          class: bannerClass.yellow,
+          message: `Your balance is less than $${warningThreshold}. Please top up to re-enabled services.`
+        }
+      }
+      else if (this.balanceWarning && !this.serverCount && this.txCount) {
+        return {
+          class: bannerClass.yellow,
+          message: `Your balance at the end of the day will be less than $${warningThreshold}. Please top up to re-enabled services.`
+        }
+      }
+      else if (this.balance.total.usd < warningThreshold && this.txCount) {
+        return {
+          class: bannerClass.yellow,
+          message: `Your balance is less than $${warningThreshold}. Any services you are using may be suspended if you don't top up your account.`
+        }
+      }
+      else if (this.balanceWarning && this.txCount) {
+        return {
+          class: bannerClass.yellow,
+          message: `Your balance at the end of the day will be less than $${warningThreshold}. Any services you are using may be suspended if you don't top up your account.`
+        }
+      }
+      else if (this.balanceWarning && !this.txCount) {
+        return {
+          class: bannerClass.blue,
+          message: `Please top up your account to at least $${warningThreshold} to enable services.`
+        }
+      }
+      return null
       /* eslint-enable max-len */
     }
   },

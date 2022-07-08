@@ -23,7 +23,12 @@
         </span>
       </button>
       <HttpError :error=httpError />
-      <div v-if=showSomethingWentWrong class="server__error">
+      <!-- eslint-disable-next-line max-len -->
+      <span v-if="haveSpecsIncreased && (balanceSuspend || balanceWarning)" class="text-red">
+        You are unable to increase this servers specs while your balance is below ${{ balance.threshold.warning.usd }}.
+        Please add funds to enable this service.
+      </span>
+      <div v-if=internalServerError class="server__error">
         <span class="font-bold">Something went wrong</span>
         <!-- eslint-disable-next-line max-len -->
         <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
@@ -68,6 +73,7 @@ export default {
     return {
       areSpecsValid: true,
       httpError: '',
+      internalServerError: false,
       isLoading: false,
       lastResizeTask: null,
       newSpec: {
@@ -76,13 +82,12 @@ export default {
         disk: null,
         ram: null
       },
-      showConfirmationModal: false,
-      showSomethingWentWrong: false
+      showConfirmationModal: false
     }
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
-    ...mapState(['account', 'session']),
+    ...mapState(['account', 'balance', 'session']),
     canSubmitResize() {
       if (this.balanceWarning || this.balanceSuspend) if (this.haveSpecsIncreased) return false
       // eslint-disable-next-line max-len
@@ -154,7 +159,7 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          if (error.status === 500) this.showSomethingWentWrong = true
+          if (error.status === 500) this.internalServerError = true
           else this.httpError = error
           this.isLoading = false
         }, 500)
@@ -176,9 +181,9 @@ export default {
       this.$emit('update-region')
     },
     newSpec() {
-      this.showSomethingWentWrong = false
+      this.internalServerError = false
     },
-    showSomethingWentWrong() {
+    internalServerError() {
       this.$emit('update-region')
     }
   }
