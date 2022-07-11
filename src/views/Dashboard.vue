@@ -32,7 +32,7 @@ export default {
   computed: {
     ...mapState(['account', 'balance', 'serverCount', 'tasks']),
     loaded() {
-      return this.account && this.balance && this.serverCount
+      return this.account && this.balance && (this.serverCount !== null)
     }
   },
   components: {
