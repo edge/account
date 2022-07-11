@@ -19,9 +19,9 @@
       </button>
       <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
     </div>
-    <div v-else>
-      <span>It looks like you don't currently have a referral code. Please contact support@edge.network.</span>
-    </div>
+    <span v-else class="text-red">
+      It looks like you don't currently have a referral code. Please contact support@edge.network.
+    </span>
   </div>
 </template>
 
