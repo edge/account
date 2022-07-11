@@ -377,7 +377,6 @@ export default {
         this.showRecovery = false
       }
       else {
-        console.log('test')
         this.show2FA = !this.show2FA
         if (this.show2FA) this.showRecovery = false
       }
