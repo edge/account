@@ -6,9 +6,10 @@ import superagent from 'superagent'
 
 export const createAccount = async (host, referralCode) => {
   const url = `${host}/account`
-  const body = referralCode ? { referralCode } : {}
-  const response = await superagent.post(url)
-    .send(body)
+  let response
+  if (referralCode) response = await superagent.post(url)
+    .send({ referralCode })
+  else response = await superagent.post(url)
   return response.body
 }
 
