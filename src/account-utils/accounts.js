@@ -4,9 +4,11 @@
 
 import superagent from 'superagent'
 
-export const createAccount = async (host) => {
+export const createAccount = async (host, referralCode) => {
   const url = `${host}/account`
+  const body = referralCode ? { referralCode } : {}
   const response = await superagent.post(url)
+    .send(body)
   return response.body
 }
 
@@ -43,6 +45,13 @@ export const disableRecovery = async (host, sessionId) => {
 
 export const getAccount = async (host, sessionId) => {
   const url = `${host}/account`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+export const getReferrals = async (host, sessionId) => {
+  const url = `${host}/account/referred`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
