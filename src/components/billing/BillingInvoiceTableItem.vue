@@ -23,7 +23,7 @@
         <Tooltip
           v-if="!canPay && onHold"
           position="right"
-          :text="tooltipText"
+          :text="unholdTooltipText"
           theme="error"
           :wide="true"
         >
@@ -91,9 +91,9 @@ export default {
     ExclamationIcon,
     Tooltip
   },
-  props: ['invoice', 'rate', 'usdBalance'],
+  props: ['invoice', 'usdBalance'],
   computed: {
-    ...mapState(['session']),
+    ...mapState(['balance', 'session']),
     canPay() {
       return this.invoice.amount > this.usdBalance
     },
@@ -116,8 +116,8 @@ export default {
     status() {
       return this.onHold ? 'Unpaid' : this.invoice.status
     },
-    tooltipText() {
-      const topUpAmount = (this.invoice.amount - this.usdBalance) / this.rate
+    unholdTooltipText() {
+      const topUpAmount = (this.invoice.amount - this.usdBalance) / this.balance.token.usdPerXe
       return `Please add ${topUpAmount.toFixed(6)} XE to your wallet to pay`
     }
   },
