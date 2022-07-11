@@ -58,10 +58,10 @@
       <!-- hourly and daily costs -->
       <div class="overview__grid">
         <div class="info__section">
-          <span class="label">Daily</span><span class="info">${{ formattedHourlyCost }}</span>
+          <span class="label">Hourly</span><span class="info">${{ formattedHourlyCost }}</span>
         </div>
         <div class="info__section">
-          <span class="label">Hourly</span><span class="info">${{ formattedDailyCost }}</span>
+          <span class="label">Daily</span><span class="info">${{ formattedDailyCost }}</span>
         </div>
       </div>
     </div>
