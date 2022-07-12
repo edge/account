@@ -53,43 +53,43 @@ export default {
       if (!this.balance.total.usd) {
         return {
           class: bannerClass.blue,
-          message: `Please top up your account to at least $${warningThreshold} to enable services.`
+          message: `Please add at least $${warningThreshold} of funds to your account to enable services.`
         }
       }
       else if (this.account.suspended) {
         return {
           class: bannerClass.red,
-          message: 'You have unpaid invoices. Please top up to reactivate your services. Failure to pay will result in your services being permanently deleted.'
+          message: 'You have unpaid invoices. Please add funds to reactivate your services. Failure to pay will result in your services being permanently deleted.'
         }
       }
       else if (this.balanceSuspend) {
         return {
           class: bannerClass.red,
-          message: 'Your balance is less than your current spend. Any services you are using will be suspended if you don\'t top up.'
+          message: 'Your balance is less than your current spend. Any services you are using will be suspended if you don\'t add funds to your account.'
         }
       }
       else if (this.balance.total.usd < warningThreshold && !this.serverCount) {
         return {
           class: bannerClass.yellow,
-          message: `Your balance is less than $${warningThreshold}. Please top up to re-enabled services.`
+          message: `Your balance is less than $${warningThreshold}. Please add funds to re-enabled services.`
         }
       }
       else if (this.balanceWarning && !this.serverCount) {
         return {
           class: bannerClass.yellow,
-          message: `Your balance at the end of the day will be less than $${warningThreshold}. Please top up to re-enabled services.`
+          message: `Your balance at the end of the day will be less than $${warningThreshold}. Please add funds to re-enabled services.`
         }
       }
       else if (this.balance.total.usd < warningThreshold) {
         return {
           class: bannerClass.yellow,
-          message: `Your balance is less than $${warningThreshold}. Any services you are using may be suspended if you don't top up your account.`
+          message: `Your balance is less than $${warningThreshold}. Any services you are using may be suspended if you don't add funds to your account.`
         }
       }
       else if (this.balanceWarning) {
         return {
           class: bannerClass.yellow,
-          message: `Your balance at the end of the day will be less than $${warningThreshold}. Any services you are using may be suspended if you don't top up your account.`
+          message: `Your balance at the end of the day will be less than $${warningThreshold}. Any services you are using may be suspended if you don't add funds to your account.`
         }
       }
       return null

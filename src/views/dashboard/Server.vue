@@ -35,7 +35,7 @@
           <div class="flex items-center space-x-1">
             <ServerStatus :server=server />
             <!-- eslint-disable-next-line max-len -->
-            <Tooltip v-if="server.suspended" position="right" theme="error" text="Your server has been suspended due to unpaid invoices. When you top up your account it will automatically restart."
+            <Tooltip v-if="server.suspended" position="right" theme="error" text="Your server has been suspended due to unpaid invoices. When you add funds to your account it will automatically restart."
             >
               <InformationCircleIcon class="w-4" />
             </Tooltip>
