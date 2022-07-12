@@ -71,13 +71,13 @@ export default {
       else if (this.balance.total.usd < warningThreshold && !this.serverCount) {
         return {
           class: bannerClass.yellow,
-          message: `Your balance is less than $${warningThreshold}. Please add funds to re-enabled services.`
+          message: `Your balance is less than $${warningThreshold}. Please add funds to re-enable services.`
         }
       }
       else if (this.balanceWarning && !this.serverCount) {
         return {
           class: bannerClass.yellow,
-          message: `Your balance at the end of the day will be less than $${warningThreshold}. Please add funds to re-enabled services.`
+          message: `Your balance at the end of the day will be less than $${warningThreshold}. Please add funds to re-enable services.`
         }
       }
       else if (this.balance.total.usd < warningThreshold) {
