@@ -30,7 +30,7 @@ export const date = (timestamp) => moment(timestamp).format('LL')
  * @return {string} value in MiB or GiB with correct units
  */
 export const mib = (MiB) => {
-  if (MiB / 1024 === 0) return `${MiB / 1024} GiB`
+  if (MiB % 1024 === 0) return `${MiB / 1024} GiB`
   return `${MiB} MiB`
 }
 
