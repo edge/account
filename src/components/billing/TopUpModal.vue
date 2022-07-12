@@ -50,7 +50,6 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
 import Modal from '@/components/Modal'
 import { mapState } from 'vuex'
 import { DuplicateIcon, SwitchHorizontalIcon } from '@heroicons/vue/outline'
@@ -72,12 +71,14 @@ export default {
   computed: {
     ...mapState(['account', 'balance']),
     formattedUSD() {
-      return this.usdToXe ?
-        format.usd(this.inputAmount, 2) :
-        format.usd(this.inputAmount * this.balance.token.usdPerXe, 2)
+      return this.usdToXe
+        ? (this.inputAmount).toFixed(2)
+        : (this.inputAmount * this.balance.token.usdPerXe).toFixed(2)
     },
     formattedXE() {
-      return this.usdToXe ? (this.inputAmount / this.balance.token.usdPerXe).toFixed(6) : this.inputAmount.toFixed(6)
+      return this.usdToXe
+        ? (this.inputAmount / this.balance.token.usdPerXe).toFixed(6)
+        : this.inputAmount.toFixed(6)
     }
   },
   methods: {
