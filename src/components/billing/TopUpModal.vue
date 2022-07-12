@@ -6,7 +6,7 @@
     <template v-slot:body>
       <div class="flex flex-col space-y-6">
         <!-- eslint-disable-next-line max-len -->
-        <span>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to credit your account.</span>
+        <span>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to process.</span>
         <div class="relative">
           <div class="flex items-center w-full">
             <span class="address">{{ account.wallet.address }}</span>
