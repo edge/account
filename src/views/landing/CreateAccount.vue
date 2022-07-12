@@ -250,6 +250,7 @@
 
 import * as format from '../../utils/format'
 import * as utils from '../../account-utils/index'
+import Cookies from 'js-cookie'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
 import Logo from '@/components/Logo'
@@ -346,7 +347,12 @@ export default {
 
       setTimeout(async () => {
         try {
-          const { account, session } = await utils.accounts.createAccount(process.env.VUE_APP_ACCOUNT_API_URL)
+          const referralCode = Cookies.get('referralCode')
+
+          const { account, session } = await utils.accounts.createAccount(
+            process.env.VUE_APP_ACCOUNT_API_URL,
+            referralCode
+          )
           // finish number generator on newly generated account number and dispatch to store
           clearInterval(numGeneratorId)
           this.accountNumber = account._key
@@ -359,6 +365,9 @@ export default {
           clearInterval(numGeneratorId)
           this.isGeneratingAccount = false
           this.accountNumber = ''
+
+          if (error.response.body.param === 'referralCode') Cookies.remove('referralCode')
+
           this.errors.accountNumber = 'Oops, something went wrong. Please try again.'
         }
       }, 1000)
@@ -393,6 +402,11 @@ export default {
         if(this.showRecovery) this.show2FA = false
       }
     }
+  },
+  mounted() {
+    const referralCodeRegExp = /^[A-Za-z0-9]{8}$/
+    const referralCode = this.$route.query.r
+    if(referralCodeRegExp.test(referralCode)) Cookies.set('referralCode', referralCode, { expires: 1 })
   },
   watch: {
     is2FAEnabled(new2FAEnabled) {

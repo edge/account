@@ -23,6 +23,9 @@
       </div>
     </div>
     <div class="box">
+      <ReferralCode />
+    </div>
+    <div class="box">
       <h4>Two-factor Authentication (2FA)</h4>
       <div>
         <Disable2FA v-if="is2FAEnabled && !backupCodes" />
@@ -46,6 +49,7 @@ import Disable2FA from '@/components/account/Disable2FA'
 import DisableRecoveryEmail from '@/components/account/DisableRecoveryEmail'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
+import ReferralCode from '@/components/ReferralCode'
 import { mapState } from 'vuex'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
@@ -60,7 +64,8 @@ export default {
     EyeIcon,
     EyeOffIcon,
     Enable2FA,
-    EnableRecoveryEmail
+    EnableRecoveryEmail,
+    ReferralCode
   },
   computed: {
     ...mapState(['account', 'backupCodes']),

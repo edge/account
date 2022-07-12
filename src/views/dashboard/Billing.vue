@@ -44,6 +44,9 @@
           </button>
         </div>
       </div>
+      <div class="box">
+        <ReferralCode />
+      </div>
       <!-- <div class="box">
         <h4>Consumption</h4>
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
@@ -72,6 +75,7 @@ import * as format from '../../utils/format'
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import { DuplicateIcon } from '@heroicons/vue/outline'
+import ReferralCode from '@/components/ReferralCode'
 import TopUpModal from '@/components/billing/TopUpModal'
 import { mapState } from 'vuex'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
@@ -87,6 +91,7 @@ export default {
     DuplicateIcon,
     EyeIcon,
     EyeOffIcon,
+    ReferralCode,
     TopUpModal
   },
   data() {
