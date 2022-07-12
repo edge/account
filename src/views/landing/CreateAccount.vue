@@ -174,7 +174,7 @@
               <span>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to credit your account. </span>
               <div class="relative">
                 <div class="flex items-center w-full">
-                  <span class="address">{{ account.wallet.address }}</span>
+                  <span class="address monospace">{{ account.wallet.address }}</span>
                   <button
                     @click.prevent="copyToClipboard"
                     class="text-gray-400 hover:text-green"
