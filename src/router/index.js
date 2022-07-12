@@ -10,6 +10,7 @@ import Billing from '@/views/dashboard/Billing'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
 import Deploy from '@/views/dashboard/Deploy'
+import Funding from '@/views/dashboard/Funding'
 import Index from '@/views/dashboard/Index'
 import Landing from '@/views/Landing'
 import NotFound from '@/views/404'
@@ -43,6 +44,11 @@ const routes = [
         path: 'billing',
         name: 'Billing',
         component: Billing
+      },
+      {
+        path: 'funding',
+        name: 'Funding',
+        component: Funding
       },
       {
         path: 'servers',

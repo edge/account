@@ -17,12 +17,12 @@
         <span>
           <span class="font-bold">Balance: </span>
           <span class="lg:hidden">
-            (<button @click="toggleTopUpModal" class="text-green hover:underline">Add Funds</button>)
+            (<button @click="addFunds" class="text-green hover:underline">Add Funds</button>)
           </span>
         </span>
         <span>{{ formattedBalance }} XE / {{ formattedUSDBalance }} USD </span>
         <span class="hidden lg:block">
-          (<button @click="toggleTopUpModal" class="text-green hover:underline">Add Funds</button>)
+          (<button @click="addFunds" class="text-green hover:underline">Add Funds</button>)
         </span>
       </div>
       <span class="topNavigation__right">
@@ -32,10 +32,6 @@
         <UserMenu />
       </span>
     </div>
-    <TopUpModal
-      v-if=showTopUpModal
-      @modal-close=toggleTopUpModal
-    />
     <MobileNavigation v-if="account" :closeNav=closeMobileNav />
   </div>
 </template>
@@ -46,7 +42,6 @@ import BurgerButton from '@/components/BurgerButton'
 import Logo from '@/components/Logo'
 import MobileNavigation from '@/components/MobileNavigation'
 // import Search from '@/components/Search'
-import TopUpModal from '@/components/billing/TopUpModal'
 import UserMenu from '@/components/UserMenu'
 import { mapState } from 'vuex'
 
@@ -69,7 +64,6 @@ export default {
     Logo,
     MobileNavigation,
     // Search,
-    TopUpModal,
     UserMenu
   },
   computed: {
@@ -88,8 +82,8 @@ export default {
     closeMobileNav() {
       this.showNav = false
     },
-    toggleTopUpModal() {
-      this.showTopUpModal = !this.showTopUpModal
+    addFunds() {
+      this.$router.push('/funding')
     }
   },
   watch: {

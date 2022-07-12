@@ -4,6 +4,7 @@
 
 export * as accounts from './accounts'
 export * as billing from './billing'
+export * as fiat from './fiat'
 export * as os from './os'
 export * as region from './region'
 export * as servers from './servers'
