@@ -53,7 +53,7 @@ export default {
       if (!this.balance.total.usd) {
         return {
           class: bannerClass.blue,
-          message: `Please add at least $${warningThreshold} of funds to your account to enable services.`
+          message: `Please transfer at least $${warningThreshold} of funds to your account to enable services.`
         }
       }
       else if (this.account.suspended) {

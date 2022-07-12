@@ -171,7 +171,7 @@
           <div class="step-content" v-if="step === 3">
             <div class="flex flex-col space-y-6 my-4">
               <!-- eslint-disable-next-line max-len -->
-              <span>To add funds to your account, please transfer XE to the following wallet address. It may take up to 10 minutes for the balance to update.</span>
+              <span>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to credit your account. </span>
               <div class="relative">
                 <div class="flex items-center w-full">
                   <span class="address">{{ account.wallet.address }}</span>
@@ -184,6 +184,7 @@
                 </div>
                 <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
               </div>
+              <span>The minimum required balance is $5.00. Please ensure your account remains above this level to avoid restrictions.</span>
             </div>
 
             <!-- top up option grid - currently tbd -->

@@ -6,7 +6,7 @@
     <template v-slot:body>
       <div class="flex flex-col space-y-6">
         <!-- eslint-disable-next-line max-len -->
-        <span>To add funds to your account, please transfer XE to the following wallet address. It may take up to 10 minutes for the balance to update.</span>
+        <span>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to credit your account.</span>
         <div class="relative">
           <div class="flex items-center w-full">
             <span class="address">{{ account.wallet.address }}</span>
@@ -19,13 +19,13 @@
           </div>
           <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
         </div>
-        <div class="flex flex-col space-y-2">
+        <div class="flex flex-col space-y-6">
           <!-- eslint-disable-next-line max-len -->
-          <span>We recommend always keeping your balance above ${{ balance.threshold.warning.usd.toFixed(2)}}. Use this converter to calculate how much XE to transfer.</span>
+          <span>The minimum required balance is ${{ balance.threshold.warning.usd.toFixed(2)}}. Please ensure your account remains above this level to avoid restrictions.</span>
 
           <div class="converter flex items-center space-x-2">
             <div class="currency symbol flex justify-between">
-              <input type="number" class="w-36" v-model="inputAmount" @focusout="formatInput" />
+              <input type="number" class="w-32" v-model="inputAmount" @focusout="formatInput" />
               {{ usdToXe ? 'USD' : 'XE' }}
             </div>
             <button @click="flipConversion" class="converter__toggle hover:text-green">
@@ -154,6 +154,10 @@ input[type=number] {
   }
   .converter .converter__toggle {
     @apply row-span-2;
+  }
+
+  input[type=number] {
+    @apply w-28;
   }
 }
 </style>
