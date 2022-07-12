@@ -365,6 +365,9 @@ export default {
           clearInterval(numGeneratorId)
           this.isGeneratingAccount = false
           this.accountNumber = ''
+
+          if (error.response.body.param === 'referralCode') Cookies.remove('referralCode')
+
           this.errors.accountNumber = 'Oops, something went wrong. Please try again.'
         }
       }, 1000)
@@ -401,8 +404,9 @@ export default {
     }
   },
   mounted() {
+    const referralCodeRegExp = /^[A-Za-z0-9]{8}$/
     const referralCode = this.$route.query.r
-    Cookies.set('referralCode', referralCode, { expires: 1 })
+    if(referralCodeRegExp.test(referralCode)) Cookies.set('referralCode', referralCode, { expires: 1 })
   },
   watch: {
     is2FAEnabled(new2FAEnabled) {
