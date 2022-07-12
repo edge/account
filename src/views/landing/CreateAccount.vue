@@ -171,10 +171,10 @@
           <div class="step-content" v-if="step === 3">
             <div class="flex flex-col space-y-6 my-4">
               <!-- eslint-disable-next-line max-len -->
-              <span>To add funds to your account, please transfer XE to the following wallet address. It may take up to 10 minutes for the balance to update.</span>
+              <span>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to credit your account. </span>
               <div class="relative">
                 <div class="flex items-center w-full">
-                  <span class="address">{{ account.wallet.address }}</span>
+                  <span class="address monospace">{{ account.wallet.address }}</span>
                   <button
                     @click.prevent="copyToClipboard"
                     class="text-gray-400 hover:text-green"
@@ -184,6 +184,7 @@
                 </div>
                 <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
               </div>
+              <span>The minimum required balance is $5.00. Please ensure your account remains above this level to avoid restrictions.</span>
             </div>
 
             <!-- top up option grid - currently tbd -->
@@ -250,6 +251,7 @@
 
 import * as format from '../../utils/format'
 import * as utils from '../../account-utils/index'
+import Cookies from 'js-cookie'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
 import Logo from '@/components/Logo'
@@ -346,7 +348,12 @@ export default {
 
       setTimeout(async () => {
         try {
-          const { account, session } = await utils.accounts.createAccount(process.env.VUE_APP_ACCOUNT_API_URL)
+          const referralCode = Cookies.get('referralCode')
+
+          const { account, session } = await utils.accounts.createAccount(
+            process.env.VUE_APP_ACCOUNT_API_URL,
+            referralCode
+          )
           // finish number generator on newly generated account number and dispatch to store
           clearInterval(numGeneratorId)
           this.accountNumber = account._key
@@ -359,6 +366,9 @@ export default {
           clearInterval(numGeneratorId)
           this.isGeneratingAccount = false
           this.accountNumber = ''
+
+          if (error.response.body.param === 'referralCode') Cookies.remove('referralCode')
+
           this.errors.accountNumber = 'Oops, something went wrong. Please try again.'
         }
       }, 1000)
@@ -393,6 +403,11 @@ export default {
         if(this.showRecovery) this.show2FA = false
       }
     }
+  },
+  mounted() {
+    const referralCodeRegExp = /^[A-Za-z0-9]{8}$/
+    const referralCode = this.$route.query.r
+    if(referralCodeRegExp.test(referralCode)) Cookies.set('referralCode', referralCode, { expires: 1 })
   },
   watch: {
     is2FAEnabled(new2FAEnabled) {

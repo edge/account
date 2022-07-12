@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import * as format from '../utils/format'
 import DistroIcon from '@/components/icons/DistroIcon'
 import ServerStatus from '@/components/server/ServerStatus'
 import { mapState } from 'vuex'
@@ -91,12 +92,10 @@ export default {
       // return `https://hatscripts.github.io/circle-flags/flags/${region.flag}.svg`
     },
     formattedDisk() {
-      return `${this.server.spec.disk / 1024} GiB`
+      return format.mib(this.server.spec.disk)
     },
     formattedRAM() {
-      const ram = this.server.spec.ram
-      if (ram < 1024) return `${ram} MiB`
-      return `${this.server.spec.ram / 1024} GiB`
+      return format.mib(this.server.spec.ram)
     },
     isActive() {
       return (!this.disablingTaskInProgress) && this.server.status === 'active'
@@ -242,7 +241,7 @@ export default {
   }
   .specs {
     @apply flex-shrink-0;
-    flex-basis: 300px;
+    flex-basis: 320px;
   }
   .zone {
     @apply col-start-3 row-start-1 flex-shrink-0;
