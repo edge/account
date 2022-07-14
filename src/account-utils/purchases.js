@@ -16,3 +16,11 @@ export const getPurchase = async (host, sessionId, key) => {
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
+
+// refresh and retrieve an XE purchase
+export const refreshPurchase = async (host, sessionId, key) => {
+  const url = `${host}/purchases/${key}/refresh`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
