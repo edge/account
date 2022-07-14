@@ -121,7 +121,7 @@ export default {
         }
       }
 
-      this.purchase = await utils.fiat.createPurchase(
+      this.purchase = await utils.purchases.createPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         data

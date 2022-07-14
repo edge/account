@@ -67,7 +67,7 @@ export default {
     }
   },
   mounted() {
-    utils.fiat.getPurchase(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.purchaseId)
+    utils.purchases.getPurchase(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.purchaseId)
       .then(purchase => {
         this.purchase = purchase
       })
