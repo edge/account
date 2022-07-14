@@ -13,12 +13,12 @@
   ],
   "scripts": {
     "build": "vue-cli-service build",
-    "dev": "vue-cli-service --port 8000 serve",
-    "dev:local": "VUE_APP_ACCOUNT_API_URL=http://localhost:8419 VUE_APP_INDEX_URL=https://index.test.network VUE_APP_EXPLORER_URL=https://test.network npm run dev",
+    "dev": "node -r dotenv/config ./node_modules/.bin/vue-cli-service --port 8000 serve",
+    "dev:local": "DOTENV_CONFIG_PATH=.env.local npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "lint:fix": "eslint --fix --ext .js,.vue src",
     "start": "node server/index.js",
-    "testnet": "VUE_APP_ACCOUNT_API_URL=https://api.account.test.network VUE_APP_INDEX_URL=https://index.test.network VUE_APP_EXPLORER_URL=https://test.network npm run dev"
+    "testnet": "DOTENV_CONFIG_PATH=.env.testnet npm run dev"
   },
   "main": "server/index.js",
   "dependencies": {
