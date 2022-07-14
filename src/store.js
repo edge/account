@@ -13,7 +13,6 @@ const store = createStore({
     backupCodes: null,
     balance: null,
     isAuthed: false,
-    lastPurchase: null,
     serverCount: null,
     session: null,
     tasks: []
@@ -36,11 +35,6 @@ const store = createStore({
     },
     setIsAuthed(state, isAuthed) {
       state.isAuthed = isAuthed
-    },
-    setLastPurchase(state, purchase) {
-      state.lastPurchase = purchase
-      if (purchase) localStorage.setItem('lastPurchase', purchase._key)
-      else localStorage.removeItem('lastPurchase')
     },
     setServerCount(state, count) {
       state.serverCount = count

@@ -14,6 +14,7 @@ import Funding from '@/views/dashboard/Funding'
 import Index from '@/views/dashboard/Index'
 import Landing from '@/views/Landing'
 import NotFound from '@/views/404'
+import Purchase from '@/views/dashboard/funding/Purchase'
 import RecoverAccount from '@/views/landing/RecoverAccount'
 import Server from '@/views/dashboard/Server'
 import Servers from '@/views/dashboard/Servers'
@@ -49,6 +50,11 @@ const routes = [
         path: 'funding',
         name: 'Funding',
         component: Funding
+      },
+      {
+        path: 'funding/purchase/:id',
+        name: 'Purchase',
+        component: Purchase
       },
       {
         path: 'servers',

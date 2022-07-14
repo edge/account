@@ -21,7 +21,7 @@
         <h4>Purchase XE</h4>
         <p>Enter your card payment details to purchase {{purchasingXE}} XE for {{purchasingUSD}} USD.</p>
         <div ref="paymentElement"/>
-        <button class="w-full mt-3 button button--small button--success sm:mt-0" @click="purchase">
+        <button class="w-full mt-3 button button--small button--success sm:mt-0" @click="confirmPurchase">
           Complete purchase
         </button>
         <a @click="cancelPurchase">Cancel purchase</a>
@@ -37,19 +37,17 @@ import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import Calculator from '@/components/funding/Calculator'
 import DetailsBox from '@/components/account/DetailsBox'
-import PaymentInfo from '@/components/funding/PaymentInfo'
 import ReferralCode from '@/components/ReferralCode'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'Billing',
+  name: 'Funding',
   title() {
     return 'Edge Account Portal » Funding'
   },
   components: {
     Calculator,
     DetailsBox,
-    PaymentInfo,
     ReferralCode
   },
   data() {
@@ -63,6 +61,7 @@ export default {
       purchasingUSD: 0,
       purchasingXE: 0,
 
+      purchase: null,
       stripeElements: null,
       paymentElement: null
     }
@@ -87,26 +86,21 @@ export default {
       this.showCheckout = false
       /** @todo cancel through API */
     },
+    async confirmPurchase() {
+      // eslint-disable-next-line max-len
+      const return_url = `${document.location.protocol}://${document.location.host}/funding/purchase/${this.purchase._key}`
+
+      await this.stripe.confirmPayment({
+        elements: this.stripeElements,
+        confirmParams: { return_url }
+      })
+    },
     async copyToClipboard () {
       this.copied = true
       await navigator.clipboard.writeText(this.account.wallet.address)
       setTimeout(() => {
         this.copied = false
       }, 2000)
-    },
-    async purchase() {
-      const return_url = [
-        document.location.protocol,
-        '://',
-        document.location.host,
-        '/funding'
-      ].join('')
-      console.log(return_url)
-
-      await this.stripe.confirmPayment({
-        elements: this.stripeElements,
-        confirmParams: { return_url }
-      })
     },
     onCalculatorUpdate({ usd, xe }) {
       this.calculatedUSD = usd
@@ -127,13 +121,13 @@ export default {
         }
       }
 
-      const result = await utils.fiat.createPurchase(
+      this.purchase = await utils.fiat.createPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         data
       )
 
-      this.stripeElements = this.stripe.elements({ clientSecret: result.intent.client_secret })
+      this.stripeElements = this.stripe.elements({ clientSecret: this.purchase.intent.client_secret })
       this.paymentElement = this.stripeElements.create('payment')
       this.paymentElement.mount(this.$refs.paymentElement)
     }
