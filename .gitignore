@@ -4,3 +4,6 @@ logs/
 npm-debug.log
 .DS_Store
 .env
+.env.*
+!.env.local
+!.env.testnet
