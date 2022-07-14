@@ -88,7 +88,7 @@ export default {
     },
     async confirmPurchase() {
       // eslint-disable-next-line max-len
-      const return_url = `${document.location.protocol}://${document.location.host}/funding/purchase/${this.purchase._key}`
+      const return_url = `${document.location.protocol}//${document.location.host}/funding/purchase/${this.purchase._key}`
 
       await this.stripe.confirmPayment({
         elements: this.stripeElements,
