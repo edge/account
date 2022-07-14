@@ -18,7 +18,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
-          buildAndPushImage(REGISTRY_CREDENTIAL, NAME, "--build-arg ACCOUNT_API_URL=$ACCOUNT_API_URL --build-arg EXPLORER_URL=$EXPLORER_URL --build-arg INDEX_URL=$INDEX_URL")
+          buildAndPushImage(REGISTRY_CREDENTIAL, NAME, "--build-arg ACCOUNT_API_URL=$ACCOUNT_API_URL --build-arg EXPLORER_URL=$EXPLORER_URL --build-arg INDEX_URL=$INDEX_URL --build-arg STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY")
         }
       }
     }
