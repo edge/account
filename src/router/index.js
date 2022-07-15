@@ -12,8 +12,10 @@ import Dashboard from '@/views/Dashboard'
 import Deploy from '@/views/dashboard/Deploy'
 import Funding from '@/views/dashboard/Funding'
 import Index from '@/views/dashboard/Index'
+import Invoices from '@/components/billing/Invoices'
 import Landing from '@/views/Landing'
 import NotFound from '@/views/404'
+import Payments from '@/components/billing/Payments'
 import Purchase from '@/views/dashboard/funding/Purchase'
 import RecoverAccount from '@/views/landing/RecoverAccount'
 import Server from '@/views/dashboard/Server'
@@ -44,7 +46,24 @@ const routes = [
       {
         path: 'billing',
         name: 'Billing',
-        component: Billing
+        component: Billing,
+        children: [
+          {
+            path: 'invoices',
+            name: 'Invoices',
+            component: Invoices
+          },
+          {
+            path: 'payments',
+            name: 'Payments',
+            component: Payments
+          }
+          // {
+          //   path: 'payments/purchase/:id',
+          //   name: 'Purchase',
+          //   component: Purchase
+          // }
+        ]
       },
       {
         path: 'funding',

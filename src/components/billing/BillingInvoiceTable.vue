@@ -29,7 +29,6 @@
             v-for="invoice in invoices"
             :invoice="invoice"
             :key="invoice._key"
-            :usdBalance=usdBalance
           />
         </tbody>
       </table>
@@ -55,7 +54,6 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'BillingInvoiceTable',
-  props: ['usdBalance'],
   components: {
     BillingInvoiceTableItem,
     LoadingTableDataRow,

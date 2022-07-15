@@ -17,15 +17,11 @@
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
       </div> -->
     </div>
-    <div class="box">
-      <h4>Transactions</h4>
-      <BillingTransactionTable />
+    <div class="flex space-x-2">
+      <router-link :to="{name: 'Invoices'}" class="tab">Invoices</router-link>
+      <router-link :to="{name: 'Payments'}" class="tab">Payments</router-link>
     </div>
-
-    <div class="box">
-      <h4>Invoices</h4>
-      <BillingInvoiceTable :rate=rate :usdBalance=usdBalance />
-    </div>
+    <router-view />
   </div>
 </template>
 
@@ -33,8 +29,6 @@
 /* global process */
 
 import * as format from '../../utils/format'
-import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
-import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import DetailsBox from '@/components/account/DetailsBox'
 import ReferralCode from '@/components/ReferralCode'
 import { mapState } from 'vuex'
@@ -45,8 +39,6 @@ export default {
     return 'Edge Account Portal » Billing'
   },
   components: {
-    BillingInvoiceTable,
-    BillingTransactionTable,
     DetailsBox,
     ReferralCode
   },
@@ -92,5 +84,9 @@ export default {
 
 .box h4 {
   @apply w-full pb-2 mb-4 font-medium;
+}
+
+.tab {
+  @apply hover:underline hover:text-green
 }
 </style>
