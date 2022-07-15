@@ -10,13 +10,12 @@ import Billing from '@/views/dashboard/Billing'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
 import Deploy from '@/views/dashboard/Deploy'
-import Funding from '@/views/dashboard/Funding'
 import Index from '@/views/dashboard/Index'
 import Invoices from '@/components/billing/Invoices'
 import Landing from '@/views/Landing'
 import NotFound from '@/views/404'
 import Payments from '@/components/billing/Payments'
-import Purchase from '@/views/dashboard/funding/Purchase'
+import Purchase from '@/components/billing/Purchase'
 import RecoverAccount from '@/views/landing/RecoverAccount'
 import Server from '@/views/dashboard/Server'
 import Servers from '@/views/dashboard/Servers'
@@ -57,23 +56,13 @@ const routes = [
             path: 'payments',
             name: 'Payments',
             component: Payments
+          },
+          {
+            path: 'payments/purchase/:id',
+            name: 'Purchase',
+            component: Purchase
           }
-          // {
-          //   path: 'payments/purchase/:id',
-          //   name: 'Purchase',
-          //   component: Purchase
-          // }
         ]
-      },
-      {
-        path: 'funding',
-        name: 'Funding',
-        component: Funding
-      },
-      {
-        path: 'funding/purchase/:id',
-        name: 'Purchase',
-        component: Purchase
       },
       {
         path: 'servers',

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col space-y-4">
     <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
       <Calculator @update="onCalculatorUpdate">
         <template v-slot:buttons>
@@ -9,23 +9,18 @@
         </template>
       </Calculator>
     </div>
-    <div v-if="showCheckout" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-      <div class="box">
-        <h4>Purchase XE</h4>
-        <p>Enter your card payment details to purchase {{purchasingXE}} XE for {{purchasingUSD}} USD.</p>
-        <div ref="paymentElement"/>
-        <button class="w-full mt-3 button button--small button--success sm:mt-0" @click="confirmPurchase">
-          Complete purchase
-        </button>
-        <a @click="cancelPurchase">Cancel purchase</a>
-      </div>
-    </div>
-    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
+    <div class="box flex flex-col space-y-4">
       <h4>Add a Payment Card</h4>
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
-      <p @click="startAddPaymentMethod">Click here to add a card</p>
+      <button v-if="!showCard" @click="startAddPaymentMethod" class="button button--small button--success">
+        Click here to add a card
+      </button>
       <div ref="cardElement"/>
-      <button v-if="showCard" class="w-full mt-3 button button--small button--success sm:mt-0" @click="addPaymentMethod">
+      <button
+        v-if="showCard"
+        @click="addPaymentMethod"
+        class="w-full mt-3 button button--small button--success sm:mt-0"
+      >
         Add card
       </button>
     </div>
@@ -37,7 +32,7 @@
 
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
-import Calculator from '@/components/funding/Calculator'
+import Calculator from '@/components/billing/Calculator'
 import { mapState } from 'vuex'
 
 export default {
@@ -92,26 +87,6 @@ export default {
         }
       })
     },
-    cancelPurchase () {
-      this.showCheckout = false
-      /** @todo cancel through API */
-    },
-    async confirmPurchase() {
-      // eslint-disable-next-line max-len
-      const return_url = `${document.location.protocol}//${document.location.host}/funding/purchase/${this.purchase._key}`
-
-      await this.stripe.confirmPayment({
-        elements: this.stripeElements,
-        confirmParams: { return_url }
-      })
-    },
-    async copyToClipboard () {
-      this.copied = true
-      await navigator.clipboard.writeText(this.account.wallet.address)
-      setTimeout(() => {
-        this.copied = false
-      }, 2000)
-    },
     onCalculatorUpdate({ usd, xe }) {
       this.calculatedUSD = usd
       this.calculatedXE = xe
@@ -137,15 +112,13 @@ export default {
         }
       }
 
-      this.purchase = await utils.purchases.createPurchase(
+      const purchase = await utils.purchases.createPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         data
       )
 
-      this.stripeElements = this.stripe.elements({ clientSecret: this.purchase.intent.client_secret })
-      this.paymentElement = this.stripeElements.create('payment')
-      this.paymentElement.mount(this.$refs.paymentElement)
+      this.$router.push({ name: 'Purchase', params: { id: purchase._key } })
     }
   },
   setup() {
