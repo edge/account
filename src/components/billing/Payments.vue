@@ -20,6 +20,15 @@
         <a @click="cancelPurchase">Cancel purchase</a>
       </div>
     </div>
+    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
+      <h4>Add a Payment Card</h4>
+      <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
+      <p @click="startAddPaymentMethod">Click here to add a card</p>
+      <div ref="cardElement"/>
+      <button v-if="showCard" class="w-full mt-3 button button--small button--success sm:mt-0" @click="addPaymentMethod">
+        Add card
+      </button>
+    </div>
   </div>
 </template>
 
@@ -38,6 +47,7 @@ export default {
       copied: false,
       iBalance: null,
       rate: null,
+      showCard: false,
       showCheckout: false,
       calculatedUSD: 0,
       calculatedXE: 0,
@@ -45,7 +55,7 @@ export default {
       purchasingXE: 0,
 
       purchase: null,
-      stripeElements: null,
+      cardElement: null,
       paymentElement: null
     }
   },
@@ -68,6 +78,20 @@ export default {
     }
   },
   methods: {
+    async addPaymentMethod() {
+      const { paymentMethod, error } = await this.stripe.createPaymentMethod({
+        type: 'card',
+        card: this.cardElement
+      })
+      if (error) throw error
+
+      await utils.billing.addPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+        name: 'Test Credit Card',
+        stripe: {
+          id: paymentMethod.id
+        }
+      })
+    },
     cancelPurchase () {
       this.showCheckout = false
       /** @todo cancel through API */
@@ -91,6 +115,12 @@ export default {
     onCalculatorUpdate({ usd, xe }) {
       this.calculatedUSD = usd
       this.calculatedXE = xe
+    },
+    startAddPaymentMethod() {
+      this.stripeElements = this.stripe.elements()
+      this.cardElement = this.stripeElements.create('card')
+      this.cardElement.mount(this.$refs.cardElement)
+      this.showCard = true
     },
     async startPurchase() {
       this.purchasingUSD = this.calculatedUSD
@@ -119,8 +149,9 @@ export default {
     }
   },
   setup() {
+    const stripe = window.Stripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY)
     return {
-      stripe: window.Stripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY)
+      stripe
     }
   }
 }

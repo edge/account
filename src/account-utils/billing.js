@@ -5,6 +5,14 @@
 import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
+export const addPaymentMethod = async (host, sessionId, data) => {
+  const url = `${host}/billing/paymentMethods`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(data)
+  return response.body
+}
+
 export const getBalance = async (host, sessionId) => {
   const url = `${host}/billing/balance`
   const response = await superagent.get(url)
