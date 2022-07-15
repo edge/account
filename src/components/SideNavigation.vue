@@ -6,9 +6,9 @@
       <div class="sideNavigation__menu">
         <Menu :mainNav="mainNav"/>
       </div>
-      <div class="sideNavigation__tools">
+      <!-- <div class="sideNavigation__tools">
         <NavigationTools/>
-      </div>
+      </div> -->
     </div>
 </template>
 
