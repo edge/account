@@ -1,7 +1,7 @@
 import superagent from 'superagent'
 
 // cancel an XE purchase
-export const cancelPyurchase = async (host, sessionId, key) => {
+export const cancelPurchase = async (host, sessionId, key) => {
   const url = `${host}/billing/purchases/${key}/cancel`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
