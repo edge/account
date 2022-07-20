@@ -24,6 +24,10 @@
         Add card
       </button>
     </div>
+    <div class="box">
+      <h4>Purchase History</h4>
+      <PurchaseTable />
+    </div>
   </div>
 </template>
 
@@ -33,6 +37,7 @@
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import Calculator from '@/components/billing/Calculator'
+import PurchaseTable from '@/components/billing/PurchaseTable'
 import { mapState } from 'vuex'
 
 export default {
@@ -50,12 +55,14 @@ export default {
       purchasingXE: 0,
 
       purchase: null,
+      purchases: null,
       cardElement: null,
       paymentElement: null
     }
   },
   components: {
-    Calculator
+    Calculator,
+    PurchaseTable
   },
   computed: {
     ...mapState(['account', 'balance', 'session']),
@@ -119,7 +126,23 @@ export default {
       )
 
       this.$router.push({ name: 'Purchase', params: { id: purchase._key } })
+    },
+    async updatePurchases() {
+      const purchases = await utils.purchases.getPurchases(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.purchases = purchases.results
     }
+  },
+  mounted() {
+    this.updatePurchases()
+    this.iPurchases = setInterval(() => {
+      this.updatePurchases()
+    }, 15 * 1000)
+  },
+  unmounted() {
+    clearInterval(this.iPurchases)
   },
   setup() {
     const stripe = window.Stripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY)
