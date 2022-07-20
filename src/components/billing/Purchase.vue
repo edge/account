@@ -21,8 +21,12 @@
         <div v-else-if="status === 'loading'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
           <h4>Loading...</h4>
         </div>
-        <div v-else-if="status === 'succeeded'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-          <h4>Purchase Complete</h4>
+        <div v-else-if="status === 'succeeded'" class="grid lg:grid-cols-2">
+          <div class="col-span-2"><span class="label">Status</span>{{ status }}</div>
+          <div><span class="label">Sent</span>{{ formattedSentAmount }}</div>
+          <div><span class="label">Received</span>{{ formattedReceivedAmount }}</div>
+          <div><span class="label">Date</span>{{ formattedDate }}</div>
+          <div><span class="label">Time</span>{{ formattedTime }}</div>
         </div>
         <div v-else-if="status === 'processing'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
           <h4>Processing...</h4>
@@ -54,6 +58,7 @@ export default {
   data() {
     return {
       error: null,
+      iRefresh: null,
       purchase: null
     }
   },
@@ -61,6 +66,18 @@ export default {
   },
   computed: {
     ...mapState(['session']),
+    formattedDate() {
+      return format.date(this.purchase.created)
+    },
+    formattedTime() {
+      return format.time(this.purchase.created)
+    },
+    formattedSentAmount() {
+      return `${format.usd(this.purchase.send.amount, 2)} USD`
+    },
+    formattedReceivedAmount() {
+      return `${format.xe(this.purchase.receive.amount)} XE`
+    },
     purchaseId() {
       return this.$route.params.id
     },
@@ -69,6 +86,9 @@ export default {
     },
     purchasingUSD() {
       return this.purchase && format.usd(this.purchase.send.amount, 2)
+    },
+    redirectStatus() {
+      return this.$route.query.redirect_status
     },
     status() {
       /** @see https://stripe.com/docs/payments/intents#intent-statuses */
@@ -96,35 +116,36 @@ export default {
       })
     },
     async getPurchase() {
-      this.showCheckout = true
-
       this.purchase = await utils.purchases.getPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.purchaseId
       )
-      console.log(this.purchase.intent.status)
-
-      if (this.purchase.intent.status === 'succeeded') {
-        utils.purchases.refreshPurchase(
+      if (this.purchase.status !== 'succeeded') this.addPaymentForm()
+    },
+    async refreshPurchase() {
+      try {
+        this.purchase = await utils.purchases.refreshPurchase(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.purchaseId
         )
-          .then(purchase => {
-            this.purchase = purchase
-          })
-          .catch(err => {
-            this.error = err
-          })
       }
-      else {
-        this.addPaymentForm()
+      catch (error) {
+        this.error = error
       }
     }
   },
   mounted() {
-    this.getPurchase()
+    if (this.redirectStatus === 'succeeded') {
+      this.refreshPurchase()
+      this.iRefresh = setInterval(() => {
+        this.refreshPurchase()
+      }, 15 * 1000)
+    }
+    else {
+      this.getPurchase()
+    }
     // utils.purchases.refreshPurchase(
     //   process.env.VUE_APP_ACCOUNT_API_URL,
     //   this.session._key,
@@ -137,10 +158,18 @@ export default {
     //     this.error = err
     //   })
   },
+  unmounted() {
+    clearInterval(this.iRefresh)
+  },
   setup() {
     const stripe = window.Stripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY)
     return {
       stripe
+    }
+  },
+  watch: {
+    purchase(newPurchase) {
+      if (newPurchase.intent.status === 'succeeded') clearInterval(this.iRefresh)
     }
   }
 }
@@ -152,5 +181,9 @@ export default {
 
 .box h4 {
   @apply w-full pb-2 mb-4 font-medium;
+}
+
+.label {
+  @apply font-bold;
 }
 </style>
