@@ -17,9 +17,13 @@
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
       </div> -->
     </div>
-    <div class="flex space-x-2">
-      <router-link :to="{name: 'Invoices'}" class="tab">Invoices</router-link>
-      <router-link :to="{name: 'Payments'}" class="tab">Payments</router-link>
+    <div class="tabs flex space-x-2">
+      <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Invoices'}">Invoices</router-link>
+      </div>
+      <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Payments'}">Payments</router-link>
+      </div>
     </div>
     <router-view />
   </div>
@@ -72,7 +76,10 @@ export default {
       }, 2000)
     },
     addFunds() {
-      this.$router.push('/funding')
+      this.$router.push('/billing/payments')
+    },
+    isSelected(route) {
+      return this.$route.fullPath.includes(route)
     }
   }
 }
@@ -86,7 +93,19 @@ export default {
   @apply w-full pb-2 mb-4 font-medium;
 }
 
+.tabGroup {
+  @apply relative;
+}
+
+.tabs {
+  @apply w-full space-x-4 md:space-x-8 border-b border-gray-300 overflow-auto flex flex-nowrap;
+}
 .tab {
-  @apply hover:underline hover:text-green
+  @apply pb-1 font-medium border-b text-gray-500 border-transparent;
+  @apply hover:text-black;
+}
+.tab.tab--selected {
+  @apply text-green border-green;
+  @apply hover:text-green;
 }
 </style>
