@@ -1,9 +1,24 @@
 <template>
   <div class="space-y-4">
     <div class="box">
-      <h4>Purchase #{{this.purchaseId}}</h4>
+      <div class="w-max">
+        <router-link :to="{ name: 'Payments' }" class="flex items-center space-x-1 hover:text-green mb-4">
+          <ArrowLeftIcon class="w-4" /><span>Back</span>
+        </router-link>
+      </div>
+      <h4>Purchase
+        <span v-if="isConfirmed || isCancelled">#{{this.purchaseId}} - <span
+          class="capitalize font-normal"
+          :class="[
+            isConfirmed ? 'text-green' : '',
+            isCancelled ? 'text-red' : '',
+            isProcessing ? 'italic' : ''
+          ]"
+        >{{ status }}</span></span>
+        <span v-else>XE</span>
+      </h4>
 
-      <div v-if="status !== 'succeeded'">
+      <div v-if="status !== 'confirmed' && status !== 'cancelled'">
         <p>Enter your card payment details to purchase {{ purchasingXE }} XE for {{ purchasingUSD }} USD.</p>
         <div ref="paymentElement"/>
         <div class="flex flex-col space-y-2 lg:flex-row w-full lg:space-x-2 lg:space-y-0 mt-4">
@@ -13,31 +28,22 @@
           <button class="w-full button button--small button--solid" @click="cancelPurchase">Cancel purchase</button>
         </div>
       </div>
-      <div v-else>
-        <div v-if="error" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-          <h4>Error loading purchase</h4>
-          <p>{{error.message}}</p>
-        </div>
-        <div v-else-if="status === 'loading'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-          <h4>Loading...</h4>
-        </div>
-        <div v-else-if="status === 'succeeded'" class="grid lg:grid-cols-2">
-          <div class="col-span-2"><span class="label">Status</span>{{ status }}</div>
-          <div><span class="label">Sent</span>{{ formattedSentAmount }}</div>
-          <div><span class="label">Received</span>{{ formattedReceivedAmount }}</div>
-          <div><span class="label">Date</span>{{ formattedDate }}</div>
-          <div><span class="label">Time</span>{{ formattedTime }}</div>
-        </div>
-        <div v-else-if="status === 'processing'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-          <h4>Processing...</h4>
-        </div>
-        <div v-else-if="status === 'canceled'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-          <h4>Purchase Cancelled</h4>
-        </div>
-        <div v-else class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-          <h4>Purchase Incomplete</h4>
-          <p>{{purchase.intent.status}}</p>
-        </div>
+      <div v-else-if="error" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
+        <h4>Error loading purchase</h4>
+        <p>{{error.message}}</p>
+      </div>
+      <div v-else-if="status === 'loading'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
+        <h4>Loading...</h4>
+      </div>
+      <div v-else class="purchase__grid md:grid-cols-2 gap-y-4">
+        <div><span class="label">Date</span>{{ formattedDate }}</div>
+        <div><span class="label">Time</span>{{ formattedTime }}</div>
+        <div><span class="label">
+          {{ isConfirmed ? 'Sent' : 'Send' }}
+        </span>{{ formattedSentAmount }}</div>
+        <div><span class="label">
+          {{ isConfirmed ? 'Received' : 'Receive' }}
+        </span>{{ formattedReceivedAmount }}</div>
       </div>
     </div>
   </div>
@@ -48,7 +54,17 @@
 
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
+import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
+
+const statusLookup = {
+  canceled: 'cancelled',
+  processing: 'processing',
+  requires_action: 'action required',
+  requires_confirmation: 'confirmation required',
+  requires_payment_method: 'payment required',
+  succeeded: 'confirmed'
+}
 
 export default {
   name: 'Purchase',
@@ -63,6 +79,7 @@ export default {
     }
   },
   components: {
+    ArrowLeftIcon
   },
   computed: {
     ...mapState(['session']),
@@ -72,11 +89,26 @@ export default {
     formattedTime() {
       return format.time(this.purchase.created)
     },
+    formattedExpiryDate() {
+      return this.purchase && format.date(this.purchase.expires)
+    },
+    formattedExpiryTime() {
+      return this.purchase && format.time(this.purchase.expires)
+    },
     formattedSentAmount() {
       return `${format.usd(this.purchase.send.amount, 2)} USD`
     },
     formattedReceivedAmount() {
       return `${format.xe(this.purchase.receive.amount)} XE`
+    },
+    isCancelled() {
+      return this.purchase && this.purchase.intent.status === 'canceled'
+    },
+    isConfirmed() {
+      return this.purchase && this.purchase.intent.status === 'succeeded'
+    },
+    isProcessing() {
+      return this.purchase && this.purchase.intent.status === 'processing'
     },
     purchaseId() {
       return this.$route.params.id
@@ -93,7 +125,7 @@ export default {
     status() {
       /** @see https://stripe.com/docs/payments/intents#intent-statuses */
       if (this.error) return 'error'
-      return this.purchase && this.purchase.intent.status || 'loading'
+      return this.purchase && statusLookup[this.purchase.intent.status] || 'loading'
     }
   },
   methods: {
@@ -119,7 +151,7 @@ export default {
         confirmParams: { return_url }
       })
     },
-    async getPurchase() {
+    async updatePurchase() {
       this.purchase = await utils.purchases.getPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
@@ -141,26 +173,13 @@ export default {
     }
   },
   mounted() {
+    this.updatePurchase()
     if (this.redirectStatus === 'succeeded') {
       this.refreshPurchase()
       this.iRefresh = setInterval(() => {
         this.refreshPurchase()
       }, 15 * 1000)
     }
-    else {
-      this.getPurchase()
-    }
-    // utils.purchases.refreshPurchase(
-    //   process.env.VUE_APP_ACCOUNT_API_URL,
-    //   this.session._key,
-    //   this.purchaseId
-    // )
-    //   .then(purchase => {
-    //     this.purchase = purchase
-    //   })
-    //   .catch(err => {
-    //     this.error = err
-    //   })
   },
   unmounted() {
     clearInterval(this.iRefresh)
@@ -188,6 +207,16 @@ export default {
 }
 
 .label {
-  @apply font-bold;
+  @apply font-bold block;
+}
+
+.purchase__grid {
+  @apply grid gap-y-4
+}
+
+@media (min-width: 450px) {
+  .purchase__grid {
+    @apply grid-cols-2;
+  }
 }
 </style>

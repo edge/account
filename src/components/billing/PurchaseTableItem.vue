@@ -46,9 +46,9 @@ import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'
 
 const statusLookup = {
   canceled: 'Cancelled',
-  requires_action: '',
-  requires_confirmation: 'Confirmation Needed',
-  requires_payment_method: 'Payment Required',
+  requires_action: 'Purchase Incomplete',
+  requires_confirmation: 'Purchase Incomplete',
+  requires_payment_method: 'Purchase Incomplete',
   succeeded: 'Confirmed'
 }
 

@@ -9,7 +9,7 @@
         </template>
       </Calculator>
     </div>
-    <div class="box flex flex-col space-y-4">
+    <div class="box flex flex-col">
       <h4>Add a Payment Card</h4>
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
       <button v-if="!showCard" @click="startAddPaymentMethod" class="button button--small button--success">
