@@ -102,9 +102,13 @@ export default {
       this.paymentElement = this.stripeElements.create('payment')
       this.paymentElement.mount(this.$refs.paymentElement)
     },
-    cancelPurchase () {
+    async cancelPurchase() {
+      this.purchase = await utils.purchases.cancelPurchase(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.purchaseId
+      )
       this.$router.push({ name: 'Payments' })
-      /** @todo cancel through API */
     },
     async confirmPurchase() {
       // eslint-disable-next-line max-len
