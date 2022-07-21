@@ -18,32 +18,52 @@
         <span v-else>XE</span>
       </h4>
 
-      <div v-if="status !== 'confirmed' && status !== 'cancelled'">
-        <p>Enter your card payment details to purchase {{ purchasingXE }} XE for {{ purchasingUSD }} USD.</p>
-        <div ref="paymentElement"/>
-        <div class="flex flex-col space-y-2 lg:flex-row w-full lg:space-x-2 lg:space-y-0 mt-4">
-          <button class="w-full button button--small button--success" @click="confirmPurchase">
-          Complete purchase
-          </button>
-          <button class="w-full button button--small button--solid" @click="cancelPurchase">Cancel purchase</button>
+      <div v-if="purchase">
+        <div v-if="processing">
+          <div><LoadingSpinner /></div>
+          <span>Processing Payment</span>
+          <span>This could take a few minutes. Please do not refresh or navigate away from this page.</span>
         </div>
-      </div>
-      <div v-else-if="error" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-        <h4>Error loading purchase</h4>
-        <p>{{error.message}}</p>
-      </div>
-      <div v-else-if="status === 'loading'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-        <h4>Loading...</h4>
-      </div>
-      <div v-else class="purchase__grid md:grid-cols-2 gap-y-4">
-        <div><span class="label">Date</span>{{ formattedDate }}</div>
-        <div><span class="label">Time</span>{{ formattedTime }}</div>
-        <div><span class="label">
-          {{ isConfirmed ? 'Sent' : 'Send' }}
-        </span>{{ formattedSentAmount }}</div>
-        <div><span class="label">
-          {{ isConfirmed ? 'Received' : 'Receive' }}
-        </span>{{ formattedReceivedAmount }}</div>
+        <div v-else-if="purchaseIsInProgress(purchase)">
+          <p>Enter your card payment details to purchase {{ purchasingXE }} XE for {{ purchasingUSD }} USD.</p>
+          <div ref="paymentElement"/>
+          <div class="flex flex-col space-y-2 lg:flex-row w-full lg:space-x-2 lg:space-y-0 mt-4">
+            <button
+              class="w-full button button--small button--success"
+              @click="confirmPurchase"
+              :disabled="completing"
+            >
+              <span>Complete purchase</span>
+              <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
+            </button>
+            <button
+              class="w-full button button--small button--solid"
+              @click="cancelPurchase"
+              :disabled="completing"
+            >
+              Cancel purchase
+            </button>
+          </div>
+          <div v-if="error" class="flex items-center errorMessage mt-2">
+            <ExclamationIcon class="w-3.5 text-red" />
+            <span class="errorMessage__text">{{
+              error.message || 'Payment Declined'
+            }}</span>
+          </div>
+        </div>
+        <div v-else class="purchase__grid md:grid-cols-2 gap-y-4">
+          <div><span class="label">Date</span>{{ formattedDate }}</div>
+          <div><span class="label">Time</span>{{ formattedTime }}</div>
+          <div><span class="label">
+            {{ isConfirmed ? 'Sent' : 'Send' }}
+          </span>{{ formattedSentAmount }}</div>
+          <div><span class="label">
+            {{ isConfirmed ? 'Received' : 'Receive' }}
+          </span>{{ formattedReceivedAmount }}</div>
+        </div>
+        <!-- <div v-else-if="status === 'loading'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
+          <h4>Loading...</h4>
+        </div> -->
       </div>
     </div>
   </div>
@@ -54,8 +74,9 @@
 
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
-import { ArrowLeftIcon } from '@heroicons/vue/outline'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
+import { ArrowLeftIcon, ExclamationIcon } from '@heroicons/vue/outline'
 
 const statusLookup = {
   canceled: 'cancelled',
@@ -73,13 +94,17 @@ export default {
   },
   data() {
     return {
+      completing: false,
       error: null,
       iRefresh: null,
+      processing: false,
       purchase: null
     }
   },
   components: {
-    ArrowLeftIcon
+    ArrowLeftIcon,
+    ExclamationIcon,
+    LoadingSpinner
   },
   computed: {
     ...mapState(['session']),
@@ -143,13 +168,25 @@ export default {
       this.$router.push({ name: 'Payments' })
     },
     async confirmPurchase() {
+      this.completing = true
       // eslint-disable-next-line max-len
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments/purchase/${this.purchase._key}`
 
-      await this.stripe.confirmPayment({
-        elements: this.stripeElements,
-        confirmParams: { return_url }
-      })
+      try {
+        this.error = null
+        const purchase = await this.stripe.confirmPayment({
+          elements: this.stripeElements,
+          confirmParams: { return_url }
+        })
+        this.error = purchase.error || null
+      }
+      catch (error) {
+        this.error = error
+      }
+      this.completing = false
+    },
+    purchaseIsInProgress(purchase) {
+      return purchase.intent.status !== 'canceled' && purchase.intent.status !== 'succeeded'
     },
     async updatePurchase() {
       this.purchase = await utils.purchases.getPurchase(
@@ -157,7 +194,11 @@ export default {
         this.session._key,
         this.purchaseId
       )
-      if (this.purchase.status !== 'succeeded') this.addPaymentForm()
+      if (this.purchaseIsInProgress(this.purchase)) {
+        setTimeout(() => {
+          this.addPaymentForm()
+        }, 0)
+      }
     },
     async refreshPurchase() {
       try {
@@ -175,11 +216,14 @@ export default {
   mounted() {
     this.updatePurchase()
     if (this.redirectStatus === 'succeeded') {
-      this.refreshPurchase()
-      this.iRefresh = setInterval(() => {
+      this.processing = true
+      setTimeout(async () => {
         this.refreshPurchase()
-      }, 15 * 1000)
+      }, 5000)
     }
+    this.iRefresh = setInterval(() => {
+      this.refreshPurchase()
+    }, 15 * 1000)
   },
   unmounted() {
     clearInterval(this.iRefresh)
@@ -192,7 +236,10 @@ export default {
   },
   watch: {
     purchase(newPurchase) {
-      if (newPurchase.intent.status === 'succeeded') clearInterval(this.iRefresh)
+      if (!this.purchaseIsInProgress(newPurchase)) {
+        this.processing = false
+        clearInterval(this.iRefresh)
+      }
     }
   }
 }
