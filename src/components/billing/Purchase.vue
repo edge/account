@@ -12,7 +12,6 @@
           :class="[
             isConfirmed ? 'text-green' : '',
             isCancelled ? 'text-red' : '',
-            isProcessing ? 'italic' : ''
           ]"
         >{{ status }}</span></span>
         <span v-else>XE</span>
@@ -20,9 +19,12 @@
 
       <div v-if="purchase">
         <div v-if="processing">
-          <div><LoadingSpinner /></div>
-          <span>Processing Payment</span>
-          <span>This could take a few minutes. Please do not refresh or navigate away from this page.</span>
+          <div class="flex items-center space-x-2">
+            <div><LoadingSpinner /></div>
+            <span>Processing Payment</span>
+          </div>
+          <!-- eslint-disable-next-line max-len -->
+          <span>This could take a few minutes. Please do not refresh or navigate away from this page until the purchase is complete.</span>
         </div>
         <div v-else-if="purchaseIsInProgress(purchase)">
           <p>Enter your card payment details to purchase {{ purchasingXE }} XE for {{ purchasingUSD }} USD.</p>
@@ -61,9 +63,6 @@
             {{ isConfirmed ? 'Received' : 'Receive' }}
           </span>{{ formattedReceivedAmount }}</div>
         </div>
-        <!-- <div v-else-if="status === 'loading'" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-          <h4>Loading...</h4>
-        </div> -->
       </div>
     </div>
   </div>
@@ -114,12 +113,6 @@ export default {
     formattedTime() {
       return format.time(this.purchase.created)
     },
-    formattedExpiryDate() {
-      return this.purchase && format.date(this.purchase.expires)
-    },
-    formattedExpiryTime() {
-      return this.purchase && format.time(this.purchase.expires)
-    },
     formattedSentAmount() {
       return `${format.usd(this.purchase.send.amount, 2)} USD`
     },
@@ -131,9 +124,6 @@ export default {
     },
     isConfirmed() {
       return this.purchase && this.purchase.intent.status === 'succeeded'
-    },
-    isProcessing() {
-      return this.purchase && this.purchase.intent.status === 'processing'
     },
     purchaseId() {
       return this.$route.params.id
@@ -194,11 +184,11 @@ export default {
         this.session._key,
         this.purchaseId
       )
-      if (this.purchaseIsInProgress(this.purchase)) {
-        setTimeout(() => {
+      setTimeout(() => {
+        if (this.purchaseIsInProgress(this.purchase)) {
           this.addPaymentForm()
-        }, 0)
-      }
+        }
+      }, 0)
     },
     async refreshPurchase() {
       try {
@@ -219,7 +209,7 @@ export default {
       this.processing = true
       setTimeout(async () => {
         this.refreshPurchase()
-      }, 5000)
+      }, 2000)
     }
     this.iRefresh = setInterval(() => {
       this.refreshPurchase()
