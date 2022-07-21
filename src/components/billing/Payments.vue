@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col space-y-4">
     <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-      <Calculator @update="onCalculatorUpdate">
+      <AddFundsCalculator @update="onCalculatorUpdate">
         <template v-slot:buttons>
           <button
             class="w-full md:max-w-xs mt-3 button button--small button--success sm:mt-0"
@@ -10,7 +10,7 @@
             Purchase XE
           </button>
         </template>
-      </Calculator>
+      </AddFundsCalculator>
     </div>
     <div class="box flex flex-col">
       <h4>Add a Payment Card</h4>
@@ -43,7 +43,7 @@
 
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
-import Calculator from '@/components/billing/Calculator'
+import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
 import PurchaseTable from '@/components/billing/PurchaseTable'
 import { mapState } from 'vuex'
 
@@ -68,7 +68,7 @@ export default {
     }
   },
   components: {
-    Calculator,
+    AddFundsCalculator,
     PurchaseTable
   },
   computed: {

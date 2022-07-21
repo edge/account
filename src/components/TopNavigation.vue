@@ -17,12 +17,12 @@
         <span>
           <span class="font-bold">Balance: </span>
           <span class="lg:hidden">
-            (<button @click="addFunds" class="text-green hover:underline">Add Funds</button>)
+            (<router-link to="/billing/payments" class="text-green hover:underline">Add Funds</router-link>)
           </span>
         </span>
         <span>{{ formattedBalance }} XE / {{ formattedUSDBalance }} USD </span>
         <span class="hidden lg:block">
-          (<button @click="addFunds" class="text-green hover:underline">Add Funds</button>)
+          (<router-link to="/billing/payments" class="text-green hover:underline">Add Funds</router-link>)
         </span>
       </div>
       <span class="topNavigation__right">
@@ -55,8 +55,7 @@ export default {
           text: 'Index'
         }
       ],
-      showNav: false,
-      showTopUpModal: false
+      showNav: false
     }
   },
   components: {
@@ -81,9 +80,6 @@ export default {
   methods: {
     closeMobileNav() {
       this.showNav = false
-    },
-    addFunds() {
-      this.$router.push('/funding')
     }
   },
   watch: {
