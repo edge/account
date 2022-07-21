@@ -29,6 +29,15 @@ export const getInvoices = async (host, sessionId, params) => {
   return response.body
 }
 
+export const getPaymentMethods = async (host, sessionId, params) => {
+  let url = `${host}/billing/paymentMethods`
+  // add query params
+  if (params !== undefined) url += `?${toQueryString(params)}`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 export const unholdInvoice = async (host, sessionId, invoiceId) => {
   const url = `${host}/billing/invoices/${invoiceId}/unhold`
   const response = await superagent.post(url)

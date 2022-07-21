@@ -55,9 +55,10 @@ export default {
       purchasingXE: 0,
 
       purchase: null,
-      purchases: null,
       cardElement: null,
-      paymentElement: null
+
+      paymentElement: null,
+      paymentMethods: null
     }
   },
   components: {
@@ -127,22 +128,26 @@ export default {
 
       this.$router.push({ name: 'Purchase', params: { id: purchase._key } })
     },
-    async updatePurchases() {
-      const purchases = await utils.purchases.getPurchases(
+    async updatePaymentMethods() {
+      const paymentMethods = await utils.billing.getPaymentMethods(
         process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
+        this.session._key,
+        {
+          limit: 5,
+          page: 1
+        }
       )
-      this.purchases = purchases.results
+      this.paymentMethods = paymentMethods.results
     }
   },
   mounted() {
-    this.updatePurchases()
-    this.iPurchases = setInterval(() => {
-      this.updatePurchases()
-    }, 15 * 1000)
+    this.updatePaymentMethods()
+    // this.iPaymentMethods = setInterval(() => {
+    //   this.updatePaymentMethods()
+    // }, 15 * 1000)
   },
   unmounted() {
-    clearInterval(this.iPurchases)
+    clearInterval(this.iPaymentMethods)
   },
   setup() {
     const stripe = window.Stripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY)
