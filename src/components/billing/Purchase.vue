@@ -29,7 +29,14 @@
         <div v-else-if="purchaseIsInProgress(purchase)">
           <p>Enter your card payment details to purchase {{ purchasingXE }} XE for {{ purchasingUSD }} USD.</p>
           <div ref="paymentElement"/>
-          <div class="flex flex-col space-y-2 lg:flex-row w-full lg:space-x-2 lg:space-y-0 mt-4">
+          <div class="flex flex-col space-y-2 lg:flex-row w-full self-end lg:space-x-2 lg:space-y-0 mt-4">
+            <button
+              class="w-full button button--small button--solid"
+              @click="cancelPurchase"
+              :disabled="completing"
+            >
+              Cancel purchase
+            </button>
             <button
               class="w-full button button--small button--success"
               @click="confirmPurchase"
@@ -37,13 +44,6 @@
             >
               <span>Complete purchase</span>
               <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
-            </button>
-            <button
-              class="w-full button button--small button--solid"
-              @click="cancelPurchase"
-              :disabled="completing"
-            >
-              Cancel purchase
             </button>
           </div>
           <div v-if="error" class="flex items-center errorMessage mt-2">

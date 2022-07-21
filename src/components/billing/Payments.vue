@@ -3,7 +3,10 @@
     <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
       <Calculator @update="onCalculatorUpdate">
         <template v-slot:buttons>
-          <button class="w-full mt-3 button button--small button--success sm:mt-0" @click="startPurchase">
+          <button
+            class="w-full md:max-w-xs mt-3 button button--small button--success sm:mt-0"
+            @click="startPurchase"
+          >
             Purchase XE
           </button>
         </template>
@@ -12,14 +15,18 @@
     <div class="box flex flex-col">
       <h4>Add a Payment Card</h4>
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
-      <button v-if="!showCard" @click="startAddPaymentMethod" class="button button--small button--success">
+      <button
+        v-if="!showCard"
+        @click="startAddPaymentMethod"
+        class="w-full md:max-w-xs button button--small button--success"
+      >
         Click here to add a card
       </button>
       <div class="mb-4" ref="paymentElement"/>
       <button
         v-if="showCard"
         @click="addPaymentMethod"
-        class="w-full mt-3 button button--small button--success sm:mt-0"
+        class="w-full md:max-w-xs mt-3 button button--small button--success sm:mt-0"
       >
         Add card
       </button>
