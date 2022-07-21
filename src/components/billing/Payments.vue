@@ -15,7 +15,7 @@
       <button v-if="!showCard" @click="startAddPaymentMethod" class="button button--small button--success">
         Click here to add a card
       </button>
-      <div ref="paymentElement"/>
+      <div class="mb-4" ref="paymentElement"/>
       <button
         v-if="showCard"
         @click="addPaymentMethod"
