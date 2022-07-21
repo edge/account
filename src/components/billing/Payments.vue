@@ -15,7 +15,7 @@
       <button v-if="!showCard" @click="startAddPaymentMethod" class="button button--small button--success">
         Click here to add a card
       </button>
-      <div ref="cardElement"/>
+      <div ref="paymentElement"/>
       <button
         v-if="showCard"
         @click="addPaymentMethod"
@@ -55,9 +55,8 @@ export default {
       purchasingXE: 0,
 
       purchase: null,
-      cardElement: null,
-
       paymentElement: null,
+
       paymentMethods: null
     }
   },
@@ -82,27 +81,34 @@ export default {
   },
   methods: {
     async addPaymentMethod() {
-      const { paymentMethod, error } = await this.stripe.createPaymentMethod({
-        type: 'card',
-        card: this.cardElement
+      // eslint-disable-next-line max-len
+      const return_url = `${document.location.protocol}//${document.location.host}/billing/payments`
+
+      const { error } = await this.stripe.confirmSetup({
+        elements: this.stripeElements,
+        confirmParams: { return_url }
       })
       if (error) throw error
-
-      await utils.billing.addPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
-        name: 'Test Credit Card',
-        stripe: {
-          id: paymentMethod.id
-        }
-      })
+    },
+    async handleSetupIntentRedirect() {
+      console.log(this.$route.query.setup_intent, this.$route.query.redirect_status)
+      if (this.$route.query.redirect_status === 'succeeded') {
+        await utils.billing.addPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          name: 'Credit Card',
+          stripe: this.$route.query.setup_intent
+        })
+      }
     },
     onCalculatorUpdate({ usd, xe }) {
       this.calculatedUSD = usd
       this.calculatedXE = xe
     },
-    startAddPaymentMethod() {
-      this.stripeElements = this.stripe.elements()
-      this.cardElement = this.stripeElements.create('card')
-      this.cardElement.mount(this.$refs.cardElement)
+    async startAddPaymentMethod() {
+      const intent = await utils.billing.createStripeSetupIntent(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
+
+      this.stripeElements = this.stripe.elements({ clientSecret: intent.client_secret })
+      this.paymentElement = this.stripeElements.create('payment')
+      this.paymentElement.mount(this.$refs.paymentElement)
       this.showCard = true
     },
     async startPurchase() {
@@ -145,6 +151,7 @@ export default {
     // this.iPaymentMethods = setInterval(() => {
     //   this.updatePaymentMethods()
     // }, 15 * 1000)
+    this.handleSetupIntentRedirect()
   },
   unmounted() {
     clearInterval(this.iPaymentMethods)

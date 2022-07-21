@@ -13,6 +13,12 @@ export const addPaymentMethod = async (host, sessionId, data) => {
   return response.body
 }
 
+export const createStripeSetupIntent = async (host, sessionId) => {
+  const url = `${host}/billing/paymentMethods/setup/stripe`
+  const response = await superagent.post(url).set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 export const getBalance = async (host, sessionId) => {
   const url = `${host}/billing/balance`
   const response = await superagent.get(url)
