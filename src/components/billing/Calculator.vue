@@ -4,7 +4,7 @@
     <div class="flex flex-col space-y-6">
       <div class="converter flex items-center space-x-2">
         <div class="currency symbol flex justify-between">
-          <input type="number" class="w-32" v-model="inputAmount" @focusout="formatInput" />
+          <input type="number" v-model="inputAmount" @focusout="formatInput" />
           {{ usdToXe ? 'USD' : 'XE' }}
         </div>
         <button @click="flipConversion" class="converter__toggle hover:text-green">
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
 import { SwitchHorizontalIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 
@@ -40,11 +39,11 @@ export default {
     ...mapState(['account', 'balance']),
     formattedUSD() {
       return this.usdToXe ?
-        this.inputAmount.toFixed(2) :
+        Number(this.inputAmount).toFixed(2) :
         (this.inputAmount * this.balance.token.usdPerXe).toFixed(2)
     },
     formattedXE() {
-      return this.usdToXe ? (this.inputAmount / this.balance.token.usdPerXe).toFixed(6) : this.inputAmount.toFixed(6)
+      return this.usdToXe ? (this.inputAmount / this.balance.token.usdPerXe).toFixed(6) : Number(this.inputAmount).toFixed(6)
     }
   },
   methods: {
@@ -98,6 +97,7 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+  @apply w-full;
 }
 
 @media (max-width: 500px) {
@@ -111,10 +111,6 @@ input[type=number] {
   }
   .converter .converter__toggle {
     @apply row-span-2;
-  }
-
-  input[type=number] {
-    @apply w-28;
   }
 }
 </style>
