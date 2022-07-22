@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col space-y-4">
-    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
+    <div class="flex flex-col space-y-4 xl:flex-row xl:space-x-6 lg:space-y-0">
       <AddFundsCalculator @update="onCalculatorUpdate">
         <template v-slot:buttons>
           <button
@@ -11,39 +11,7 @@
           </button>
         </template>
       </AddFundsCalculator>
-
-      <div class="box flex flex-col">
-        <h4>Auto Add Funds</h4>
-        <p>Enabling auto add funds will automatically purchase XE whenever you balance is running low.</p>
-
-        <div class="flex space-x-2 mb-5">
-          <div>
-            <label for="">Target amount</label>
-            <div class="currency flex justify-between">
-              <input type="number" v-model="autoTargetAmount" @focusout="formatTargetAmount" />
-              USD
-            </div>
-          </div>
-
-          <div>
-            <label for="">Select Payment Card</label>
-            <select v-model="autoPaymentCard" name="" id="" class="w-full">
-              <option v-for="p in paymentMethods" :key="p._key" :value="p._key">
-                XXXX XXXX XXXX {{ p.stripe.card.last4 }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <button
-          @click=enableAutoTopUp
-          class="button button--small button--success w-full md:max-w-xs"
-          :disabled="!autoPaymentCard || autoTargetAmount < 10"
-        >
-          Enable Auto Add Funds
-        </button>
-      </div>
-
+      <AutoTopUp :paymentMethods=paymentMethods />
     </div>
     <div class="box flex flex-col">
       <h4>Add a Payment Card</h4>
@@ -78,6 +46,7 @@
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
+import AutoTopUp from '@/components/billing/AutoTopUp'
 import PaymentMethodTable from '@/components/billing/PaymentMethodTable'
 import PurchaseTable from '@/components/billing/PurchaseTable'
 import { mapState } from 'vuex'
@@ -98,14 +67,12 @@ export default {
 
       purchase: null,
       paymentElement: null,
-      paymentMethods: [],
-
-      autoPaymentCard: null,
-      autoTargetAmount: '10.00'
+      paymentMethods: []
     }
   },
   components: {
     AddFundsCalculator,
+    AutoTopUp,
     PaymentMethodTable,
     PurchaseTable
   },
@@ -134,26 +101,6 @@ export default {
         confirmParams: { return_url }
       })
       if (error) throw error
-    },
-    async enableAutoTopUp() {
-      try {
-        const res = await utils.billing.enableAutoTopUp(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          {
-            paymentMethod: this.autoPaymentCard,
-            targetBalance: Number(this.autoTargetAmount)
-          }
-        )
-        console.log(res)
-      }
-      catch (error) {
-        console.error(error)
-      }
-    },
-    formatTargetAmount() {
-      if (!this.autoTargetAmount) this.autoTargetAmount = 0
-      this.autoTargetAmount = Number(this.autoTargetAmount).toFixed(2)
     },
     async handleSetupIntentRedirect() {
       if (this.$route.query.redirect_status === 'succeeded') {
