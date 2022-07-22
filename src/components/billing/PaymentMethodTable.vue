@@ -1,20 +1,17 @@
 <template>
   <div v-if="paymentMethods && paymentMethods.length">
-    <div class="mt-4 overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
+    <div class="overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
             <th scope="col" class="tableHead__cell" width="">
               Card Number
             </th>
-            <th scope="col" class="tableHead__cell" width="100">
+            <th scope="col" class="tableHead__cell">
               Expiry
             </th>
-            <th scope="col" class="tableHead__cell" width="100">
+            <th scope="col" class="tableHead__cell">
               Type
-            </th>
-            <th scope="col" class="tableHead__cell" width="">
-              Default
             </th>
             <th scope="col" class="tableHead__cell actions" width="150"></th>
           </tr>
@@ -24,7 +21,7 @@
             v-for="paymentMethod in paymentMethods"
             :paymentMethod="paymentMethod"
             :key="paymentMethod._key"
-            @updatePaymentMethods=updatePaymentMethods
+            @refreshPaymentMethods="updatePaymentMethods"
           />
         </tbody>
       </table>
@@ -72,6 +69,9 @@ export default {
     changePage(newPage) {
       this.pageHistory = [...this.pageHistory, newPage]
     },
+    onRefreshPaymentMethods() {
+      this.updatePaymentMethods()
+    },
     async updatePaymentMethods() {
       const paymentMethods = await utils.billing.getPaymentMethods(
         process.env.VUE_APP_ACCOUNT_API_URL,
@@ -96,6 +96,7 @@ export default {
     clearInterval(this.iPaymentMethods)
     this.iPaymentMethods = null
   },
+  emits: ['updatePaymentMethods'],
   watch: {
     pageHistory() {
       this.updatePaymentMethods()

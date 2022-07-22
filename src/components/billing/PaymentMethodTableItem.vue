@@ -12,15 +12,11 @@
       <span class="mr-2 lg:hidden">Card Type:</span>
       <span class="truncate capitalize">{{ cardType }}</span>
     </td>
-    <td class="tableBody__cell col-span-2">
-      <span class="mr-2 lg:hidden">Default:</span>
-      <span class="truncate underline">Set as default card</span>
-    </td>
     <td class="tableBody__cell actions">
       <div class="flex items-center w-full space-x-2 action_buttons">
         <button
           class="tableButton button-error delete"
-          @click.prevent=deletePaymentMethod
+          @click.prevent=toggleDeleteConfirmationModal
           :disabled=isDeleting
         >
           <div class="flex items-center">
@@ -37,6 +33,13 @@
       </div>
     </td>
   </tr>
+  <!-- eslint-disable-next-line vue/no-multiple-template-root-->
+  <DeletePaymentMethodConfirmation
+    v-if=showDeleteConfirmation
+    :paymentMethod=paymentMethod
+    @modal-confirm=deletePaymentMethod
+    @modal-close=toggleDeleteConfirmationModal
+  />
 </template>
 
 <script>
@@ -44,6 +47,7 @@
 
 // import * as format from '../../utils/format'
 import * as utils from '../../account-utils'
+import DeletePaymentMethodConfirmation from '@/components/confirmations/DeletePaymentMethodConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
@@ -59,10 +63,12 @@ export default {
       downloadError: false,
       httpError: null,
       isDeleting: false,
+      showDeleteConfirmation: false,
       unholdError: false
     }
   },
   components: {
+    DeletePaymentMethodConfirmation,
     ExclamationIcon,
     LoadingSpinner,
     Tooltip,
@@ -95,7 +101,7 @@ export default {
         console.log(res)
 
         setTimeout(() => {
-          this.$emit('updatePaymentMethods')
+          this.$emit('refreshPaymentMethods')
           this.isDeleting = false
         }, 1000)
       }
@@ -103,9 +109,12 @@ export default {
         this.httpError = error
         this.isDeleting = false
       }
-
+    },
+    toggleDeleteConfirmationModal() {
+      this.showDeleteConfirmation = !this.showDeleteConfirmation
     }
-  }
+  },
+  emits: ['refreshPaymentMethods']
 }
 </script>
 <style scoped>

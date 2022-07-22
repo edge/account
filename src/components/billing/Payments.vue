@@ -14,24 +14,34 @@
       <AutoTopUp :paymentMethods=paymentMethods />
     </div>
     <div class="box flex flex-col">
-      <h4>Add a Payment Card</h4>
+      <h4>Payment Cards</h4>
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
-      <PaymentMethodTable @updatePaymentMethods=updatePaymentMethods />
+      <PaymentMethodTable @updatePaymentMethods=onUpdatePaymentMethods ref="paymentMethodTable" />
       <button
         v-if="!showCard"
         @click=startAddPaymentMethod
-        class="w-full md:max-w-xs button button--small button--success"
+        class="mt-5 w-full md:max-w-xs button button--small button--success"
       >
         Add New Card
       </button>
-      <div class="mb-4" ref="paymentElement"/>
-      <button
-        v-if="showCard"
-        @click="addPaymentMethod"
-        class="w-full md:max-w-xs mt-3 button button--small button--success sm:mt-0"
-      >
-        Add card
-      </button>
+      <h4 v-if="showCard" class="mt-5 pt-5 border-t border-gray-300">Add New Card</h4>
+      <div v-show="paymentElement" class="mb-5" ref="paymentElement"/>
+      <div class="flex flex-col md:flex-row md:space-x-2">
+        <button
+          v-if=showCard
+          @click=cancelAddPaymentMethod
+          class="w-full button button--small button--solid"
+        >
+          Cancel
+        </button>
+        <button
+          v-if="showCard"
+          @click="addPaymentMethod"
+          class="w-full button button--small button--success"
+        >
+          Add card
+        </button>
+      </div>
     </div>
     <div class="box">
       <h4>Purchase History</h4>
@@ -102,6 +112,10 @@ export default {
       })
       if (error) throw error
     },
+    cancelAddPaymentMethod() {
+      this.showCard = false
+      this.paymentElement = null
+    },
     async handleSetupIntentRedirect() {
       if (this.$route.query.redirect_status === 'succeeded') {
         await utils.billing.addPaymentMethod(
@@ -112,11 +126,15 @@ export default {
             stripe: this.$route.query.setup_intent
           }
         )
+        this.$refs.paymentMethodTable.updatePaymentMethods()
       }
     },
     onCalculatorUpdate({ usd, xe }) {
       this.calculatedUSD = usd
       this.calculatedXE = xe
+    },
+    onUpdatePaymentMethods(paymentMethods) {
+      this.paymentMethods = paymentMethods
     },
     async startAddPaymentMethod() {
       const intent = await utils.billing.createStripeSetupIntent(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
@@ -148,9 +166,6 @@ export default {
       )
 
       this.$router.push({ name: 'Purchase', params: { id: purchase._key } })
-    },
-    updatePaymentMethods(paymentMethods) {
-      this.paymentMethods = paymentMethods
     }
   },
   mounted() {
