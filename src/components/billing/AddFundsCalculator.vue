@@ -1,8 +1,9 @@
 <template>
   <div class="box">
-    <h4>Add Funds</h4>
-    <div class="flex flex-col space-y-6">
-      <div class="converter flex items-center space-x-2">
+    <h4>Manually Add Funds</h4>
+    <div class="flex flex-col">
+      <p>Make a one off  purchase of XE to add funds to your account.</p>
+      <div class="converter flex items-center space-x-2 mb-5">
         <div class="currency symbol flex justify-between">
           <input type="number" v-model="inputAmount" @focusout="formatInput" />
           {{ usdToXe ? 'USD' : 'XE' }}

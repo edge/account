@@ -83,6 +83,7 @@ export default {
       )
       this.paymentMethods = paymentMethods.results
       this.metadata = paymentMethods.metadata
+      this.$emit('updatePaymentMethods', paymentMethods.results)
     }
   },
   mounted() {

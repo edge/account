@@ -26,6 +26,14 @@ export const deletePaymentMethod = async (host, sessionId, paymentMethodKey) => 
   return response.body
 }
 
+export const enableAutoTopUp = async (host, sessionId, data) => {
+  const url = `${host}/account/topup`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(data)
+  return response.body
+}
+
 export const getBalance = async (host, sessionId) => {
   const url = `${host}/billing/balance`
   const response = await superagent.get(url)

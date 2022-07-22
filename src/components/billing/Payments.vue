@@ -11,17 +11,50 @@
           </button>
         </template>
       </AddFundsCalculator>
+
+      <div class="box flex flex-col">
+        <h4>Auto Add Funds</h4>
+        <p>Enabling auto add funds will automatically purchase XE whenever you balance is running low.</p>
+
+        <div class="flex space-x-2 mb-5">
+          <div>
+            <label for="">Target amount</label>
+            <div class="currency flex justify-between">
+              <input type="number" v-model="autoTargetAmount" @focusout="formatTargetAmount" />
+              USD
+            </div>
+          </div>
+
+          <div>
+            <label for="">Select Payment Card</label>
+            <select v-model="autoPaymentCard" name="" id="" class="w-full">
+              <option v-for="p in paymentMethods" :key="p._key" :value="p._key">
+                XXXX XXXX XXXX {{ p.stripe.card.last4 }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <button
+          @click=enableAutoTopUp
+          class="button button--small button--success w-full md:max-w-xs"
+          :disabled="!autoPaymentCard || autoTargetAmount < 10"
+        >
+          Enable Auto Add Funds
+        </button>
+      </div>
+
     </div>
     <div class="box flex flex-col">
       <h4>Add a Payment Card</h4>
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
-      <PaymentMethodTable />
+      <PaymentMethodTable @updatePaymentMethods=updatePaymentMethods />
       <button
         v-if="!showCard"
-        @click="startAddPaymentMethod"
+        @click=startAddPaymentMethod
         class="w-full md:max-w-xs button button--small button--success"
       >
-        Click here to add a card
+        Add New Card
       </button>
       <div class="mb-4" ref="paymentElement"/>
       <button
@@ -65,8 +98,10 @@ export default {
 
       purchase: null,
       paymentElement: null,
+      paymentMethods: [],
 
-      paymentMethods: null
+      autoPaymentCard: null,
+      autoTargetAmount: '10.00'
     }
   },
   components: {
@@ -100,13 +135,36 @@ export default {
       })
       if (error) throw error
     },
+    async enableAutoTopUp() {
+      try {
+        const res = await utils.billing.enableAutoTopUp(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          {
+            paymentMethod: this.autoPaymentCard,
+            targetBalance: Number(this.autoTargetAmount)
+          }
+        )
+        console.log(res)
+      }
+      catch (error) {
+        console.error(error)
+      }
+    },
+    formatTargetAmount() {
+      if (!this.autoTargetAmount) this.autoTargetAmount = 0
+      this.autoTargetAmount = Number(this.autoTargetAmount).toFixed(2)
+    },
     async handleSetupIntentRedirect() {
-      console.log(this.$route.query.setup_intent, this.$route.query.redirect_status)
       if (this.$route.query.redirect_status === 'succeeded') {
-        await utils.billing.addPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
-          name: 'Credit Card',
-          stripe: this.$route.query.setup_intent
-        })
+        await utils.billing.addPaymentMethod(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          {
+            name: 'Credit Card',
+            stripe: this.$route.query.setup_intent
+          }
+        )
       }
     },
     onCalculatorUpdate({ usd, xe }) {
@@ -143,13 +201,13 @@ export default {
       )
 
       this.$router.push({ name: 'Purchase', params: { id: purchase._key } })
+    },
+    updatePaymentMethods(paymentMethods) {
+      this.paymentMethods = paymentMethods
     }
   },
   mounted() {
     this.handleSetupIntentRedirect()
-  },
-  unmounted() {
-    clearInterval(this.iPaymentMethods)
   },
   setup() {
     const stripe = window.Stripe(process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY)
@@ -160,12 +218,36 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .box {
   @apply w-full p-6 bg-white rounded-lg;
 }
 
 .box h4 {
   @apply w-full pb-2 mb-4 font-medium;
+}
+
+.currency {
+  @apply border border-gray-500 rounded w-full py-2 px-4;
+}
+
+/* remove input defualy focus and arrows */
+input:focus {
+  outline: none;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  @apply w-full;
+}
+
+select {
+  @apply w-full border border-gray-500 bg-white rounded w-full p-2;
 }
 </style>
