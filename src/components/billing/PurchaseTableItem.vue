@@ -9,7 +9,7 @@
     </td>
     <td class="tableBody__cell">
       <div class="flex flex-row justify-center lg:block truncate">
-        <span class="mr-2 lg:hidden">Date:</span>
+        <span class="mr-2 lg:hidden">Time:</span>
         <div><ClockIcon class="table__icon mr-1 lg:hidden" /></div>
         <span class="truncate">{{ formattedTime }}</span>
       </div>
