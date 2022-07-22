@@ -15,6 +15,7 @@
     <div class="box flex flex-col">
       <h4>Add a Payment Card</h4>
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
+      <PaymentMethodTable />
       <button
         v-if="!showCard"
         @click="startAddPaymentMethod"
@@ -44,6 +45,7 @@
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
+import PaymentMethodTable from '@/components/billing/PaymentMethodTable'
 import PurchaseTable from '@/components/billing/PurchaseTable'
 import { mapState } from 'vuex'
 
@@ -69,6 +71,7 @@ export default {
   },
   components: {
     AddFundsCalculator,
+    PaymentMethodTable,
     PurchaseTable
   },
   computed: {
@@ -140,24 +143,9 @@ export default {
       )
 
       this.$router.push({ name: 'Purchase', params: { id: purchase._key } })
-    },
-    async updatePaymentMethods() {
-      const paymentMethods = await utils.billing.getPaymentMethods(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        {
-          limit: 5,
-          page: 1
-        }
-      )
-      this.paymentMethods = paymentMethods.results
     }
   },
   mounted() {
-    this.updatePaymentMethods()
-    // this.iPaymentMethods = setInterval(() => {
-    //   this.updatePaymentMethods()
-    // }, 15 * 1000)
     this.handleSetupIntentRedirect()
   },
   unmounted() {

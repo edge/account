@@ -19,6 +19,13 @@ export const createStripeSetupIntent = async (host, sessionId) => {
   return response.body
 }
 
+export const deletePaymentMethod = async (host, sessionId, paymentMethodKey) => {
+  const url = `${host}/billing/paymentMethods/${paymentMethodKey}`
+  const response = await superagent.delete(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 export const getBalance = async (host, sessionId) => {
   const url = `${host}/billing/balance`
   const response = await superagent.get(url)
