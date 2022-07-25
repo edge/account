@@ -44,7 +44,7 @@
       </button>
       <button
         v-if="autoTopUpEnabled"
-        @click=disableAutoTopUp
+        @click=toggleDisableConfirmationModal
         class="button button--small button--error w-full md:max-w-xs"
         :disabled="enabling || disabling"
       >
@@ -52,6 +52,11 @@
         <div class="ml-1" v-if="disabling"><LoadingSpinner /></div>
       </button>
     </div>
+    <DisableAutoTopUpConfirmation
+      v-if=showDisableConfirmation
+      @modal-confirm=disableAutoTopUp
+      @modal-close=toggleDisableConfirmationModal
+    />
   </div>
 </template>
 
@@ -60,6 +65,7 @@
 
 import * as utils from '@/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
+import DisableAutoTopUpConfirmation from '@/components/confirmations/DisableAutoTopUpConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 
@@ -67,6 +73,7 @@ export default {
   name: 'AutoTopUp',
   components: {
     BadgeCheckIcon,
+    DisableAutoTopUpConfirmation,
     LoadingSpinner
   },
   data() {
@@ -74,6 +81,7 @@ export default {
       enabling: false,
       disabling: false,
       paymentCard: null,
+      showDisableConfirmation: false,
       targetBalance: '10.00'
     }
   },
@@ -95,6 +103,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
+        this.toggleDisableConfirmationModal()
         setTimeout(() => {
           this.disabling = false
           this.paymentCard = null
@@ -130,6 +139,9 @@ export default {
     formatTargetBalance() {
       if (!this.targetBalance) this.targetBalance = 0
       this.targetBalance = Number(this.targetBalance).toFixed(2)
+    },
+    toggleDisableConfirmationModal() {
+      this.showDisableConfirmation = !this.showDisableConfirmation
     }
   },
   mounted() {
