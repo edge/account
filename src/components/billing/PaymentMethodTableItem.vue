@@ -12,6 +12,15 @@
       <span class="mr-2 lg:hidden">Card Type:</span>
       <span class="truncate capitalize">{{ cardType }}</span>
     </td>
+    <td v-if=autoTopUpCard class="tableBody__cell">
+      <div v-if=isAutoTopUpCard class="flex items-center">
+        <div><BadgeCheckIcon class="text-green w-4 mr-1" /></div>
+        Auto payment card
+      </div>
+      <span v-else><button @click="setAsAutoTopUp" class="underline hover:text-green">
+        Set as auto payment card
+      </button></span>
+    </td>
     <td class="tableBody__cell actions">
       <div class="flex items-center w-full space-x-2 action_buttons">
         <button
@@ -45,8 +54,8 @@
 <script>
 /* global process */
 
-// import * as format from '../../utils/format'
 import * as utils from '../../account-utils'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DeletePaymentMethodConfirmation from '@/components/confirmations/DeletePaymentMethodConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
@@ -68,15 +77,16 @@ export default {
     }
   },
   components: {
+    BadgeCheckIcon,
     DeletePaymentMethodConfirmation,
     ExclamationIcon,
     LoadingSpinner,
     Tooltip,
     TrashIcon
   },
-  props: ['paymentMethod'],
+  props: ['autoTopUpCard', 'paymentMethod'],
   computed: {
-    ...mapState(['session']),
+    ...mapState(['account', 'session']),
     cardType() {
       return this.paymentMethod.stripe.card.brand
     },
@@ -86,19 +96,21 @@ export default {
     formattedExpiry() {
       const card = this.paymentMethod.stripe.card
       return `${('0' + card.exp_month).slice(-2)}/${card.exp_year.toString().slice(2)}`
+    },
+    isAutoTopUpCard() {
+      return this.paymentMethod._key === this.autoTopUpCard
     }
   },
   methods: {
     async deletePaymentMethod() {
       try {
         this.isDeleting = true
-        const res = await utils.billing.deletePaymentMethod(
+        await utils.billing.deletePaymentMethod(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.paymentMethod._key
         )
-        /** @todo handle auto top-up card deleted*/
-        console.log(res)
+        this.toggleDeleteConfirmationModal()
 
         setTimeout(() => {
           this.$emit('refreshPaymentMethods')
@@ -108,6 +120,28 @@ export default {
       catch (error) {
         this.httpError = error
         this.isDeleting = false
+      }
+    },
+    async setAsAutoTopUp() {
+      try {
+        // this.enabling = true
+        await utils.billing.enableAutoTopUp(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          {
+            paymentMethod: this.paymentMethod._key,
+            targetBalance: this.account.topup.targetBalance
+          }
+        )
+        this.$store.dispatch('updateAccount')
+
+        // setTimeout(() => {
+        //   this.enabling = false
+        // }, 1000)
+      }
+      catch (error) {
+        console.error(error)
+        // this.enabling = false
       }
     },
     toggleDeleteConfirmationModal() {

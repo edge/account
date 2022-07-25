@@ -4,7 +4,7 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell" width="">
+            <th scope="col" class="tableHead__cell" width="28%">
               Card Number
             </th>
             <th scope="col" class="tableHead__cell">
@@ -13,12 +13,16 @@
             <th scope="col" class="tableHead__cell">
               Type
             </th>
+            <th v-if=autoTopUpEnabled scope="col" class="tableHead__cell" width="29%">
+              Auto Payment
+            </th>
             <th scope="col" class="tableHead__cell actions" width="150"></th>
           </tr>
         </thead>
         <tbody class="tableBody">
           <PaymentMethodTableItem
             v-for="paymentMethod in paymentMethods"
+            :autoTopUpCard=autoTopUpCard
             :paymentMethod="paymentMethod"
             :key="paymentMethod._key"
             @refreshPaymentMethods="updatePaymentMethods"
@@ -60,7 +64,14 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['account', 'session']),
+    autoTopUpEnabled() {
+      return this.account && this.account.topup
+    },
+    autoTopUpCard() {
+      if (this.autoTopUpEnabled) return this.account.topup.paymentMethod
+      return null
+    },
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
     }
