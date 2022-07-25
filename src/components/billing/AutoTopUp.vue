@@ -20,13 +20,40 @@
           <span class="errorMessage__text">Minimum target balance is $10</span>
         </div>
       </div>
-      <div class="w-full">
+      <div class="w-full" v-if="paymentMethods">
         <label for="">Select Payment Card</label>
-        <select v-model="paymentCard" name="" id="" class="w-full">
-          <option v-for="p in paymentMethods" :key="p._key" :value="p._key">
-            XXXX XXXX XXXX {{ p.stripe.card.last4 }}
-          </option>
-        </select>
+        <Listbox v-model="paymentCard">
+          <div class="relative w-full">
+            <ListboxButton class="listButton">
+              <span class="block truncate">XXXX XXXX XXXX {{ paymentCard && paymentCard.stripe.card.last4 }}</span>
+              <span class="listButton__icon">
+                <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
+              </span>
+            </ListboxButton>
+            <transition
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100"
+              leave-to-class="opacity-0"
+            >
+              <ListboxOptions class="listOptions">
+                <ListboxOption
+                  v-slot="{ active, selected }"
+                  v-for="p in paymentMethods"
+                  :key="p._key"
+                  :value="p"
+                  as="template"
+                >
+                  <li :class="active ? 'active' : ''" class="listOption">
+                    <span :class="'block truncate'">XXXX XXXX XXXX {{ p.stripe.card.last4 }}</span>
+                    <span v-if="selected" class="checkmark" >
+                      <CheckIcon class="w-5 h-5" aria-hidden="true" />
+                    </span>
+                  </li>
+                </ListboxOption>
+              </ListboxOptions>
+            </transition>
+          </div>
+        </Listbox>
       </div>
     </div>
     <div v-else>
@@ -68,12 +95,28 @@ import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableAutoTopUpConfirmation from '@/components/confirmations/DisableAutoTopUpConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
+import {
+  CheckIcon,
+  ChevronDownIcon
+} from '@heroicons/vue/outline'
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions
+} from '@headlessui/vue'
 
 export default {
   name: 'AutoTopUp',
   components: {
     BadgeCheckIcon,
+    CheckIcon,
+    ChevronDownIcon,
     DisableAutoTopUpConfirmation,
+    Listbox,
+    ListboxButton,
+    ListboxOption,
+    ListboxOptions,
     LoadingSpinner
   },
   data() {
@@ -122,7 +165,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
-            paymentMethod: this.paymentCard,
+            paymentMethod: this.paymentCard.stripe.id,
             targetBalance: Number(this.targetBalance)
           }
         )
@@ -146,8 +189,15 @@ export default {
   },
   mounted() {
     if (this.account.topup) {
-      this.paymentCard = this.account.topup.paymentMethod
       this.targetBalance = this.account.topup.targetBalance.toFixed(2)
+    }
+  },
+  watch: {
+    paymentMethods() {
+      this.paymentCard = this.paymentMethods.find(p => {
+        console.log(p._key)
+        return p._key === this.account.topup.paymentMethod
+      })
     }
   }
 }
@@ -167,7 +217,7 @@ export default {
 }
 
 /* remove input defualy focus and arrows */
-input:focus, select:focus {
+input:focus {
   outline: none;
 }
 /* Chrome, Safari, Edge, Opera */
@@ -182,13 +232,33 @@ input[type=number] {
   @apply w-full;
 }
 
-select {
-  @apply w-full border border-gray-500 bg-white rounded w-full p-2;
-}
-
 @media (max-width: 500px) {
   .form, .buttons {
     @apply flex-col space-x-0 space-y-2
   }
+}
+
+/* ListBox */
+.listButton {
+  @apply relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-500 rounded cursor-pointer;
+  @apply focus:outline-none focus:ring-1 focus:ring-green-200 focus:ring-opacity-25;
+}
+.listButton__icon {
+  @apply absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400;
+}
+
+/* options */
+.listOptions {
+  @apply absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
+}
+.listOption {
+  @apply relative flex items-center justify-between cursor-pointer py-2 pl-4 pr-4 text-gray-900 cursor-default select-none;
+}
+.listOption.active {
+  @apply text-green bg-green bg-opacity-5;
+}
+/* checkmark */
+.checkmark {
+  @apply flex items-center pl-3 text-green;
 }
 </style>
