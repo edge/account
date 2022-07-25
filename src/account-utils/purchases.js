@@ -1,4 +1,5 @@
 import superagent from 'superagent'
+import { toQueryString } from './helpers'
 
 // cancel an XE purchase
 export const cancelPurchase = async (host, sessionId, key) => {
@@ -26,8 +27,10 @@ export const getPurchase = async (host, sessionId, key) => {
 }
 
 // retrieve all XE purchases on an account
-export const getPurchases = async (host, sessionId) => {
-  const url = `${host}/billing/purchases`
+export const getPurchases = async (host, sessionId, params) => {
+  let url = `${host}/billing/purchases`
+  // add query params
+  if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
