@@ -34,7 +34,7 @@
           <div v-if=useSavedCard class="flex items-center space-x-2">
             <label class="flex-shrink-0">Select from saved payment cards</label>
             <Listbox v-model="paymentCard">
-              <div class="relative w-full mt-1">
+              <div class="relative w-full">
                 <ListboxButton class="listButton">
                   <span class="block truncate">XXXX XXXX XXXX {{ paymentCard && paymentCard.stripe.card.last4 }}</span>
                   <span class="listButton__icon">
@@ -369,7 +369,7 @@ select:focus {
 
 /* ListBox */
 .listButton {
-  @apply relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md cursor-pointer;
+  @apply relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-500 rounded cursor-pointer;
   @apply focus:outline-none focus:ring-1 focus:ring-green-200 focus:ring-opacity-25;
 }
 .listButton__icon {
