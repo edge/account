@@ -194,10 +194,7 @@ export default {
   },
   watch: {
     paymentMethods() {
-      this.paymentCard = this.paymentMethods.find(p => {
-        console.log(p._key)
-        return p._key === this.account.topup.paymentMethod
-      })
+      this.paymentCard = this.paymentMethods.find(p => p._key === this.account.topup.paymentMethod)
     }
   }
 }
