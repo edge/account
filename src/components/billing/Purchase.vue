@@ -28,7 +28,53 @@
         </div>
         <div v-else-if="purchaseIsInProgress(purchase)">
           <p>Enter your card payment details to purchase {{ purchasingXE }} XE for {{ purchasingUSD }} USD.</p>
+          <!-- stripe card input form -->
           <div ref="paymentElement"/>
+          <!-- saved card select -->
+          <div v-if=useSavedCard class="flex items-center space-x-2">
+            <label class="flex-shrink-0">Select from saved payment cards</label>
+            <Listbox v-model="paymentCard">
+              <div class="relative w-full mt-1">
+                <ListboxButton class="listButton">
+                  <span class="block truncate">XXXX XXXX XXXX {{ paymentCard && paymentCard.stripe.card.last4 }}</span>
+                  <span class="listButton__icon">
+                    <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
+                  </span>
+                </ListboxButton>
+                <transition
+                  leave-active-class="transition duration-100 ease-in"
+                  leave-from-class="opacity-100"
+                  leave-to-class="opacity-0"
+                >
+                  <ListboxOptions class="listOptions">
+                    <ListboxOption
+                      v-slot="{ active, selected }"
+                      v-for="p in paymentMethods"
+                      :key="p._key"
+                      :value="p"
+                      as="template"
+                    >
+                      <li :class="active ? 'active' : ''" class="listOption">
+                        <span :class="'block truncate'">XXXX XXXX XXXX {{ p.stripe.card.last4 }}</span>
+                        <span v-if="selected" class="checkmark" >
+                          <CheckIcon class="w-5 h-5" aria-hidden="true" />
+                        </span>
+                      </li>
+                    </ListboxOption>
+                  </ListboxOptions>
+                </transition>
+              </div>
+            </Listbox>
+          </div>
+          <!-- button to switch between new and saved card -->
+          <button
+            v-if="paymentMethods"
+            @click="toggleUseSavedCard"
+            class="mt-4 underline hover:text-green"
+          >
+            {{ useSavedCard ? 'Use a new card' : 'Use a saved card' }}
+          </button>
+          <!-- confirm or cancel buttons -->
           <div class="flex flex-col space-y-2 lg:flex-row w-full self-end lg:space-x-2 lg:space-y-0 mt-4">
             <button
               class="w-full button button--small button--solid"
@@ -40,7 +86,7 @@
             <button
               class="w-full button button--small button--success"
               @click="confirmPurchase"
-              :disabled="completing"
+              :disabled="completing || !canComplete"
             >
               <span>Complete purchase</span>
               <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
@@ -75,7 +121,18 @@ import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
-import { ArrowLeftIcon, ExclamationIcon } from '@heroicons/vue/outline'
+import {
+  ArrowLeftIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ExclamationIcon
+} from '@heroicons/vue/outline'
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions
+} from '@headlessui/vue'
 
 const statusLookup = {
   canceled: 'cancelled',
@@ -97,16 +154,31 @@ export default {
       error: null,
       iRefresh: null,
       processing: false,
-      purchase: null
+      purchase: null,
+
+      paymentCard: null,
+      paymentMethods: null,
+
+      useSavedCard: false
     }
   },
   components: {
     ArrowLeftIcon,
+    CheckIcon,
+    ChevronDownIcon,
     ExclamationIcon,
+    Listbox,
+    ListboxButton,
+    ListboxOption,
+    ListboxOptions,
     LoadingSpinner
   },
   computed: {
     ...mapState(['session']),
+    canComplete() {
+      if (this.useSavedCard) return this.paymentCard
+      return true
+    },
     formattedDate() {
       return format.date(this.purchase.created)
     },
@@ -163,22 +235,41 @@ export default {
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments/purchase/${this.purchase._key}`
 
       try {
+        let purchase
         this.error = null
-        const purchase = await this.stripe.confirmPayment({
-          elements: this.stripeElements,
-          confirmParams: { return_url }
-        })
+
+        if (this.useSavedCard) {
+          purchase = await this.stripe.confirmCardPayment(this.purchase.intent.client_secret, {
+            payment_method: this.paymentCard.stripe.id,
+            return_url
+          })
+        }
+        else {
+          purchase = await this.stripe.confirmPayment({
+            elements: this.stripeElements,
+            confirmParams: { return_url }
+          })
+        }
+
         this.error = purchase.error || null
       }
       catch (error) {
         this.error = error
+        this.completing = false
       }
-      this.completing = false
+    },
+    async getPaymentMethods() {
+      const paymentMethods = await utils.billing.getPaymentMethods(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.paymentMethods = paymentMethods.results
+      this.paymentCard = paymentMethods.results[0]
     },
     purchaseIsInProgress(purchase) {
       return purchase.intent.status !== 'canceled' && purchase.intent.status !== 'succeeded'
     },
-    async updatePurchase() {
+    async getPurchase() {
       this.purchase = await utils.purchases.getPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
@@ -187,6 +278,7 @@ export default {
       setTimeout(() => {
         if (this.purchaseIsInProgress(this.purchase)) {
           this.addPaymentForm()
+          this.getPaymentMethods()
         }
       }, 0)
     },
@@ -201,10 +293,15 @@ export default {
       catch (error) {
         this.error = error
       }
+    },
+    toggleUseSavedCard() {
+      if (this.useSavedCard) this.paymentElement.mount(this.$refs.paymentElement)
+      else this.paymentElement.unmount(this.$refs.paymentElement)
+      this.useSavedCard = !this.useSavedCard
     }
   },
   mounted() {
-    this.updatePurchase()
+    this.getPurchase()
     if (this.redirectStatus === 'succeeded') {
       this.processing = true
       setTimeout(async () => {
@@ -251,9 +348,46 @@ export default {
   @apply grid gap-y-4
 }
 
+select {
+  @apply border border-gray-500 bg-white rounded p-2;
+}
+
+option {
+  @apply rounded p-2;
+}
+
+select:focus {
+  outline: none;
+}
+
 @media (min-width: 450px) {
   .purchase__grid {
     @apply grid-cols-2;
   }
+}
+
+
+/* ListBox */
+.listButton {
+  @apply relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md cursor-pointer;
+  @apply focus:outline-none focus:ring-1 focus:ring-green-200 focus:ring-opacity-25;
+}
+.listButton__icon {
+  @apply absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400;
+}
+
+/* options */
+.listOptions {
+  @apply absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
+}
+.listOption {
+  @apply relative flex items-center justify-between cursor-pointer py-2 pl-4 pr-4 text-gray-900 cursor-default select-none;
+}
+.listOption.active {
+  @apply text-green bg-green bg-opacity-5;
+}
+/* checkmark */
+.checkmark {
+  @apply flex items-center pl-3 text-green;
 }
 </style>
