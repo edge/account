@@ -166,7 +166,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
-            paymentMethod: this.paymentCard.stripe.id,
+            paymentMethod: this.paymentCard._key,
             targetBalance: Number(this.targetBalance),
             threshold: Number(this.threshold)
           }
