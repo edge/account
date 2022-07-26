@@ -30,7 +30,7 @@
         <button
           v-if=showCard
           @click=cancelAddPaymentMethod
-          class="w-full button button--small button--solid"
+          class="w-full button button--small button--outline"
         >
           Cancel
         </button>

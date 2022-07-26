@@ -80,18 +80,18 @@
           <!-- confirm or cancel buttons -->
           <div class="flex flex-col space-y-2 lg:flex-row w-full self-end lg:space-x-2 lg:space-y-0 mt-4">
             <button
-              class="w-full button button--small button--solid"
+              class="w-full button button--small button--outline"
               @click="cancelPurchase"
               :disabled="completing"
             >
-              Cancel purchase
+              Cancel Purchase
             </button>
             <button
               class="w-full button button--small button--success"
               @click="confirmPurchase"
               :disabled="completing || !canComplete"
             >
-              <span>Complete purchase</span>
+              <span>Complete Purchase</span>
               <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
             </button>
           </div>
