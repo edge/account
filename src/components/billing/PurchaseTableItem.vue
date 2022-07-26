@@ -1,5 +1,5 @@
 <template>
-  <tr class="hover:bg-gray-200 cursor-pointer" @click="goToPurchase">
+  <tr>
     <td class="tableBody__cell">
       <div class="flex flex-row justify-center lg:block truncate">
         <span class="mr-2 lg:hidden">Date:</span>
@@ -24,18 +24,22 @@
     </td>
     <td class="tableBody__cell status row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>
-      <div class="flex space-x-1 items-center">
-        <span
-          class="truncate capitalize"
-          :class="[
-            isConfirmed ? 'text-green' : '',
-            isCancelled ? 'text-red' : '',
-            isInProgress ? 'italic pr-1' : ''
-          ]"
-        >
-          {{ status }}
-        </span>
-      </div>
+      <span
+        class="truncate capitalize"
+        :class="[
+          isConfirmed ? 'text-green' : '',
+          isCancelled ? 'text-red' : '',
+          isProcessing ? 'italic pr-1' : ''
+        ]"
+      >
+        {{ status }}
+      </span>
+    </td>
+    <td class="tableBody__cell status row-start-1 col-start-2">
+      <span class="mr-2 lg:hidden">Reference:</span>
+      <span class="truncate">
+        <button @click=goToPurchase class="underline hover:text-green">#{{ purchase._key }}</button>
+      </span>
     </td>
   </tr>
 </template>
@@ -43,14 +47,6 @@
 <script>
 import * as format from '../../utils/format'
 import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'
-
-const statusLookup = {
-  canceled: 'Cancelled',
-  requires_action: 'Purchase Incomplete',
-  requires_confirmation: 'Purchase Incomplete',
-  requires_payment_method: 'Purchase Incomplete',
-  succeeded: 'Confirmed'
-}
 
 export default {
   name: 'PurchaseTableItem',
@@ -79,16 +75,20 @@ export default {
       return format.time(this.purchase.created)
     },
     isCancelled() {
-      return this.purchase.intent.status === 'canceled'
+      return this.purchase.status === 'cancelled'
     },
     isConfirmed() {
-      return this.purchase.intent.status === 'succeeded'
+      return (this.purchase.status) === 'complete'
+    },
+    isProcessing() {
+      return ['paid', 'pending', 'processed', 'unsent'].includes(this.purchase.status)
     },
     isInProgress() {
-      return this.purchase.intent.status !== 'canceled' && this.purchase.intent.status !== 'succeeded'
+      return this.purchase.status === 'unpaid'
     },
     status() {
-      return statusLookup[this.purchase.intent.status] || this.purchase.intent.status
+      if (this.isProcessing) return 'processing'
+      return this.purchase.status
     }
   },
   methods: {

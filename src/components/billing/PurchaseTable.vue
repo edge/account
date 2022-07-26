@@ -19,6 +19,9 @@
             <th scope="col" class="tableHead__cell">
               Status
             </th>
+            <th scope="col" class="tableHead__cell">
+              Reference
+            </th>
           </tr>
         </thead>
         <tbody class="tableBody">

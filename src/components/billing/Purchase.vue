@@ -7,18 +7,20 @@
         </router-link>
       </div>
       <h4>Purchase
-        <span v-if="isConfirmed || isCancelled">#{{this.purchaseId}} - <span
+        <span v-if="isConfirmed || isCancelled || isProcessing">#{{this.purchaseId}} - <span
           class="capitalize font-normal"
           :class="[
             isConfirmed ? 'text-green' : '',
             isCancelled ? 'text-red' : '',
+            isProcessing ? 'italic' : ''
           ]"
         >{{ status }}</span></span>
         <span v-else>XE</span>
       </h4>
 
       <div v-if="purchase">
-        <div v-if="processing">
+        <!-- stripe payment in progress -->
+        <div v-if="processingStripe">
           <div class="flex items-center space-x-2">
             <div><LoadingSpinner /></div>
             <span>Processing Payment</span>
@@ -26,7 +28,8 @@
           <!-- eslint-disable-next-line max-len -->
           <span>This could take a few minutes. Please do not refresh or navigate away from this page until the purchase is complete.</span>
         </div>
-        <div v-else-if="purchaseIsInProgress(purchase)">
+        <!-- purchase unpaid - payment form -->
+        <div v-else-if="isPurchaseUnpaid(purchase)">
           <p>Enter your card payment details to purchase {{ purchasingXE }} XE for {{ purchasingUSD }} USD.</p>
           <!-- stripe card input form -->
           <div ref="paymentElement"/>
@@ -99,11 +102,12 @@
             }}</span>
           </div>
         </div>
+        <!-- complete, processing (xe side) or cancelled -->
         <div v-else class="purchase__grid md:grid-cols-2 gap-y-4">
           <div><span class="label">Date</span>{{ formattedDate }}</div>
           <div><span class="label">Time</span>{{ formattedTime }}</div>
           <div><span class="label">
-            {{ isConfirmed ? 'Sent' : 'Send' }}
+            {{ isConfirmed || isProcessing ? 'Sent' : 'Send' }}
           </span>{{ formattedSentAmount }}</div>
           <div><span class="label">
             {{ isConfirmed ? 'Received' : 'Receive' }}
@@ -134,15 +138,6 @@ import {
   ListboxOptions
 } from '@headlessui/vue'
 
-const statusLookup = {
-  canceled: 'cancelled',
-  processing: 'processing',
-  requires_action: 'action required',
-  requires_confirmation: 'confirmation required',
-  requires_payment_method: 'payment required',
-  succeeded: 'confirmed'
-}
-
 export default {
   name: 'Purchase',
   title() {
@@ -153,7 +148,7 @@ export default {
       completing: false,
       error: null,
       iRefresh: null,
-      processing: false,
+      processingStripe: false,
       purchase: null,
 
       paymentCard: null,
@@ -192,10 +187,13 @@ export default {
       return `${format.xe(this.purchase.receive.amount)} XE`
     },
     isCancelled() {
-      return this.purchase && this.purchase.intent.status === 'canceled'
+      return this.purchase && this.purchase.status === 'cancelled'
     },
     isConfirmed() {
-      return this.purchase && this.purchase.intent.status === 'succeeded'
+      return this.purchase && this.purchase.status === 'complete'
+    },
+    isProcessing() {
+      return this.purchase && ['paid', 'pending', 'processed', 'unsent'].includes(this.purchase.status)
     },
     purchaseId() {
       return this.$route.params.id
@@ -210,9 +208,8 @@ export default {
       return this.$route.query.redirect_status
     },
     status() {
-      /** @see https://stripe.com/docs/payments/intents#intent-statuses */
-      if (this.error) return 'error'
-      return this.purchase && statusLookup[this.purchase.intent.status] || 'loading'
+      if (this.isProcessing) return 'processing'
+      return this.purchase && this.purchase.status
     }
   },
   methods: {
@@ -266,8 +263,8 @@ export default {
       this.paymentMethods = paymentMethods.results
       this.paymentCard = paymentMethods.results[0]
     },
-    purchaseIsInProgress(purchase) {
-      return purchase.intent.status !== 'canceled' && purchase.intent.status !== 'succeeded'
+    isPurchaseUnpaid(purchase) {
+      return purchase.status === 'unpaid'
     },
     async getPurchase() {
       this.purchase = await utils.purchases.getPurchase(
@@ -276,7 +273,7 @@ export default {
         this.purchaseId
       )
       setTimeout(() => {
-        if (this.purchaseIsInProgress(this.purchase)) {
+        if (this.isPurchaseUnpaid(this.purchase)) {
           this.addPaymentForm()
           this.getPaymentMethods()
         }
@@ -306,7 +303,7 @@ export default {
       this.processing = true
       setTimeout(async () => {
         this.refreshPurchase()
-      }, 2000)
+      }, 1500)
     }
     this.iRefresh = setInterval(() => {
       this.refreshPurchase()
@@ -323,7 +320,7 @@ export default {
   },
   watch: {
     purchase(newPurchase) {
-      if (!this.purchaseIsInProgress(newPurchase)) {
+      if (!this.isPurchaseUnpaid(newPurchase)) {
         this.processing = false
         clearInterval(this.iRefresh)
       }
