@@ -4,10 +4,13 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell" width="15%">
+            <th scope="col" class="tableHead__cell">
+              Reference
+            </th>
+            <th scope="col" class="tableHead__cell">
               Date
             </th>
-            <th scope="col" class="tableHead__cell" width="15%">
+            <th scope="col" class="tableHead__cell">
               Time
             </th>
             <th scope="col" class="tableHead__cell">
@@ -18,9 +21,6 @@
             </th>
             <th scope="col" class="tableHead__cell">
               Status
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Reference
             </th>
           </tr>
         </thead>
@@ -118,7 +118,7 @@ export default {
   @apply w-full p-6 bg-white rounded-lg;
 }
 .box h4 {
-  @apply w-full pb-2 mb-4 font-medium;
+  @apply w-full mb-4 font-medium;
 }
 
 .tableHead {

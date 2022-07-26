@@ -4,7 +4,7 @@
       <AddFundsCalculator @update="onCalculatorUpdate">
         <template v-slot:buttons>
           <button
-            class="w-full md:max-w-xs mt-3 button button--small button--success sm:mt-0"
+            class="w-full md:max-w-xs mt-3 button button--small button--success sm:mt-0 self-end"
             @click="startPurchase"
           >
             Purchase XE
@@ -18,29 +18,32 @@
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
       <PaymentMethodTable @updatePaymentMethods=onUpdatePaymentMethods ref="paymentMethodTable" />
       <button
-        v-if="!showCard"
+        v-if="!showAddNewCard"
         @click=startAddPaymentMethod
-        class="mt-5 w-full md:max-w-xs button button--small button--success"
+        class="mt-5 w-full md:max-w-xs button button--small button--success self-end"
       >
         Add New Card
       </button>
-      <h4 v-if="showCard" class="mt-5 pt-5 border-t border-gray-300">Add New Card</h4>
-      <div v-show="paymentElement" class="mb-5" ref="paymentElement"/>
-      <div class="flex flex-col md:flex-row md:space-x-2">
-        <button
-          v-if=showCard
-          @click=cancelAddPaymentMethod
-          class="w-full button button--small button--outline"
-        >
-          Cancel
-        </button>
-        <button
-          v-if="showCard"
-          @click="addPaymentMethod"
-          class="w-full button button--small button--success"
-        >
-          Add card
-        </button>
+      <!-- add new card form -->
+      <h4 v-if="showAddNewCard" class="mt-5 pt-5 border-t border-gray-300">Add New Card</h4>
+      <div class="newCardForm">
+        <div v-show="paymentElement" class="mb-5" ref="paymentElement"/>
+        <div class="flex flex-col md:flex-row md:space-x-2">
+          <button
+            v-if=showAddNewCard
+            @click=cancelAddPaymentMethod
+            class="w-full button button--small button--outline"
+          >
+            Cancel
+          </button>
+          <button
+            v-if="showAddNewCard"
+            @click="addPaymentMethod"
+            class="w-full button button--small button--success"
+          >
+            Add card
+          </button>
+      </div>
       </div>
     </div>
     <div class="box">
@@ -68,7 +71,7 @@ export default {
       copied: false,
       iBalance: null,
       rate: null,
-      showCard: false,
+      showAddNewCard: false,
       showCheckout: false,
       calculatedUSD: 0,
       calculatedXE: 0,
@@ -113,7 +116,7 @@ export default {
       if (error) throw error
     },
     cancelAddPaymentMethod() {
-      this.showCard = false
+      this.showAddNewCard = false
       this.paymentElement = null
     },
     async handleSetupIntentRedirect() {
@@ -142,7 +145,7 @@ export default {
       this.stripeElements = this.stripe.elements({ clientSecret: intent.client_secret })
       this.paymentElement = this.stripeElements.create('payment')
       this.paymentElement.mount(this.$refs.paymentElement)
-      this.showCard = true
+      this.showAddNewCard = true
     },
     async startPurchase() {
       this.purchasingUSD = this.calculatedUSD
@@ -186,7 +189,11 @@ export default {
 }
 
 .box h4 {
-  @apply w-full pb-2 mb-4 font-medium;
+  @apply w-full mb-4 font-medium;
+}
+
+.newCardForm {
+  @apply max-w-5xl;
 }
 
 .currency {

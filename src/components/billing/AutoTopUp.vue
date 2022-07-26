@@ -60,15 +60,7 @@
       <p class="text-red">Please add a saved payment card below to enable auto payments.</p>
     </div>
 
-    <div class="buttons flex space-x-2">
-      <button
-        @click=enableAutoTopUp
-        class="button button--small button--success w-full md:max-w-xs"
-        :disabled="!canEnable || enabling || disabling"
-      >
-        {{ autoTopUpEnabled ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
-        <div class="ml-1" v-if="enabling"><LoadingSpinner /></div>
-      </button>
+    <div class="buttons flex space-x-2 justify-end">
       <button
         v-if="autoTopUpEnabled"
         @click=toggleDisableConfirmationModal
@@ -77,6 +69,14 @@
       >
         {{ disabling ? 'Disabling' : 'Disable'}}
         <div class="ml-1" v-if="disabling"><LoadingSpinner /></div>
+      </button>
+      <button
+        @click=enableAutoTopUp
+        class="button button--small button--success w-full md:max-w-xs"
+        :disabled="!canEnable || enabling || disabling"
+      >
+        {{ autoTopUpEnabled ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
+        <div class="ml-1" v-if="enabling"><LoadingSpinner /></div>
       </button>
     </div>
     <DisableAutoTopUpConfirmation
@@ -125,7 +125,8 @@ export default {
       disabling: false,
       paymentCard: null,
       showDisableConfirmation: false,
-      targetBalance: '10.00'
+      targetBalance: '10.00',
+      threshold: '5.00'
     }
   },
   props: ['paymentMethods'],
@@ -166,7 +167,8 @@ export default {
           this.session._key,
           {
             paymentMethod: this.paymentCard.stripe.id,
-            targetBalance: Number(this.targetBalance)
+            targetBalance: Number(this.targetBalance),
+            threshold: Number(this.threshold)
           }
         )
         setTimeout(() => {
@@ -194,7 +196,10 @@ export default {
   },
   watch: {
     paymentMethods() {
-      this.paymentCard = this.paymentMethods.find(p => p._key === this.account.topup.paymentMethod)
+      if (this.account && this.account.topup) {
+        this.paymentCard = this.paymentMethods.find(p => p._key === this.account.topup.paymentMethod)
+      }
+      else this.paymentCard = this.paymentMethods[0]
     }
   }
 }
@@ -206,7 +211,7 @@ export default {
 }
 
 .box h4 {
-  @apply w-full pb-2 mb-4 font-medium;
+  @apply w-full mb-4 font-medium;
 }
 
 .currency {

@@ -1,6 +1,12 @@
 <template>
   <tr>
     <td class="tableBody__cell">
+      <span class="mr-2 lg:hidden">Reference:</span>
+      <span class="truncate">
+        <button @click=goToPurchase class="underline hover:text-green">#{{ purchase._key }}</button>
+      </span>
+    </td>
+    <td class="tableBody__cell">
       <div class="flex flex-row justify-center lg:block truncate">
         <span class="mr-2 lg:hidden">Date:</span>
         <div><CalendarIcon class="table__icon mr-1 lg:hidden" /></div>
@@ -14,15 +20,15 @@
         <span class="truncate">{{ formattedTime }}</span>
       </div>
     </td>
-    <td class="tableBody__cell col-span-2">
+    <td class="tableBody__cell">
       <span class="mr-2 lg:hidden">Sent:</span>
       <span class="truncate">{{ formattedSentAmount }} <span class="lg:hidden">USD</span></span>
     </td>
-    <td class="tableBody__cell col-span-2">
+    <td class="tableBody__cell">
       <span class="mr-2 lg:hidden">Received:</span>
       <span class="truncate">{{ formattedReceivedAmount }} <span class="lg:hidden">XE</span></span>
     </td>
-    <td class="tableBody__cell status row-start-1 col-start-2">
+    <td class="tableBody__cell">
       <span class="mr-2 lg:hidden">Status:</span>
       <span
         class="truncate capitalize"
@@ -33,12 +39,6 @@
         ]"
       >
         {{ status }}
-      </span>
-    </td>
-    <td class="tableBody__cell status row-start-1 col-start-2">
-      <span class="mr-2 lg:hidden">Reference:</span>
-      <span class="truncate">
-        <button @click=goToPurchase class="underline hover:text-green">#{{ purchase._key }}</button>
       </span>
     </td>
   </tr>

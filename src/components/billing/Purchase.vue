@@ -104,6 +104,10 @@
         </div>
         <!-- complete, processing (xe side) or cancelled -->
         <div v-else class="purchase__grid md:grid-cols-2 gap-y-4">
+          <div v-if=isProcessing class="col-span-2">
+            <!-- eslint-disable-next-line max-len -->
+            <span>Thank you for your purchase. We have received your payment and are now processing your XE. Please note that this can take up to 15 minutes.</span>
+          </div>
           <div><span class="label">Date</span>{{ formattedDate }}</div>
           <div><span class="label">Time</span>{{ formattedTime }}</div>
           <div><span class="label">
@@ -334,7 +338,7 @@ export default {
 }
 
 .box h4 {
-  @apply w-full pb-2 mb-4 font-medium;
+  @apply w-full mb-4 font-medium;
 }
 
 .label {

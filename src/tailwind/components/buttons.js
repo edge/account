@@ -23,8 +23,9 @@ const themes = {
     borderColor: colors.gray.DEFAULT,
 
     '&:hover, &.hover': {
-      borderColor: colors.gray[500],
-      color: colors.gray[500]
+      backgroundColor: colors.gray.DEFAULT,
+      borderColor: colors.gray.DEFAULT,
+      color: colors.white
     },
 
     '&:disabled, &.disabled': {
@@ -40,6 +41,20 @@ const themes = {
     '&:hover, &.hover': {
       backgroundColor: 'transparent',
       color: colors.red.DEFAULT
+    },
+
+    '&:disabled, &.disabled': {
+      backgroundColor: colors.gray.DEFAULT,
+      borderColor: colors.gray.DEFAULT
+    }
+  },
+  'outline-error': {
+    borderColor: colors.red.DEFAULT,
+    color: colors.red.DEFAULT,
+
+    '&:hover, &.hover': {
+      backgroundColor: colors.red.DEFAULT,
+      color: colors.white
     },
 
     '&:disabled, &.disabled': {
@@ -144,6 +159,7 @@ const buttons = ({ theme }) => {
     '.button--solid': button.solid,
     '.button--outline': button.outline,
     '.button--error': button.error,
+    '.button--outline-error': button['outline-error'],
     '.button--success': button.success,
     '.button--outline-success': button['outline-success'],
     '.button--small': button.small,

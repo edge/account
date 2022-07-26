@@ -4,7 +4,7 @@
     <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
       <DetailsBox>
         <template v-slot:buttons>
-          <button @click=addFunds class="button button--success button--small h-10">
+          <button @click=addFunds class="button button--success button--small">
             Add Funds
           </button>
         </template>
@@ -90,7 +90,7 @@ export default {
 }
 
 .box h4 {
-  @apply w-full pb-2 mb-4 font-medium;
+  @apply w-full mb-4 font-medium;
 }
 
 .tabGroup {

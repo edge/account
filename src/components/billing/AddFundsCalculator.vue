@@ -81,6 +81,14 @@ export default {
 </script>
 
 <style scoped>
+.box {
+  @apply w-full p-6 bg-white rounded-lg;
+}
+
+.box h4 {
+  @apply w-full mb-4 font-medium;
+}
+
 .currency {
   @apply border border-gray-500 rounded w-1/2 py-2 px-4;
 }

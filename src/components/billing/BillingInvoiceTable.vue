@@ -113,7 +113,7 @@ export default {
   @apply w-full p-6 bg-white rounded-lg;
 }
 .box h4 {
-  @apply w-full pb-2 mb-4 font-medium;
+  @apply w-full mb-4 font-medium;
 }
 
 .tableHead {
