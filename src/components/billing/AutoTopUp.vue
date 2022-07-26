@@ -1,13 +1,13 @@
 <template>
   <div class="box flex flex-col">
-    <h4>Auto Payments</h4>
+    <h4>Auto Top-Up</h4>
 
-    <div v-if="autoTopUpEnabled" class="flex items-center mb-5">
+    <div v-if="autoTopUpCard" class="flex items-center mb-5">
       <BadgeCheckIcon class="w-4 text-green mr-1" />
-      <span>Auto payments enabled</span>
+      <span>Auto top-up enabled</span>
     </div>
 
-    <p>Enabling auto payments will automatically purchase XE whenever you balance is running low.</p>
+    <p>Enabling auto top-ups will automatically purchase XE whenever you balance is running low.</p>
 
     <div v-if="paymentMethods.length" class="form flex space-x-2 mb-5">
       <div class="w-full">
@@ -57,14 +57,14 @@
       </div>
     </div>
     <div v-else>
-      <p class="text-red">Please add a saved payment card below to enable auto payments.</p>
+      <p class="text-red">Please add a saved payment card below to enable auto top-ups.</p>
     </div>
 
     <div class="buttons flex space-x-2 justify-end">
       <button
-        v-if="autoTopUpEnabled"
+        v-if="autoTopUpCard"
         @click=toggleDisableConfirmationModal
-        class="button button--small button--error w-full md:max-w-xs"
+        class="button button--small button--outline-error w-full md:max-w-xs"
         :disabled="enabling || disabling"
       >
         {{ disabling ? 'Disabling' : 'Disable'}}
@@ -75,7 +75,7 @@
         class="button button--small button--success w-full md:max-w-xs"
         :disabled="!canEnable || enabling || disabling"
       >
-        {{ autoTopUpEnabled ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
+        {{ autoTopUpCard ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
         <div class="ml-1" v-if="enabling"><LoadingSpinner /></div>
       </button>
     </div>
@@ -132,7 +132,7 @@ export default {
   props: ['paymentMethods'],
   computed: {
     ...mapState(['account', 'balance', 'session']),
-    autoTopUpEnabled() {
+    autoTopUpCard() {
       return this.account.topup
     },
     canEnable() {
@@ -195,6 +195,12 @@ export default {
     }
   },
   watch: {
+    autoTopUpCard() {
+      if (this.account && this.account.topup) {
+        this.paymentCard = this.paymentMethods.find(p => p._key === this.account.topup.paymentMethod)
+      }
+      else this.paymentCard = this.paymentMethods[0]
+    },
     paymentMethods() {
       if (this.account && this.account.topup) {
         this.paymentCard = this.paymentMethods.find(p => p._key === this.account.topup.paymentMethod)
