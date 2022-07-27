@@ -30,9 +30,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account', 'balance', 'serverCount', 'tasks']),
+    ...mapState(['account', 'balance', 'config', 'serverCount', 'tasks']),
     loaded() {
-      return this.account && this.balance && (this.serverCount !== null)
+      return this.account && this.balance && (this.serverCount !== null) && this.config
     }
   },
   components: {
@@ -51,6 +51,7 @@ export default {
   mounted() {
     // get any active tasks and balance on page load
     this.$store.dispatch('getActiveTasks')
+    this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
     this.$store.dispatch('updateBalance')
     this.$store.dispatch('updateServerCount')
