@@ -16,12 +16,12 @@
     <div class="box flex flex-col">
       <h4>Payment Cards</h4>
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
-      <div class="w-full grid gap-y-4 xl:grid-cols-2 xl:gap-x-4">
+      <div class="w-1/2 flex flex-col">
         <!-- current saved cards list -->
         <div class="flex flex-col">
           <PaymentMethodList @updatePaymentMethods=onUpdatePaymentMethods ref="paymentMethodList" />
           <button
-            :disabled=showAddNewCard
+            v-if="!showAddNewCard"
             @click=startAddPaymentMethod
             class="addNewPayment__button h-20"
           >
@@ -32,8 +32,7 @@
           </button>
         </div>
         <!-- add new card form -->
-        <div class="flex flex-col">
-          <!-- <h4 v-if="showAddNewCard">Add New Card</h4> -->
+        <div class="flex flex-col border border-dashed border-gray-300 rounded-md mt-2 p-4">
           <div class="max-w-5xl">
             <div
               v-show="paymentElement"
