@@ -1,37 +1,24 @@
 <template>
-  <tr>
-    <td class="tableBody__cell col-span-2">
-      <span class="mr-2 lg:hidden">Card Number:</span>
-      <span class="truncate">{{ formattedCardNumber }}</span>
-    </td>
-    <td class="tableBody__cell col-span-2">
-      <span class="mr-2 lg:hidden">Expiry:</span>
-      <span class="truncate">{{ formattedExpiry }}</span>
-    </td>
-    <td class="tableBody__cell col-span-2">
-      <span class="mr-2 lg:hidden">Card Type:</span>
+  <div class="payment__item">
+    <div class="flex flex-col items-center justify-center row-span-2">
+      <CreditCardIcon class="w-10 text-green" />
       <span class="truncate capitalize">{{ cardType }}</span>
-    </td>
-    <td v-if=autoTopUpCard class="tableBody__cell">
-      <div v-if=isAutoTopUpCard class="flex items-center">
-        <div><BadgeCheckIcon class="text-green w-4 mr-1" /></div>
-        Auto payment card
-      </div>
-      <span v-else><button @click="setAsAutoTopUp" class="underline hover:text-green">
-        Set as auto payment card
-      </button></span>
-    </td>
-    <td class="tableBody__cell actions">
-      <div class="flex items-center w-full space-x-2 action_buttons">
+    </div>
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+      <span class="monospace truncate">{{ formattedCardNumber }}</span>
+      <span class="monospace truncate">{{ formattedExpiry }}</span>
+    </div>
+    <div class="row-span-2 flex items-center">
+      <div class="flex items-center space-x-2">
         <button
-          class="tableButton button-error delete"
+          class="card__button delete"
           @click.prevent=toggleDeleteConfirmationModal
           :disabled=isDeleting
         >
           <div class="flex items-center">
             <div>
-              <LoadingSpinner v-if=isDeleting class="tableButton__icon" />
-              <TrashIcon v-else class="tableButton__icon" />
+              <LoadingSpinner v-if=isDeleting class="card__button__icon" />
+              <TrashIcon v-else class="card__button__icon" />
             </div>
             <span class="leading-none">Delete</span>
           </div>
@@ -40,8 +27,17 @@
           <ExclamationIcon class="w-5 mt-1 text-red" />
         </Tooltip>
       </div>
-    </td>
-  </tr>
+    </div>
+    <div v-if="account.topup" class="w-48">
+      <div v-if=isAutoTopUpCard class="flex items-center">
+        <div><BadgeCheckIcon class="text-green w-4 mr-1" /></div>
+        Auto top-up card
+      </div>
+      <button v-else @click="setAsAutoTopUp" class="flex-shrink-0 underline hover:text-green">
+        Set as auto top-up card
+      </button>
+    </div>
+  </div>
   <!-- eslint-disable-next-line vue/no-multiple-template-root-->
   <DeletePaymentMethodConfirmation
     v-if=showDeleteConfirmation
@@ -55,18 +51,15 @@
 /* global process */
 
 import * as utils from '../../account-utils'
-import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DeletePaymentMethodConfirmation from '@/components/confirmations/DeletePaymentMethodConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
-import {
-  ExclamationIcon,
-  TrashIcon
-} from '@heroicons/vue/outline'
+import { BadgeCheckIcon, CreditCardIcon } from '@heroicons/vue/solid'
+import { ExclamationIcon, TrashIcon } from '@heroicons/vue/outline'
 
 export default {
-  name: 'PaymentMethodTableItem',
+  name: 'PaymentMethodItem',
   data() {
     return {
       downloadError: false,
@@ -78,6 +71,7 @@ export default {
   },
   components: {
     BadgeCheckIcon,
+    CreditCardIcon,
     DeletePaymentMethodConfirmation,
     ExclamationIcon,
     LoadingSpinner,
@@ -152,63 +146,39 @@ export default {
 }
 </script>
 <style scoped>
-tr {
-  @apply grid py-4 gap-x-2 gap-y-2;
-  grid-template-columns: auto;
+.payment__item {
+  @apply grid gap-x-4 h-20 bg-white text-gray-500 border border-gray-300 rounded-md w-full p-2 pr-4;
+  grid-template-columns: auto 1fr auto;
 }
 
-.tableBody__cell {
-  @apply flex items-center text-gray-500 leading-4 truncate;
-}
-
-.tableButton {
+.card__button {
   @apply button button--extraSmall w-1/2 lg:w-24;
 }
 
-.tableButton.restore {
-  @apply button--success
+.card__button.default {
+ @apply button--success
 }
 
-.tableButton.delete {
- @apply button--error
+.card__button.delete {
+ @apply button--outline-error
 }
 
-.tableButton__icon {
+.card__button__icon {
   @apply w-3.5 h-3.5 mr-1;
 }
 
 @screen lg {
-  tr {
-    @apply table-row py-0;
-  }
+  /* .payment__item {
+    @apply justify-between gap-x-4;
+  } */
 
-  .tableBody__cell {
-    @apply text-sm pl-6 py-2 table-cell align-middle w-full;
-  }
-
-  .action_buttons {
-    @apply space-x-2
-  }
-
-  .tableButton__icon {
+  .card__button__icon {
     @apply w-4 h-4 mr-1;
   }
 }
 
 @media (max-width: 450px) {
-  tr {
-    @apply grid py-4 gap-x-2 gap-y-2;
-    grid-template-columns: 1fr;
-  }
-
-  .tableBody__cell {
-    @apply col-span-1;
-  }
-
-  .action_buttons {
-    @apply flex-col space-x-0 space-y-2 items-start;
-  }
-  .tableButton {
+  .card__button {
     @apply w-full;
   }
 }

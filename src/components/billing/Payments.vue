@@ -16,34 +16,48 @@
     <div class="box flex flex-col">
       <h4>Payment Cards</h4>
       <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
-      <PaymentMethodTable @updatePaymentMethods=onUpdatePaymentMethods ref="paymentMethodTable" />
-      <button
-        v-if="!showAddNewCard"
-        @click=startAddPaymentMethod
-        class="mt-5 w-full md:max-w-xs button button--small button--success self-end"
-      >
-        Add New Card
-      </button>
-      <!-- add new card form -->
-      <h4 v-if="showAddNewCard" class="mt-5 pt-5 border-t border-gray-300">Add New Card</h4>
-      <div class="newCardForm">
-        <div v-show="paymentElement" class="mb-5" ref="paymentElement"/>
-        <div class="flex flex-col md:flex-row md:space-x-2">
+      <div class="w-full grid gap-y-4 xl:grid-cols-2 xl:gap-x-4">
+        <!-- current saved cards list -->
+        <div class="flex flex-col">
+          <PaymentMethodList @updatePaymentMethods=onUpdatePaymentMethods ref="paymentMethodList" />
           <button
-            v-if=showAddNewCard
-            @click=cancelAddPaymentMethod
-            class="w-full button button--small button--outline"
+            :disabled=showAddNewCard
+            @click=startAddPaymentMethod
+            class="addNewPayment__button h-20"
           >
-            Cancel
+            <div class="flex items-center justify-center w-full">
+              <div><PlusCircleIcon class="w-5 mr-2" /></div>
+              <span>Add New Card</span>
+            </div>
           </button>
-          <button
-            v-if="showAddNewCard"
-            @click="addPaymentMethod"
-            class="w-full button button--small button--success"
-          >
-            Add card
-          </button>
-      </div>
+        </div>
+        <!-- add new card form -->
+        <div class="flex flex-col">
+          <!-- <h4 v-if="showAddNewCard">Add New Card</h4> -->
+          <div class="max-w-5xl">
+            <div
+              v-show="paymentElement"
+              class="mb-5"
+              ref="paymentElement"
+            />
+            <div class="flex flex-col md:flex-row md:space-x-2">
+              <button
+                v-if=showAddNewCard
+                @click=cancelAddPaymentMethod
+                class="w-full button button--small button--outline"
+              >
+                Cancel
+              </button>
+              <button
+                v-if="showAddNewCard"
+                @click="addPaymentMethod"
+                class="w-full button button--small button--success"
+              >
+                Add card
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="box">
@@ -60,8 +74,10 @@ import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
 import AutoTopUp from '@/components/billing/AutoTopUp'
-import PaymentMethodTable from '@/components/billing/PaymentMethodTable'
+import PaymentMethodList from '@/components/billing/PaymentMethodList'
+import { PlusCircleIcon } from '@heroicons/vue/outline'
 import PurchaseTable from '@/components/billing/PurchaseTable'
+
 import { mapState } from 'vuex'
 
 export default {
@@ -86,7 +102,8 @@ export default {
   components: {
     AddFundsCalculator,
     AutoTopUp,
-    PaymentMethodTable,
+    PaymentMethodList,
+    PlusCircleIcon,
     PurchaseTable
   },
   computed: {
@@ -129,7 +146,7 @@ export default {
             stripe: this.$route.query.setup_intent
           }
         )
-        this.$refs.paymentMethodTable.updatePaymentMethods()
+        this.$refs.paymentMethodList.updatePaymentMethods()
       }
     },
     onCalculatorUpdate({ usd, xe }) {
@@ -140,6 +157,7 @@ export default {
       this.paymentMethods = paymentMethods
     },
     async startAddPaymentMethod() {
+      if (this.showAddNewCard) return
       const intent = await utils.billing.createStripeSetupIntent(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
 
       this.stripeElements = this.stripe.elements({ clientSecret: intent.client_secret })
@@ -192,12 +210,16 @@ export default {
   @apply w-full mb-4 font-medium;
 }
 
-.newCardForm {
-  @apply max-w-5xl;
-}
-
 .currency {
   @apply border border-gray-500 rounded w-full py-2 px-4;
+}
+
+.addNewPayment__button {
+  @apply flex items-center bg-white text-gray-500 border border-dashed border-gray-300 rounded-md w-full p-2 pr-8 mt-2 cursor-pointer;
+}
+.addNewPayment__button:hover {
+  @apply border-green text-green;
+  border-style: solid;
 }
 
 /* remove input defualy focus and arrows */

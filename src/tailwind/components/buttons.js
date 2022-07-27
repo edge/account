@@ -59,7 +59,8 @@ const themes = {
 
     '&:disabled, &.disabled': {
       backgroundColor: colors.gray.DEFAULT,
-      borderColor: colors.gray.DEFAULT
+      borderColor: colors.gray.DEFAULT,
+      color: colors.white
     }
   },
   success: {
