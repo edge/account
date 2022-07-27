@@ -3,29 +3,49 @@
     <h4>Auto Top-Up</h4>
 
     <div v-if="autoTopUpCard" class="flex items-center mb-5">
-      <BadgeCheckIcon class="w-4 text-green mr-1" />
-      <span>Auto top-up enabled</span>
+      <div><BadgeCheckIcon class="w-4 text-green mr-1" /></div>
+      <span>Auto top-up enabled.</span>
     </div>
 
-    <p>Enabling auto top-ups will automatically purchase XE whenever you balance is running low.</p>
+    <!-- eslint-disable-next-line max-len -->
+    <p>{{ autoTopUpCard ? "If" : "By enabling auto top-ups, if" }} your balance drops below the threshold an XE purchase will automatically be made to top up your account to your target balance.</p>
 
-    <div v-if="paymentMethods.length" class="form flex space-x-2 mb-5">
-      <div class="w-full">
-        <label for="">Target balance</label>
-        <div class="currency flex justify-between">
-          <input type="number" v-model="targetBalance" @focusout="formatTargetBalance" />
-          USD
+    <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-5">
+      <div class="input-wrapper">
+        <div class="w-full">
+          <label class="block mb-1">Threshold</label>
+          <div class="currency flex justify-between">
+            <input
+              type="number"
+              v-model="threshold"
+              @focusout="formatThreshold"
+              @keypress="enableOnEnter"
+            />
+            USD
+          </div>
         </div>
-        <div class="errorMessage mt-1" v-if="targetBalance < 10">
-          <span class="errorMessage__text">Minimum target balance is $10</span>
+        <div class="w-full">
+          <label class="block mb-1">Target balance</label>
+          <div class="currency flex justify-between">
+            <input
+              type="number"
+              v-model="targetBalance"
+              @focusout="formatTargetBalance"
+              @keypress="enableOnEnter"
+            />
+            USD
+          </div>
         </div>
       </div>
-      <div class="w-full" v-if="paymentMethods">
-        <label for="">Select Payment Card</label>
+      <div class="errorMessage" v-if="targetBalanceError">
+        <span class="errorMessage__text">{{ targetBalanceError }}</span>
+      </div>
+      <div class="w-full pt-1" v-if="paymentMethods">
+        <label class="block mb-1">Select Payment Card</label>
         <Listbox v-model="paymentCard">
           <div class="relative w-full">
             <ListboxButton class="listButton">
-              <span class="block truncate">XXXX XXXX XXXX {{ paymentCard && paymentCard.stripe.card.last4 }}</span>
+              <span class="block truncate">{{ paymentCard && `XXXX XXXX XXXX ${paymentCard.stripe.card.last4}` }}</span>
               <span class="listButton__icon">
                 <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
               </span>
@@ -126,17 +146,34 @@ export default {
       paymentCard: null,
       showDisableConfirmation: false,
       targetBalance: '10.00',
+      targetBalanceError: null,
       threshold: '5.00'
     }
   },
   props: ['paymentMethods'],
   computed: {
-    ...mapState(['account', 'balance', 'session']),
+    ...mapState(['account', 'config', 'session']),
     autoTopUpCard() {
-      return this.account.topup
+      return this.account && this.account.topup && this.account.topup.paymentMethod
     },
     canEnable() {
-      return this.paymentCard && this.targetBalance >= 10
+      return this.paymentCard && this.isTargetBalanceAboveMin && this.isThresholdAboveMin
+    },
+    isTargetBalanceAboveMin() {
+      return Number(this.targetBalance) >= this.minTargetBalance
+        && Number(this.targetBalance) >= Number(this.threshold) + this.thresholdBuffer
+    },
+    isThresholdAboveMin() {
+      return Number(this.threshold) >= this.minThreshold
+    },
+    minTargetBalance() {
+      return this.config.topup.minTargetBalance
+    },
+    minThreshold() {
+      return this.config.topup.minThreshold
+    },
+    thresholdBuffer() {
+      return this.config.topup.thresholdBuffer
     }
   },
   methods: {
@@ -158,6 +195,11 @@ export default {
         console.error(error)
         this.disabling = false
       }
+    },
+    enableOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.enableAutoTopUp()
     },
     async enableAutoTopUp() {
       try {
@@ -185,6 +227,21 @@ export default {
       if (!this.targetBalance) this.targetBalance = 0
       this.targetBalance = Number(this.targetBalance).toFixed(2)
     },
+    formatThreshold() {
+      if (!this.threshold) this.threshold = 0
+      this.threshold = Number(this.threshold).toFixed(2)
+    },
+    setTargetBalanceError() {
+      const targetBalance = Number(this.targetBalance)
+      const threshold = Number(this.threshold)
+      const thresholdBuffer = this.config.topup.thresholdBuffer
+      /* eslint-disable max-len */
+      if (targetBalance < this.minTargetBalance) this.targetBalanceError = `Minimum target balance is $${this.minTargetBalance}.`
+      else if (threshold < this.minThreshold) this.targetBalanceError = `Minimum threshold is $${this.minThreshold}.`
+      else if (targetBalance < threshold + thresholdBuffer) this.targetBalanceError = `Target balance must be $${thresholdBuffer} greater than the threshold.`
+      /* eslint-enable max-len */
+      else this.targetBalanceError = null
+    },
     toggleDisableConfirmationModal() {
       this.showDisableConfirmation = !this.showDisableConfirmation
     }
@@ -192,20 +249,31 @@ export default {
   mounted() {
     if (this.account.topup) {
       this.targetBalance = this.account.topup.targetBalance.toFixed(2)
+      this.threshold = this.account.topup.threshold.toFixed(2)
+    }
+    else {
+      this.targetBalance = this.config.topup.minTargetBalance.toFixed(2)
+      this.threshold = this.config.topup.minThreshold.toFixed(2)
     }
   },
   watch: {
-    autoTopUpCard() {
-      if (this.account && this.account.topup) {
-        this.paymentCard = this.paymentMethods.find(p => p._key === this.account.topup.paymentMethod)
+    autoTopUpCard(newCard) {
+      if (newCard) {
+        this.paymentCard = this.paymentMethods.find(p => p._key === newCard)
       }
       else this.paymentCard = this.paymentMethods[0]
     },
     paymentMethods() {
-      if (this.account && this.account.topup) {
-        this.paymentCard = this.paymentMethods.find(p => p._key === this.account.topup.paymentMethod)
+      if (this.autoTopUpCard) {
+        this.paymentCard = this.paymentMethods.find(p => p._key === this.autoTopUpCard)
       }
       else this.paymentCard = this.paymentMethods[0]
+    },
+    targetBalance() {
+      this.setTargetBalanceError()
+    },
+    threshold() {
+      this.setTargetBalanceError()
     }
   }
 }
@@ -218,6 +286,10 @@ export default {
 
 .box h4 {
   @apply w-full mb-4 font-medium;
+}
+
+.input-wrapper {
+  @apply flex space-x-2;
 }
 
 .currency {
@@ -241,8 +313,8 @@ input[type=number] {
 }
 
 @media (max-width: 500px) {
-  .form, .buttons {
-    @apply flex-col space-x-0 space-y-2
+  .form, .buttons, .input-wrapper {
+    @apply flex-col space-x-0 space-y-2;
   }
 }
 

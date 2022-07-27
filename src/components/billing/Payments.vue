@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col space-y-4">
-    <div class="flex flex-col space-y-4 xl:flex-row xl:space-x-6 lg:space-y-0">
+    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
       <AddFundsCalculator @update="onCalculatorUpdate">
         <template v-slot:buttons>
           <button
