@@ -30,76 +30,68 @@
         </div>
         <!-- purchase unpaid - payment form -->
         <div v-else-if="isPurchaseUnpaid(purchase)">
-          <p>Enter your card payment details to purchase {{ purchasingXE }} XE for {{ purchasingUSD }} USD.</p>
-          <!-- stripe card input form -->
-          <div ref="paymentElement"/>
-          <!-- saved card select -->
-          <div v-if=useSavedCard class="flex items-center space-x-2">
-            <label class="flex-shrink-0">Select from saved payment cards</label>
-            <Listbox v-model="paymentCard">
-              <div class="relative w-full">
-                <ListboxButton class="listButton">
-                  <span class="block truncate">XXXX XXXX XXXX {{ paymentCard && paymentCard.stripe.card.last4 }}</span>
-                  <span class="listButton__icon">
-                    <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
-                  </span>
-                </ListboxButton>
-                <transition
-                  leave-active-class="transition duration-100 ease-in"
-                  leave-from-class="opacity-100"
-                  leave-to-class="opacity-0"
-                >
-                  <ListboxOptions class="listOptions">
-                    <ListboxOption
-                      v-slot="{ active, selected }"
-                      v-for="p in paymentMethods"
-                      :key="p._key"
-                      :value="p"
-                      as="template"
-                    >
-                      <li :class="active ? 'active' : ''" class="listOption">
-                        <span :class="'block truncate'">XXXX XXXX XXXX {{ p.stripe.card.last4 }}</span>
-                        <span v-if="selected" class="checkmark" >
-                          <CheckIcon class="w-5 h-5" aria-hidden="true" />
-                        </span>
-                      </li>
-                    </ListboxOption>
-                  </ListboxOptions>
-                </transition>
+          <p>Please enter your card details below to complete your purchase.</p>
+          <div class="flex flex-col space-y-2 w-1/2">
+            <!-- saved card list -->
+            <PaymentSelectionItem
+              v-for="p in paymentMethods"
+              :key="p._key"
+              :paymentMethod=p
+              :selected="p === paymentCard"
+              @selectCard="onSelectCard"
+            />
+            <!-- use new card button -->
+            <button
+              v-if="!useNewCard"
+              @click=openUseNewCard
+              class="addNewPayment__button h-20"
+            >
+              <div class="flex items-center justify-center w-full">
+                <div><PlusCircleIcon class="w-5 mr-2" /></div>
+                <span>Use New Card</span>
               </div>
-            </Listbox>
-          </div>
-          <!-- button to switch between new and saved card -->
-          <button
-            v-if="paymentMethods"
-            @click="toggleUseSavedCard"
-            class="mt-4 underline hover:text-green"
-          >
-            {{ useSavedCard ? 'Use a new card' : 'Use a saved card' }}
-          </button>
-          <!-- confirm or cancel buttons -->
-          <div class="flex flex-col space-y-2 lg:flex-row w-full self-end lg:space-x-2 lg:space-y-0 mt-4">
-            <button
-              class="w-full button button--small button--outline"
-              @click="cancelPurchase"
-              :disabled="completing"
-            >
-              Cancel Purchase
             </button>
-            <button
-              class="w-full button button--small button--success"
-              @click="confirmPurchase"
-              :disabled="completing || !canComplete"
+            <!-- stripe card input form -->
+            <div
+              :class="useNewCard && paymentMethods.length ? 'border border-green border-l-8 p-4 rounded-md' : ''"
+              ref="paymentElement"
+            />
+            <!-- purchase summary -->
+            <div
+              class="summary-grid"
+              :class="useNewCard ? 'pt-2' : 'pt-0'"
             >
-              <span>Complete Purchase</span>
-              <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
-            </button>
-          </div>
-          <div v-if="error" class="flex items-center errorMessage mt-2">
-            <ExclamationIcon class="w-3.5 text-red" />
-            <span class="errorMessage__text">{{
-              error.message || 'Payment Declined'
-            }}</span>
+              <span class="mr-4">Purchasing:</span>
+              <span><span class="font-bold">{{ purchasingXE }}</span> XE</span>
+              <span class="mr-4">Charge:</span>
+              <span><span class="font-bold">{{ purchasingUSD }}</span> USD</span>
+            </div>
+            <!-- confirm or cancel buttons -->
+            <div
+              class="flex flex-col space-y-2 lg:flex-row w-full self-end lg:space-x-2 lg:space-y-0"
+            >
+              <button
+                class="w-full button button--small button--outline"
+                @click="cancelPurchase"
+                :disabled="completing"
+              >
+                Cancel Purchase
+              </button>
+              <button
+                class="w-full button button--small button--success"
+                @click="confirmPurchase"
+                :disabled="completing || !canComplete"
+              >
+                <span>Complete Purchase</span>
+                <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
+              </button>
+            </div>
+            <div v-if="error" class="flex items-center errorMessage mt-2">
+              <ExclamationIcon class="w-3.5 text-red" />
+              <span class="errorMessage__text">{{
+                error.message || 'Payment Declined'
+              }}</span>
+            </div>
           </div>
         </div>
         <!-- complete, processing (xe side) or cancelled -->
@@ -128,19 +120,13 @@
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import PaymentSelectionItem from '@/components/billing/PaymentSelectionItem'
 import { mapState } from 'vuex'
 import {
   ArrowLeftIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  ExclamationIcon
+  ExclamationIcon,
+  PlusCircleIcon
 } from '@heroicons/vue/outline'
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions
-} from '@headlessui/vue'
 
 export default {
   name: 'Purchase',
@@ -158,24 +144,20 @@ export default {
       paymentCard: null,
       paymentMethods: null,
 
-      useSavedCard: false
+      useNewCard: false
     }
   },
   components: {
     ArrowLeftIcon,
-    CheckIcon,
-    ChevronDownIcon,
     ExclamationIcon,
-    Listbox,
-    ListboxButton,
-    ListboxOption,
-    ListboxOptions,
-    LoadingSpinner
+    LoadingSpinner,
+    PaymentSelectionItem,
+    PlusCircleIcon
   },
   computed: {
     ...mapState(['session']),
     canComplete() {
-      if (this.useSavedCard) return this.paymentCard
+      if (!this.useNewCard) return this.paymentCard
       return true
     },
     formattedDate() {
@@ -220,7 +202,10 @@ export default {
     addPaymentForm() {
       this.stripeElements = this.stripe.elements({ clientSecret: this.purchase.intent.client_secret })
       this.paymentElement = this.stripeElements.create('payment')
-      this.paymentElement.mount(this.$refs.paymentElement)
+      if (this.paymentMethods && !this.paymentMethods.length) {
+        this.useNewCard = true
+        this.paymentElement.mount(this.$refs.paymentElement)
+      }
     },
     async cancelPurchase() {
       this.purchase = await utils.purchases.cancelPurchase(
@@ -239,7 +224,7 @@ export default {
         let purchase
         this.error = null
 
-        if (this.useSavedCard) {
+        if (!this.useNewCard) {
           purchase = await this.stripe.confirmCardPayment(this.purchase.intent.client_secret, {
             payment_method: this.paymentCard.stripe.id,
             return_url
@@ -251,7 +236,6 @@ export default {
             confirmParams: { return_url }
           })
         }
-
         this.error = purchase.error || null
       }
       catch (error) {
@@ -276,12 +260,17 @@ export default {
         this.session._key,
         this.purchaseId
       )
-      setTimeout(() => {
+      setTimeout(async () => {
         if (this.isPurchaseUnpaid(this.purchase)) {
+          await this.getPaymentMethods()
           this.addPaymentForm()
-          this.getPaymentMethods()
         }
       }, 0)
+    },
+    onSelectCard(card) {
+      this.useNewCard = false
+      this.paymentCard = card
+      this.paymentElement.unmount(this.$refs.paymentElement)
     },
     async refreshPurchase() {
       try {
@@ -299,6 +288,11 @@ export default {
       if (this.useSavedCard) this.paymentElement.mount(this.$refs.paymentElement)
       else this.paymentElement.unmount(this.$refs.paymentElement)
       this.useSavedCard = !this.useSavedCard
+    },
+    openUseNewCard() {
+      this.useNewCard = true
+      this.paymentCard = null
+      this.paymentElement.mount(this.$refs.paymentElement)
     }
   },
   mounted() {
@@ -368,6 +362,11 @@ select:focus {
 }
 
 
+.payment__item {
+  @apply grid gap-x-4 h-20 bg-white text-gray-500 border border-gray-300 rounded-md w-full p-2 pr-4;
+  grid-template-columns: auto 1fr auto;
+}
+
 /* ListBox */
 .listButton {
   @apply relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-500 rounded cursor-pointer;
@@ -390,5 +389,18 @@ select:focus {
 /* checkmark */
 .checkmark {
   @apply flex items-center pl-3 text-green;
+}
+
+.addNewPayment__button {
+  @apply flex items-center bg-white text-gray-500 border border-dashed border-gray-300 rounded-md w-full p-2 pr-8 mt-2 cursor-pointer;
+}
+.addNewPayment__button:hover {
+  @apply border-green text-green;
+  border-style: solid;
+}
+
+.summary-grid {
+  @apply grid text-right pb-2;
+  grid-template-columns: 1fr auto;
 }
 </style>

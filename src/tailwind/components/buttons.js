@@ -29,8 +29,9 @@ const themes = {
     },
 
     '&:disabled, &.disabled': {
-      borderColor: colors.black[100],
-      color: colors.black[200]
+      backgroundColor: colors.gray.DEFAULT,
+      borderColor: colors.gray.DEFAULT,
+      color: colors.white
     }
   },
   error: {

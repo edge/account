@@ -32,7 +32,7 @@
           </button>
         </div>
         <!-- add new card form -->
-        <div class="flex flex-col border border-dashed border-gray-300 rounded-md mt-2 p-4">
+        <div :class="showAddNewCard ? 'flex flex-col border border-dashed border-gray-300 rounded-md mt-2 p-4' : ''">
           <div class="max-w-5xl">
             <div
               v-show="paymentElement"
