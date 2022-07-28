@@ -147,7 +147,7 @@ export default {
 </script>
 <style scoped>
 .payment__item {
-  @apply grid gap-x-4 h-20 bg-white text-gray-500 border border-gray-300 rounded-md w-full p-2 pr-4;
+  @apply grid gap-x-4 bg-white text-gray-500 border border-gray-300 rounded-md w-full p-2 pr-4;
   grid-template-columns: auto 1fr auto;
 }
 

@@ -4,19 +4,20 @@
     class="payment__item"
     :class="selected ? 'selected' : ''"
   >
-    <div class="flex flex-col items-center justify-center">
-      <CreditCardIcon class="w-10 text-green" />
-      <span class="truncate capitalize">{{ cardType }}</span>
-    </div>
-    <div class="flex flex-col md:flex-row md:justify-between md:items-center">
-      <span class="monospace truncate">{{ formattedCardNumber }}</span>
+    <span class="uppercase text-xs text-right col-start-3 pb-4">{{ paymentMethod.name }}</span>
+    <span class="card_number text-2xl monospace truncate col-span-3">{{ formattedCardNumber }}</span>
+    <div class="expiry flex flex-col">
+      <span class="monospace">Exp:</span>
       <span class="monospace truncate">{{ formattedExpiry }}</span>
+    </div>
+    <div class="flex justify-end col-start-3">
+      <CardBrandIcon :brand="cardType" />
     </div>
   </div>
 </template>
 
 <script>
-import { CreditCardIcon } from '@heroicons/vue/solid'
+import CardBrandIcon from '@/components/icons/CardBrandIcon'
 import { mapState } from 'vuex'
 
 export default {
@@ -31,7 +32,7 @@ export default {
     }
   },
   components: {
-    CreditCardIcon
+    CardBrandIcon
   },
   props: ['paymentMethod', 'selected'],
   computed: {
@@ -57,11 +58,17 @@ export default {
 </script>
 <style scoped>
 .payment__item {
-  @apply grid gap-x-4 h-20 bg-white text-gray-500 border border-gray-300 rounded-md w-full p-2 pr-4 cursor-pointer;
+  @apply grid grid-rows-3 gap-y-2 bg-gray-100 text-gray-500 border border-gray-300 rounded-md px-6 py-2 cursor-pointer;
   grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto;
+  width: 330px;
 }
 .payment__item.selected {
   @apply border-l-8 border-green;
+  padding-left: calc(1rem + 1px);
+}
+.payment__item:hover {
+  @apply border-green;
 }
 
 .card__button {
@@ -90,9 +97,30 @@ export default {
   }
 }
 
-@media (max-width: 450px) {
-  .card__button {
+@media (max-width: 400px) {
+  .payment__item {
     @apply w-full;
   }
+
+  .payment__item .card_number {
+    @apply text-xl;
+  }
+}
+
+@media (max-width: 350px) {
+  .payment__item .card_number {
+    @apply text-md;
+  }
+
+  .payment__item .expiry {
+    @apply text-xs;
+  }
+}
+
+@media (max-width: 310px) {
+  .payment__item .card_number {
+    @apply text-sm;
+  }
+
 }
 </style>
