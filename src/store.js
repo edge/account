@@ -10,6 +10,7 @@ import { createStore } from 'vuex'
 const store = createStore({
   state: {
     account: null,
+    config: null,
     backupCodes: null,
     balance: null,
     isAuthed: false,
@@ -32,6 +33,9 @@ const store = createStore({
     },
     setBalance(state, balance) {
       state.balance = balance
+    },
+    setConfig(state, config) {
+      state.config = config
     },
     setIsAuthed(state, isAuthed) {
       state.isAuthed = isAuthed
@@ -92,6 +96,11 @@ const store = createStore({
         state.session._key
       )
       commit('setBalance', response)
+
+    },
+    async updateConfig({ commit }) {
+      const response = await utils.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
+      commit('setConfig', response)
 
     },
     async updateServerCount({ commit, state }) {

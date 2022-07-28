@@ -4,31 +4,36 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell" width="15%">
+            <th scope="col" class="tableHead__cell">
+              Reference
+            </th>
+            <th scope="col" class="tableHead__cell">
               Date
             </th>
             <th scope="col" class="tableHead__cell">
-              Description
+              Time
+            </th>
+            <th scope="col" class="tableHead__cell">
+              Sent (USD)
+            </th>
+            <th scope="col" class="tableHead__cell">
+              Received (XE)
             </th>
             <th scope="col" class="tableHead__cell">
               Status
             </th>
-            <th scope="col" class="tableHead__cell">
-              Amount (USD)
-            </th>
-            <th scope="col" class="tableHead__cell" width="130"></th>
           </tr>
         </thead>
         <tbody class="tableBody">
-          <LoadingTableDataRow v-if="!invoices" colspan="5" />
-          <tr v-else-if="!invoices.length">
-            <td colspan="5" class="tableBody__cell text-center text-gray-500">No invoices</td>
+          <LoadingTableDataRow v-if="!purchases" colspan="5" />
+          <tr v-else-if="!purchases.length">
+            <td colspan="5" class="tableBody__cell text-center text-gray-500">No purchases</td>
           </tr>
-          <BillingInvoiceTableItem
+          <PurchaseTableItem
             v-else
-            v-for="invoice in invoices"
-            :invoice="invoice"
-            :key="invoice._key"
+            v-for="purchase in purchases"
+            :purchase="purchase"
+            :key="purchase._key"
           />
         </tbody>
       </table>
@@ -47,23 +52,23 @@
 /* global process */
 
 import * as utils from '../../account-utils'
-import BillingInvoiceTableItem from '@/components/billing/BillingInvoiceTableItem'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
+import PurchaseTableItem from '@/components/billing/PurchaseTableItem'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'BillingInvoiceTable',
+  name: 'PurchaseTable',
   components: {
-    BillingInvoiceTableItem,
     LoadingTableDataRow,
+    PurchaseTableItem,
     Pagination
   },
   data() {
     return {
-      iInvoices: null,
-      invoices: null,
-      limit: 5,
+      iPurchases: null,
+      purchases: null,
+      limit: 10,
       metadata: { totalCount: 0 },
       pageHistory: [1]
     }
@@ -78,8 +83,8 @@ export default {
     changePage(newPage) {
       this.pageHistory = [...this.pageHistory, newPage]
     },
-    async updateInvoices() {
-      const invoices = await utils.billing.getInvoices(
+    async updatePurchases() {
+      const purchases = await utils.purchases.getPurchases(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {
@@ -87,23 +92,23 @@ export default {
           page: this.currentPage
         }
       )
-      this.invoices = invoices.results
-      this.metadata = invoices.metadata
+      this.purchases = purchases.results
+      this.metadata = purchases.metadata
     }
   },
   mounted() {
-    this.updateInvoices()
-    this.iInvoices = setInterval(() => {
-      this.updateInvoices()
-    }, 5000)
+    this.updatePurchases()
+    this.iPurchases = setInterval(() => {
+      this.updatePurchases()
+    }, 15000)
   },
   unmounted() {
-    clearInterval(this.iInvoices)
-    this.iInvoices = null
+    clearInterval(this.iPurchases)
+    this.iPurchases = null
   },
   watch: {
     pageHistory() {
-      this.updateInvoices()
+      this.updatePurchases()
     }
   }
 }

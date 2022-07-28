@@ -38,7 +38,8 @@ const actionLookup = {
   create: 'Deployed',
   createBackup: 'Backup Created',
   destroyBackup: 'Backup Destroyed',
-  resizeResource: 'Resized',
+  resizeDisk: 'Disk Resized',
+  resizeResource: 'Server Resized',
   restoreBackup: 'Backup Restored',
   start: 'Powered On',
   stop: 'Powered Off'
@@ -56,13 +57,13 @@ export default {
       return this.task.action.slice(0, 1).toUpperCase() + this.task.action.slice(1)
     },
     formattedDate() {
-      return format.date(this.task.created)
+      return format.date(this.task.updated)
     },
     formattedEvent() {
       return actionLookup[this.task.action]
     },
     formattedTime() {
-      return format.time(this.task.created, true)
+      return format.time(this.task.updated, true)
     },
     isComplete() {
       return this.task.status === 'complete'

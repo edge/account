@@ -151,7 +151,7 @@ export default {
       return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode && !this.isLoading
     },
     recoverySecret() {
-      return format.removeSpaces(this.confirmationCode.split)
+      return format.removeSpaces(this.confirmationCode)
     }
   },
   mounted() {

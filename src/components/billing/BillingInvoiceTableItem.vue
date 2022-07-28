@@ -91,7 +91,7 @@ export default {
     ExclamationIcon,
     Tooltip
   },
-  props: ['invoice', 'usdBalance'],
+  props: ['invoice'],
   computed: {
     ...mapState(['balance', 'session']),
     canPay() {
@@ -119,6 +119,9 @@ export default {
     unholdTooltipText() {
       const topUpAmount = (this.invoice.amount - this.usdBalance) / this.balance.token.usdPerXe
       return `Please add ${topUpAmount.toFixed(6)} XE to your wallet to pay`
+    },
+    usdBalance() {
+      return this.balance.total.usd
     }
   },
   methods: {
