@@ -67,7 +67,7 @@
               >
                 <span class="mr-4">Purchasing:</span>
                 <span><span class="font-bold">{{ purchasingXE }}</span> XE</span>
-                <span class="mr-4">Charge:</span>
+                <span class="mr-4">Cost:</span>
                 <span><span class="font-bold">{{ purchasingUSD }}</span> USD</span>
               </div>
               <!-- confirm or cancel buttons -->

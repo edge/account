@@ -1,22 +1,30 @@
 <template>
-  <div class="box">
-    <h4>Manually Add Funds</h4>
-    <div class="flex flex-col">
+  <div class="box flex flex-col justify-between">
+    <div>
+      <h4>Manually Add Funds</h4>
       <p>Make a one off  purchase of XE to add funds to your account.</p>
-      <div class="converter flex items-center space-x-2 mb-5">
-        <div class="currency symbol flex justify-between">
-          <input type="number" v-model="inputAmount" @focusout="formatInput" />
-          {{ usdToXe ? 'USD' : 'XE' }}
-        </div>
-        <button @click="flipConversion" class="converter__toggle hover:text-green">
-          <SwitchHorizontalIcon class="w-5"/>
-        </button>
-        <div class="currency flex justify-between">
-          {{ usdToXe ? formattedXE : formattedUSD }} <span>{{ usdToXe ? 'XE' : 'USD' }}</span>
-        </div>
-      </div>
-      <slot name="buttons"/>
+      <p>Use the below converter to calculate how much you wish to purchase.</p>
     </div>
+    <div class="converter flex items-center space-x-2 mb-5">
+      <div class="currency input flex justify-between">
+        <input type="number" v-model="inputAmount" @focusout="formatInput" />
+        {{ usdToXe ? 'USD' : 'XE' }}
+      </div>
+      <button @click="flipConversion" class="converter__toggle hover:text-green">
+        <SwitchHorizontalIcon class="w-5"/>
+      </button>
+      <div class="currency output flex justify-between">
+        {{ usdToXe ? formattedXE : formattedUSD }} <span>{{ usdToXe ? 'XE' : 'USD' }}</span>
+      </div>
+    </div>
+    <!-- purchase summary -->
+    <div class="summary-grid">
+      <span class="mr-4">Purchasing:</span>
+      <span><span class="font-bold">{{ formattedXE }}</span> XE</span>
+      <span class="mr-4">Charge:</span>
+      <span><span class="font-bold">{{ formattedUSD }}</span> USD</span>
+    </div>
+    <slot name="buttons"/>
   </div>
 </template>
 
@@ -90,7 +98,18 @@ export default {
 }
 
 .currency {
-  @apply border border-gray-500 rounded w-1/2 py-2 px-4;
+  @apply border-gray-500 w-1/2 py-2 px-4;
+}
+.currency.input {
+  @apply border rounded
+}
+.currency.output {
+  @apply border-b
+}
+
+.summary-grid {
+  @apply grid text-right pb-2;
+  grid-template-columns: 1fr auto;
 }
 
 /* remove input defualy focus and arrows */
