@@ -6,7 +6,7 @@
           <ArrowLeftIcon class="w-4" /><span>Back</span>
         </router-link>
       </div>
-      <h4 class="flex items-center">
+      <h4 v-if="!purchaseNotFound" class="flex items-center">
         <span>Purchase</span>
         <span v-if="isConfirmed || isCancelled || isProcessing" class="ml-1">
           #{{this.purchaseId}} -
@@ -19,9 +19,9 @@
             ]"
           >{{ status }}</span>
         </span>
-        <span v-else>XE</span>
+        <span v-else class="ml-1">XE</span>
         <Tooltip
-          v-if="purchase.auto"
+          v-if="purchase && purchase.auto"
           text="Purchase made by auto top-up"
           position="right"
         >
@@ -29,7 +29,14 @@
         </Tooltip>
       </h4>
 
-      <div v-if="purchase">
+      <!-- purchase not found -->
+      <div v-if="purchaseNotFound" class="flex flex-col items-center space-y-2">
+        <span class="text-xl">Purchase Not Found</span>
+        <span class="pb-1">We couldn't find a record of this purchase on your account.</span>
+        <router-link :to="{ name: 'Payments' }" class="button button--small button--success">Go Back</router-link>
+      </div>
+      <!-- purchase loaded -->
+      <div v-else-if="purchase">
         <!-- stripe payment in progress -->
         <div v-if="processingStripe">
           <div class="flex items-center space-x-2">
@@ -165,12 +172,11 @@ export default {
       completing: false,
       error: null,
       iRefresh: null,
-      processingStripe: false,
-      purchase: null,
-
       paymentCard: null,
       paymentMethods: null,
-
+      processingStripe: false,
+      purchase: null,
+      purchaseNotFound: false,
       useNewCard: false
     }
   },
@@ -300,17 +306,22 @@ export default {
       return purchase.status === 'unpaid'
     },
     async getPurchase() {
-      this.purchase = await utils.purchases.getPurchase(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.purchaseId
-      )
-      setTimeout(async () => {
-        if (this.isPurchaseUnpaid(this.purchase)) {
-          await this.getPaymentMethods()
-          this.addPaymentForm()
-        }
-      }, 0)
+      try {
+        this.purchase = await utils.purchases.getPurchase(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.purchaseId
+        )
+        setTimeout(async () => {
+          if (this.isPurchaseUnpaid(this.purchase)) {
+            await this.getPaymentMethods()
+            this.addPaymentForm()
+          }
+        }, 0)
+      }
+      catch (error) {
+        if (error.status === 500) this.purchaseNotFound = true
+      }
     },
     onSelectCard(card) {
       this.useNewCard = false
