@@ -127,13 +127,6 @@
                 </div>
               </div>
             </div>
-            <!-- skip step button -->
-            <button
-              @click.prevent="step = 3"
-              class="w-full text-sm text-center text-gray-500 underline hover:text-green"
-            >
-              Skip for now
-            </button>
           </div>
           <!-- when moving past secure account section, still display whether recovery/2fa has been enabled -->
           <div class="step-content" v-else-if="step > 2">
@@ -157,71 +150,6 @@
                 </span>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- add credit to account step -->
-        <div class="step" :class="step < 3 ? 'inactive' : ''" >
-          <div class="step-title" @click="changeStep(3)">
-            <CurrencyDollarIcon class="step-icon" />
-            <span>Add credit to your account</span>
-          </div>
-
-          <!-- credit icons -->
-          <div class="step-content" v-if="step === 3">
-            <div class="flex flex-col space-y-6 my-4">
-              <!-- eslint-disable-next-line max-len -->
-              <span>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to credit your account. </span>
-              <div class="relative">
-                <div class="flex items-center w-full">
-                  <span class="address monospace">{{ account.wallet.address }}</span>
-                  <button
-                    @click.prevent="copyToClipboard"
-                    class="text-gray-400 hover:text-green"
-                  >
-                    <DuplicateIcon class="ml-2 w-6 h-6" />
-                  </button>
-                </div>
-                <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
-              </div>
-              <span>The minimum required balance is $5.00. Please ensure your account remains above this level to avoid restrictions.</span>
-            </div>
-
-            <!-- top up option grid - currently tbd -->
-            <!-- <div class="credit-items-grid">
-              <span class="credit-item">
-                <XEIcon class="credit-item-icon" />
-                <span class="text-sm">XE</span>
-              </span>
-              <span class="credit-item">
-                <EdgeIcon class="credit-item-icon" />
-                <span class="text-sm">EDGE</span>
-              </span>
-              <span class="credit-item">
-                <CreditCardIcon class="credit-item-icon" />
-                <span class="text-sm">Credit/Debit</span>
-              </span>
-              <span class="credit-item">
-                <BTCIcon class="credit-item-icon" />
-                <span class="text-sm">BTC</span>
-              </span>
-              <span class="credit-item">
-                <ETHIcon class="credit-item-icon" />
-                <span class="text-sm">ETH</span>
-              </span>
-              <span class="credit-item">
-                <XHavenIcon class="credit-item-icon" />
-                <span class="text-sm">xHaven</span>
-              </span>
-            </div> -->
-
-            <!-- skip step button -->
-            <button
-              @click.prevent="goToAccount"
-              class="w-full mt-2 text-sm text-center text-gray-500 underline hover:text-green"
-            >
-              Skip for now
-            </button>
           </div>
         </div>
 
@@ -262,7 +190,6 @@ import {
   ShieldCheckIcon
 } from '@heroicons/vue/solid'
 import {
-  CurrencyDollarIcon,
   DuplicateIcon,
   ExclamationIcon,
   FingerPrintIcon,
@@ -278,7 +205,6 @@ export default {
   components: {
     ChevronDownIcon,
     ChevronRightIcon,
-    CurrencyDollarIcon,
     DuplicateIcon,
     Enable2FA,
     EnableRecoveryEmail,

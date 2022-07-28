@@ -81,7 +81,7 @@ export default {
 
 <style>
 .referralCode h4 {
-  @apply w-full pb-2 mb-4 font-medium;
+  @apply w-full mb-4 font-medium;
 }
 
 .code {

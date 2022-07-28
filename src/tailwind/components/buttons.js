@@ -23,13 +23,15 @@ const themes = {
     borderColor: colors.gray.DEFAULT,
 
     '&:hover, &.hover': {
-      borderColor: colors.gray[900],
-      color: colors.gray[900]
+      backgroundColor: colors.gray.DEFAULT,
+      borderColor: colors.gray.DEFAULT,
+      color: colors.white
     },
 
     '&:disabled, &.disabled': {
-      borderColor: colors.black[100],
-      color: colors.black[200]
+      backgroundColor: colors.gray.DEFAULT,
+      borderColor: colors.gray.DEFAULT,
+      color: colors.white
     }
   },
   error: {
@@ -45,6 +47,21 @@ const themes = {
     '&:disabled, &.disabled': {
       backgroundColor: colors.gray.DEFAULT,
       borderColor: colors.gray.DEFAULT
+    }
+  },
+  'outline-error': {
+    borderColor: colors.red.DEFAULT,
+    color: colors.red.DEFAULT,
+
+    '&:hover, &.hover': {
+      backgroundColor: colors.red.DEFAULT,
+      color: colors.white
+    },
+
+    '&:disabled, &.disabled': {
+      backgroundColor: colors.gray.DEFAULT,
+      borderColor: colors.gray.DEFAULT,
+      color: colors.white
     }
   },
   success: {
@@ -65,7 +82,7 @@ const themes = {
   },
   'outline-success': {
     borderColor: colors.green.DEFAULT,
-    color: colors.white,
+    color: colors.green.DEFAULT,
 
     '&:hover, &.hover': {
       borderColor: colors.green.DEFAULT,
@@ -144,6 +161,7 @@ const buttons = ({ theme }) => {
     '.button--solid': button.solid,
     '.button--outline': button.outline,
     '.button--error': button.error,
+    '.button--outline-error': button['outline-error'],
     '.button--success': button.success,
     '.button--outline-success': button['outline-success'],
     '.button--small': button.small,

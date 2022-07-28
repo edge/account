@@ -7,20 +7,15 @@
       <div v-else><CashIcon class="w-8"/></div>
       <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
         <span>{{ warning.message }}</span>
-        <button @click=toggleTopUpModal class="button button--solid button--small h-8 w-max flex-shrink-0">
+        <router-link to="/billing/payments" class="button button--solid button--small h-8 w-max flex-shrink-0">
           Add Funds
-        </button>
+        </router-link>
       </div>
     </div>
-    <TopUpModal
-      v-if=showTopUpModal
-      @modal-close=toggleTopUpModal
-    />
   </div>
 </template>
 
 <script>
-import TopUpModal from '@/components/billing/TopUpModal'
 import { CashIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
 
@@ -34,13 +29,7 @@ export default {
   name: 'SuspensionMessage',
   components: {
     CashIcon,
-    ExclamationIcon,
-    TopUpModal
-  },
-  data() {
-    return {
-      showTopUpModal: false
-    }
+    ExclamationIcon
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
@@ -94,11 +83,6 @@ export default {
       }
       return null
       /* eslint-enable max-len */
-    }
-  },
-  methods: {
-    toggleTopUpModal() {
-      this.showTopUpModal = !this.showTopUpModal
     }
   }
 }
