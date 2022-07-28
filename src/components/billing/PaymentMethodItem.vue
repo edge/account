@@ -1,14 +1,16 @@
 <template>
   <div class="payment__item">
-    <div class="flex flex-col items-center justify-center row-span-2">
-      <CreditCardIcon class="w-10 text-green" />
-      <span class="truncate capitalize">{{ cardType }}</span>
+    <!-- <span class="uppercase text-xs pb-4">{{ paymentMethod.name }}</span> -->
+    <div v-if="account.topup" class="">
+      <div v-if=isAutoTopUpCard class="flex items-center">
+        <div><BadgeCheckIcon class="text-green w-4 mr-1" /></div>
+        Auto top-up card
+      </div>
+      <button v-else @click="setAsAutoTopUp" class="flex-shrink-0 underline hover:text-green">
+        Use for auto top-up
+      </button>
     </div>
-    <div class="flex flex-col md:flex-row md:justify-between md:items-center">
-      <span class="monospace truncate">{{ formattedCardNumber }}</span>
-      <span class="monospace truncate">{{ formattedExpiry }}</span>
-    </div>
-    <div class="row-span-2 flex items-center">
+    <div class="col-start-3 flex items-center justify-end">
       <div class="flex items-center space-x-2">
         <button
           class="card__button delete"
@@ -20,7 +22,7 @@
               <LoadingSpinner v-if=isDeleting class="card__button__icon" />
               <TrashIcon v-else class="card__button__icon" />
             </div>
-            <span class="leading-none">Delete</span>
+            <span class="card__button__text ml-1">Delete</span>
           </div>
         </button>
         <Tooltip v-if="httpError" :text="httpError" theme="error" position="left">
@@ -28,14 +30,13 @@
         </Tooltip>
       </div>
     </div>
-    <div v-if="account.topup" class="w-48">
-      <div v-if=isAutoTopUpCard class="flex items-center">
-        <div><BadgeCheckIcon class="text-green w-4 mr-1" /></div>
-        Auto top-up card
-      </div>
-      <button v-else @click="setAsAutoTopUp" class="flex-shrink-0 underline hover:text-green">
-        Set as auto top-up card
-      </button>
+    <span class="card_number text-2xl monospace truncate col-span-3">{{ formattedCardNumber }}</span>
+    <div class="expiry flex flex-col">
+      <span class="monospace">Exp:</span>
+      <span class="monospace truncate">{{ formattedExpiry }}</span>
+    </div>
+    <div class="flex justify-end col-start-3">
+      <CardBrandIcon :brand="cardType" />
     </div>
   </div>
   <!-- eslint-disable-next-line vue/no-multiple-template-root-->
@@ -51,11 +52,12 @@
 /* global process */
 
 import * as utils from '../../account-utils'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
+import CardBrandIcon from '@/components/icons/CardBrandIcon'
 import DeletePaymentMethodConfirmation from '@/components/confirmations/DeletePaymentMethodConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
-import { BadgeCheckIcon, CreditCardIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon, TrashIcon } from '@heroicons/vue/outline'
 
 export default {
@@ -70,8 +72,8 @@ export default {
     }
   },
   components: {
+    CardBrandIcon,
     BadgeCheckIcon,
-    CreditCardIcon,
     DeletePaymentMethodConfirmation,
     ExclamationIcon,
     LoadingSpinner,
@@ -147,12 +149,14 @@ export default {
 </script>
 <style scoped>
 .payment__item {
-  @apply grid gap-x-4 bg-white text-gray-500 border border-gray-300 rounded-md w-full p-2 pr-4;
+  @apply grid grid-rows-3 gap-y-2 bg-gray-100 text-gray-500 border border-gray-300 rounded-md px-6 py-3 cursor-pointer;
   grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto;
+  width: 330px;
 }
 
 .card__button {
-  @apply button button--extraSmall w-1/2 lg:w-24;
+  @apply button button--extraSmall p-1;
 }
 
 .card__button.default {
@@ -164,7 +168,7 @@ export default {
 }
 
 .card__button__icon {
-  @apply w-3.5 h-3.5 mr-1;
+  @apply w-3.5 h-3.5;
 }
 
 @screen lg {
@@ -173,13 +177,47 @@ export default {
   } */
 
   .card__button__icon {
-    @apply w-4 h-4 mr-1;
+    @apply w-4 h-4;
   }
 }
 
 @media (max-width: 450px) {
   .card__button {
     @apply w-full;
+  }
+}
+
+@media (max-width: 400px) {
+  .payment__item {
+    @apply w-full;
+  }
+
+  .payment__item .card_number {
+    @apply text-xl;
+  }
+}
+
+@media (max-width: 350px) {
+  .payment__item .card_number {
+    @apply text-md;
+  }
+
+  .payment__item .expiry {
+    @apply text-xs;
+  }
+
+  .card__button__text {
+    @apply hidden;
+  }
+}
+
+@media (max-width: 310px) {
+  .payment__item {
+    @apply px-4
+  }
+
+  .payment__item .card_number {
+    @apply text-sm;
   }
 }
 </style>

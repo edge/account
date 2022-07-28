@@ -16,14 +16,14 @@
     <div class="box flex flex-col">
       <h4>Payment Cards</h4>
       <p>Adding a card makes it simple to top up your account in future and allows you to use auto top-up.</p>
-      <div class="w-1/2 flex flex-col">
+      <div class="flex flex-col">
         <!-- current saved cards list -->
         <div class="flex flex-col">
           <PaymentMethodList @updatePaymentMethods=onUpdatePaymentMethods ref="paymentMethodList" />
           <button
             v-if="!showAddNewCard"
             @click=startAddPaymentMethod
-            class="addNewPayment__button h-20"
+            class="addNewPayment__button"
           >
             <div class="flex items-center justify-center w-full">
               <div><PlusCircleIcon class="w-5 mr-2" /></div>
@@ -32,14 +32,17 @@
           </button>
         </div>
         <!-- add new card form -->
-        <div :class="showAddNewCard ? 'flex flex-col border border-dashed border-gray-300 rounded-md mt-2 p-4' : ''">
+        <div
+          class="addNewPayment__form"
+          :class="showAddNewCard ? 'flex flex-col border border-dashed border-gray-300 rounded-md mt-2 p-4' : ''"
+        >
           <div class="max-w-5xl">
             <div
               v-show="paymentElement"
               class="mb-5"
               ref="paymentElement"
             />
-            <div class="flex flex-col md:flex-row md:space-x-2">
+            <div class="flex flex-col space-y-2">
               <button
                 v-if=showAddNewCard
                 @click=cancelAddPaymentMethod
@@ -213,8 +216,14 @@ export default {
   @apply border border-gray-500 rounded w-full py-2 px-4;
 }
 
+.addNewPayment__form {
+  @apply bg-gray-100;
+  width: 330px;
+}
 .addNewPayment__button {
-  @apply flex items-center bg-white text-gray-500 border border-dashed border-gray-300 rounded-md w-full p-2 pr-8 mt-2 cursor-pointer;
+  @apply flex items-center bg-gray-100 text-gray-500 border border-dashed border-gray-300 rounded-md w-full mt-2 cursor-pointer;
+  width: 330px;
+  height: 133px;
 }
 .addNewPayment__button:hover {
   @apply border-green text-green;
@@ -237,7 +246,13 @@ input[type=number] {
   @apply w-full;
 }
 
-select {
-  @apply w-full border border-gray-500 bg-white rounded w-full p-2;
+@media (max-width: 400px) {
+  .payment__form {
+    width: 100%
+  }
+
+  .addNewPayment__form, .addNewPayment__button {
+    width: 100%;
+  }
 }
 </style>

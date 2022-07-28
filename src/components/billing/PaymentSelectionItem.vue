@@ -4,7 +4,7 @@
     class="payment__item"
     :class="selected ? 'selected' : ''"
   >
-    <span class="uppercase text-xs text-right col-start-3 pb-4">{{ paymentMethod.name }}</span>
+    <span class="uppercase text-xs pb-4">{{ paymentMethod.name }}</span>
     <span class="card_number text-2xl monospace truncate col-span-3">{{ formattedCardNumber }}</span>
     <div class="expiry flex flex-col">
       <span class="monospace">Exp:</span>
@@ -121,6 +121,5 @@ export default {
   .payment__item .card_number {
     @apply text-sm;
   }
-
 }
 </style>

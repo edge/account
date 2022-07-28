@@ -66,7 +66,7 @@
               <button
                 v-if="!useNewCard"
                 @click=openUseNewCard
-                class="addNewPayment__button h-20"
+                class="addNewPayment__button"
               >
                 <div class="flex items-center justify-center w-full">
                   <div><PlusCircleIcon class="w-5 mr-2" /></div>
