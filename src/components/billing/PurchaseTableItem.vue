@@ -1,9 +1,16 @@
 <template>
   <tr>
-    <td class="tableBody__cell">
+    <td class="tableBody__cell reference">
       <span class="mr-2 lg:hidden">Reference:</span>
-      <span class="truncate">
+      <span class="flex items-center space-x-1">
         <button @click=goToPurchase class="underline hover:text-green">#{{ purchase._key }}</button>
+        <Tooltip
+          v-if="purchase.auto"
+          text="Purchase made by auto top-up"
+          position="right"
+        >
+          <InformationCircleIcon class="w-4 text-gray-400" />
+        </Tooltip>
       </span>
     </td>
     <td class="tableBody__cell">
@@ -46,6 +53,8 @@
 
 <script>
 import * as format from '../../utils/format'
+import { InformationCircleIcon } from '@heroicons/vue/solid'
+import Tooltip from '@/components/Tooltip'
 import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'
 
 export default {
@@ -58,7 +67,9 @@ export default {
   },
   components: {
     CalendarIcon,
-    ClockIcon
+    ClockIcon,
+    InformationCircleIcon,
+    Tooltip
   },
   props: ['purchase'],
   computed: {
@@ -113,13 +124,9 @@ tr {
   @apply flex items-center text-gray-500 leading-4 truncate;
 }
 
-.tableBody__cell.status {
+.tableBody__cell.status, .tableBody__cell.reference {
   overflow: visible;
-  text-overflow: unset
-}
-
-.tableBody__cell.table__button {
-  @apply overflow-visible;
+  text-overflow: unset;
 }
 
 .table__icon {
@@ -133,9 +140,6 @@ tr {
 
   .tableBody__cell {
     @apply text-sm pl-6 py-4 table-cell align-middle w-full;
-  }
-  .tableBody__cell.table__button {
-    @apply py-0;
   }
 
   .action_buttons {

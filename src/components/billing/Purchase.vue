@@ -6,16 +6,27 @@
           <ArrowLeftIcon class="w-4" /><span>Back</span>
         </router-link>
       </div>
-      <h4>Purchase
-        <span v-if="isConfirmed || isCancelled || isProcessing">#{{this.purchaseId}} - <span
-          class="capitalize font-normal"
-          :class="[
-            isConfirmed ? 'text-green' : '',
-            isCancelled ? 'text-red' : '',
-            isProcessing ? 'italic' : ''
-          ]"
-        >{{ status }}</span></span>
+      <h4 class="flex items-center">
+        <span>Purchase</span>
+        <span v-if="isConfirmed || isCancelled || isProcessing" class="ml-1">
+          #{{this.purchaseId}} -
+          <span
+            class="capitalize font-normal"
+            :class="[
+              isConfirmed ? 'text-green' : '',
+              isCancelled ? 'text-red' : '',
+              isProcessing ? 'italic' : ''
+            ]"
+          >{{ status }}</span>
+        </span>
         <span v-else>XE</span>
+        <Tooltip
+          v-if="purchase.auto"
+          text="Purchase made by auto top-up"
+          position="right"
+        >
+          <InformationCircleIcon class="ml-1 w-4 text-gray-400" />
+        </Tooltip>
       </h4>
 
       <div v-if="purchase">
@@ -132,8 +143,10 @@
 
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
+import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentSelectionItem from '@/components/billing/PaymentSelectionItem'
+import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import {
@@ -164,9 +177,11 @@ export default {
   components: {
     ArrowLeftIcon,
     ExclamationIcon,
+    InformationCircleIcon,
     LoadingSpinner,
     PaymentSelectionItem,
-    PlusCircleIcon
+    PlusCircleIcon,
+    Tooltip
   },
   computed: {
     ...mapState(['session']),
