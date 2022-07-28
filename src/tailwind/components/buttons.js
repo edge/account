@@ -82,7 +82,7 @@ const themes = {
   },
   'outline-success': {
     borderColor: colors.green.DEFAULT,
-    color: colors.white,
+    color: colors.green.DEFAULT,
 
     '&:hover, &.hover': {
       borderColor: colors.green.DEFAULT,
