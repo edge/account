@@ -2,7 +2,7 @@
   <div class="box flex flex-col justify-between">
     <div>
       <h4>Manually Add Funds</h4>
-      <p>Make a one off  purchase of XE to add funds to your account.</p>
+      <p>Make a one-off  purchase of XE to add funds to your account.</p>
       <p>Use the below converter to calculate how much you wish to purchase.</p>
     </div>
     <div class="converter flex items-center space-x-2 mb-5">

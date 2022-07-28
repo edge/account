@@ -3,7 +3,7 @@
     <div class="box">
       <h4>Create a backup</h4>
       <!-- eslint-disable-next-line max-len -->
-      <p class="mt-3 text-gray-500">A backup copy is a disk image of the virtual machine, which is used for recovery in case the original data are lost.</p>
+      <p class="mt-3 text-gray-500">A backup is a disk image of your server, which can be used for recovery in case of data loss.</p>
       <div class="flex flex-col w-full mt-5 lg:space-x-4 lg:items-end lg:flex-row">
         <div class="flex-1 w-full lg:w-auto input-group">
           <label class="label">Backup name</label>

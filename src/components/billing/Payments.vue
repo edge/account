@@ -15,7 +15,7 @@
     </div>
     <div class="box flex flex-col">
       <h4>Payment Cards</h4>
-      <p>Adding a card makes it simple to top-up your account in future and enables the automatic top-up feature.</p>
+      <p>Adding a card makes it simple to top up your account in future and allows you to use auto top-up.</p>
       <div class="w-1/2 flex flex-col">
         <!-- current saved cards list -->
         <div class="flex flex-col">
