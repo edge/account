@@ -30,68 +30,81 @@
         </div>
         <!-- purchase unpaid - payment form -->
         <div v-else-if="isPurchaseUnpaid(purchase)">
-          <p>Please enter your card details below to complete your purchase.</p>
-          <div class="flex flex-col space-y-2 w-1/2">
-            <!-- saved card list -->
-            <PaymentSelectionItem
-              v-for="p in paymentMethods"
-              :key="p._key"
-              :paymentMethod=p
-              :selected="p === paymentCard"
-              @selectCard="onSelectCard"
-            />
-            <!-- use new card button -->
-            <button
-              v-if="!useNewCard"
-              @click=openUseNewCard
-              class="addNewPayment__button h-20"
-            >
-              <div class="flex items-center justify-center w-full">
-                <div><PlusCircleIcon class="w-5 mr-2" /></div>
-                <span>Use New Card</span>
+          <div v-if="!expired">
+            <span class="block mb-2">Please enter your card details below to complete your purchase.</span>
+            <span class="block mb-2 italic">
+              This purchase will expire at {{ expiryTime }}, {{ expiryDate }}.
+            </span>
+            <div class="flex flex-col space-y-2 w-1/2">
+              <!-- saved card list -->
+              <PaymentSelectionItem
+                v-for="p in paymentMethods"
+                :key="p._key"
+                :paymentMethod=p
+                :selected="p === paymentCard"
+                @selectCard="onSelectCard"
+              />
+              <!-- use new card button -->
+              <button
+                v-if="!useNewCard"
+                @click=openUseNewCard
+                class="addNewPayment__button h-20"
+              >
+                <div class="flex items-center justify-center w-full">
+                  <div><PlusCircleIcon class="w-5 mr-2" /></div>
+                  <span>Use New Card</span>
+                </div>
+              </button>
+              <!-- stripe card input form -->
+              <div
+                :class="useNewCard && paymentMethods.length ? 'border border-green border-l-8 p-4 rounded-md' : ''"
+                ref="paymentElement"
+              />
+              <!-- purchase summary -->
+              <div
+                class="summary-grid"
+                :class="useNewCard ? 'pt-2' : 'pt-0'"
+              >
+                <span class="mr-4">Purchasing:</span>
+                <span><span class="font-bold">{{ purchasingXE }}</span> XE</span>
+                <span class="mr-4">Charge:</span>
+                <span><span class="font-bold">{{ purchasingUSD }}</span> USD</span>
               </div>
-            </button>
-            <!-- stripe card input form -->
-            <div
-              :class="useNewCard && paymentMethods.length ? 'border border-green border-l-8 p-4 rounded-md' : ''"
-              ref="paymentElement"
-            />
-            <!-- purchase summary -->
-            <div
-              class="summary-grid"
-              :class="useNewCard ? 'pt-2' : 'pt-0'"
-            >
-              <span class="mr-4">Purchasing:</span>
-              <span><span class="font-bold">{{ purchasingXE }}</span> XE</span>
-              <span class="mr-4">Charge:</span>
-              <span><span class="font-bold">{{ purchasingUSD }}</span> USD</span>
-            </div>
-            <!-- confirm or cancel buttons -->
-            <div
-              class="flex flex-col space-y-2 lg:flex-row w-full self-end lg:space-x-2 lg:space-y-0"
-            >
-              <button
-                class="w-full button button--small button--outline"
-                @click="cancelPurchase"
-                :disabled="completing"
+              <!-- confirm or cancel buttons -->
+              <div
+                class="flex flex-col space-y-2 lg:flex-row w-full self-end lg:space-x-2 lg:space-y-0"
               >
-                Cancel Purchase
-              </button>
-              <button
-                class="w-full button button--small button--success"
-                @click="confirmPurchase"
-                :disabled="completing || !canComplete"
-              >
-                <span>Complete Purchase</span>
-                <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
-              </button>
+                <button
+                  class="w-full button button--small button--outline"
+                  @click="cancelPurchase"
+                  :disabled="completing"
+                >
+                  Cancel Purchase
+                </button>
+                <button
+                  class="w-full button button--small button--success"
+                  @click="confirmPurchase"
+                  :disabled="completing || !canComplete"
+                >
+                  <span>Complete Purchase</span>
+                  <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
+                </button>
+              </div>
+              <div v-if="error" class="flex items-center errorMessage mt-2">
+                <ExclamationIcon class="w-3.5 text-red" />
+                <span class="errorMessage__text">{{
+                  error.message || 'Payment Declined'
+                }}</span>
+              </div>
             </div>
-            <div v-if="error" class="flex items-center errorMessage mt-2">
-              <ExclamationIcon class="w-3.5 text-red" />
-              <span class="errorMessage__text">{{
-                error.message || 'Payment Declined'
-              }}</span>
-            </div>
+          </div>
+          <div v-else>
+            <span class="text-red block mb-2 italic">
+              This purchase has expired.
+            </span>
+            <router-link :to="{ name: 'Payments' }" class="mt-2 button button--small button--success">
+              Start Again
+            </router-link>
           </div>
         </div>
         <!-- complete, processing (xe side) or cancelled -->
@@ -100,8 +113,8 @@
             <!-- eslint-disable-next-line max-len -->
             <span>Thank you for your purchase. We have received your payment and are now processing your XE. Please note that this can take up to 15 minutes.</span>
           </div>
-          <div><span class="label">Date</span>{{ formattedDate }}</div>
-          <div><span class="label">Time</span>{{ formattedTime }}</div>
+          <div><span class="label">Date</span>{{ createdDate }}</div>
+          <div><span class="label">Time</span>{{ createdTime }}</div>
           <div><span class="label">
             {{ isConfirmed || isProcessing ? 'Sent' : 'Send' }}
           </span>{{ formattedSentAmount }}</div>
@@ -122,6 +135,7 @@ import * as utils from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentSelectionItem from '@/components/billing/PaymentSelectionItem'
 import { mapState } from 'vuex'
+import moment from 'moment'
 import {
   ArrowLeftIcon,
   ExclamationIcon,
@@ -160,11 +174,23 @@ export default {
       if (!this.useNewCard) return this.paymentCard
       return true
     },
-    formattedDate() {
+    createdDate() {
       return format.date(this.purchase.created)
     },
-    formattedTime() {
+    createdTime() {
       return format.time(this.purchase.created)
+    },
+    expired() {
+      return moment().isAfter(this.softExpiry)
+    },
+    expiresIn() {
+      return moment(this.softExpiry).fromNow()
+    },
+    expiryDate() {
+      return this.purchase.expires && format.date(this.softExpiry)
+    },
+    expiryTime() {
+      return this.purchase.expires && format.time(this.softExpiry)
     },
     formattedSentAmount() {
       return `${format.usd(this.purchase.send.amount, 2)} USD`
@@ -192,6 +218,10 @@ export default {
     },
     redirectStatus() {
       return this.$route.query.redirect_status
+    },
+    softExpiry() {
+      // set expiry 30 seconds before true expiry
+      return this.purchase.expires && this.purchase.expires - 30000 || null
     },
     status() {
       if (this.isProcessing) return 'processing'
@@ -272,6 +302,11 @@ export default {
       this.paymentCard = card
       this.paymentElement.unmount(this.$refs.paymentElement)
     },
+    openUseNewCard() {
+      this.useNewCard = true
+      this.paymentCard = null
+      this.paymentElement.mount(this.$refs.paymentElement)
+    },
     async refreshPurchase() {
       try {
         this.purchase = await utils.purchases.refreshPurchase(
@@ -288,11 +323,6 @@ export default {
       if (this.useSavedCard) this.paymentElement.mount(this.$refs.paymentElement)
       else this.paymentElement.unmount(this.$refs.paymentElement)
       this.useSavedCard = !this.useSavedCard
-    },
-    openUseNewCard() {
-      this.useNewCard = true
-      this.paymentCard = null
-      this.paymentElement.mount(this.$refs.paymentElement)
     }
   },
   mounted() {
