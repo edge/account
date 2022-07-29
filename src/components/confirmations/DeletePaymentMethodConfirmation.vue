@@ -19,7 +19,7 @@
         class="w-full button button--small button--error"
         @click="confirm"
       >
-        Yes, Delete Payment Card
+        Yes, Delete
       </button>
       <button
         class="w-full mt-3 button button--small button--outline sm:mt-0"
