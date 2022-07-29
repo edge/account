@@ -126,7 +126,8 @@ export default {
           this.session._key,
           {
             paymentMethod: this.paymentMethod._key,
-            targetBalance: this.account.topup.targetBalance
+            targetBalance: this.account.topup.targetBalance,
+            threshold: this.account.topup.threshold
           }
         )
         this.$store.dispatch('updateAccount')
