@@ -18,11 +18,14 @@
       </div> -->
     </div>
     <div class="tabs flex space-x-2">
-      <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Invoices'}">Invoices</router-link>
+      <div class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Wallet'}">Wallet</router-link>
       </div>
       <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Payments'}">Payments</router-link>
+      </div>
+      <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Invoices'}">Invoices</router-link>
       </div>
     </div>
     <router-view />
