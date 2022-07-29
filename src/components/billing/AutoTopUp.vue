@@ -84,7 +84,7 @@
       <button
         v-if="autoTopUpCard"
         @click=toggleDisableConfirmationModal
-        class="button button--small button--outline-error w-full md:max-w-xs"
+        class="button button--small button--outline-error w-full"
         :disabled="enabling || disabling"
       >
         {{ disabling ? 'Disabling' : 'Disable'}}
@@ -92,7 +92,8 @@
       </button>
       <button
         @click=enableAutoTopUp
-        class="button button--small button--success w-full md:max-w-xs"
+        class="button button--small button--success w-full"
+        :class="autoTopUpCard ? '' : 'md:max-w-xs'"
         :disabled="!canEnable || enabling || disabling"
       >
         {{ autoTopUpCard ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
