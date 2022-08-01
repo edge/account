@@ -53,7 +53,7 @@
             <span class="block mb-2 italic">
               This purchase will expire at {{ expiryTime }}, {{ expiryDate }}.
             </span>
-            <div class="flex flex-col space-y-2 w-1/2">
+            <div class="payment__form grid space-y-2">
               <!-- saved card list -->
               <PaymentSelectionItem
                 v-for="p in paymentMethods"
@@ -66,7 +66,7 @@
               <button
                 v-if="!useNewCard"
                 @click=openUseNewCard
-                class="addNewPayment__button h-20"
+                class="addNewPayment__button"
               >
                 <div class="flex items-center justify-center w-full">
                   <div><PlusCircleIcon class="w-5 mr-2" /></div>
@@ -90,7 +90,7 @@
               </div>
               <!-- confirm or cancel buttons -->
               <div
-                class="flex flex-col space-y-2 lg:flex-row w-full self-end lg:space-x-2 lg:space-y-0"
+                class="flex flex-col space-y-2 w-full self-end"
               >
                 <button
                   class="w-full button button--small button--outline"
@@ -411,44 +411,14 @@ select:focus {
   outline: none;
 }
 
-@media (min-width: 450px) {
-  .purchase__grid {
-    @apply grid-cols-2;
-  }
-}
-
-
-.payment__item {
-  @apply grid gap-x-4 h-20 bg-white text-gray-500 border border-gray-300 rounded-md w-full p-2 pr-4;
-  grid-template-columns: auto 1fr auto;
-}
-
-/* ListBox */
-.listButton {
-  @apply relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-500 rounded cursor-pointer;
-  @apply focus:outline-none focus:ring-1 focus:ring-green-200 focus:ring-opacity-25;
-}
-.listButton__icon {
-  @apply absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400;
-}
-
-/* options */
-.listOptions {
-  @apply absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
-}
-.listOption {
-  @apply relative flex items-center justify-between cursor-pointer py-2 pl-4 pr-4 text-gray-900 cursor-default select-none;
-}
-.listOption.active {
-  @apply text-green bg-green bg-opacity-5;
-}
-/* checkmark */
-.checkmark {
-  @apply flex items-center pl-3 text-green;
+.payment__form {
+  width: 330px
 }
 
 .addNewPayment__button {
-  @apply flex items-center bg-white text-gray-500 border border-dashed border-gray-300 rounded-md w-full p-2 pr-8 mt-2 cursor-pointer;
+  @apply flex items-center bg-gray-100 text-gray-500 border border-dashed border-gray-300 rounded-md w-full mt-2 cursor-pointer;
+  width: 330px;
+  height: 133px;
 }
 .addNewPayment__button:hover {
   @apply border-green text-green;
@@ -458,5 +428,22 @@ select:focus {
 .summary-grid {
   @apply grid text-right pb-2;
   grid-template-columns: 1fr auto;
+}
+
+
+@media (min-width: 450px) {
+  .purchase__grid {
+    @apply grid-cols-2;
+  }
+}
+
+@media (max-width: 400px) {
+  .payment__form {
+    width: 100%
+  }
+
+  .addNewPayment__button {
+    width: 100%;
+  }
 }
 </style>

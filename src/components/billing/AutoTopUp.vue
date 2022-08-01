@@ -8,7 +8,7 @@
     </div>
 
     <!-- eslint-disable-next-line max-len -->
-    <p>{{ autoTopUpCard ? "If" : "By enabling auto top-ups, if" }} your balance drops below the threshold an XE purchase will automatically be made to top up your account to your target balance.</p>
+    <p>{{ autoTopUpCard ? "If" : "When you enable auto top-ups, if" }} your balance drops below your <strong>threshold</strong> XE will be purchased to bring your account funds back to your <strong>target balance</strong>.</p>
 
     <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-5">
       <div class="input-wrapper">
@@ -84,7 +84,7 @@
       <button
         v-if="autoTopUpCard"
         @click=toggleDisableConfirmationModal
-        class="button button--small button--outline-error w-full md:max-w-xs"
+        class="button button--small button--outline-error w-full"
         :disabled="enabling || disabling"
       >
         {{ disabling ? 'Disabling' : 'Disable'}}
@@ -92,7 +92,8 @@
       </button>
       <button
         @click=enableAutoTopUp
-        class="button button--small button--success w-full md:max-w-xs"
+        class="button button--small button--success w-full"
+        :class="autoTopUpCard ? '' : 'md:max-w-xs'"
         :disabled="!canEnable || enabling || disabling"
       >
         {{ autoTopUpCard ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}

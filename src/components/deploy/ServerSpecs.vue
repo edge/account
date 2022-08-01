@@ -98,7 +98,7 @@
         <span v-show="diskValueIncreased || diskValueDecreased" class="spec__warning">
           <!-- eslint-disable-next-line max-len -->
           <span v-if=diskValueIncreased>Your server's filesystem will be expanded. This disk resize is not reversible.</span>
-          <span v-else>Disk size cannot be decreased in size.
+          <span v-else>Disk size cannot be decreased.
             <button class="underline" @click="resetToMinimumDisk">Reset</button>
           </span>
         </span>

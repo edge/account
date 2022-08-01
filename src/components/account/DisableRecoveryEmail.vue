@@ -13,7 +13,7 @@
         <span>Disabling</span>
         <span class="ml-2"><LoadingSpinner /></span>
       </div>
-      <span v-else>Disable Recovery Eamil</span>
+      <span v-else>Disable Recovery Email</span>
     </button>
     <HttpError :error=httpError />
     <!-- disable recovery email confirmation modal -->

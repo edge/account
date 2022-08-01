@@ -1,11 +1,6 @@
 <template>
   <div class="flex flex-col space-y-4">
     <div class="box">
-      <h4>Transactions</h4>
-      <BillingTransactionTable />
-    </div>
-
-    <div class="box">
       <h4>Invoices</h4>
       <BillingInvoiceTable />
     </div>
@@ -14,13 +9,11 @@
 
 <script>
 import BillingInvoiceTable from '@/components/billing/BillingInvoiceTable'
-import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 
 export default {
   name: 'Invoices',
   components: {
-    BillingInvoiceTable,
-    BillingTransactionTable
+    BillingInvoiceTable
   }
 }
 </script>

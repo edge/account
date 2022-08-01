@@ -28,7 +28,7 @@
           </figure>
         </li>
         <li>Enter the verification code provided by Google Authenticator and click 'Enable 2FA'.</li>
-        <li>You can disable two-factor at any time.</li>
+        <li>You can disable 2FA at any time by entering your verification code.</li>
       </ol>
       <figure v-show="totpAuthUrl && !createAccount" class="qrcode accountPage">
         <VueQrcode

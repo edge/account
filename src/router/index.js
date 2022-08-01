@@ -21,6 +21,7 @@ import Server from '@/views/dashboard/Server'
 import Servers from '@/views/dashboard/Servers'
 import SignIn from '@/views/landing/SignIn'
 import Vnc from '@/views/Vnc'
+import Wallet from '@/components/billing/Wallet'
 import store from '../store'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -61,6 +62,11 @@ const routes = [
             path: 'payments/purchase/:id',
             name: 'Purchase',
             component: Purchase
+          },
+          {
+            path: 'wallet',
+            name: 'Wallet',
+            component: Wallet
           }
         ]
       },
