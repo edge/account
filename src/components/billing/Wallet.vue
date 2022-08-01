@@ -39,7 +39,7 @@ export default {
   computed: {
     ...mapState(['account', 'balance']),
     formattedXE() {
-      return this.balance.token.usdPerXe.toFixed(6)
+      return (1 / this.balance.token.usdPerXe).toFixed(6)
     }
   }
 }
