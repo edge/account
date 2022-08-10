@@ -2,13 +2,15 @@
   <div class="mainContent__inner space-y-4">
     <h1>Billing</h1>
     <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-      <DetailsBox>
+      <DetailsBox/>
+      <!--
         <template v-slot:buttons>
           <button @click=addFunds class="button button--success button--small">
             Add Funds
           </button>
         </template>
       </DetailsBox>
+      -->
       <div class="box">
         <ReferralCode />
       </div>
