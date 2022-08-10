@@ -22,7 +22,7 @@
           <span class="details__info monospace truncate">{{ account.wallet.address }}</span>
         </a>
         <button
-          @click.prevent="copyToClipboard"
+          @click.prevent="copyToClipboard(account.wallet.address)"
           class="text-gray-400 hover:text-green"
         >
           <DuplicateIcon class="ml-2 w-6 h-6" />
@@ -87,6 +87,14 @@ export default {
     addFunds: Function
   },
   methods: {
+    async copyToClipboard(str) {
+      await navigator.clipboard.writeText(str)
+      this.copied = true
+
+      setTimeout(() => {
+        this.copied = false
+      }, 1000)
+    },
     toggleShowAccountNumber() {
       this.showAccountNumber = !this.showAccountNumber
     }
