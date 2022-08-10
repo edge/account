@@ -55,7 +55,7 @@ export default {
 
 <style scoped>
 .box {
-  @apply w-full p-6 bg-white rounded-lg;
+  @apply w-full p-6 bg-white rounded-lg justify-start;
 }
 
 .box h4 {

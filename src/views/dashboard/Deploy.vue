@@ -236,7 +236,7 @@ export default {
     isRegionDisabled() {
       if (!this.selectedRegion) return false
       const capacity = this.selectedRegion.capacity
-      const usage = this.selectedRegion.usage
+      const usage = this.selectedRegion.usage || {}
       for (const spec in capacity) {
         if (usage[spec] >= capacity[spec]) return true
       }
@@ -273,7 +273,7 @@ export default {
       return `${MiB / 1024} GiB`
     },
     getMaxAvailableSpec(spec) {
-      return this.selectedRegion.capacity[spec] - this.selectedRegion.usage[spec]
+      return this.selectedRegion.capacity[spec] - (this.selectedRegion.usage && this.selectedRegion.usage[spec] || 0)
     },
     async getHostname() {
       const response = await utils.servers.getHostname(
