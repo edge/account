@@ -27,7 +27,7 @@
         <tbody class="tableBody">
           <LoadingTableDataRow v-if="!purchases" colspan="5" />
           <tr v-else-if="!purchases.length">
-            <td colspan="5" class="tableBody__cell text-center text-gray-500">No purchases</td>
+            <td colspan="6" class="tableBody__cell text-center text-gray-500">No purchases</td>
           </tr>
           <PurchaseTableItem
             v-else
