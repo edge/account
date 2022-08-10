@@ -45,7 +45,9 @@
           </div>
         </RadioGroupOption>
         <span v-if="isRegionAtCapacity(region)" class="capacity__warning">This region has reached capacity.</span>
-        <span v-else-if="isRegionDisabled(region)" class="capacity__warning">This region has been disabled.</span>
+        <!--
+          <span v-else-if="isRegionDisabled(region)" class="capacity__warning">This region has been disabled.</span>
+        -->
       </div>
     </div>
   </RadioGroup>
@@ -104,7 +106,7 @@ export default {
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
-      this.regions = regions.results
+      this.regions = regions.results.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
       // pre-select first active region
       this.selected = regions.results.find(region => region.active)
     }
