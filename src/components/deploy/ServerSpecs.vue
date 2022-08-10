@@ -315,7 +315,7 @@ export default {
       else return `${sliderRAM} GiB`
     },
     getMaxAvailableInput(spec) {
-      let max = this.region.capacity[spec] - this.region.usage[spec]
+      let max = this.region.capacity[spec] - (this.region.usage && this.region.usage[spec] || 0)
       if (this.current) max += this.current.spec[spec]
       if (spec === 'disk' || spec === 'ram') return max / 1024
       return max

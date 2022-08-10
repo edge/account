@@ -90,7 +90,7 @@ export default {
   methods: {
     isRegionAtCapacity(region) {
       const capacity = region.capacity
-      const usage = region.usage
+      const usage = region.usage || {}
       for (const spec in capacity) {
         if (usage[spec] >= capacity[spec]) return true
       }
