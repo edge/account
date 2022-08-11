@@ -9,6 +9,7 @@
 
 <script>
 const osLookup = {
+  'almalinux': 'alma_purple',
   'centos': 'centos_purple',
   'debian': 'debian',
   'ubuntu': 'ubuntu'
