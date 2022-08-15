@@ -144,7 +144,11 @@ export default {
       return format.removeSpaces(this.confirmationCode)
     },
     totpAuthUrl() {
-      return this.secret.otpauth_url
+      return speakeasy.otpauthURL({
+        secret: this.secret.ascii,
+        label: `Edge Accounts (. . . ${this.account._key.slice(-4)})`,
+        algorithm: 'sha1'
+      })
     }
   },
   methods: {
