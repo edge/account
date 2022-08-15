@@ -15,7 +15,8 @@
             <span class="label">IP Address</span><span class="info">{{ server.network.ip[0] }}</span>
           </div>
           <div class="info__section">
-            <span class="label">Region</span><span class="info">{{ region && region.name }}</span>
+            <span class="label">Region</span>
+            <span class="info">{{ region ? region.name : 'Unknown' }}</span>
           </div>
         </div>
         <!-- status, os, created, updated -->
