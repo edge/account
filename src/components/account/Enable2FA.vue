@@ -146,7 +146,7 @@ export default {
     totpAuthUrl() {
       return speakeasy.otpauthURL({
         secret: this.secret.ascii,
-        label: `Edge Accounts (. . . ${this.account._key.slice(-4)})`,
+        label: `Edge Accounts (— — — ${this.account._key.slice(-4)})`,
         algorithm: 'sha1'
       })
     }
