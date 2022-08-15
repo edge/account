@@ -24,7 +24,7 @@
         <router-link :to="{name: 'Wallet'}">Wallet</router-link>
       </div>
       <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Payments'}">Payments</router-link>
+        <router-link :to="{name: 'Payments'}">Purchase XE</router-link>
       </div>
       <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Invoices'}">Invoices</router-link>
