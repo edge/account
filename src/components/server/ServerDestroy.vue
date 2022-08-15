@@ -86,12 +86,13 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
+        const deletingCrashedServer = this.server.status === 'crashed'
         const response = await utils.servers.deleteServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId
         )
-        this.$store.commit('addTask', response.task)
+        if (response.task || !deletingCrashedServer) this.$store.commit('addTask', response.task)
         this.isLoading = false
       }
       catch (error) {
