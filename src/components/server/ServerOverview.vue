@@ -12,7 +12,17 @@
             <span class="label">Hostname</span><span class="info">{{ server.settings.domain }}</span>
           </div>
           <div class="info__section">
-            <span class="label">IP Address</span><span class="info">{{ server.network.ip[0] }}</span>
+            <span class="label">IP Address</span>
+            <div class="relative flex w-max">
+              <span class="">{{ server.network.ip[0] }}</span>
+              <button
+                @click.prevent="copyToClipboard(server.network.ip[0])"
+                class="text-gray-400 hover:text-green"
+              >
+                <DuplicateIcon class="ml-2 w-5 h-5" />
+              </button>
+              <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
+            </div>
           </div>
           <div class="info__section">
             <span class="label">Region</span>
@@ -71,18 +81,20 @@
 
 <script>
 import * as format from '../../utils/format'
+import { DuplicateIcon } from '@heroicons/vue/outline'
 import ServerStatus from '@/components/server/ServerStatus'
 
 export default {
   name: 'ServerOverview',
   props: ['region', 'server'],
+  components: {
+    DuplicateIcon,
+    ServerStatus
+  },
   data() {
     return {
-
+      copied: false
     }
-  },
-  components: {
-    ServerStatus
   },
   computed: {
     created() {
@@ -113,6 +125,14 @@ export default {
     }
   },
   methods: {
+    async copyToClipboard(str) {
+      await navigator.clipboard.writeText(str)
+      this.copied = true
+
+      setTimeout(() => {
+        this.copied = false
+      }, 1000)
+    },
     formatTimestamp(ts) {
       return `${format.time(ts)}, ${format.date(ts)}`
     }
@@ -146,6 +166,14 @@ export default {
   @apply flex-shrink-0 truncate w-full;
 }
 
+.copied {
+  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+  @apply transition-opacity duration-200 ease-in;
+}
+.copied.visible {
+  @apply opacity-100;
+}
+
 @media (max-width: 450px) {
   .server__details .info__section {
     @apply flex-col;
@@ -153,9 +181,6 @@ export default {
 }
 
 @media (min-width: 450px) {
-  .server__details .info {
-    width: calc(100% - 96)
-  }
   .server__details .info__section {
     @apply flex-row;
   }
@@ -173,7 +198,7 @@ export default {
 }
 @screen lg {
   .server__specs .overview__grid {
-    @apply grid-cols-4
+    @apply grid-cols-4;
   }
   .server__specs .label {
     @apply w-max;
@@ -192,7 +217,7 @@ export default {
 }
 @screen 2xl {
   .server__specs .overview__grid {
-    @apply grid-cols-4
+    grid-template-columns: repeat(3, 1fr) auto;
   }
 }
 </style>
