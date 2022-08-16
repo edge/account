@@ -6,6 +6,7 @@
         v-model="input1"
         v-mask="'#'"
         @click="focusOnFirstEmpty"
+        @paste="onPaste"
         @keydown="onKeyDown"
         placeholder="·"
         ref="1"
@@ -143,6 +144,13 @@ export default {
         if (enter) this.submitForm()
       }, 1)
 
+    },
+    async onPaste() {
+      const clipboardContent = await navigator.clipboard.readText()
+      if (/^[0-9]{6}$/.test(clipboardContent)) {
+        for (let i = 0; i < 6; i++) this[`input${i + 1}`] = clipboardContent[i]
+        this.submitForm()
+      }
     },
     setAllInputs(newInput) {
       this.input1 = newInput
