@@ -172,12 +172,8 @@ export default {
     this.$refs['1'].focus()
   },
   watch: {
-    input6() {
-      if (/^[0-9]{6}$/.test(this.confirmationCode)) {
-        setTimeout(() => {
-          this.submitForm()
-        }, 1)
-      }
+    confirmationCode(newCode) {
+      if (/^[0-9]{6}$/.test(newCode)) this.submitForm()
     },
     error() {
       if (!this.error) return
