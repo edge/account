@@ -42,12 +42,12 @@
       <div class="serverList__field zone">
         <span class="serverList__header">Zone</span>
         <div class="flex">
-          <img v-if="!region" class="flagIcon" :src="flagSrc" alt="flag">
+          <img v-if="region" class="flagIcon" :src="flagSrc" alt="flag">
           <span
             class="text-m"
-            :class="!region ? '' : 'italic text-gray'"
+            :class="region ? '' : 'italic text-gray'"
           >
-            {{ !region ? region.name : 'Unknown' }}
+            {{ region ? region.name : 'Unknown' }}
           </span>
         </div>
       </div>
