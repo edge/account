@@ -91,7 +91,7 @@ export default {
           this.session._key,
           this.serverId
         )
-        this.$store.commit('addTask', response.task)
+        if (response.task) this.$store.commit('addTask', response.task)
         this.isLoading = false
       }
       catch (error) {

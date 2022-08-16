@@ -32,7 +32,7 @@
     </td>
     <td class="tableBody__cell col-span-2">
       <span class="mr-2 lg:hidden">Memo:</span>
-      <span class="truncate">{{ tx.data.memo }}</span>
+      <span class="truncate" :class="!tx.data.memo ? 'italic text-gray' : ''">{{ tx.data.memo || 'None' }}</span>
     </td>
     <td class="tableBody__cell status row-start-1 col-start-2">
       <span class="mr-2 lg:hidden">Status:</span>

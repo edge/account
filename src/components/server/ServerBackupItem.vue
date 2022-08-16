@@ -135,7 +135,7 @@ export default {
       return format.date(this.backup.created)
     },
     formattedTime() {
-      return format.time(this.backup.created, true)
+      return format.time(this.backup.created)
     },
     isCreating() {
       return this.backupTasks.some(task => task.action === 'createBackup') || this.backup.status === 'creating'
@@ -243,7 +243,7 @@ tr {
   @apply sm:row-start-2;
 }
 .tableBody__cell.time {
-  @apply sm:row-start-2 col-start-2 lg:hidden xl:table-cell;
+  @apply sm:row-start-2 col-start-2;
 }
 .tableBody__cell.actions {
   @apply col-span-3 lg:px-0;
@@ -289,7 +289,7 @@ tr {
   }
 
   .backup-comment {
-    @apply text-gray-500;
+    @apply text-sm text-gray-500;
   }
 
   .action_buttons {

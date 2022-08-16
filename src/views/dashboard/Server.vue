@@ -1,10 +1,13 @@
 <template>
   <div class="mainContent__inner" v-if="server">
     <!-- title -->
-    <h1 class="mb-0 leading-none">{{ server.settings.name ||server.settings.hostname }}</h1>
+    <h1 class="mb-0 leading-none">{{ server.settings.name || server.settings.hostname }}</h1>
 
     <!-- ip and domain -->
-    <div class="flex items-center space-x-2 mt-1 text-gray-500 truncate collapse sub-header">
+    <div
+      class="flex items-center mt-1 text-gray-500 truncate collapse sub-header"
+      :class="serverIp ? 'space-x-2' : ''"
+    >
       <span>{{ serverIp }}</span>
       <span v-if=serverIp class="divider"/>
       <span class="truncate">{{ server.settings.domain }}</span>
