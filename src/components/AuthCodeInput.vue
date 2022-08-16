@@ -6,7 +6,7 @@
         v-model="input1"
         v-mask="'#'"
         @click="focusOnFirstEmpty"
-        @paste="onPaste"
+        @paste="onPaste(0)"
         @keydown="onKeyDown"
         placeholder="·"
         ref="1"
@@ -18,6 +18,7 @@
         v-model="input2"
         v-mask="'#'"
         @click="focusOnFirstEmpty"
+        @paste="onPaste(1)"
         @keydown="onKeyDown"
         placeholder="·"
         ref="2"
@@ -29,6 +30,7 @@
         v-model="input3"
         v-mask="'#'"
         @click="focusOnFirstEmpty"
+        @paste="onPaste(2)"
         @keydown="onKeyDown"
         placeholder="·"
         ref="3"
@@ -40,6 +42,7 @@
         v-model="input4"
         v-mask="'#'"
         @click="focusOnFirstEmpty"
+        @paste="onPaste(3)"
         @keydown="onKeyDown"
         placeholder="·"
         ref="4"
@@ -51,6 +54,7 @@
         v-model="input5"
         v-mask="'#'"
         @click="focusOnFirstEmpty"
+        @paste="onPaste(4)"
         @keydown="onKeyDown"
         placeholder="·"
         ref="5"
@@ -62,6 +66,7 @@
         v-model="input6"
         v-mask="'#'"
         @click="focusOnFirstEmpty"
+        @paste="onPaste(5)"
         @keydown="onKeyDown"
         placeholder="·"
         ref="6"
@@ -133,23 +138,19 @@ export default {
     },
     onKeyDown(e) {
       const enter = e.which === 13
-      const number = this.checkNumber(e.key)
-      const finalInput = e.target.className.includes('last')
       // timeout to allow the input to be entered before performing tasks
       setTimeout(() => {
         this.resetErrors()
         this.focusNext(e)
         // submit form if entering final number or hitting enter
-        if (number && finalInput) this.submitForm()
         if (enter) this.submitForm()
       }, 1)
 
     },
-    async onPaste() {
+    async onPaste(startIndex) {
       const clipboardContent = await navigator.clipboard.readText()
       if (/^[0-9]{6}$/.test(clipboardContent)) {
-        for (let i = 0; i < 6; i++) this[`input${i + 1}`] = clipboardContent[i]
-        this.submitForm()
+        for (let i = startIndex; i < 6; i++) this[`input${i + 1}`] = clipboardContent[i]
       }
     },
     setAllInputs(newInput) {
@@ -171,6 +172,13 @@ export default {
     this.$refs['1'].focus()
   },
   watch: {
+    input6() {
+      if (/^[0-9]{6}$/.test(this.confirmationCode)) {
+        setTimeout(() => {
+          this.submitForm()
+        }, 1)
+      }
+    },
     error() {
       if (!this.error) return
       this.setAllInputs('')
