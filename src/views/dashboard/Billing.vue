@@ -1,8 +1,8 @@
 <template>
   <div class="mainContent__inner space-y-4">
     <h1>Billing</h1>
-    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
-      <DetailsBox/>
+    <div class="flex flex-col space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-6 lg:space-y-0">
+      <div class="box overflow-hidden"><DetailsBox/></div>
       <!--
         <template v-slot:buttons>
           <button @click=addFunds class="button button--success button--small">
@@ -11,9 +11,7 @@
         </template>
       </DetailsBox>
       -->
-      <div class="box">
-        <ReferralCode />
-      </div>
+      <div class="box overflow-hidden"><ReferralCode /></div>
       <!-- <div class="box">
         <h4>Consumption</h4>
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
