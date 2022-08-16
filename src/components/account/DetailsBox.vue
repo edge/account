@@ -1,5 +1,5 @@
 <template>
-  <div class="box overflow-hidden">
+  <div class="w-full overflow-hidden">
     <h4>Account Details</h4>
     <div class="details__section">
       <span class="details__title">Account No:</span>

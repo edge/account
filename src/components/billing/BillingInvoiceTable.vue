@@ -10,7 +10,7 @@
             <th scope="col" class="tableHead__cell">
               Description
             </th>
-            <th scope="col" class="tableHead__cell">
+            <th scope="col" class="tableHead__cell" :width="hasUnpaidInvoice ? '' : '100'">
               Status
             </th>
             <th scope="col" class="tableHead__cell">
@@ -72,6 +72,9 @@ export default {
     ...mapState(['session']),
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
+    },
+    hasUnpaidInvoice() {
+      return this.invoices && this.invoices.some(invoice => invoice.status === 'hold')
     }
   },
   methods: {
