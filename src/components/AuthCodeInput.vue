@@ -149,7 +149,7 @@ export default {
     },
     async onPaste(startIndex) {
       const clipboardContent = await navigator.clipboard.readText()
-      if (/^[0-9]{6}$/.test(clipboardContent)) {
+      if (/^[0-9]*$/.test(clipboardContent)) {
         for (let i = startIndex; i < 6; i++) this[`input${i + 1}`] = clipboardContent[i]
       }
     },
