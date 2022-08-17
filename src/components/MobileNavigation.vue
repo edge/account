@@ -85,8 +85,10 @@ export default {
 </script>
 <style scoped>
   .mobileNavigation {
-    @apply fixed pointer-events-none opacity-0 right-0 w-full top-0 flex flex-col h-screen overflow-auto border-r border-gray-300 md:hidden;
+    @apply fixed pointer-events-none opacity-0 right-0 w-full top-0 flex flex-col overflow-auto border-r border-gray-300 md:hidden;
     @apply transition-all transform -translate-x-full duration-500;
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
   }
   .menu-open .mobileNavigation {
     @apply opacity-100 translate-x-0;

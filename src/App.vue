@@ -26,6 +26,8 @@ export default {
 
 <style>
 .app {
-  @apply bg-gray-200 min-h-screen;
+  @apply bg-gray-200;
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
 }
 </style>
