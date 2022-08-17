@@ -40,9 +40,9 @@
     </div>
     <div class="details__section balance estimated_costs">
       <div class="flex flex-col">
-        <span class="details__title flex items-center">Estimated Costs:
+        <span class="details__title flex items-center">Usage:
           <Tooltip theme="white"
-            text="This shows the estimated costs owed so far. The final amount may vary."
+            text="This shows accrued costs since your last payment."
           >
             <InformationCircleIcon class="ml-1 w-4 text-gray hover:text-green"/>
           </Tooltip>

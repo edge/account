@@ -22,10 +22,10 @@
           </span>
         </div>
         <div class="items-center flex-shrink-0 flex space-x-1">
-          <span class="font-bold">Estimated Costs: </span>
+          <span class="font-bold">Usage Costs: </span>
           <span>{{ formattedEstimatedCost }} XE / {{ formattedUSDEstimatedCost }} USD </span>
           <Tooltip position="right" theme="white"
-            text="This shows the estimated costs owed so far. The final amount may vary."
+            text="This shows accrued costs since your last payment."
           >
             <InformationCircleIcon class="w-4 text-gray hover:text-green"/>
           </Tooltip>
