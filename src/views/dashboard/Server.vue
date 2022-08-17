@@ -428,6 +428,9 @@ export default {
   @apply pb-1 font-medium border-b text-gray-500 border-transparent;
   @apply hover:text-black;
 }
+.tab:focus-visible {
+  outline: none;
+}
 .tab--selected {
   @apply text-green border-green;
   @apply hover:text-green;

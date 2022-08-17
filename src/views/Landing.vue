@@ -14,10 +14,12 @@ export default {
 </script>
 <style>
   .landingPage {
-    @apply flex w-screen h-screen bg-white;
+    @apply flex w-screen bg-white;
     background-image: url("https://cdn.discordapp.com/attachments/976127390482849922/991745747651412078/unknown.png");
     background-repeat: no-repeat;
     background-size: cover;
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
   }
   .landingPage__left {
     @apply flex justify-center items-start w-full h-full px-5 lg:w-1/2 z-10;

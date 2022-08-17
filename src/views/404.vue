@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center w-full h-screen">
+  <div class="flex flex-col items-center justify-center w-full full-height">
     <router-link to="/">
       <img src="https://cdn.edge.network/assets/img/edge-logo-green.svg" alt="Edge" width="100">
     </router-link>
@@ -19,4 +19,8 @@ export default {
 }
 </script>
 <style scoped>
+.full-height {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+}
 </style>

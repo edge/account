@@ -97,6 +97,9 @@ export default {
   .tooltip.error {
     @apply bg-red
   }
+  .tooltip.white {
+    @apply bg-white border border-gray-300 text-gray-500;
+  }
 
   /* the notch */
   .tooltip .text::after {
@@ -135,6 +138,19 @@ export default {
     border-color: transparent transparent #cd5f4e transparent
   }
   .tooltip.error.left .text::after {
-    border-color: transparent transparent transparent #cd5f4e 
+    border-color: transparent transparent transparent #cd5f4e
+  }
+
+  .tooltip.white.top .text::after {
+    border-color: #fff transparent transparent transparent
+  }
+  .tooltip.white.right .text::after {
+    border-color: transparent #fff transparent transparent
+  }
+  .tooltip.white.bottom .text::after {
+    border-color: transparent transparent #fff transparent
+  }
+  .tooltip.white.left .text::after {
+    border-color: transparent transparent transparent #fff
   }
 </style>

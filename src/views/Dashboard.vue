@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full min-h-screen">
+  <div class="flex w-full min-full-height">
     <SideNavigation />
     <main class="flex flex-col w-full mainContent">
       <TopNavigation />
@@ -86,11 +86,16 @@ export default {
 }
 </script>
 <style>
-  .mainContent {
-    @apply relative flex-1;
-  }
+.min-full-height {
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
 
-  .mainContent__inner {
-    @apply p-3 md:p-5 lg:p-8 mt-7;
-  }
+.mainContent {
+  @apply relative flex-1;
+}
+
+.mainContent__inner {
+  @apply p-3 md:p-5 lg:p-8 mt-7;
+}
 </style>
