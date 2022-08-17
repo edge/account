@@ -10,6 +10,8 @@ import Billing from '@/views/dashboard/Billing'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
 import Deploy from '@/views/dashboard/Deploy'
+// import Domain from '@/views/dashboard/Domain'
+import Domains from '@/views/dashboard/Domains'
 import Index from '@/views/dashboard/Index'
 import Invoices from '@/components/billing/Invoices'
 import Landing from '@/views/Landing'
@@ -69,6 +71,16 @@ const routes = [
             component: Wallet
           }
         ]
+      },
+      // {
+      //   path: 'domain/:id',
+      //   name: 'Domain',
+      //   component: Domain
+      // },
+      {
+        path: 'domains',
+        name: 'Domains',
+        component: Domains
       },
       {
         path: 'servers',

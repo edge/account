@@ -15,7 +15,7 @@
 <script>
 import Logo from '@/components/Logo'
 import Menu from '@/components/Menu'
-import NavigationTools from '@/components/NavigationTools'
+// import NavigationTools from '@/components/NavigationTools'
 
 export default {
   name: 'SideNavigation',
@@ -25,8 +25,11 @@ export default {
         {
           link: '/servers',
           text: 'Servers'
-        }
-        ,
+        },
+        {
+          link: '/domains',
+          text: 'Domains'
+        },
         {
           link: '/storage',
           text: 'Storage',
@@ -43,11 +46,6 @@ export default {
           disabled: true
         },
         {
-          link: '/domains',
-          text: 'Domains',
-          disabled: true
-        },
-        {
           link: '/shield',
           text: 'Shield',
           disabled: true
@@ -57,8 +55,8 @@ export default {
   },
   components: {
     Logo,
-    Menu,
-    NavigationTools
+    Menu
+    // NavigationTools
   }
 }
 </script>
