@@ -12,18 +12,19 @@
     </div> -->
 
     <!-- user nav and deploy button - hidden on small screens -->
-    <div class="hidden md:flex w-full items-center justify-between ">
-      <div class="flex-shrink-0 flex flex-col lg:flex-row lg:space-x-1">
-        <span>
+    <div class="topNavigation__wrapper hidden md:flex w-full items-center">
+      <div class="balance hidden flex-col flex-shrink-0">
+        <div class="flex-shrink-0 flex space-x-1">
           <span class="font-bold">Balance: </span>
-          <span class="lg:hidden">
+          <span>{{ formattedBalance }} XE / {{ formattedUSDBalance }} USD </span>
+          <span>
             (<router-link to="/billing/payments" class="text-green hover:underline">Add Funds</router-link>)
           </span>
-        </span>
-        <span>{{ formattedBalance }} XE / {{ formattedUSDBalance }} USD </span>
-        <span class="hidden lg:block">
-          (<router-link to="/billing/payments" class="text-green hover:underline">Add Funds</router-link>)
-        </span>
+        </div>
+        <div class="flex-shrink-0 flex space-x-1">
+          <span class="font-bold">Estimated Costs: </span>
+          <span>{{ formattedEstimatedCost }} XE / {{ formattedUSDEstimatedCost }} USD </span>
+        </div>
       </div>
       <span class="topNavigation__right">
         <router-link to="/servers/deploy">
@@ -70,6 +71,12 @@ export default {
     formattedBalance() {
       return this.balance && format.xe(this.balance.total.xe)
     },
+    formattedEstimatedCost() {
+      return this.balance && format.xe(this.balance.reserved.xe)
+    },
+    formattedUSDEstimatedCost() {
+      return this.balance && format.usd(this.balance.reserved.usd, 2)
+    },
     formattedUSDBalance() {
       return this.usdBalance && format.usd(this.usdBalance, 2)
     },
@@ -105,10 +112,23 @@ export default {
 /* .topNavigation.menu-open {
   @apply fixed;
 } */
+.topNavigation__wrapper {
+  @apply justify-end;
+}
 .topNavigation__left {
   @apply hidden lg:block;
 }
 .topNavigation__right {
   @apply items-center hidden space-x-2 md:flex;
+}
+
+@media (min-width: 950px) {
+  .balance {
+    @apply flex;
+  }
+
+  .topNavigation__wrapper {
+    @apply justify-between;
+  }
 }
 </style>

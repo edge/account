@@ -38,6 +38,13 @@
       </div>
       <slot name="buttons"/>
     </div>
+    <div class="details__section balance estimated_costs">
+      <div class="flex flex-col">
+        <span class="details__title">Estimated Costs:</span>
+        <span class="details__info">{{ formattedEstimatedCost }} <span class="currency">XE</span></span>
+        <span class="details__info">{{ formattedUSDEstimatedCost }} <span class="currency">USD</span></span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -75,6 +82,12 @@ export default {
     },
     formattedBalance() {
       return format.xe(this.balance.total.xe)
+    },
+    formattedEstimatedCost() {
+      return this.balance && format.xe(this.balance.reserved.xe)
+    },
+    formattedUSDEstimatedCost() {
+      return this.balance && format.usd(this.balance.reserved.usd, 2)
     },
     formattedUSDBalance() {
       return format.usd(this.usdBalance, 2)
@@ -147,6 +160,12 @@ export default {
 
   .details__section.balance .button {
     @apply w-full mt-2;
+  }
+}
+
+@media (min-width: 950px) {
+  .balance.estimated_costs {
+    @apply hidden;
   }
 }
 </style>
