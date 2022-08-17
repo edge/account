@@ -21,11 +21,11 @@
       <div class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Wallet'}">Wallet</router-link>
       </div>
-      <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Payments'}">Purchase XE</router-link>
-      </div>
       <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Invoices'}">Invoices</router-link>
+      </div>
+      <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Payments'}">Purchase XE</router-link>
       </div>
     </div>
     <router-view />
@@ -106,6 +106,10 @@ export default {
 .tab {
   @apply pb-1 font-medium border-b text-gray-500 border-transparent;
   @apply hover:text-black;
+}
+.tab:focus,
+.tab a:focus {
+  outline: none;
 }
 .tab.tab--selected {
   @apply text-green border-green;
