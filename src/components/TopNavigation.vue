@@ -21,9 +21,14 @@
             (<router-link to="/billing/payments" class="text-green hover:underline">Add Funds</router-link>)
           </span>
         </div>
-        <div class="flex-shrink-0 flex space-x-1">
+        <div class="items-center flex-shrink-0 flex space-x-1">
           <span class="font-bold">Estimated Costs: </span>
           <span>{{ formattedEstimatedCost }} XE / {{ formattedUSDEstimatedCost }} USD </span>
+          <Tooltip position="right" theme="white"
+            text="This shows the estimated costs owed so far. The final amount may vary."
+          >
+            <InformationCircleIcon class="w-4 text-gray hover:text-green"/>
+          </Tooltip>
         </div>
       </div>
       <span class="topNavigation__right">
@@ -40,9 +45,11 @@
 <script>
 import * as format from '../utils/format'
 import BurgerButton from '@/components/BurgerButton'
+import { InformationCircleIcon } from '@heroicons/vue/outline'
 import Logo from '@/components/Logo'
 import MobileNavigation from '@/components/MobileNavigation'
 // import Search from '@/components/Search'
+import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
 import { mapState } from 'vuex'
 
@@ -61,9 +68,11 @@ export default {
   },
   components: {
     BurgerButton,
+    InformationCircleIcon,
     Logo,
     MobileNavigation,
     // Search,
+    Tooltip,
     UserMenu
   },
   computed: {

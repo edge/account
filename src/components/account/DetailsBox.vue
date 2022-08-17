@@ -40,7 +40,13 @@
     </div>
     <div class="details__section balance estimated_costs">
       <div class="flex flex-col">
-        <span class="details__title">Estimated Costs:</span>
+        <span class="details__title flex items-center">Estimated Costs:
+          <Tooltip theme="white"
+            text="This shows the estimated costs owed so far. The final amount may vary."
+          >
+            <InformationCircleIcon class="ml-1 w-4 text-gray hover:text-green"/>
+          </Tooltip>
+        </span>
         <span class="details__info">{{ formattedEstimatedCost }} <span class="currency">XE</span></span>
         <span class="details__info">{{ formattedUSDEstimatedCost }} <span class="currency">USD</span></span>
       </div>
@@ -52,8 +58,9 @@
 /* global process */
 
 import * as format from '@/utils/format'
-import { DuplicateIcon } from '@heroicons/vue/outline'
+import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
+import { DuplicateIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
 export default {
@@ -61,7 +68,9 @@ export default {
   components: {
     DuplicateIcon,
     EyeIcon,
-    EyeOffIcon
+    EyeOffIcon,
+    InformationCircleIcon,
+    Tooltip
   },
   data() {
     return {
