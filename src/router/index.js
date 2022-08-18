@@ -10,7 +10,7 @@ import Billing from '@/views/dashboard/Billing'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
 import Deploy from '@/views/dashboard/Deploy'
-// import Domain from '@/views/dashboard/Domain'
+import Domain from '@/views/dashboard/Domain'
 import Domains from '@/views/dashboard/Domains'
 import Index from '@/views/dashboard/Index'
 import Invoices from '@/components/billing/Invoices'
@@ -72,11 +72,11 @@ const routes = [
           }
         ]
       },
-      // {
-      //   path: 'domain/:id',
-      //   name: 'Domain',
-      //   component: Domain
-      // },
+      {
+        path: 'domain/:key',
+        name: 'Domain',
+        component: Domain
+      },
       {
         path: 'domains',
         name: 'Domains',

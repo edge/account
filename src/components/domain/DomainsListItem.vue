@@ -1,48 +1,48 @@
 <template>
     <li
       @click=goToServer
-      class="serverList__item"
-      :class="isActive ? 'active' : isInactive ? 'inactive' : ''"
+      class="domainList__item"
     >
       <!-- server details -->
-      <div class="serverList__field details overflow-hidden">
+      <div class="domainList__field name overflow-hidden">
         <!-- server name -->
-        <span class="serverList__name">{{ domain._key }}</span>
+        <span class="domainList__name">{{ domain._key }}</span>
       </div>
-      <!-- server specs -->
-      <div class="serverList__field specs">
-        <!-- specs -->
-        <!-- <div class="serverList__stats text-m">
-          <span>{{ server.spec.cpus }} vCPU</span>
+      <!-- domain records -->
+      <div class="domainList__field records">
+        <!-- records -->
+        <span class="domainList__header">Records</span>
+        <div class="domainList__stats text-m">
+          <span>A</span>
           <span class="divider"></span>
-          <span>{{ formattedDisk }} Disk</span>
+          <span>MX</span>
           <span class="divider"></span>
-          <span>{{ formattedRAM }} RAM</span>
+          <span>CNAME</span>
           <span class="divider"></span>
-          <span>{{ server.spec.bandwidth }} Mbps</span>
-        </div> -->
+          <span></span>
+        </div>
       </div>
       <!-- created -->
-      <div class="serverList__field created">
-        <span class="serverList__header">Created</span>
+      <div class="domainList__field created">
+        <span class="domainList__header">Created</span>
         <span class="text-m">{{ created }}</span>
       </div>
       <!-- status dot -->
-      <div class="serverList__field status">
-        <span class="serverList__header">Status</span>
+      <div class="domainList__field status">
+        <span class="domainList__header">Status</span>
         <!-- <ServerStatus extraClass="text-m" :server=server /> -->
       </div>
     </li>
 </template>
 
 <script>
-import * as format from '@/utils/format'
+// import * as format from '@/utils/format'
 import ServerStatus from '@/components/server/ServerStatus'
 import { mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
-  name: 'DomainListItem',
+  name: 'DomainsListItem',
   components: {
     ServerStatus
   },
@@ -71,22 +71,16 @@ export default {
 }
 
 /* list item */
-.serverList__item {
-  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-t-8 border-gray-400 rounded-md w-full p-5 pr-8;
+.domainList__item {
+  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 rounded-md w-full p-5 pr-8;
   @apply cursor-pointer transition-all duration-100;
-}
-.serverList__item.active {
-  @apply border-green;
-}
-.serverList__item.inactive {
-  @apply border-red;
 }
 
 /* list item content */
-.serverList__field {
+.domainList__field {
   @apply flex flex-col;
 }
-.serverList__header {
+.domainList__header {
   @apply text-md mr-2;
 }
 .ip__and__domain {
@@ -95,27 +89,15 @@ export default {
 .zone, .created, .status {
   @apply flex flex-col;
 }
-.serverList__name {
-  @apply text-md text-gray-500 truncate;
+.domainList__name {
+  @apply text-md text-black truncate;
 }
-.active .serverList__name {
-  @apply text-green font-medium;
-}
-.inactive .serverList__name {
-  @apply text-red font-medium;
-}
-.serverList__stats {
+.domainList__stats {
   @apply flex space-x-1.5;
 }
 /* status dot */
-.serverList__statusDot {
+.domainList__statusDot {
   @apply w-2.5 h-2.5 rounded-full mr-1 bg-gray-400;
-}
-.active .serverList__statusDot {
-  @apply bg-green;
-}
-.inactive .serverList__statusDot {
-  @apply bg-red;
 }
 .divider {
   @apply h-full bg-gray-400;
@@ -124,14 +106,14 @@ export default {
 
 /* tablet sized screens up to desktop */
 @media (min-width: 470px) {
-  .serverList__item {
+  .domainList__item {
     @apply grid-rows-3 gap-x-10;
     grid-template-columns: auto;
   }
-  .serverList__header {
+  .domainList__header {
     @apply mr-0;
   }
-  .details {
+  .name {
     @apply col-span-2;
   }
   .ip__and__domain {
@@ -158,14 +140,14 @@ export default {
 }
 
 @screen lg {
-  .serverList__item {
-    @apply flex justify-between border-l-8 border-t-0 gap-x-4;
+  .domainList__item {
+    @apply flex justify-between gap-x-4;
   }
-  .details {
-    @apply col-span-1 flex-shrink;
+  .name {
+    @apply col-span-1 row-span-2 flex-shrink justify-center;
     flex-basis: 280px;
   }
-  .specs {
+  .records {
     @apply flex-shrink-0;
     flex-basis: 320px;
   }
@@ -180,11 +162,11 @@ export default {
 }
 
 @media (max-width: 370px) {
-  .serverList__stats {
+  .domainList__stats {
     @apply flex-col space-x-0;
   }
 
-  .serverList__stats .divider {
+  .domainList__stats .divider {
     @apply hidden;
   }
 }

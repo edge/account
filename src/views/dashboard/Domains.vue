@@ -22,43 +22,29 @@
           <button
             @click.prevent="addDomain"
             :disabled="!canAddDomain"
-            class="button button--success">
-            Add Domain
+            class="button button--success"
+          >
+            <div v-if="addingDomain" class="flex items-center">
+              <span>Adding</span>
+              <div><LoadingSpinner class="ml-1 w-4" /></div>
+            </div>
+            <span v-else>Add Domain</span>
           </button>
         </div>
 
       </div>
     </div>
 
-    <!-- domains list -->
-    <div v-if="!loaded" class="box mt-5 flex items-center">
-      <span>Loading domains</span>
-      <div class="ml-2"><LoadingSpinner /></div>
-    </div>
-
-    <ul v-else-if="domains.length" role="list" class="domainList">
-      <DomainListItem
-        v-for="domain in domains"
-        :key="domain._key"
-        :domain=domain
-      />
-      <Pagination
-        :currentPage=currentPage
-        :limit=limit
-        :totalCount="metadata.totalCount"
-        @change-page=changePage
-      />
-    </ul>
+    <DomainsList />
   </div>
 </template>
 
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
-import DomainListItem from '@/components/domain/DomainListItem'
+import * as utils from '@/account-utils'
+import DomainsList from '@/components/domain/DomainsList'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import Pagination from '@/components/Pagination'
 import { mapState } from 'vuex'
 
 export default {
@@ -67,34 +53,27 @@ export default {
     return 'Edge Account Portal » Domains'
   },
   components: {
-    DomainListItem,
-    LoadingSpinner,
-    Pagination
+    DomainsList,
+    LoadingSpinner
   },
   data() {
     return {
-      domains: [],
-      iDomains: null,
-      limit: 10,
-      loaded: false,
-      metadata: { totalCount: 0 },
-      newDomainName: '',
-      pageHistory: [1]
+      addingDomain: false,
+      newDomainName: ''
     }
   },
   computed: {
-    ...mapState(['account', 'session']),
+    ...mapState(['session']),
     canAddDomain() {
+      /** @todo add proper verfification */
       return this.newDomainName
-    },
-    currentPage() {
-      return this.pageHistory[this.pageHistory.length - 1]
     }
   },
   methods: {
     async addDomain() {
       try {
-        await utils.domains.createDomain(
+        this.addingDomain = true
+        await utils.dns.addZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.newDomainName
@@ -103,36 +82,9 @@ export default {
       catch (error) {
         console.error(error)
       }
-    },
-    changePage(newPage) {
-      this.pageHistory = [...this.pageHistory, newPage]
-    },
-    async updateDomains() {
-      const domains = await utils.domains.getDomains(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
-      )
-      this.domains = domains.results
-      this.metadata = domains.metadata
-      this.loaded = true
-    }
-  },
-  async mounted() {
-    await this.updateDomains()
-    this.iDomains = setInterval(() => {
-      this.updateDomains()
-    }, 10000)
-  },
-  unmounted() {
-    clearInterval(this.iDomains)
-  },
-  watch: {
-    pageHistory() {
-      this.updateDomains()
+      setTimeout(() => {
+        this.addingDomain = false
+      }, 800)
     }
   }
 }
@@ -140,9 +92,5 @@ export default {
 <style scoped>
 .box {
   @apply w-full p-6 bg-white rounded-lg;
-}
-
-.domainList {
-  @apply mt-5 lg:mt-5 space-y-2;
 }
 </style>
