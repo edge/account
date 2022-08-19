@@ -21,36 +21,72 @@
         <span class="recordList__header">TTL</span>
         <span class="recordList__value">{{ record.ttl }}</span>
       </div>
-      <!-- settings -->
-      <div class="recordList__field settings justify-center">
-        <div class="hover:text-green cursor-pointer">
-          <CogIcon class="w-7" />
+      <!-- options -->
+      <div class="recordList__field options justify-center">
+        <div class="relative">
+          <button @click=toggleShowOptions
+            class="relative hover:text-green cursor-pointer"
+          >
+            <CogIcon class="w-7" />
+          </button>
+          <div v-if="showOptions" class="options__dropdown">
+            <button
+              class="w-max hover:underline"
+            >Edit record</button>
+            <button
+              @click=deleteRecord
+              class="w-max text-red hover:underline"
+            >Delete</button>
+          </div>
         </div>
-        <div></div>
       </div>
     </li>
 </template>
 
 <script>
-// import * as format from '@/utils/format'
+/* global process */
+
+import * as utils from '@/account-utils'
 import { CogIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
-  name: 'DomainsListItem',
+  name: 'DomainRecordsListItem',
   components: {
     CogIcon
   },
+  data() {
+    return {
+      showOptions: false
+    }
+  },
   props: ['record'],
   computed: {
-    ...mapState(['tasks']),
+    ...mapState(['session']),
     created() {
       const created = moment(this.record.created).fromNow()
       return created === 'a few seconds ago' ? 'Just now' : created
     }
   },
   methods: {
+    toggleShowOptions() {
+      this.showOptions = !this.showOptions
+    },
+    async deleteRecord() {
+      try {
+        await utils.dns.deleteRecord(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.record.zone,
+          this.record._key
+        )
+      }
+      catch (error) {
+        /** @todo handle error */
+        console.error(error)
+      }
+    }
   }
 }
 </script>
@@ -146,6 +182,10 @@ export default {
   .status {
     @apply col-start-5 row-start-1;
     flex-basis: 100px;
+  }
+  .options__dropdown {
+    @apply flex flex-col space-y-2 pl-2 pr-4 py-2;
+    @apply absolute right-0 z-10 w-max overflow-auto text-base bg-white rounded-md shadow-lg ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
   }
 }
 

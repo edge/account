@@ -1,6 +1,6 @@
 <template>
     <li
-      @click=goToServer
+      @click=goToDomain
       class="domainList__item"
     >
       <!-- server details -->
@@ -12,14 +12,25 @@
       <div class="domainList__field records">
         <!-- records -->
         <span class="domainList__header">Records</span>
-        <div class="domainList__stats text-m">
-          <span>A</span>
+        <div>
+          <div v-if="domain.records" class="domainList__stats text-m">
+            <div v-for="(count, type, index) in domain.records"
+              :key="type"
+              class="flex space-x-2"
+            >
+              <span>{{count}} {{type}}</span>
+              <span v-if="index !== recordTypesCount - 1" class="divider"></span>
+            </div>
+          </div>
+          <span v-else class="italic text-gray-400">No records</span>
+
+          <!-- <span>A</span>
           <span class="divider"></span>
           <span>MX</span>
           <span class="divider"></span>
           <span>CNAME</span>
           <span class="divider"></span>
-          <span></span>
+          <span></span> -->
         </div>
       </div>
       <!-- created -->
@@ -30,21 +41,21 @@
       <!-- status dot -->
       <div class="domainList__field status">
         <span class="domainList__header">Status</span>
-        <!-- <ServerStatus extraClass="text-m" :server=server /> -->
+        <DomainStatus extraClass="text-m" :domain=domain />
       </div>
     </li>
 </template>
 
 <script>
 // import * as format from '@/utils/format'
-import ServerStatus from '@/components/server/ServerStatus'
+import DomainStatus from '@/components/domain/DomainStatus'
 import { mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
   name: 'DomainsListItem',
   components: {
-    ServerStatus
+    DomainStatus
   },
   props: ['domain'],
   computed: {
@@ -52,10 +63,13 @@ export default {
     created() {
       const created = moment(this.domain.created).fromNow()
       return created === 'a few seconds ago' ? 'Just now' : created
+    },
+    recordTypesCount() {
+      return this.domain && Object.keys(this.domain.records).length
     }
   },
   methods: {
-    goToServer() {
+    goToDomain() {
       this.$router.push(`/domain/${this.domain._key}`)
     }
   }
@@ -90,7 +104,7 @@ export default {
   @apply flex flex-col;
 }
 .domainList__name {
-  @apply text-md text-black truncate;
+  @apply text-md text-green truncate;
 }
 .domainList__stats {
   @apply flex space-x-1.5;

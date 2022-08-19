@@ -26,6 +26,14 @@ export const createRecord = async (host, sessionId, zoneKey, recordOptions) => {
   return response.body
 }
 
+// delete record
+export const deleteRecord = async (host, sessionId, zoneKey, recordKey) => {
+  const url = `${host}/dns/${zoneKey}/records/${recordKey}`
+  const response = await superagent.delete(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // delete domain
 export const deleteZone = async (host, sessionId, zoneKey) => {
   const url = `${host}/dns/${zoneKey}`
