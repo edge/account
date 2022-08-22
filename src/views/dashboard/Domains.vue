@@ -12,8 +12,9 @@
             autocomplete="off"
             class="w-full input input--floating"
             placeholder="Add a domain name"
+            @keypress="addOnEnter"
             required
-            v-model="newDomainName"
+            v-model="v$.newDomainName.$model"
           />
         </div>
 
@@ -33,6 +34,17 @@
         </div>
 
       </div>
+      <!-- errors -->
+      <div class="errorMessage">
+        <span
+          v-for="error in v$.newDomainName.$errors"
+          :key="error.$uid"
+          class="mt-2 errorMessage__text"
+        >
+          {{ error.$message }}
+        </span>
+      </div>
+      <HttpError :error=httpError />
     </div>
 
     <DomainsList />
@@ -43,9 +55,12 @@
 /* global process */
 
 import * as utils from '@/account-utils'
+import * as validation from '../../utils/validation'
 import DomainsList from '@/components/domain/DomainsList'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
+import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'Domains',
@@ -54,23 +69,30 @@ export default {
   },
   components: {
     DomainsList,
+    HttpError,
     LoadingSpinner
   },
   data() {
     return {
       addingDomain: false,
+      httpError: null,
       newDomainName: ''
+    }
+  },
+  validations() {
+    return {
+      newDomainName: [validation.domain]
     }
   },
   computed: {
     ...mapState(['session']),
     canAddDomain() {
-      /** @todo add proper verfification */
-      return this.newDomainName
+      return !this.v$.newDomainName.$invalid
     }
   },
   methods: {
     async addDomain() {
+      if (!this.canAddDomain) return
       try {
         this.addingDomain = true
         await utils.dns.addZone(
@@ -85,6 +107,21 @@ export default {
       setTimeout(() => {
         this.addingDomain = false
       }, 800)
+    },
+    addOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.addDomain()
+    }
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
+  },
+  watch: {
+    newDomainName() {
+      this.httpError = null
     }
   }
 }
