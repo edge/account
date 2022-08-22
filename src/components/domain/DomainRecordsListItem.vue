@@ -3,7 +3,7 @@
       <div class="recordList__field type">
         <span class="recordList__header">Type</span>
         <!-- server name -->
-        <span class="recordList__value text-center">{{ record.type }}</span>
+        <span class="recordList__value">{{ record.type }}</span>
       </div>
       <!-- server details -->
       <div class="recordList__field name overflow-hidden">
@@ -23,22 +23,33 @@
       </div>
       <!-- options -->
       <div class="recordList__field options justify-center">
-        <div class="relative">
-          <button @click=toggleShowOptions
-            class="relative hover:text-green cursor-pointer"
-          >
+        <Popover as='div' class="relative w-full">
+          <PopoverButton class="flex items-center hidden sm:block">
             <CogIcon class="w-7" />
-          </button>
-          <div v-if="showOptions" class="options__dropdown">
-            <button
-              class="w-max hover:underline"
-            >Edit record</button>
+          </PopoverButton>
+          <PopoverPanel :static="!sm" class="options__dropdown">
+            <button class="tableButton edit w-max sm:hover:underline">
+              Edit
+            </button>
             <button
               @click=deleteRecord
-              class="w-max text-red hover:underline"
-            >Delete</button>
-          </div>
-        </div>
+              class="tableButton delete w-max text-red sm:hover:underline"
+            >
+              Delete
+            </button>
+          </PopoverPanel>
+        </Popover>
+        <!-- <div class="sm:hidden">
+          <button class="tableButton edit">
+            Edit
+          </button>
+          <button
+            @click=deleteRecord
+            class="tableButton delete"
+          >
+            Delete
+          </button>
+        </div> -->
       </div>
     </li>
 </template>
@@ -50,15 +61,20 @@ import * as utils from '@/account-utils'
 import { CogIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 import moment from 'moment'
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 
 export default {
   name: 'DomainRecordsListItem',
   components: {
-    CogIcon
+    CogIcon,
+    Popover,
+    PopoverButton,
+    PopoverPanel
   },
   data() {
     return {
-      showOptions: false
+      showOptions: false,
+      windowWidth: window.innerWidth
     }
   },
   props: ['record'],
@@ -67,6 +83,9 @@ export default {
     created() {
       const created = moment(this.record.created).fromNow()
       return created === 'a few seconds ago' ? 'Just now' : created
+    },
+    sm() {
+      return this.windowWidth >= 640
     }
   },
   methods: {
@@ -86,18 +105,23 @@ export default {
         /** @todo handle error */
         console.error(error)
       }
+    },
+    onWindowResize() {
+      this.windowWidth = window.innerWidth
     }
+  },
+  mounted() {
+    window.addEventListener('resize', this.onWindowResize)
+  },
+  unmounted() {
+    window.removeEventListener('resize', this.onWindowResize)
   }
 }
 </script>
 <style scoped>
-.text-m {
-  font-size: 0.8rem;
-}
-
 /* list item */
 .recordList__item {
-  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 rounded-md w-full p-5 pr-8;
+  @apply grid grid-cols-2 gap-2 bg-white text-gray-500 rounded-md w-full p-5 pr-8;
 }
 
 /* list item content */
@@ -105,31 +129,25 @@ export default {
   @apply flex flex-col;
 }
 .recordList__header {
-  @apply text-md mr-2;
-}
-.ip__and__domain {
-  @apply flex flex-col overflow-hidden;
-}
-.zone, .created, .status {
-  @apply flex flex-col;
+  @apply text-sm mr-2;
 }
 .recordList__value {
   @apply text-sm text-black truncate;
 }
-.recordList__stats {
-  @apply flex space-x-1.5;
+.type {
+  @apply row-start-2;
 }
-/* status dot */
-.recordList__statusDot {
-  @apply w-2.5 h-2.5 rounded-full mr-1 bg-gray-400;
+.ttl {
+  @apply col-start-2;
 }
-.divider {
-  @apply h-full bg-gray-400;
-  width: 1px
+.options {
+  @apply col-span-2;
 }
-
+.options__dropdown {
+  @apply flex w-full space-x-2 justify-between
+}
 /* tablet sized screens up to desktop */
-@media (min-width: 470px) {
+/* @media (min-width: 470px) {
   .recordList__item {
     @apply grid-rows-3 gap-x-10;
     grid-template-columns: auto;
@@ -140,62 +158,65 @@ export default {
   .name {
     @apply col-span-2;
   }
-  .ip__and__domain {
-    @apply flex-row space-x-1
-  }
-  .ip__and__domain.divider {
-    @apply block;
-  }
-  .zone {
-    @apply col-start-2 row-start-2;
-  }
+} */
 
-  .created {
-    @apply col-start-1 row-start-3;
-  }
-
-  .status {
-    @apply col-start-2 row-start-3;
-  }
-
-  .divider {
-    @apply block;
-  }
-}
-
-@screen lg {
+@screen sm {
   .recordList__item {
-    @apply flex justify-between gap-x-4;
+    @apply flex flex-row space-y-0 justify-between gap-x-4;
+  }
+
+  .type {
+    @apply flex-shrink-0;
+    flex-basis: 60px;
   }
   .name {
-    @apply col-span-1 row-span-2 flex-shrink justify-center;
-    flex-basis: 280px;
-  }
-  .records {
-    @apply flex-shrink-0;
+    @apply col-span-1 row-span-2 justify-center;
     flex-basis: 320px;
   }
-  .created {
+  .value {
+    flex-basis: 320px;
+  }
+  .ttl {
     @apply col-start-4 row-start-1 flex-shrink-0;
-    flex-basis: 120px;
+    flex-basis: 60px;
   }
-  .status {
-    @apply col-start-5 row-start-1;
-    flex-basis: 100px;
+  .options {
+
   }
+
   .options__dropdown {
-    @apply flex flex-col space-y-2 pl-2 pr-4 py-2;
-    @apply absolute right-0 z-10 w-max overflow-auto text-base bg-white rounded-md shadow-lg ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
+    @apply flex flex-col space-x-0 space-y-1 pl-2 pr-4 py-2;
+    @apply absolute right-0 top-8 z-10 w-max overflow-auto text-base bg-white rounded-md shadow-lg ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
   }
 }
 
-@media (max-width: 370px) {
-  .recordList__stats {
-    @apply flex-col space-x-0;
+@media (max-width: 640px) {
+  .tableButton {
+    @apply button button--extraSmall w-1/2;
   }
+  .tableButton.edit {
+    @apply button--success
+  }
+  .tableButton.delete {
+  @apply button--error
+  }
+  .tableButton__icon {
+    @apply w-3.5 h-3.5 mr-1;
+  }
+}
 
-  .recordList__stats .divider {
-    @apply hidden;
+@media (max-width: 400px) {
+  .recordList__item {
+    @apply flex flex-col
+  }
+  .options {
+    @apply col-span-1;
+  }
+  .options__dropdown {
+    @apply flex-col space-x-0 space-y-2;
+  }
+  .tableButton {
+    @apply w-full;
   }
 }
 </style>

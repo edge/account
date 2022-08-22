@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <div class="mt-5">
+    <h4 class="text-xl">DNS Records</h4>
     <div v-if="!loaded" class="box mt-5 flex items-center">
       <span>Loading records</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
 
-    <ul v-else-if="records.length" role="list" class="domainList">
+    <ul v-else-if="records.length" role="list" class="recordList">
       <DomainRecordsListItem
         v-for="record in records"
         :key="record._key"
@@ -94,7 +95,7 @@ export default {
   @apply w-full p-6 bg-white rounded-lg;
 }
 
-.domainList {
-  @apply mt-5 lg:mt-5 space-y-2;
+.recordList {
+  @apply mt-2 space-y-2;
 }
 </style>
