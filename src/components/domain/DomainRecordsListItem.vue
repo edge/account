@@ -1,59 +1,67 @@
 <template>
-    <li class="recordList__item">
-      <div class="recordList__field type">
-        <span class="recordList__header">Type</span>
-        <!-- server name -->
-        <span class="recordList__value">{{ record.type }}</span>
-      </div>
-      <!-- server details -->
-      <div class="recordList__field name overflow-hidden">
-        <span class="recordList__header">Hostname</span>
-        <span class="recordList__value">{{ record.name }}</span>
-      </div>
-      <!-- domain records -->
-      <div class="recordList__field value">
-        <!-- records -->
-        <span class="recordList__header">Value</span>
-        <span class="recordList__value">{{ record.value }}</span>
-      </div>
-      <!-- created -->
-      <div class="recordList__field ttl">
-        <span class="recordList__header">TTL</span>
-        <span class="recordList__value">{{ record.ttl }}</span>
-      </div>
-      <!-- options -->
-      <div class="recordList__field options justify-center">
-        <Popover as='div' class="relative w-full">
-          <PopoverButton class="flex items-center hidden sm:block">
-            <CogIcon class="w-6" />
-          </PopoverButton>
-          <PopoverPanel :static="!sm" class="options__dropdown">
-            <button class="tableButton edit w-max sm:hover:underline">
-              <div>
-                <PencilIcon class="tableButton__icon" />
-              </div>
-              Edit
-            </button>
-            <button
-              @click=deleteRecord
-              class="tableButton delete w-max text-red sm:hover:underline"
-            >
-              <div>
-                <LoadingSpinner v-if=isDeleting class="tableButton__icon" />
-                <TrashIcon v-else class="tableButton__icon" />
-              </div>
-              Delete
-            </button>
-          </PopoverPanel>
-        </Popover>
-      </div>
-    </li>
+  <li class="recordList__item">
+    <div class="recordList__field type">
+      <span class="recordList__header">Type</span>
+      <!-- server name -->
+      <span class="recordList__value">{{ record.type }}</span>
+    </div>
+    <!-- server details -->
+    <div class="recordList__field name overflow-hidden">
+      <span class="recordList__header">Hostname</span>
+      <span class="recordList__value">{{ record.name }}</span>
+    </div>
+    <!-- domain records -->
+    <div class="recordList__field value">
+      <!-- records -->
+      <span class="recordList__header">Value</span>
+      <span class="recordList__value">{{ record.value }}</span>
+    </div>
+    <!-- created -->
+    <div class="recordList__field ttl">
+      <span class="recordList__header">TTL</span>
+      <span class="recordList__value">{{ record.ttl }}</span>
+    </div>
+    <!-- options -->
+    <div class="recordList__field options justify-center">
+      <Popover as='div' class="relative w-full">
+        <PopoverButton class="flex items-center hidden sm:block">
+          <CogIcon class="w-6" />
+        </PopoverButton>
+        <PopoverPanel :static="!sm" class="options__dropdown">
+          <button class="tableButton edit w-max sm:hover:underline">
+            <div>
+              <PencilIcon class="tableButton__icon" />
+            </div>
+            Edit
+          </button>
+          <button
+            @click=toggleDeleteConfirmationModal
+            class="tableButton delete w-max text-red sm:hover:underline"
+          >
+            <div>
+              <LoadingSpinner v-if=isDeleting class="tableButton__icon" />
+              <TrashIcon v-else class="tableButton__icon" />
+            </div>
+            Delete
+          </button>
+        </PopoverPanel>
+      </Popover>
+    </div>
+  </li>
+  <!-- eslint-disable-next-line vue/no-multiple-template-root-->
+  <DeleteRecordConfirmation
+    v-if=showDeleteConfirmationModal
+    :record=record
+    @modal-confirm=deleteRecord
+    @modal-close=toggleDeleteConfirmationModal
+  />
 </template>
 
 <script>
 /* global process */
 
 import * as utils from '@/account-utils'
+import DeleteRecordConfirmation from '@/components/confirmations/DeleteRecordConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import moment from 'moment'
@@ -69,6 +77,8 @@ export default {
   name: 'DomainRecordsListItem',
   components: {
     CogIcon,
+    DeleteRecordConfirmation,
+    ExclamationIcon,
     LoadingSpinner,
     PencilIcon,
     Popover,
@@ -79,6 +89,7 @@ export default {
   data() {
     return {
       isDeleting: false,
+      showDeleteConfirmationModal: false,
       showOptions: false,
       windowWidth: window.innerWidth
     }
@@ -99,8 +110,9 @@ export default {
       this.showOptions = !this.showOptions
     },
     async deleteRecord() {
+      this.isDeleting = true
+      this.toggleDeleteConfirmationModal()
       try {
-        this.isDeleting = true
         await utils.dns.deleteRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -118,6 +130,9 @@ export default {
     },
     onWindowResize() {
       this.windowWidth = window.innerWidth
+    },
+    toggleDeleteConfirmationModal() {
+      this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
     }
   },
   mounted() {
