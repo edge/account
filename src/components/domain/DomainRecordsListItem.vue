@@ -25,31 +25,27 @@
       <div class="recordList__field options justify-center">
         <Popover as='div' class="relative w-full">
           <PopoverButton class="flex items-center hidden sm:block">
-            <CogIcon class="w-7" />
+            <CogIcon class="w-6" />
           </PopoverButton>
           <PopoverPanel :static="!sm" class="options__dropdown">
             <button class="tableButton edit w-max sm:hover:underline">
+              <div>
+                <PencilIcon class="tableButton__icon" />
+              </div>
               Edit
             </button>
             <button
               @click=deleteRecord
               class="tableButton delete w-max text-red sm:hover:underline"
             >
+              <div>
+                <LoadingSpinner v-if=isDeleting class="tableButton__icon" />
+                <TrashIcon v-else class="tableButton__icon" />
+              </div>
               Delete
             </button>
           </PopoverPanel>
         </Popover>
-        <!-- <div class="sm:hidden">
-          <button class="tableButton edit">
-            Edit
-          </button>
-          <button
-            @click=deleteRecord
-            class="tableButton delete"
-          >
-            Delete
-          </button>
-        </div> -->
       </div>
     </li>
 </template>
@@ -58,21 +54,31 @@
 /* global process */
 
 import * as utils from '@/account-utils'
-import { CogIcon } from '@heroicons/vue/outline'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import moment from 'moment'
+import {
+  CogIcon,
+  ExclamationIcon,
+  PencilIcon,
+  TrashIcon
+} from '@heroicons/vue/outline'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 
 export default {
   name: 'DomainRecordsListItem',
   components: {
     CogIcon,
+    LoadingSpinner,
+    PencilIcon,
     Popover,
     PopoverButton,
-    PopoverPanel
+    PopoverPanel,
+    TrashIcon
   },
   data() {
     return {
+      isDeleting: false,
       showOptions: false,
       windowWidth: window.innerWidth
     }
@@ -94,6 +100,7 @@ export default {
     },
     async deleteRecord() {
       try {
+        this.isDeleting = true
         await utils.dns.deleteRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -105,6 +112,9 @@ export default {
         /** @todo handle error */
         console.error(error)
       }
+      setTimeout(() => {
+        this.isDeleting = false
+      }, 800)
     },
     onWindowResize() {
       this.windowWidth = window.innerWidth
@@ -146,19 +156,6 @@ export default {
 .options__dropdown {
   @apply flex w-full space-x-2 justify-between
 }
-/* tablet sized screens up to desktop */
-/* @media (min-width: 470px) {
-  .recordList__item {
-    @apply grid-rows-3 gap-x-10;
-    grid-template-columns: auto;
-  }
-  .recordList__header {
-    @apply mr-0;
-  }
-  .name {
-    @apply col-span-2;
-  }
-} */
 
 @screen sm {
   .recordList__item {
@@ -180,28 +177,31 @@ export default {
     @apply col-start-4 row-start-1 flex-shrink-0;
     flex-basis: 60px;
   }
-  .options {
-
-  }
 
   .options__dropdown {
-    @apply flex flex-col space-x-0 space-y-1 pl-2 pr-4 py-2;
+    @apply flex flex-col space-x-0 space-y-2 pl-2 pr-4 py-2;
     @apply absolute right-0 top-8 z-10 w-max overflow-auto text-base bg-white rounded-md shadow-lg ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
+  }
+  .tableButton {
+    @apply flex items-center;
+  }
+  .tableButton__icon {
+    @apply w-4 mr-1;
   }
 }
 
 @media (max-width: 640px) {
   .tableButton {
-    @apply button button--extraSmall w-1/2;
+    @apply button button--extraSmall w-1/2 leading-none;
   }
   .tableButton.edit {
-    @apply button--success
+    @apply button--success;
   }
   .tableButton.delete {
-  @apply button--error
+    @apply button--error;
   }
   .tableButton__icon {
-    @apply w-3.5 h-3.5 mr-1;
+    @apply w-3.5 mr-1;
   }
 }
 
