@@ -204,10 +204,10 @@ export default {
 .record-form {
   @apply grid gap-4 w-full;
   grid-template-columns: auto 1fr;
-  @apply lg:flex lg:space-x-4 lg:items-start lg:flex-row;
+  @apply lg:flex lg:items-start lg:flex-row;
 }
 .input-group.type {
-  width: 100px;
+  width: 80px;
 }
 .input-group.ttl {
   @apply col-start-1 row-start-2;
@@ -229,7 +229,7 @@ input[type=number] {
 
 /* button */
 .listButton {
-  @apply relative w-full pl-2 text-sm text-left text-gray-600 bg-white border-b border-gray-400 cursor-default;
+  @apply relative w-full text-sm text-left text-gray-600 bg-white border-b border-gray-400 cursor-default;
   @apply focus:outline-none focus:shadow-none focus:text-green focus:border-green;
   padding-bottom: 1px;
 }
@@ -243,9 +243,18 @@ input[type=number] {
   @apply absolute z-10 w-full mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
 }
 .listOption {
-  @apply relative cursor-pointer p-2 text-gray-900 cursor-default select-none;
+  @apply relative cursor-pointer p-2 pl-1 text-gray-900 cursor-default select-none;
 }
 .listOption.active, .listOption.selected {
   @apply text-green bg-green bg-opacity-5;
+}
+
+@media (max-width: 400px) {
+  .input-group.hostname, .input-group.value {
+    @apply col-span-2;
+  }
+  .input-group.ttl {
+    @apply w-full row-start-1 col-start-2;
+  }
 }
 </style>
