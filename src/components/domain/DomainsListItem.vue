@@ -97,9 +97,6 @@ export default {
 .domainList__header {
   @apply text-md mr-2;
 }
-.ip__and__domain {
-  @apply flex flex-col overflow-hidden;
-}
 .zone, .created, .status {
   @apply flex flex-col;
 }
@@ -118,36 +115,33 @@ export default {
   width: 1px
 }
 
+@media (min-width: 350px) {
+  .domainList__item {
+    grid-template-columns: 1fr 80px;
+  }
+  .status {
+    @apply row-start-1 col-start-2;
+  }
+}
+
 /* tablet sized screens up to desktop */
 @media (min-width: 470px) {
   .domainList__item {
-    @apply grid-rows-3 gap-x-10;
-    grid-template-columns: auto;
+    @apply gap-x-4;
+    grid-template-columns: 1fr 100px 80px;
   }
   .domainList__header {
     @apply mr-0;
   }
   .name {
-    @apply col-span-2;
+    @apply col-span-3;
   }
-  .ip__and__domain {
-    @apply flex-row space-x-1
+  .records, .created, .status {
+    @apply row-start-2 col-span-1
   }
-  .ip__and__domain.divider {
-    @apply block;
-  }
-  .zone {
-    @apply col-start-2 row-start-2;
-  }
-
-  .created {
-    @apply col-start-1 row-start-3;
-  }
-
   .status {
-    @apply col-start-2 row-start-3;
+    @apply justify-self-end
   }
-
   .divider {
     @apply block;
   }
@@ -158,20 +152,21 @@ export default {
     @apply flex justify-between gap-x-4;
   }
   .name {
-    @apply col-span-1 row-span-2 flex-shrink justify-center;
+    @apply col-span-1 row-span-2 justify-center;
     flex-basis: 280px;
   }
   .records {
     @apply flex-shrink-0;
-    flex-basis: 320px;
+    flex-basis: 240px;
+  }
+  .created, .status {
+    @apply row-start-1 flex-shrink-0;
   }
   .created {
-    @apply col-start-4 row-start-1 flex-shrink-0;
-    flex-basis: 120px;
+    flex-basis: 100px;
   }
   .status {
-    @apply col-start-5 row-start-1;
-    flex-basis: 100px;
+    flex-basis: 70px;
   }
 }
 
