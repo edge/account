@@ -62,7 +62,7 @@ export default {
 </script>
 <style scoped>
   .sideNavigation {
-    @apply hidden md:sticky top-0 md:flex flex-col w-64 flex-shrink-0 overflow-auto py-6 bg-white border-r border-gray-300;
+    @apply hidden md:sticky top-0 md:flex flex-col w-52 lg:w-64 flex-shrink-0 overflow-auto py-6 bg-white border-r border-gray-300;
     height: 100vh;
     height: calc(var(--vh, 1vh) * 100);
   }
