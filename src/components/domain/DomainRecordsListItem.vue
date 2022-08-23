@@ -77,34 +77,33 @@
     </div>
     <!-- options -->
     <div class="recordList__field options justify-center">
-      <Popover as='div' class="relative w-full">
+      <div v-if=isEditing class="flex space-x-2 sm:flex-col sm:space-x-0 sm:space-y-2 sm:items-center">
+        <button
+          @click=toggleEditConfirmationModal
+          class="tableButton save w-max"
+        >
+          <div><CheckIcon class="tableButton__icon sm:text-green sm:w-5" /></div>
+          <span class="sm:hidden">Save</span>
+        </button>
+        <button
+          @click=cancelEditing
+          class="tableButton cancel w-max"
+        >
+          <div><XIcon class="tableButton__icon sm:text-red sm:w-5" /></div>
+          <span class="sm:hidden">Cancel</span>
+        </button>
+      </div>
+      <Popover v-else as='div' class="relative w-full">
         <PopoverButton class="flex items-center hidden sm:block">
           <CogIcon class="w-6" />
         </PopoverButton>
         <PopoverPanel :static="!sm" class="options__dropdown">
           <PopoverButton as='button'
-            v-if="!isEditing"
             @click=startEditing
             class="tableButton edit w-max sm:hover:underline"
           >
             <div><PencilIcon class="tableButton__icon" /></div>
             Edit
-          </PopoverButton>
-          <PopoverButton as='button'
-            v-if="isEditing"
-            @click=toggleEditConfirmationModal
-            class="tableButton edit w-max sm:hover:underline"
-          >
-            <div><SaveIcon class="tableButton__icon" /></div>
-            Save
-          </PopoverButton>
-          <PopoverButton as='button'
-            v-if="isEditing"
-            @click=cancelEditing
-            class="tableButton edit w-max sm:hover:underline"
-          >
-            <div><XIcon class="tableButton__icon" /></div>
-            Cancel
           </PopoverButton>
           <PopoverButton as='button'
             @click=toggleDeleteConfirmationModal
@@ -147,10 +146,10 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import {
+  CheckIcon,
   CogIcon,
   ExclamationIcon,
   PencilIcon,
-  SaveIcon,
   TrashIcon,
   XIcon
 } from '@heroicons/vue/outline'
@@ -167,9 +166,11 @@ import {
 export default {
   name: 'DomainRecordsListItem',
   components: {
+    CheckIcon,
     ChevronDownIcon,
     CogIcon,
     DeleteRecordConfirmation,
+    EditRecordConfirmation,
     ExclamationIcon,
     Listbox,
     ListboxButton,
@@ -180,7 +181,6 @@ export default {
     Popover,
     PopoverButton,
     PopoverPanel,
-    SaveIcon,
     TrashIcon,
     XIcon
   },
@@ -258,6 +258,7 @@ export default {
         /** @todo handle error */
         console.error(error)
       }
+      this.cancelEditing()
       // setTimeout(() => {
       //   this.isDeleting = false
       // }, 800)
@@ -290,7 +291,7 @@ export default {
 <style scoped>
 /* list item */
 .recordList__item {
-  @apply grid grid-cols-2 gap-2 bg-white text-gray-500 rounded-md w-full p-5 pr-8;
+  @apply grid grid-cols-2 gap-2 bg-white text-gray-500 rounded-md w-full pl-5 py-3 pr-8;
 }
 
 /* list item content */
@@ -371,6 +372,10 @@ input[type=number] {
     @apply col-start-4 row-start-1 flex-shrink-0;
     flex-basis: 100px;
   }
+  .options {
+    @apply flex-shrink-0;
+    flex-basis: 25px;
+  }
 
   .options__dropdown {
     @apply flex flex-col space-x-0 space-y-2 pl-2 pr-4 py-2;
@@ -388,10 +393,10 @@ input[type=number] {
   .tableButton {
     @apply button button--extraSmall w-1/2 leading-none;
   }
-  .tableButton.edit {
+  .tableButton.edit, .tableButton.save {
     @apply button--success;
   }
-  .tableButton.delete {
+  .tableButton.delete, .tableButton.cancel {
     @apply button--error;
   }
   .tableButton__icon {

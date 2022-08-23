@@ -9,8 +9,8 @@
     <template v-slot:body>
       <span class="font-semibold">Warning: this cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>All backup data will be lost and cannot be recovered</li>
-        <li>This action will not affect current server status</li>
+        <li>This record will be deleted</li>
+        <li>Placeholder warning message</li>
       </div>
     </template>
     <template v-slot:buttons>
