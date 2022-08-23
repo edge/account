@@ -4,7 +4,7 @@
 
     <!-- add new domain input -->
     <div class="box">
-      <div class="flex flex-col w-full lg:space-x-8 lg:items-end lg:flex-row">
+      <div class="flex flex-col space-y-2 w-full sm:space-x-4 sm:space-y-0 sm:items-end sm:flex-row">
         <!-- input -->
         <div class="flex-1 input-group">
           <label class="label">Domain Name</label>
@@ -18,20 +18,18 @@
           />
         </div>
 
-        <!-- buttons -->
-        <div class="flex mt-5 space-x-2 lg:mt-0">
-          <button
-            @click.prevent="addDomain"
-            :disabled="!canAddDomain"
-            class="button button--success"
-          >
-            <div v-if="addingDomain" class="flex items-center">
-              <span>Adding</span>
-              <div><LoadingSpinner class="ml-1 w-4" /></div>
-            </div>
-            <span v-else>Add Domain</span>
-          </button>
-        </div>
+        <!-- add button -->
+        <button
+          @click.prevent="addDomain"
+          :disabled="!canAddDomain"
+          class="button button--success"
+        >
+          <div v-if="addingDomain" class="flex items-center">
+            <span>Adding</span>
+            <div><LoadingSpinner class="ml-1 w-4" /></div>
+          </div>
+          <span v-else>Add Domain</span>
+        </button>
 
       </div>
       <!-- errors -->
