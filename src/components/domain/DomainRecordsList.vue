@@ -1,12 +1,13 @@
 <template>
   <div class="mt-5">
     <h4 class="text-xl">DNS Records</h4>
-    <div v-if="!loaded" class="box mt-5 flex items-center">
+    <!-- loading -->
+    <div v-if="!loaded" class="box mt-2 flex items-center">
       <span>Loading records</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
-
-    <ul v-else-if="records.length" role="list" class="recordList">
+    <!-- records list -->
+    <ul v-else-if="records.length" class="recordList">
       <DomainRecordsListItem
         v-for="record in records"
         :key="record._key"
@@ -19,6 +20,10 @@
         @change-page=changePage
       />
     </ul>
+    <!-- no records -->
+    <div v-else class="box mt-2">
+      <span>No records</span>
+    </div>
   </div>
 </template>
 

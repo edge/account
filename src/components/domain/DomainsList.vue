@@ -1,11 +1,12 @@
 <template>
   <div>
-    <div v-if="!loaded" class="box mt-5 flex items-center">
+    <!-- loading -->
+    <div v-if="!loaded" class="box mt-2 flex items-center">
       <span>Loading domains</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
-
-    <ul v-else-if="domains.length" role="list" class="domainList">
+    <!-- domains list -->
+    <ul v-else-if="domains.length" class="domainList">
       <DomainsListItem
         v-for="domain in domains"
         :key="domain._key"
@@ -18,6 +19,10 @@
         @change-page=changePage
       />
     </ul>
+    <!-- no domains -->
+    <div v-else class="box mt-2">
+      <span>No domains</span>
+    </div>
   </div>
 </template>
 
