@@ -14,7 +14,7 @@
               <ListboxButton class="listButton">
                 <span class="block truncate">{{ type }}</span>
                 <span class="listButton__icon">
-                  <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
+                  <ChevronDownIcon class="w-5" aria-hidden="true" />
                 </span>
               </ListboxButton>
               <transition

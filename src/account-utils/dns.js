@@ -42,6 +42,15 @@ export const deleteZone = async (host, sessionId, zoneKey) => {
   return response.body
 }
 
+// create a new record
+export const editRecord = async (host, sessionId, zoneKey, recordKey, recordOptions) => {
+  const url = `${host}/dns/${zoneKey}/records/${recordKey}`
+  const response = await superagent.put(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(recordOptions)
+  return response.body
+}
+
 // get record by key
 export const getRecord = async (host, sessionId, zoneKey, recordKey) => {
   const url = `${host}/dns/${zoneKey}/records/${recordKey}`
