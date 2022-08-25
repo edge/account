@@ -91,6 +91,12 @@
         </button>
 
       </div>
+      <!-- synced records warning -->
+      <div v-if=displaySyncRecordsWarning class="w-full mt-2 bg-gray-300 rounded text-black p-2">
+        <div class="float-left"><InformationCircleIcon class="w-4 mr-1 mt-0.5" /></div>
+        <!-- eslint-disable-next-line max-len -->
+        <span>The current TTL for {{ type }} {{ hostname }} is {{ syncRecordsTTL }} and changing it will update {{ syncRecordsCount }} other record{{ syncRecordsCount > 1 ? 's' : '' }}.</span>
+      </div>
     </div>
 
     <DomainRecordsList :domain=domain />
@@ -103,6 +109,7 @@
 import * as utils from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
+import { InformationCircleIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import {
@@ -120,6 +127,7 @@ export default {
   components: {
     ChevronDownIcon,
     DomainRecordsList,
+    InformationCircleIcon,
     Listbox,
     ListboxButton,
     ListboxOptions,
@@ -134,6 +142,8 @@ export default {
       iDomain: null,
       loading: false,
       ttl: null,
+      syncRecordsCount: null,
+      syncRecordsTTL: null,
       type: 'A',
       value: null
     }
@@ -143,6 +153,9 @@ export default {
     canCreateRecord() {
       /** @todo add proper validation */
       return this.hostname && this.ttl && this.type && this.value
+    },
+    displaySyncRecordsWarning() {
+      return this.canCreateRecord && this.syncRecordsCount && this.syncRecordsTTL !== this.ttl
     },
     domainName() {
       return this.$route.params.key
@@ -175,6 +188,20 @@ export default {
         this.creatingRecord = false
       }, 800)
     },
+    async getSyncRecords() {
+      const { results, metadata} = await utils.dns.getRecords(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.domainName,
+        {
+          limit: 1,
+          name: this.hostname || '',
+          type: this.type
+        }
+      )
+      this.syncRecordsCount = metadata.totalCount
+      this.syncRecordsTTL = results.length ? results[0].ttl : null
+    },
     async updateDomain() {
       this.domain = await utils.dns.getZone(
         process.env.VUE_APP_ACCOUNT_API_URL,
@@ -194,6 +221,14 @@ export default {
   unmounted() {
     clearInterval(this.iDomain)
     this.iDomain = null
+  },
+  watch: {
+    hostname() {
+      this.getSyncRecords()
+    },
+    type() {
+      this.getSyncRecords()
+    }
   }
 }
 </script>
