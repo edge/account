@@ -19,7 +19,8 @@ const paramLookup = {
   'spec.ram': 'RAM',
   'settings.os': 'Operating System',
   'settings.hostname': 'Hostname',
-  'settings.domain': 'Domain'
+  'settings.domain': 'Domain',
+  'zone': 'Domain'
 }
 
 export default {
@@ -27,11 +28,6 @@ export default {
   props: ['error'],
   components: {
     ExclamationIcon
-  },
-  data() {
-    return {
-
-    }
   },
   computed: {
     formattedError() {

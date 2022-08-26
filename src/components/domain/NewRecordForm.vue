@@ -101,6 +101,9 @@
       <!-- eslint-disable-next-line max-len -->
       <span>The current TTL for {{ type }} {{ hostname }} is {{ syncRecordsTTL }} and changing it will update {{ syncRecordsCount }} other record{{ syncRecordsCount > 1 ? 's' : '' }}.</span>
     </div>
+    <div class="mt-1">
+      <HttpError :error=httpError />
+    </div>
   </div>
 </template>
 
@@ -110,6 +113,7 @@
 import * as regex from '@/utils/regex'
 import * as utils from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
+import HttpError from '@/components/HttpError'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -124,6 +128,7 @@ export default {
   name: 'NewRecordForm',
   components: {
     ChevronDownIcon,
+    HttpError,
     InformationCircleIcon,
     Listbox,
     ListboxButton,
@@ -136,6 +141,7 @@ export default {
       creatingRecord: false,
       hostname: null,
       hostnameError: '',
+      httpError: null,
       ttl: null,
       syncRecordsCount: null,
       syncRecordsTTL: null,
@@ -210,8 +216,7 @@ export default {
         this.$emit('createRecord')
       }
       catch (error) {
-        /** @todo handle error */
-        console.error(error)
+        this.httpError = error
       }
       setTimeout(() => {
         this.creatingRecord = false

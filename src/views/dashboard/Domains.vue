@@ -42,7 +42,9 @@
           {{ error.$message }}
         </span>
       </div>
-      <HttpError :error=httpError />
+      <div class="mt-1">
+        <HttpError :error=httpError />
+      </div>
     </div>
 
     <DomainsList ref="domainsList" />
@@ -98,10 +100,11 @@ export default {
           this.session._key,
           this.newDomainName
         )
+        this.newDomainName = null
         this.$refs.domainsList.updateDomains()
       }
       catch (error) {
-        console.error(error)
+        this.httpError = error
       }
       setTimeout(() => {
         this.addingDomain = false
