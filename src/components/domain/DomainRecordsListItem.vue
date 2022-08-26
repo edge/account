@@ -40,28 +40,37 @@
       </div>
       <!-- hostname -->
       <div class="recordList__field input-group name overflow-hidden">
-        <span class="recordList__header">Hostname</span>
-        <input v-if=isEditing
-          autocomplete="off"
-          class="w-full input input--floating"
-          placeholder="Enter @ or hostname"
-          required
-          v-model="hostname"
-        />
-        <span v-else class="recordList__value">{{ record.name }}</span>
+        <span class="recordList__header">{{ nameLabel.label }}</span>
+        <div class="flex">
+          <input v-if=isEditing
+            autocomplete="off"
+            class="w-full input input--floating"
+            :placeholder="nameLabel.placeholder"
+            required
+            v-model="hostname"
+          />
+          <span v-else class="recordList__value">{{ record.name }}</span>
+          <span class="text-gray-400 border-gray-400" :class="isEditing ? 'border-b' : ''">.{{ domainName }}</span>
+        </div>
+        <div v-if="hostname && hostnameError" class="errorMessage">
+          <span class="errorMessage__text">{{ hostnameError }}</span>
+        </div>
       </div>
       <!-- value -->
       <div class="recordList__field input-group value">
         <!-- records -->
-        <span class="recordList__header">Value</span>
+        <span class="recordList__header">{{ valueLabel.label }}</span>
         <input v-if=isEditing
           autocomplete="off"
           class="w-full input input--floating"
-          placeholder="Enter value"
+          :placeholder="valueLabel.placeholder"
           required
           v-model="value"
         />
         <span v-else class="recordList__value">{{ record.value }}</span>
+        <div v-if="value && valueError" class="errorMessage">
+          <span class="errorMessage__text">{{ valueError }}</span>
+        </div>
       </div>
       <!-- ttl -->
       <div class="recordList__field input-group ttl">
@@ -147,6 +156,7 @@
 <script>
 /* global process */
 
+import * as regex from '@/utils/regex'
 import * as utils from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DeleteRecordConfirmation from '@/components/confirmations/DeleteRecordConfirmation'
@@ -198,6 +208,7 @@ export default {
   data() {
     return {
       hostname: null,
+      hostnameError: '',
       isDeleting: false,
       isEditing: false,
       showDeleteConfirmationModal: false,
@@ -207,6 +218,7 @@ export default {
       ttl: null,
       type: null,
       value: null,
+      valueError: '',
       windowWidth: window.innerWidth
     }
   },
@@ -214,8 +226,7 @@ export default {
   computed: {
     ...mapState(['config','session']),
     canConfirmEdit() {
-      /** @todo add proper validation */
-      return this.hostname && this.ttl && this.type && this.value
+      return !this.hostnameError && this.ttl && this.type && !this.valueError
     },
     created() {
       const created = moment(this.record.created).fromNow()
@@ -233,11 +244,45 @@ export default {
         this.type !== this.record.type ||
         this.value !== this.record.value
     },
+    nameLabel() {
+      const type = this.isEditing ? this.type : this.record.type
+      if (type === 'PTR') return {
+        label: 'IPv4 Address',
+        placeholder: 'Enter IP address'
+      }
+      else return {
+        label: 'Hostname',
+        placeholder: 'Enter hostname'
+      }
+    },
     sm() {
       return this.windowWidth >= 640
     },
     types() {
       return this.config && this.config.dns.recordTypes
+    },
+    valueLabel() {
+      const type = this.isEditing ? this.type : this.record.type
+      if (type === 'A') return {
+        label: 'IPv4 Address',
+        placeholder: 'Enter IP address'
+      }
+      else if (type === 'AAAA') return {
+        label: 'IPv6 Address',
+        placeholder: 'Enter IP address'
+      }
+      else if (type === 'NS') return {
+        label: 'Nameserver',
+        placeholder: 'Enter nameserver'
+      }
+      else if (['ALIAS', 'CNAME', 'MX', 'PTR'].includes(type)) return {
+        label: 'Target',
+        placeholder: 'Enter target'
+      }
+      else return {
+        label: 'Value',
+        placeholder: 'Enter value'
+      }
     }
   },
   methods: {
@@ -326,6 +371,30 @@ export default {
     toggleEditConfirmationModal() {
       if(!this.showEditConfirmationModal && !this.hasEdited) this.cancelEditing()
       else this.showEditConfirmationModal = !this.showEditConfirmationModal
+    },
+    validateHostname() {
+      let error = ''
+      if (this.type === 'PTR') {
+        if (!regex.ipv4.test(this.hostname)) this.hostnameError = 'Must be valid IPv4 address'
+      }
+      // eslint-disable-next-line max-len
+      else if (this.hostname && !regex.recordName.test(this.hostname)) error = 'Must contain only alphanumeric characters, dot (.) or dash (-)'
+      else error = ''
+      this.hostnameError = error
+    },
+    validateValue() {
+      let error = ''
+      if (this.type === 'A') {
+        if (!regex.ipv4.test(this.value)) error = 'Must be valid IPv4 address'
+      }
+      else if (this.type === 'AAAA') {
+        if (!regex.ipv6.test(this.value)) error = 'Must be valid IPv6 address'
+      }
+      else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
+        if (!regex.fqdn.test(this.value)) error = 'Must be valid FQDN'
+      }
+      else if (!this.value) error = 'Value required'
+      this.valueError = error
     }
   },
   mounted() {
@@ -337,9 +406,15 @@ export default {
   watch: {
     hostname() {
       this.getSyncRecords()
+      this.validateHostname()
     },
     type() {
       this.getSyncRecords()
+      this.validateHostname()
+      this.validateValue()
+    },
+    value() {
+      this.validateValue()
     }
   }
 }
@@ -422,7 +497,7 @@ input[type=number] {
     flex-basis: 80px;
   }
   .name {
-    @apply col-span-1 row-span-2 justify-center;
+    @apply col-span-1;
     flex-basis: 320px;
   }
   .value {

@@ -53,7 +53,7 @@
               required
               v-model="hostname"
             />
-            <span class="text-gray-300 border-b border-gray-400">.{{ domainName }}</span>
+            <span class="text-gray-400 border-b border-gray-400">.{{ domainName }}</span>
           </div>
           <div v-if="hostname && hostnameError" class="errorMessage">
             <span class="errorMessage__text">{{ hostnameError }}</span>
@@ -75,7 +75,7 @@
         </div>
         <!-- ttl -->
         <div class="input-group ttl">
-          <label class="label">TTL (seconds)</label>
+          <label class="label">TTL</label>
           <input
             type="number"
             autocomplete="off"
@@ -115,6 +115,7 @@
 <script>
 /* global process */
 
+import * as regex from '@/utils/regex'
 import * as utils from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
@@ -127,27 +128,6 @@ import {
   ListboxOption,
   ListboxOptions
 } from '@headlessui/vue'
-
-// FQDN regex
-const domainRegexp = /((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}/i
-// record name alphanumeric (and - or .) regex
-const nameRegexp = /^[a-z0-9-.]*$/
-// IPv4 regex
-const IPv4SegmentFormat = '(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])'
-const IPv4AddressFormat = `(${IPv4SegmentFormat}[.]){3}${IPv4SegmentFormat}`
-const IPv4AddressRegExp = new RegExp(`^${IPv4AddressFormat}$`)
-// IPv6 rex=gex
-const IPv6SegmentFormat = '(?:[0-9a-fA-F]{1,4})'
-const IPv6AddressRegExp = new RegExp('^(' +
-  `(?:${IPv6SegmentFormat}:){7}(?:${IPv6SegmentFormat}|:)|` +
-  `(?:${IPv6SegmentFormat}:){6}(?:${IPv4AddressFormat}|:${IPv6SegmentFormat}|:)|` +
-  `(?:${IPv6SegmentFormat}:){5}(?::${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,2}|:)|` +
-  `(?:${IPv6SegmentFormat}:){4}(?:(:${IPv6SegmentFormat}){0,1}:${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,3}|:)|` +
-  `(?:${IPv6SegmentFormat}:){3}(?:(:${IPv6SegmentFormat}){0,2}:${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,4}|:)|` +
-  `(?:${IPv6SegmentFormat}:){2}(?:(:${IPv6SegmentFormat}){0,3}:${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,5}|:)|` +
-  `(?:${IPv6SegmentFormat}:){1}(?:(:${IPv6SegmentFormat}){0,4}:${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,6}|:)|` +
-  `(?::((?::${IPv6SegmentFormat}){0,5}:${IPv4AddressFormat}|(?::${IPv6SegmentFormat}){1,7}|:))` +
-  ')(%[0-9a-zA-Z-.:]{1,})?$')
 
 export default {
   name: 'Domain',
@@ -183,7 +163,6 @@ export default {
   computed: {
     ...mapState(['config', 'session']),
     canCreateRecord() {
-      /** @todo add proper validation */
       return !this.hostnameError && this.ttl && this.type && !this.valueError
     },
     displaySyncRecordsWarning() {
@@ -286,23 +265,23 @@ export default {
     validateHostname() {
       let error = ''
       if (this.type === 'PTR') {
-        if (!IPv4AddressRegExp.test(this.hostname)) this.hostnameError = 'Must be valid IPv4 address'
+        if (!regex.ipv4.test(this.hostname)) this.hostnameError = 'Must be valid IPv4 address'
       }
       // eslint-disable-next-line max-len
-      else if (this.hostname && !nameRegexp.test(this.hostname)) error = 'Must contain only alphanumeric characters, dot (.) or dash (-)'
+      else if (this.hostname && !regex.recordName.test(this.hostname)) error = 'Must contain only alphanumeric characters, dot (.) or dash (-)'
       else error = ''
       this.hostnameError = error
     },
     validateValue() {
       let error = ''
       if (this.type === 'A') {
-        if (!IPv4AddressRegExp.test(this.value)) error = 'Must be valid IPv4 address'
+        if (!regex.ipv4.test(this.value)) error = 'Must be valid IPv4 address'
       }
       else if (this.type === 'AAAA') {
-        if (!IPv6AddressRegExp.test(this.value)) error = 'Must be valid IPv6 address'
+        if (!regex.ipv6.test(this.value)) error = 'Must be valid IPv6 address'
       }
       else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
-        if (!domainRegexp.test(this.value)) error = 'Must be valid FQDN'
+        if (!regex.fqdn.test(this.value)) error = 'Must be valid FQDN'
       }
       else if (!this.value) error = 'Value required'
       this.valueError = error
@@ -350,7 +329,7 @@ export default {
 }
 .input-group.ttl {
   @apply col-start-1 row-start-2;
-  width: 100px;
+  width: 80px;
 }
 .input-group .input--floating {
   @apply text-sm
