@@ -12,6 +12,7 @@
         v-for="record in records"
         :key="record._key"
         :record=record
+        @updateRecords=updateRecords
       />
       <Pagination
         :currentPage=currentPage

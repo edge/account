@@ -45,7 +45,7 @@
       <HttpError :error=httpError />
     </div>
 
-    <DomainsList />
+    <DomainsList ref="domainsList" />
   </div>
 </template>
 
@@ -98,6 +98,7 @@ export default {
           this.session._key,
           this.newDomainName
         )
+        this.$refs.domainsList.updateDomains()
       }
       catch (error) {
         console.error(error)

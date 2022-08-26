@@ -206,6 +206,8 @@ export default {
             value: this.value
           }
         )
+        this.resetForm()
+        this.$emit('createRecord')
       }
       catch (error) {
         /** @todo handle error */
@@ -228,6 +230,12 @@ export default {
       )
       this.syncRecordsCount = metadata.totalCount
       this.syncRecordsTTL = results.length ? results[0].ttl : null
+    },
+    resetForm() {
+      this.hostname = null
+      this.ttl = null
+      this.type = this.types[0]
+      this.value = null
     },
     validateHostname() {
       let error = ''

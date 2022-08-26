@@ -309,15 +309,13 @@ export default {
             value: this.value
           }
         )
+        this.$emit('updateRecords')
       }
       catch (error) {
         /** @todo handle error */
         console.error(error)
       }
       this.cancelEditing()
-      // setTimeout(() => {
-      //   this.isDeleting = false
-      // }, 800)
     },
     async deleteRecord() {
       this.isDeleting = true
@@ -329,14 +327,13 @@ export default {
           this.record.zone,
           this.record._key
         )
+        this.$emit('updateRecords')
       }
       catch (error) {
         /** @todo handle error */
         console.error(error)
       }
-      setTimeout(() => {
-        this.isDeleting = false
-      }, 800)
+      this.isDeleting = false
     },
     async getSyncRecords() {
       const { results, metadata} = await utils.dns.getRecords(
@@ -398,6 +395,7 @@ export default {
       this.valueError = error
     }
   },
+  emits: ['updateRecords'],
   mounted() {
     window.addEventListener('resize', this.onWindowResize)
   },

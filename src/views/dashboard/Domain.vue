@@ -5,10 +5,10 @@
     <!-- add new dns record -->
     <div class="box">
       <h4 class="mb-2">Add a new record</h4>
-      <NewRecordForm />
+      <NewRecordForm @createRecord=onCreateRecord />
     </div>
 
-    <DomainRecordsList :domain=domain />
+    <DomainRecordsList :domain=domain ref="recordsList" />
   </div>
 </template>
 
@@ -43,6 +43,9 @@ export default {
     }
   },
   methods: {
+    onCreateRecord() {
+      this.$refs.recordsList.updateRecords()
+    },
     async updateDomain() {
       this.domain = await utils.dns.getZone(
         process.env.VUE_APP_ACCOUNT_API_URL,
