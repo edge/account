@@ -91,6 +91,7 @@
           <button
             @click=toggleEditConfirmationModal
             class="tableButton save w-max"
+            :disabled="!canConfirmEdit"
           >
             <div><CheckIcon class="tableButton__icon sm:text-green sm:w-5" /></div>
             <span class="sm:hidden">Save</span>
@@ -518,6 +519,9 @@ input[type=number] {
   }
   .tableButton {
     @apply flex items-center;
+  }
+  button:disabled .tableButton__icon {
+    @apply text-gray-500;
   }
   .tableButton__icon {
     @apply w-4 mr-1;
