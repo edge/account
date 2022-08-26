@@ -44,25 +44,34 @@
         </div>
         <!-- hostname -->
         <div class="flex-1 input-group hostname">
-          <label class="label">Hostname</label>
-          <input
-            autocomplete="off"
-            class="w-full input input--floating"
-            placeholder="Enter @ or hostname"
-            required
-            v-model="hostname"
-          />
+          <label class="label">{{ nameLabel.label }}</label>
+          <div class="flex">
+            <input
+              autocomplete="off"
+              class="w-full input input--floating"
+              :placeholder="nameLabel.placeholder"
+              required
+              v-model="hostname"
+            />
+            <span class="text-gray-300 border-b border-gray-400">.{{ domainName }}</span>
+          </div>
+          <div v-if="hostname && hostnameError" class="errorMessage">
+            <span class="errorMessage__text">{{ hostnameError }}</span>
+          </div>
         </div>
         <!-- value -->
         <div class="flex-1 input-group value">
-          <label class="label">Value</label>
+          <label class="label">{{ valueLabel.label }}</label>
           <input
             autocomplete="off"
             class="w-full input input--floating"
-            placeholder="Enter value"
+            :placeholder="valueLabel.placeholder"
             required
             v-model="value"
           />
+          <div v-if="value && valueError" class="errorMessage">
+            <span class="errorMessage__text">{{ valueError }}</span>
+          </div>
         </div>
         <!-- ttl -->
         <div class="input-group ttl">
@@ -119,6 +128,27 @@ import {
   ListboxOptions
 } from '@headlessui/vue'
 
+// FQDN regex
+const domainRegexp = /((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}/i
+// record name alphanumeric (and - or .) regex
+const nameRegexp = /^[a-z0-9-.]*$/
+// IPv4 regex
+const IPv4SegmentFormat = '(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])'
+const IPv4AddressFormat = `(${IPv4SegmentFormat}[.]){3}${IPv4SegmentFormat}`
+const IPv4AddressRegExp = new RegExp(`^${IPv4AddressFormat}$`)
+// IPv6 rex=gex
+const IPv6SegmentFormat = '(?:[0-9a-fA-F]{1,4})'
+const IPv6AddressRegExp = new RegExp('^(' +
+  `(?:${IPv6SegmentFormat}:){7}(?:${IPv6SegmentFormat}|:)|` +
+  `(?:${IPv6SegmentFormat}:){6}(?:${IPv4AddressFormat}|:${IPv6SegmentFormat}|:)|` +
+  `(?:${IPv6SegmentFormat}:){5}(?::${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,2}|:)|` +
+  `(?:${IPv6SegmentFormat}:){4}(?:(:${IPv6SegmentFormat}){0,1}:${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,3}|:)|` +
+  `(?:${IPv6SegmentFormat}:){3}(?:(:${IPv6SegmentFormat}){0,2}:${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,4}|:)|` +
+  `(?:${IPv6SegmentFormat}:){2}(?:(:${IPv6SegmentFormat}){0,3}:${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,5}|:)|` +
+  `(?:${IPv6SegmentFormat}:){1}(?:(:${IPv6SegmentFormat}){0,4}:${IPv4AddressFormat}|(:${IPv6SegmentFormat}){1,6}|:)|` +
+  `(?::((?::${IPv6SegmentFormat}){0,5}:${IPv4AddressFormat}|(?::${IPv6SegmentFormat}){1,7}|:))` +
+  ')(%[0-9a-zA-Z-.:]{1,})?$')
+
 export default {
   name: 'Domain',
   title() {
@@ -139,20 +169,22 @@ export default {
       creatingRecord: false,
       domain: null,
       hostname: null,
+      hostnameError: '',
       iDomain: null,
       loading: false,
       ttl: null,
       syncRecordsCount: null,
       syncRecordsTTL: null,
       type: 'A',
-      value: null
+      value: null,
+      valueError: ''
     }
   },
   computed: {
     ...mapState(['config', 'session']),
     canCreateRecord() {
       /** @todo add proper validation */
-      return this.hostname && this.ttl && this.type && this.value
+      return !this.hostnameError && this.ttl && this.type && !this.valueError
     },
     displaySyncRecordsWarning() {
       return this.canCreateRecord && this.syncRecordsCount && this.syncRecordsTTL !== this.ttl
@@ -160,8 +192,50 @@ export default {
     domainName() {
       return this.$route.params.key
     },
+    // isHostnameValid() {
+    //   if (this.type === 'PTR') return IPv4AddressRegExp.test(this.hostname)
+    //   else return !this.hostname || nameRegexp.test(this.hostname)
+    // },
+    // isValueValid() {
+    //   if (this.type === 'A') return IPv4AddressRegExp.test(this.value)
+    //   else if (this.type === 'AAAA') return IPv6AddressRegExp.test(this.value)
+    //   else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) return domainRegexp.test(this.value)
+    //   else return this.type
+    // },
+    nameLabel() {
+      if (this.type === 'PTR') return {
+        label: 'IPv4 Address',
+        placeholder: 'Enter IP address'
+      }
+      else return {
+        label: 'Hostname',
+        placeholder: 'Enter hostname'
+      }
+    },
     types() {
       return this.config && this.config.dns.recordTypes
+    },
+    valueLabel() {
+      if (this.type === 'A') return {
+        label: 'IPv4 Address',
+        placeholder: 'Enter IP address'
+      }
+      else if (this.type === 'AAAA') return {
+        label: 'IPv6 Address',
+        placeholder: 'Enter IP address'
+      }
+      else if (this.type === 'NS') return {
+        label: 'Nameserver',
+        placeholder: 'Enter nameserver'
+      }
+      else if (['ALIAS', 'CNAME', 'MX', 'PTR'].includes(this.type)) return {
+        label: 'Target',
+        placeholder: 'Enter target'
+      }
+      else return {
+        label: 'Value',
+        placeholder: 'Enter value'
+      }
     }
   },
   methods: {
@@ -208,6 +282,30 @@ export default {
         this.session._key,
         this.domainName
       )
+    },
+    validateHostname() {
+      let error = ''
+      if (this.type === 'PTR') {
+        if (!IPv4AddressRegExp.test(this.hostname)) this.hostnameError = 'Must be valid IPv4 address'
+      }
+      // eslint-disable-next-line max-len
+      else if (this.hostname && !nameRegexp.test(this.hostname)) error = 'Must contain only alphanumeric characters, dot (.) or dash (-)'
+      else error = ''
+      this.hostnameError = error
+    },
+    validateValue() {
+      let error = ''
+      if (this.type === 'A') {
+        if (!IPv4AddressRegExp.test(this.value)) error = 'Must be valid IPv4 address'
+      }
+      else if (this.type === 'AAAA') {
+        if (!IPv6AddressRegExp.test(this.value)) error = 'Must be valid IPv6 address'
+      }
+      else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
+        if (!domainRegexp.test(this.value)) error = 'Must be valid FQDN'
+      }
+      else if (!this.value) error = 'Value required'
+      this.valueError = error
     }
   },
   mounted() {
@@ -225,9 +323,15 @@ export default {
   watch: {
     hostname() {
       this.getSyncRecords()
+      this.validateHostname()
     },
     type() {
       this.getSyncRecords()
+      this.validateHostname()
+      this.validateValue()
+    },
+    value() {
+      this.validateValue()
     }
   }
 }
