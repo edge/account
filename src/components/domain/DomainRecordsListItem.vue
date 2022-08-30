@@ -89,7 +89,7 @@
       <div class="recordList__field options justify-center">
         <div v-if=isEditing class="flex space-x-2 sm:flex-col sm:space-x-0 sm:space-y-2 sm:items-center">
           <button
-            @click=toggleEditConfirmationModal
+            @click=confirmEditRecord
             class="tableButton save w-max"
             :disabled="!canConfirmEdit"
           >
@@ -149,13 +149,6 @@
     @modal-confirm=deleteRecord
     @modal-close=toggleDeleteConfirmationModal
   />
-  <!-- eslint-disable-next-line vue/no-multiple-template-root-->
-  <EditRecordConfirmation
-    v-if=showEditConfirmationModal
-    :record=record
-    @modal-confirm=confirmEditRecord
-    @modal-close=toggleEditConfirmationModal
-  />
 </template>
 
 <script>
@@ -165,7 +158,6 @@ import * as regex from '@/utils/regex'
 import * as utils from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DeleteRecordConfirmation from '@/components/confirmations/DeleteRecordConfirmation'
-import EditRecordConfirmation from '@/components/confirmations/EditRecordConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -195,7 +187,6 @@ export default {
     ChevronDownIcon,
     CogIcon,
     DeleteRecordConfirmation,
-    EditRecordConfirmation,
     HttpError,
     InformationCircleIcon,
     Listbox,
@@ -218,7 +209,6 @@ export default {
       isDeleting: false,
       isEditing: false,
       showDeleteConfirmationModal: false,
-      showEditConfirmationModal: false,
       syncRecordsCount: null,
       syncRecordsTTL: null,
       ttl: null,
@@ -302,7 +292,7 @@ export default {
     },
     async confirmEditRecord() {
       this.httpError = null
-      this.toggleEditConfirmationModal()
+      if(!this.hasEdited) this.cancelEditing()
       try {
         await utils.dns.editRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -372,10 +362,6 @@ export default {
     },
     toggleDeleteConfirmationModal() {
       this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
-    },
-    toggleEditConfirmationModal() {
-      if(!this.showEditConfirmationModal && !this.hasEdited) this.cancelEditing()
-      else this.showEditConfirmationModal = !this.showEditConfirmationModal
     },
     validateHostname() {
       let error = ''

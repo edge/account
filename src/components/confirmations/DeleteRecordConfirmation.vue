@@ -4,13 +4,12 @@
       <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
     </template>
     <template v-slot:header>
-      <span>Delete record: {{ record.name }}</span>
+      <span>Delete record</span>
     </template>
     <template v-slot:body>
-      <span class="font-semibold">Warning: this cannot be undone.</span>
+      <span class="font-semibold">This action cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>This record will be deleted</li>
-        <li>Placeholder warning message</li>
+        <li>Please confirm deleting of record {{ record.type }} {{ record.name }}</li>
       </div>
     </template>
     <template v-slot:buttons>
