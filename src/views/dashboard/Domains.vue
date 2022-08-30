@@ -101,12 +101,13 @@ export default {
           this.newDomainName
         )
         this.newDomainName = null
+        await this.v$.$reset()
         this.$refs.domainsList.updateDomains()
       }
       catch (error) {
         this.httpError = error
       }
-      setTimeout(() => {
+      setTimeout(async () => {
         this.addingDomain = false
       }, 800)
     },
@@ -122,7 +123,8 @@ export default {
     }
   },
   watch: {
-    newDomainName() {
+    async newDomainName() {
+      await this.v$.$reset()
       this.httpError = null
     }
   }
