@@ -1,6 +1,13 @@
 <template>
   <div class="mainContent__inner" v-if=domain>
     <h1>{{domain._key}}</h1>
+    <div class="box mb-4">
+      <!-- eslint-disable-next-line max-len -->
+      <div class="float-left"><InformationCircleIcon class="w-5 mr-1"/></div>
+      <span>You need to update your nameservers with your domain registrar in order for these records to work.
+        <a href="" target="#" class="underline hover:text-green">Learn more</a>
+      .</span>
+    </div>
 
     <!-- add new dns record -->
     <div class="box">
@@ -17,6 +24,7 @@
 
 import * as utils from '@/account-utils'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
+import { InformationCircleIcon } from '@heroicons/vue/outline'
 import NewRecordForm from '@/components/domain/NewRecordForm'
 import { mapState } from 'vuex'
 
@@ -27,6 +35,7 @@ export default {
   },
   components: {
     DomainRecordsList,
+    InformationCircleIcon,
     NewRecordForm
   },
   data() {
