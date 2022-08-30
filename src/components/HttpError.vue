@@ -1,6 +1,8 @@
 <template>
-  <div v-if="error" class="flex items-center errorMessage">
-    <ExclamationIcon class="w-3.5 text-red" />
+  <div v-if="error" class="error_wrapper errorMessage">
+    <div class="float-left">
+      <ExclamationIcon class="w-3.5 text-red" />
+    </div>
     <span class="errorMessage__text text-red">{{ formattedError }}</span>
   </div>
 </template>
@@ -19,7 +21,8 @@ const paramLookup = {
   'spec.ram': 'RAM',
   'settings.os': 'Operating System',
   'settings.hostname': 'Hostname',
-  'settings.domain': 'Domain'
+  'settings.domain': 'Domain',
+  'zone': 'Domain'
 }
 
 export default {
@@ -27,11 +30,6 @@ export default {
   props: ['error'],
   components: {
     ExclamationIcon
-  },
-  data() {
-    return {
-
-    }
   },
   computed: {
     formattedError() {
@@ -55,3 +53,8 @@ export default {
 }
 </script>
 
+<style scoped>
+.error_wrapper {
+  @apply block;
+}
+</style>

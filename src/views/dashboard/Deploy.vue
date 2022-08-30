@@ -51,11 +51,11 @@
           :hostname=hostname
           :isRegionDisabled="isRegionDisabled"
         />
-        <div v-if="serverNameUpdated" class="flex flex-col">
+        <div v-if="serverNameUpdated" class="errorMessage">
           <span
             v-for="error in v$.serverOptions.settings.name.$errors"
             :key="error.$uid"
-            class="mt-2 text-red"
+            class="errorMessage__text"
           >
             {{ error.$message }}
           </span>
@@ -66,11 +66,11 @@
           :hostname="hostname"
           :isRegionDisabled="isRegionDisabled"
         />
-        <div v-if="serverDomainUpdated" class="flex flex-col">
+        <div v-if="serverDomainUpdated" class="errorMessage">
           <span
             v-for="error in v$.serverOptions.settings.domain.$errors"
             :key="error.$uid"
-            class="mt-2 text-red"
+            class="errorMessage__text"
           >
             {{ error.$message }}
           </span>
@@ -83,11 +83,11 @@
           @password-changed="updatePassword"
           :isRegionDisabled="isRegionDisabled"
         />
-        <div class="flex flex-col">
+        <div class="errorMessage">
           <span
             v-for="error in v$.serverOptions.settings.password.$errors"
             :key="error.$uid"
-            class="mt-2 text-red"
+            class="mt-2 errorMessage__text"
           >
             {{ error.$message }}
           </span>
