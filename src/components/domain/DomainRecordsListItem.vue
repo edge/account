@@ -50,7 +50,12 @@
             v-model="hostname"
           />
           <span v-else class="recordList__value">{{ record.name }}</span>
-          <span class="text-gray-400 border-gray-400" :class="isEditing ? 'border-b' : ''">.{{ domainName }}</span>
+          <span
+            class="border-gray-400 text-black"
+            :class="isEditing ? 'border-b text-gray-400' : ''"
+          >
+            {{ domainName ? '.' : ''}}{{ domainName }}
+          </span>
         </div>
         <div v-if="hostname && hostnameError" class="errorMessage">
           <span class="errorMessage__text">{{ hostnameError }}</span>
