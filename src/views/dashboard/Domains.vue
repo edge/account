@@ -93,9 +93,10 @@ export default {
   methods: {
     async addDomain() {
       if (!this.canAddDomain) return
+      let domain
       try {
         this.addingDomain = true
-        await utils.dns.addZone(
+        domain = await utils.dns.addZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.newDomainName
@@ -109,6 +110,7 @@ export default {
       }
       setTimeout(async () => {
         this.addingDomain = false
+        if (domain) this.$router.push({ name: 'Domain', params: { key: domain._key } })
       }, 800)
     },
     addOnEnter(event) {
