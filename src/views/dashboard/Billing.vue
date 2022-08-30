@@ -84,6 +84,9 @@ export default {
     isSelected(route) {
       return this.$route.fullPath.includes(route)
     }
+  },
+  mounted() {
+    if (this.$route.fullPath === '/billing' || this.$route.fullPath === '/billing/') this.$router.push({ name: 'Wallet' })
   }
 }
 </script>
