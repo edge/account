@@ -124,7 +124,6 @@ export default {
   },
   watch: {
     async newDomainName() {
-      await this.v$.$reset()
       this.httpError = null
     }
   }
