@@ -139,14 +139,14 @@ export default {
   data() {
     return {
       creatingRecord: false,
-      hostname: null,
+      hostname: '',
       hostnameError: '',
       httpError: null,
-      ttl: null,
+      ttl: 3600,
       syncRecordsCount: null,
       syncRecordsTTL: null,
       type: 'A',
-      value: null,
+      value: '',
       valueError: ''
     }
   },
@@ -237,16 +237,14 @@ export default {
       this.syncRecordsTTL = results.length ? results[0].ttl : null
     },
     resetForm() {
-      this.hostname = null
-      this.ttl = null
+      this.hostname = ''
+      this.ttl = 3600
       this.type = this.types[0]
-      this.value = null
+      this.value = ''
     },
     validateHostname() {
       let error = ''
-      if (this.type === 'PTR') {
-        if (!regex.ipv4.test(this.hostname)) this.hostnameError = 'Must be valid IPv4 address'
-      }
+      if (this.type === 'PTR' && !regex.ipv4.test(this.hostname)) error = 'Must be valid IPv4 address'
       // eslint-disable-next-line max-len
       else if (this.hostname && !regex.recordName.test(this.hostname)) error = 'Must contain only alphanumeric characters, dot (.) or dash (-)'
       else error = ''
@@ -269,15 +267,21 @@ export default {
   },
   watch: {
     hostname() {
+      this.httpError = null
       this.getSyncRecords()
       this.validateHostname()
     },
+    ttl() {
+      this.httpError = null
+    },
     type() {
+      this.httpError = null
       this.getSyncRecords()
       this.validateHostname()
       this.validateValue()
     },
     value() {
+      this.httpError = null
       this.validateValue()
     }
   }
