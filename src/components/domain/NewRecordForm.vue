@@ -168,7 +168,7 @@ export default {
       }
       else return {
         label: 'Hostname',
-        placeholder: 'Enter hostname'
+        placeholder: 'Enter @ or hostname'
       }
     },
     types() {
