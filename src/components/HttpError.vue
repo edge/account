@@ -1,6 +1,8 @@
 <template>
-  <div v-if="error" class="flex items-center errorMessage">
-    <ExclamationIcon class="w-3.5 text-red" />
+  <div v-if="error" class="error_wrapper errorMessage">
+    <div class="float-left">
+      <ExclamationIcon class="w-3.5 text-red" />
+    </div>
     <span class="errorMessage__text text-red">{{ formattedError }}</span>
   </div>
 </template>
@@ -51,3 +53,8 @@ export default {
 }
 </script>
 
+<style scoped>
+.error_wrapper {
+  @apply block;
+}
+</style>
