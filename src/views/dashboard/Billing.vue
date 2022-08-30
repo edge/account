@@ -17,7 +17,7 @@
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
       </div> -->
     </div>
-    <div class="tabs flex space-x-2">
+    <div class="tabs flex space-x-2 pt-4">
       <div class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Wallet'}">Wallet</router-link>
       </div>
