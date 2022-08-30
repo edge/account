@@ -17,7 +17,7 @@
         <div class="divider"></div>
         <MenuItem v-slot="{ active }">
           <button
-            @click.prevent="navigate('/billing/invoices')"
+            @click.prevent="navigate('/billing/wallet')"
             :class="[
               'menu__item',
               active ? 'active' : ''

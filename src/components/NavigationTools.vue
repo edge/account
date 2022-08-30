@@ -8,7 +8,7 @@
       </router-link>
     </li>
     <li @click="closeNav" class="navigation-tools__item mobileOnly">
-      <router-link to="/billing/invoices" class="navigation-tools__link">
+      <router-link to="/billing/wallet" class="navigation-tools__link">
         <span class=""><CashIcon class="w-5 h-5" /></span>
         <span class="navigation-tools__label">Billing</span>
       </router-link>
