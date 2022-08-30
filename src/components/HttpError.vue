@@ -13,6 +13,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 const paramLookup = {
   'backupCode': 'Backup Code',
   'comment': 'Comment',
+  'name': 'Hostname',
   'otp': 'TOTP',
   'region': 'Region',
   'region.servers': 'Servers',
@@ -22,6 +23,9 @@ const paramLookup = {
   'settings.os': 'Operating System',
   'settings.hostname': 'Hostname',
   'settings.domain': 'Domain',
+  'ttl': 'TTL',
+  'type': 'Type',
+  'value': 'Value',
   'zone': 'Domain'
 }
 
