@@ -7,7 +7,16 @@
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
     <!-- records list -->
-    <ul v-else-if="records.length" class="recordList">
+    <ul v-if=config class="recordList">
+      <DomainRecordsListItem
+        v-for="record in nameserversRecords"
+        :key="record._key"
+        :record=record
+        :template="true"
+        @updateRecords=updateRecords
+      />
+    </ul>
+    <ul v-if="records.length" class="recordList">
       <DomainRecordsListItem
         v-for="record in records"
         :key="record._key"
@@ -21,10 +30,6 @@
         @change-page=changePage
       />
     </ul>
-    <!-- no records -->
-    <div v-else class="box mt-2">
-      <span>No records</span>
-    </div>
   </div>
 </template>
 
@@ -56,9 +61,18 @@ export default {
   },
   props: ['domain'],
   computed: {
-    ...mapState(['session']),
+    ...mapState(['config', 'session']),
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
+    },
+    nameserversRecords() {
+      return this.config.dns.nameservers.map(ns => ({
+        name: '',
+        ttl: '3600',
+        type: 'NS',
+        value: ns,
+        zone: this.domain._key
+      }))
     }
   },
   methods: {

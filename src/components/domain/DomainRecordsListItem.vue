@@ -54,7 +54,7 @@
             class="border-gray-400 text-black"
             :class="isEditing ? 'border-b text-gray-400' : ''"
           >
-            {{ domainName ? '.' : ''}}{{ domainName }}
+            {{ record.name ? '.' : ''}}{{ domainName }}
           </span>
         </div>
         <div v-if="hostname && hostnameError" class="errorMessage">
@@ -91,7 +91,7 @@
         <span v-else class="recordList__value">{{ record.ttl }}</span>
       </div>
       <!-- options -->
-      <div class="recordList__field options justify-center">
+      <div class="recordList__field options justify-center" v-if="!template">
         <div v-if=isEditing class="flex space-x-2 sm:flex-col sm:space-x-0 sm:space-y-2 sm:items-center">
           <button
             @click=confirmEditRecord
@@ -223,7 +223,7 @@ export default {
       windowWidth: window.innerWidth
     }
   },
-  props: ['record'],
+  props: ['record', 'template'],
   computed: {
     ...mapState(['config','session']),
     canConfirmEdit() {
