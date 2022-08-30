@@ -137,6 +137,10 @@
       <!-- eslint-disable-next-line max-len -->
       <span>The current TTL for {{ type }} {{ hostname }} is {{ syncRecordsTTL }} and changing it will update {{ syncRecordsCount }} other record{{ syncRecordsCount > 1 ? 's' : '' }}.</span>
     </div>
+    <!-- http error -->
+    <div v-if="httpError" class="mt-2 bg-gray-300 rounded p-2">
+      <HttpError :error=httpError />
+    </div>
   </li>
   <!-- eslint-disable-next-line vue/no-multiple-template-root-->
   <DeleteRecordConfirmation
@@ -162,13 +166,13 @@ import * as utils from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DeleteRecordConfirmation from '@/components/confirmations/DeleteRecordConfirmation'
 import EditRecordConfirmation from '@/components/confirmations/EditRecordConfirmation'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import {
   CheckIcon,
   CogIcon,
-  ExclamationIcon,
   InformationCircleIcon,
   PencilIcon,
   TrashIcon,
@@ -192,7 +196,7 @@ export default {
     CogIcon,
     DeleteRecordConfirmation,
     EditRecordConfirmation,
-    ExclamationIcon,
+    HttpError,
     InformationCircleIcon,
     Listbox,
     ListboxButton,
@@ -210,6 +214,7 @@ export default {
     return {
       hostname: null,
       hostnameError: '',
+      httpError: null,
       isDeleting: false,
       isEditing: false,
       showDeleteConfirmationModal: false,
@@ -288,6 +293,7 @@ export default {
   },
   methods: {
     cancelEditing() {
+      this.httpError = null
       this.hostname = null
       this.ttl = null
       this.type = null
@@ -295,6 +301,7 @@ export default {
       this.isEditing = false
     },
     async confirmEditRecord() {
+      this.httpError = null
       this.toggleEditConfirmationModal()
       try {
         await utils.dns.editRecord(
@@ -310,14 +317,14 @@ export default {
           }
         )
         this.$emit('updateRecords')
+        this.cancelEditing()
       }
       catch (error) {
-        /** @todo handle error */
-        console.error(error)
+        this.httpError = error
       }
-      this.cancelEditing()
     },
     async deleteRecord() {
+      this.httpError = null
       this.isDeleting = true
       this.toggleDeleteConfirmationModal()
       try {
@@ -330,8 +337,7 @@ export default {
         this.$emit('updateRecords')
       }
       catch (error) {
-        /** @todo handle error */
-        console.error(error)
+        this.httpError = error
       }
       this.isDeleting = false
     },
@@ -356,6 +362,7 @@ export default {
       this.windowWidth = window.innerWidth
     },
     async startEditing() {
+      this.httpError = null
       this.hostname = this.record.name
       this.ttl = this.record.ttl
       this.type = this.record.type
@@ -404,15 +411,21 @@ export default {
   },
   watch: {
     hostname() {
+      this.httpError = null
       this.getSyncRecords()
       this.validateHostname()
     },
+    ttl() {
+      this.httpError = null
+    },
     type() {
+      this.httpError = null
       this.getSyncRecords()
       this.validateHostname()
       this.validateValue()
     },
     value() {
+      this.httpError = null
       this.validateValue()
     }
   }
