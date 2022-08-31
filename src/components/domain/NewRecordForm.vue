@@ -244,7 +244,6 @@ export default {
     },
     validateHostname() {
       let error = ''
-
       if (this.type === 'PTR' && !regex.ipv4.test(this.hostname)) error = 'Please enter a valid IPv4 address'
       else if (this.hostname === '@') error = ''
       // eslint-disable-next-line max-len

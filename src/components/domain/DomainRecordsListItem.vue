@@ -57,7 +57,7 @@
             {{ record.name ? '.' : ''}}{{ domainName }}
           </span>
         </div>
-        <div v-if="hostname && hostnameError" class="errorMessage">
+        <div v-if="isEditing && hostnameError" class="errorMessage">
           <span class="errorMessage__text">{{ hostnameError }}</span>
         </div>
       </div>
@@ -73,7 +73,7 @@
           v-model="value"
         />
         <span v-else class="recordList__value">{{ record.value }}</span>
-        <div v-if="value && valueError" class="errorMessage">
+        <div v-if="isEditing && valueError" class="errorMessage">
           <span class="errorMessage__text">{{ valueError }}</span>
         </div>
       </div>
@@ -91,48 +91,50 @@
         <span v-else class="recordList__value">{{ record.ttl }}</span>
       </div>
       <!-- options -->
-      <div class="recordList__field options justify-center" v-if="!template">
-        <div v-if=isEditing class="flex space-x-2 sm:flex-col sm:space-x-0 sm:space-y-2 sm:items-center">
-          <button
-            @click=confirmEditRecord
-            class="tableButton save w-max"
-            :disabled="!canConfirmEdit"
-          >
-            <div><CheckIcon class="tableButton__icon sm:text-green sm:w-5" /></div>
-            <span class="sm:hidden">Save</span>
-          </button>
-          <button
-            @click=cancelEditing
-            class="tableButton cancel w-max"
-          >
-            <div><XIcon class="tableButton__icon sm:text-red sm:w-5" /></div>
-            <span class="sm:hidden">Cancel</span>
-          </button>
+      <div class="recordList__field options justify-center">
+        <div v-if="!template">
+          <div v-if=isEditing class="flex space-x-2 sm:flex-col sm:space-x-0 sm:space-y-2 sm:items-center">
+            <button
+              @click=confirmEditRecord
+              class="tableButton save w-max"
+              :disabled="!canConfirmEdit"
+            >
+              <div><CheckIcon class="tableButton__icon sm:text-green sm:w-5" /></div>
+              <span class="sm:hidden">Save</span>
+            </button>
+            <button
+              @click=cancelEditing
+              class="tableButton cancel w-max"
+            >
+              <div><XIcon class="tableButton__icon sm:text-red sm:w-5" /></div>
+              <span class="sm:hidden">Cancel</span>
+            </button>
+          </div>
+          <Popover v-else as='div' class="relative w-full">
+            <PopoverButton class="flex items-center hidden sm:block">
+              <CogIcon class="w-6" />
+            </PopoverButton>
+            <PopoverPanel :static="!sm" class="options__dropdown">
+              <PopoverButton as='button'
+                @click=startEditing
+                class="tableButton edit w-max sm:hover:underline"
+              >
+                <div><PencilIcon class="tableButton__icon" /></div>
+                Edit
+              </PopoverButton>
+              <PopoverButton as='button'
+                @click=toggleDeleteConfirmationModal
+                class="tableButton delete w-max text-red sm:hover:underline"
+              >
+                <div>
+                  <LoadingSpinner v-if=isDeleting class="tableButton__icon" />
+                  <TrashIcon v-else class="tableButton__icon" />
+                </div>
+                Delete
+              </PopoverButton>
+            </PopoverPanel>
+          </Popover>
         </div>
-        <Popover v-else as='div' class="relative w-full">
-          <PopoverButton class="flex items-center hidden sm:block">
-            <CogIcon class="w-6" />
-          </PopoverButton>
-          <PopoverPanel :static="!sm" class="options__dropdown">
-            <PopoverButton as='button'
-              @click=startEditing
-              class="tableButton edit w-max sm:hover:underline"
-            >
-              <div><PencilIcon class="tableButton__icon" /></div>
-              Edit
-            </PopoverButton>
-            <PopoverButton as='button'
-              @click=toggleDeleteConfirmationModal
-              class="tableButton delete w-max text-red sm:hover:underline"
-            >
-              <div>
-                <LoadingSpinner v-if=isDeleting class="tableButton__icon" />
-                <TrashIcon v-else class="tableButton__icon" />
-              </div>
-              Delete
-            </PopoverButton>
-          </PopoverPanel>
-        </Popover>
       </div>
     </div>
 
@@ -216,7 +218,7 @@ export default {
       showDeleteConfirmationModal: false,
       syncRecordsCount: null,
       syncRecordsTTL: null,
-      ttl: null,
+      ttl: 3600,
       type: null,
       value: null,
       valueError: '',
@@ -227,7 +229,7 @@ export default {
   computed: {
     ...mapState(['config','session']),
     canConfirmEdit() {
-      return !this.hostnameError && this.ttl && this.type && !this.valueError
+      return this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
     },
     created() {
       const created = moment(this.record.created).fromNow()
@@ -253,7 +255,7 @@ export default {
       }
       else return {
         label: 'Hostname',
-        placeholder: 'Enter hostname'
+        placeholder: 'Enter @ or hostname'
       }
     },
     sm() {
@@ -288,11 +290,7 @@ export default {
   },
   methods: {
     cancelEditing() {
-      this.httpError = null
-      this.hostname = null
-      this.ttl = null
-      this.type = null
-      this.value = null
+      this.resetEditForm()
       this.isEditing = false
     },
     async confirmEditRecord() {
@@ -356,6 +354,15 @@ export default {
     onWindowResize() {
       this.windowWidth = window.innerWidth
     },
+    resetEditForm() {
+      this.hostnameError = null
+      this.valueError = null
+      this.httpError = null
+      this.hostname = ''
+      this.ttl = 3600
+      this.type = null
+      this.value = ''
+    },
     async startEditing() {
       this.httpError = null
       this.hostname = this.record.name
@@ -370,26 +377,26 @@ export default {
     },
     validateHostname() {
       let error = ''
-      if (this.type === 'PTR') {
-        if (!regex.ipv4.test(this.hostname)) this.hostnameError = 'Must be valid IPv4 address'
-      }
+      if (this.type === 'PTR' && !regex.ipv4.test(this.hostname)) error = 'Please enter a valid IPv4 address'
+      else if (this.hostname === '@') error = ''
       // eslint-disable-next-line max-len
-      else if (this.hostname && !regex.recordName.test(this.hostname)) error = 'Must contain only alphanumeric characters, dot (.) or dash (-)'
+      else if (this.hostname && !regex.recordName.test(this.hostname) && !this.hostname !== '@') error = 'Please enter a valid hostname'
+      else if (!this.hostname) error = 'Please enter a hostname'
       else error = ''
       this.hostnameError = error
     },
     validateValue() {
       let error = ''
       if (this.type === 'A') {
-        if (!regex.ipv4.test(this.value)) error = 'Must be valid IPv4 address'
+        if (!regex.ipv4.test(this.value)) error = 'Please enter a valid IPv4 address'
       }
       else if (this.type === 'AAAA') {
-        if (!regex.ipv6.test(this.value)) error = 'Must be valid IPv6 address'
+        if (!regex.ipv6.test(this.value)) error = 'Please enter a valid IPv6 address'
       }
       else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
-        if (!regex.fqdn.test(this.value)) error = 'Must be valid FQDN'
+        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid FQDN'
       }
-      else if (!this.value) error = 'Value required'
+      else if (!this.value) error = 'Please enter a value'
       this.valueError = error
     }
   },
