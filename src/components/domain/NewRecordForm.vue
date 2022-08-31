@@ -293,7 +293,7 @@ export default {
 .record-form {
   @apply grid gap-4 w-full;
   grid-template-columns: auto 1fr;
-  @apply lg:flex lg:items-start lg:flex-row;
+  @apply xl:flex xl:items-start xl:flex-row;
 }
 .input-group.type {
   width: 80px;
