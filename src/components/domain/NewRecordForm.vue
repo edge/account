@@ -50,7 +50,7 @@
           />
           <span class="text-gray-400 border-b border-gray-400">.{{ domainName }}</span>
         </div>
-        <div v-if="hostname && hostnameError" class="errorMessage">
+        <div v-if="hostnameError" class="errorMessage">
           <span class="errorMessage__text">{{ hostnameError }}</span>
         </div>
       </div>
@@ -244,9 +244,12 @@ export default {
     },
     validateHostname() {
       let error = ''
+
       if (this.type === 'PTR' && !regex.ipv4.test(this.hostname)) error = 'Must be valid IPv4 address'
+      else if (this.hostname === '@') error = ''
       // eslint-disable-next-line max-len
-      else if (this.hostname && !regex.recordName.test(this.hostname)) error = 'Must contain only alphanumeric characters, dot (.) or dash (-)'
+      else if (this.hostname && !regex.recordName.test(this.hostname) && !this.hostname !== '@') error = 'Must be a valid hostname or @ for root'
+      else if (!this.hostname) error = 'For record at root of domain use @'
       else error = ''
       this.hostnameError = error
     },
