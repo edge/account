@@ -1,6 +1,5 @@
 <template>
   <div class="mt-5">
-    <h4 class="text-xl">DNS Records</h4>
     <!-- loading -->
     <div v-if="!loaded" class="box mt-2 flex items-center">
       <span>Loading records</span>
