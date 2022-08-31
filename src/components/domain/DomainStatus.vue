@@ -1,10 +1,8 @@
 <template>
   <div
-    class="flex items-center"
+    class="flex items-center text-m"
     :class="[
-      isActive ? 'active' : '',
-      isInactive ? 'inactive' : '',
-      extraClass
+      isActive ? 'active' : 'inactive'
     ]"
   >
     <span class="domainList__statusDot" />
@@ -17,21 +15,13 @@
 
 export default {
   name: 'DomainStatus',
-  props: ['extraClass', 'domain'],
+  props: ['domain'],
   computed: {
     isActive() {
-      return true
-    },
-    isInactive() {
-      return false
+      return this.domain.active
     },
     status() {
-      // if (this.isStopping) return 'Stopping'
-      // if (this.isDestroying) return 'Deleting'
-      // if (this.isResizing) return 'Resizing'
-      // if (this.isRestoring) return 'Restoring'
-      // if (this.isStarting) return 'Starting'
-      return this.domain.status || 'Active'
+      return this.domain.active ? 'Active' : 'Inactive'
     }
   }
 }

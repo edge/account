@@ -23,14 +23,6 @@
             </div>
           </div>
           <span v-else class="italic text-gray-400">No records</span>
-
-          <!-- <span>A</span>
-          <span class="divider"></span>
-          <span>MX</span>
-          <span class="divider"></span>
-          <span>CNAME</span>
-          <span class="divider"></span>
-          <span></span> -->
         </div>
       </div>
       <!-- created -->
@@ -41,7 +33,7 @@
       <!-- status dot -->
       <div class="domainList__field status">
         <span class="domainList__header">Status</span>
-        <DomainStatus extraClass="text-m" :domain=domain />
+        <DomainStatus :domain=domain />
       </div>
     </li>
 </template>
