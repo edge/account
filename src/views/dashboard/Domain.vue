@@ -1,5 +1,10 @@
 <template>
-  <div class="mainContent__inner" v-if=domain>
+  <div class="mainContent__inner domain" v-if=domain>
+    <div class="w-max">
+      <router-link :to="{ name: 'Domains' }" class="flex items-center space-x-1 hover:text-green mb-4">
+        <ArrowLeftIcon class="w-4" /><span>Domains</span>
+      </router-link>
+    </div>
     <h1>{{domain._key}}</h1>
     <div class="box mb-4">
       <!-- eslint-disable-next-line max-len -->
@@ -24,9 +29,9 @@
 
 import * as utils from '@/account-utils'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
-import { InformationCircleIcon } from '@heroicons/vue/outline'
 import NewRecordForm from '@/components/domain/NewRecordForm'
 import { mapState } from 'vuex'
+import { ArrowLeftIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'Domain',
@@ -34,6 +39,7 @@ export default {
     return 'Edge Account Portal » Domain'
   },
   components: {
+    ArrowLeftIcon,
     DomainRecordsList,
     InformationCircleIcon,
     NewRecordForm
@@ -80,5 +86,8 @@ export default {
 <style scoped>
 .box {
   @apply w-full p-6 bg-white rounded-lg;
+}
+.mainContent__inner.domain {
+  @apply pt-0 mt-6;
 }
 </style>

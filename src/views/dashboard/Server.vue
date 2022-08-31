@@ -1,5 +1,10 @@
 <template>
-  <div class="mainContent__inner" v-if="server">
+  <div class="mainContent__inner server" v-if="server">
+    <div class="w-max">
+      <router-link :to="{ name: 'Servers' }" class="flex items-center space-x-1 hover:text-green mb-4">
+        <ArrowLeftIcon class="w-4" /><span>Servers</span>
+      </router-link>
+    </div>
     <!-- title -->
     <h1 class="mb-0 leading-none">{{ server.settings.name || server.settings.hostname }}</h1>
 
@@ -241,6 +246,7 @@
 
 import * as format from '../../utils/format'
 import * as utils from '../../account-utils'
+import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import DistroIcon from '@/components/icons/DistroIcon'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -278,6 +284,7 @@ export default {
     }
   },
   components: {
+    ArrowLeftIcon,
     DistroIcon,
     InformationCircleIcon,
     LoadingSpinner,
@@ -417,6 +424,10 @@ export default {
 </script>
 
 <style scoped>
+.mainContent__inner.server {
+  @apply pt-0 mt-6;
+}
+
 .tabGroup {
   @apply relative;
 }
