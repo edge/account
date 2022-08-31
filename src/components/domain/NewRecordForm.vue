@@ -64,7 +64,7 @@
           required
           v-model="value"
         />
-        <div v-if="value && valueError" class="errorMessage">
+        <div v-if="valueError" class="errorMessage">
           <span class="errorMessage__text">{{ valueError }}</span>
         </div>
       </div>
@@ -153,7 +153,7 @@ export default {
   computed: {
     ...mapState(['config', 'session']),
     canCreateRecord() {
-      return !this.hostnameError && this.ttl && this.type && !this.valueError
+      return this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
     },
     displaySyncRecordsWarning() {
       return this.canCreateRecord && this.syncRecordsCount && this.syncRecordsTTL !== this.ttl
@@ -245,26 +245,26 @@ export default {
     validateHostname() {
       let error = ''
 
-      if (this.type === 'PTR' && !regex.ipv4.test(this.hostname)) error = 'Must be valid IPv4 address'
+      if (this.type === 'PTR' && !regex.ipv4.test(this.hostname)) error = 'Please enter a valid IPv4 address'
       else if (this.hostname === '@') error = ''
       // eslint-disable-next-line max-len
-      else if (this.hostname && !regex.recordName.test(this.hostname) && !this.hostname !== '@') error = 'Must be a valid hostname or @ for root'
-      else if (!this.hostname) error = 'For record at root of domain use @'
+      else if (this.hostname && !regex.recordName.test(this.hostname) && !this.hostname !== '@') error = 'Please enter a valid hostname'
+      else if (!this.hostname) error = 'Please enter a hostname'
       else error = ''
       this.hostnameError = error
     },
     validateValue() {
       let error = ''
       if (this.type === 'A') {
-        if (!regex.ipv4.test(this.value)) error = 'Must be valid IPv4 address'
+        if (!regex.ipv4.test(this.value)) error = 'Please enter a valid IPv4 address'
       }
       else if (this.type === 'AAAA') {
-        if (!regex.ipv6.test(this.value)) error = 'Must be valid IPv6 address'
+        if (!regex.ipv6.test(this.value)) error = 'Please enter a valid IPv6 address'
       }
       else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
-        if (!regex.fqdn.test(this.value)) error = 'Must be valid FQDN'
+        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid FQDN'
       }
-      else if (!this.value) error = 'Value required'
+      else if (!this.value) error = 'Please enter a value'
       this.valueError = error
     }
   },
