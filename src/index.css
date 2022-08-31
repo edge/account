@@ -14,7 +14,7 @@ html {
 }
 
 
-/* 
+/*
   FORM STYLES
 */
 .input-group {
@@ -44,9 +44,30 @@ html {
   @apply flex items-center space-x-1 text-xs font-medium text-red;
 }
 
-/* 
+/*
   TYPOGRAPHY
 */
 .loose {
   @apply tracking-widest text-sm;
+}
+
+/* tabs */
+.tabGroup {
+  @apply relative;
+}
+
+.tabs {
+  @apply w-full space-x-4 md:space-x-8 border-b border-gray-300 overflow-auto flex flex-nowrap;
+}
+.tab {
+  @apply pb-1 font-medium border-b text-gray-500 border-transparent;
+  @apply hover:text-black;
+}
+.tab:focus,
+.tab a:focus {
+  outline: none;
+}
+.tab.tab--selected {
+  @apply text-green border-green;
+  @apply hover:text-green;
 }

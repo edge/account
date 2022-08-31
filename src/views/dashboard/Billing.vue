@@ -98,24 +98,4 @@ export default {
 .box h4 {
   @apply w-full mb-4 font-medium;
 }
-
-.tabGroup {
-  @apply relative;
-}
-
-.tabs {
-  @apply w-full space-x-4 md:space-x-8 border-b border-gray-300 overflow-auto flex flex-nowrap;
-}
-.tab {
-  @apply pb-1 font-medium border-b text-gray-500 border-transparent;
-  @apply hover:text-black;
-}
-.tab:focus,
-.tab a:focus {
-  outline: none;
-}
-.tab.tab--selected {
-  @apply text-green border-green;
-  @apply hover:text-green;
-}
 </style>
