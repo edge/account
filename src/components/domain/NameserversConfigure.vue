@@ -7,7 +7,7 @@
       <li v-for="ns in config.dns.nameservers" :key="ns" class="list-disc">{{ ns }}</li>
     </ul>
     <!-- eslint-disable-next-line max-len -->
-    <span>Visit the wiki to learn more about <a class="underline hover:text-green">how nameservers work</a>.</span>
+    <span>Visit the wiki to learn more about <a class="underline hover:text-green cursor-pointer">how nameservers work</a>.</span>
   </div>
 </template>
 

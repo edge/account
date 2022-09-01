@@ -78,7 +78,7 @@ export default {
 
 /* list item */
 .domainList__item {
-  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 rounded-md w-full p-5 pr-8;
+  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 rounded-md w-full p-5;
   @apply cursor-pointer transition-all duration-100;
 }
 
