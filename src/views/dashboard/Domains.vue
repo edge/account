@@ -48,15 +48,15 @@
       <div class="flex flex-col items-baseline mt-2">
         <span class="text-green">Estimated Cost</span>
         <div v-if="dnsChargesApply" class="cost flex">
-          <span><span class="text-lg flex-shrink-0">$0.0333</span> per day</span>
+          <span><span class="flex-shrink-0">$0.0333</span> per day</span>
           <span class="dot" />
-          <span><span class="text-lg flex-shrink-0">$1.00</span> per 30 days</span>
+          <span><span class="flex-shrink-0">$1.00</span> per 30 days</span>
           <span class="dot" />
-          <a class="text-lg flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Get DNS for free</a>
+          <a class="flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Get DNS for free</a>
         </div>
         <div v-else class="flex flex-wrap items-center">
-          <span class="text-lg flex-shrink-0 mr-2">No charge for DNS.</span>
-          <a class="text-lg flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Learn more.</a>
+          <span class="flex-shrink-0 mr-2">No charge for DNS.</span>
+          <a class="flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Learn more.</a>
         </div>
       </div>
     </div>
@@ -99,12 +99,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['serverCount', 'session']),
+    ...mapState(['balance', 'session']),
     canAddDomain() {
       return !this.v$.newDomainName.$invalid
     },
     dnsChargesApply() {
-      return !this.serverCount
+      return !this.balance.freeDNS
     }
   },
   methods: {
@@ -160,7 +160,7 @@ export default {
   @apply w-1 h-1 bg-gray-400 rounded-full
 }
 
-@media (max-width: 530px) {
+@media (max-width: 480px) {
   .cost {
     @apply flex-col items-start space-x-0 space-y-2 mt-2;
   }
