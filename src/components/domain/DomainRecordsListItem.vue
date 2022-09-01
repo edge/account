@@ -432,7 +432,7 @@ export default {
 <style scoped>
 /* list item */
 .recordList__item {
-  @apply flex flex-col bg-white text-gray-500 rounded-md w-full pl-5 py-3 pr-8;
+  @apply flex flex-col bg-white text-gray-500 rounded-md w-full px-5 py-3;
 }
 
 .recordList__fields-wrapper {
@@ -515,7 +515,7 @@ input[type=number] {
   }
   .ttl {
     @apply col-start-4 row-start-1 flex-shrink-0;
-    flex-basis: 100px;
+    flex-basis: 60px;
   }
   .options {
     @apply flex-shrink-0;
