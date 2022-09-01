@@ -45,6 +45,20 @@
       <div class="mt-1">
         <HttpError :error=httpError />
       </div>
+      <div class="flex flex-col items-baseline mt-2">
+        <span class="text-green">Estimated Cost</span>
+        <div v-if="dnsChargesApply" class="cost flex">
+          <span><span class="text-lg flex-shrink-0">$0.0333</span> per day</span>
+          <span class="dot" />
+          <span><span class="text-lg flex-shrink-0">$1.00</span> per 30 days</span>
+          <span class="dot" />
+          <a class="text-lg flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Get DNS for free</a>
+        </div>
+        <div v-else class="flex flex-wrap items-center">
+          <span class="text-lg flex-shrink-0 mr-2">No charge for DNS.</span>
+          <a class="text-lg flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Learn more.</a>
+        </div>
+      </div>
     </div>
 
     <DomainsList ref="domainsList" />
@@ -88,6 +102,10 @@ export default {
     ...mapState(['session']),
     canAddDomain() {
       return !this.v$.newDomainName.$invalid
+    },
+    dnsChargesApply() {
+      /** @todo determine if DNS charges apply */
+      return false
     }
   },
   methods: {
@@ -134,5 +152,21 @@ export default {
 <style scoped>
 .box {
   @apply w-full p-6 bg-white rounded-lg;
+}
+
+.cost {
+  @apply flex items-center space-x-2.5;
+}
+.dot {
+  @apply w-1 h-1 bg-gray-400 rounded-full
+}
+
+@media (max-width: 530px) {
+  .cost {
+    @apply flex-col items-start space-x-0 space-y-2 mt-2;
+  }
+  .dot {
+    @apply hidden;
+  }
 }
 </style>
