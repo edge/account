@@ -54,18 +54,36 @@
           <span class="errorMessage__text">{{ hostnameError }}</span>
         </div>
       </div>
-      <!-- value -->
-      <div class="flex-1 input-group value">
-        <label class="label">{{ valueLabel.label }}</label>
-        <input
-          autocomplete="off"
-          class="w-full input input--floating"
-          :placeholder="valueLabel.placeholder"
-          required
-          v-model="value"
-        />
-        <div v-if="valueError" class="errorMessage">
-          <span class="errorMessage__text">{{ valueError }}</span>
+      <!-- value (and priority for MX) -->
+      <div class="flex space-x-2" :class="type === 'MX' ? 'mx-wrapper' : 'flex-1 input-group value'">
+        <!-- priority (MX only) -->
+        <div v-if="type === 'MX'" class="input-group priority">
+          <label class="label">Priority</label>
+          <input
+            type="number"
+            autocomplete="off"
+            class="w-full input input--floating"
+            placeholder="Enter priority"
+            required
+            v-model="priority"
+          />
+          <div v-if="priorityError" class="errorMessage">
+            <span class="errorMessage__text">{{ priorityError }}</span>
+          </div>
+        </div>
+        <!-- value -->
+        <div class="flex-1 input-group value">
+          <label class="label">{{ valueLabel.label }}</label>
+          <input
+            autocomplete="off"
+            class="w-full input input--floating"
+            :placeholder="valueLabel.placeholder"
+            required
+            v-model="value"
+          />
+          <div v-if="valueError" class="errorMessage">
+            <span class="errorMessage__text">{{ valueError }}</span>
+          </div>
         </div>
       </div>
       <!-- ttl -->
@@ -79,6 +97,9 @@
           required
           v-model="ttl"
         />
+        <div v-if="ttlError" class="errorMessage">
+            <span class="errorMessage__text">{{ ttlError }}</span>
+          </div>
       </div>
 
       <!-- submit button -->
@@ -142,7 +163,10 @@ export default {
       hostname: '',
       hostnameError: '',
       httpError: null,
+      priority: '',
+      priorityError: '',
       ttl: 3600,
+      ttlError: '',
       syncRecordsCount: null,
       syncRecordsTTL: null,
       type: 'A',
@@ -153,6 +177,9 @@ export default {
   computed: {
     ...mapState(['config', 'session']),
     canCreateRecord() {
+      if (this.type === 'MX') {
+        if (this.priorityError) return false
+      }
       return this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
     },
     displaySyncRecordsWarning() {
@@ -201,6 +228,8 @@ export default {
     async createRecord() {
       try {
         this.creatingRecord = true
+        // add priority and trailing . to MX values
+        const value = this.type === 'MX' ? `${this.priority} ${this.value}.` : this.value
         await utils.dns.createRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -209,7 +238,7 @@ export default {
             name: this.hostname,
             ttl: this.ttl,
             type: this.type,
-            value: this.value
+            value
           }
         )
         this.resetForm()
@@ -252,6 +281,22 @@ export default {
       else error = ''
       this.hostnameError = error
     },
+    validatePriority() {
+      let error = ''
+      if (this.priority === '') error = 'Priority required'
+      else if (this.priority < 1) error = 'Minimum value is 1'
+      else if (!Number.isInteger(this.priority)) error = 'Must be integer'
+      else error = ''
+      this.priorityError = error
+    },
+    validateTtl() {
+      let error = ''
+      if (this.ttl === '') error = 'TTL required'
+      else if (this.ttl < 1) error = 'Minimum value is 1'
+      else if (!Number.isInteger(this.ttl)) error = 'Must be integer'
+      else error = ''
+      this.ttlError = error
+    },
     validateValue() {
       let error = ''
       if (this.type === 'A') {
@@ -273,14 +318,21 @@ export default {
       this.getSyncRecords()
       this.validateHostname()
     },
+    priority() {
+      this.httpError = null
+      this.validatePriority()
+    },
     ttl() {
       this.httpError = null
+      this.validateTtl()
     },
     type() {
       this.httpError = null
       this.getSyncRecords()
       this.validateHostname()
       this.validateValue()
+      this.validatePriority()
+      this.validateTtl()
     },
     value() {
       this.httpError = null
@@ -301,6 +353,12 @@ export default {
 .input-group.ttl {
   @apply col-start-1 row-start-2;
   width: 80px;
+}
+.mx-wrapper {
+  @apply flex-1;
+}
+.input-group.priority {
+  width: 85px;
 }
 .input-group .input--floating {
   @apply text-sm
@@ -339,8 +397,14 @@ input[type=number] {
 }
 
 @media (max-width: 400px) {
-  .input-group.hostname, .input-group.value {
+  .input-group.hostname, .input-group.value, .mx-wrapper {
     @apply col-span-2;
+  }
+  .mx-wrapper {
+    @apply space-x-0 space-y-2 flex-col;
+  }
+  .input-group.priority {
+    @apply w-full;
   }
   .input-group.ttl {
     @apply w-full row-start-1 col-start-2;
