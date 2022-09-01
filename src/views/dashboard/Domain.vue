@@ -5,7 +5,12 @@
         <ArrowLeftIcon class="w-4" /><span>Domains</span>
       </router-link>
     </div>
-    <h1>{{domainName}}</h1>
+    <div class="w-full flex flex-wrap justify-between items-center">
+      <h1 class="mr-2">{{domainName}}</h1>
+      <div class="mb-5" v-if=domain>
+        <DomainStatus :domain=domain :large="true" />
+      </div>
+    </div>
 
     <div class="box mb-4" v-if="domain && !deleted">
       <!-- eslint-disable-next-line max-len -->
@@ -93,9 +98,10 @@
 /* global process */
 
 import * as utils from '@/account-utils'
-import NameserversConfigure from '@/components/domain/NameserversConfigure'
 import DomainDelete from '@/components/domain/DomainDelete'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
+import DomainStatus from '@/components/domain/DomainStatus'
+import NameserversConfigure from '@/components/domain/NameserversConfigure'
 import NewRecordForm from '@/components/domain/NewRecordForm'
 import { mapState } from 'vuex'
 import { ArrowLeftIcon, InformationCircleIcon } from '@heroicons/vue/outline'
@@ -108,10 +114,11 @@ export default {
   },
   components: {
     ArrowLeftIcon,
-    NameserversConfigure,
     DomainDelete,
     DomainRecordsList,
+    DomainStatus,
     InformationCircleIcon,
+    NameserversConfigure,
     NewRecordForm,
     TabGroup,
     TabList,
