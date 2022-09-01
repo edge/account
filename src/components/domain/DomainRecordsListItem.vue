@@ -1,6 +1,6 @@
 <template>
   <li class="recordList__item">
-    <div class="recordList__fields-wrapper">
+    <div class="recordList__fields-wrapper" :class="isMx ? 'mx' : ''">
       <div class="recordList__field input-group type">
         <span class="recordList__header">Type</span>
         <!-- type -->
@@ -61,9 +61,24 @@
           <span class="errorMessage__text">{{ hostnameError }}</span>
         </div>
       </div>
+      <!-- priority (MX only) -->
+      <div class="recordList__field input-group priority" v-if="isMx">
+        <span class="recordList__header">Priority</span>
+        <input v-if=isEditing
+          type="number"
+          autocomplete="off"
+          class="w-full input input--floating"
+          placeholder="Enter priority"
+          required
+          v-model="priority"
+        />
+        <span v-else class="recordList__value">{{ mxValue.priority }}</span>
+        <div v-if="isEditing && priorityError" class="errorMessage">
+          <span class="errorMessage__text">{{ priorityError }}</span>
+        </div>
+      </div>
       <!-- value -->
       <div class="recordList__field input-group value">
-        <!-- records -->
         <span class="recordList__header">{{ valueLabel.label }}</span>
         <input v-if=isEditing
           autocomplete="off"
@@ -72,7 +87,7 @@
           required
           v-model="value"
         />
-        <span v-else class="recordList__value">{{ record.value }}</span>
+        <span v-else class="recordList__value">{{ mxValue ? mxValue.value : record.value }}</span>
         <div v-if="isEditing && valueError" class="errorMessage">
           <span class="errorMessage__text">{{ valueError }}</span>
         </div>
@@ -89,6 +104,9 @@
           v-model="ttl"
         />
         <span v-else class="recordList__value">{{ record.ttl }}</span>
+        <div v-if="isEditing && ttlError" class="errorMessage">
+          <span class="errorMessage__text">{{ ttlError }}</span>
+        </div>
       </div>
       <!-- options -->
       <div class="recordList__field options justify-center">
@@ -215,10 +233,13 @@ export default {
       httpError: null,
       isDeleting: false,
       isEditing: false,
+      priority: '',
+      priorityError: '',
       showDeleteConfirmationModal: false,
       syncRecordsCount: null,
       syncRecordsTTL: null,
       ttl: 3600,
+      ttlError: '',
       type: null,
       value: null,
       valueError: '',
@@ -246,6 +267,17 @@ export default {
         this.ttl !== this.record.ttl ||
         this.type !== this.record.type ||
         this.value !== this.record.value
+    },
+    isMx() {
+      return (!this.isEditing && this.record.type === 'MX') || this.type === 'MX'
+    },
+    mxValue() {
+      if (this.record.type !== 'MX') return null
+      const value = this.record.value.split(' ')
+      return {
+        priority: value[0],
+        value: value[1].slice(0, value[1].length - 1)
+      }
     },
     nameLabel() {
       const type = this.isEditing ? this.type : this.record.type
@@ -296,6 +328,8 @@ export default {
     async confirmEditRecord() {
       this.httpError = null
       if(!this.hasEdited) this.cancelEditing()
+      // add priority and trailing . to MX values
+      const value = this.type === 'MX' ? `${this.priority} ${this.value}.` : this.value
       try {
         await utils.dns.editRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -306,7 +340,7 @@ export default {
             name: this.hostname,
             ttl: this.ttl,
             type: this.type,
-            value: this.value
+            value
           }
         )
         this.$emit('updateRecords')
@@ -359,6 +393,7 @@ export default {
       this.valueError = null
       this.httpError = null
       this.hostname = ''
+      this.priority = ''
       this.ttl = 3600
       this.type = null
       this.value = ''
@@ -366,9 +401,10 @@ export default {
     async startEditing() {
       this.httpError = null
       this.hostname = this.record.name
+      this.priority = this.mxValue ? Number(this.mxValue.priority) : ''
       this.ttl = this.record.ttl
       this.type = this.record.type
-      this.value = this.record.value
+      this.value = this.mxValue ? this.mxValue.value : this.record.value
       await this.getSyncRecords()
       this.isEditing = true
     },
@@ -384,6 +420,22 @@ export default {
       else if (!this.hostname) error = 'Please enter a hostname'
       else error = ''
       this.hostnameError = error
+    },
+    validatePriority() {
+      let error = ''
+      if (this.priority === '') error = 'Priority required'
+      else if (this.priority < 1) error = 'Minimum value is 1'
+      else if (!Number.isInteger(this.priority)) error = 'Must be integer'
+      else error = ''
+      this.priorityError = error
+    },
+    validateTtl() {
+      let error = ''
+      if (this.ttl === '') error = 'TTL required'
+      else if (this.ttl < 1) error = 'Minimum value is 1'
+      else if (!Number.isInteger(this.ttl)) error = 'Must be integer'
+      else error = ''
+      this.ttlError = error
     },
     validateValue() {
       let error = ''
@@ -413,14 +465,21 @@ export default {
       this.getSyncRecords()
       this.validateHostname()
     },
+    priority() {
+      this.httpError = null
+      this.validatePriority()
+    },
     ttl() {
       this.httpError = null
+      this.validateTtl()
     },
     type() {
       this.httpError = null
       this.getSyncRecords()
       this.validateHostname()
       this.validateValue()
+      this.validatePriority()
+      this.validateTtl()
     },
     value() {
       this.httpError = null
@@ -436,7 +495,8 @@ export default {
 }
 
 .recordList__fields-wrapper {
-  @apply grid grid-cols-2 gap-2;
+  @apply grid gap-2;
+  grid-template-columns: 100px 90px 1fr;
 }
 
 /* list item content */
@@ -449,14 +509,20 @@ export default {
 .recordList__value {
   @apply text-sm text-black truncate;
 }
-.type {
-  @apply row-start-2;
+.name {
+  @apply col-span-2;
+}
+.value {
+  @apply col-span-2;
+}
+.mx .value {
+  @apply col-span-1;
 }
 .ttl {
-  @apply col-start-2;
+  @apply col-start-1 row-start-2;
 }
 .options {
-  @apply col-span-2;
+  @apply col-span-3;
 }
 .options__dropdown {
   @apply flex w-full space-x-2 justify-between
@@ -498,36 +564,42 @@ input[type=number] {
 }
 
 @screen sm {
-  .recordList__fields-wrapper {
-    @apply flex flex-row space-y-0 justify-between gap-x-4;
+  .recordList__item {
+    @apply pr-3;
   }
-
-  .type {
-    @apply flex-shrink-0;
-    flex-basis: 80px;
+  .recordList__fields-wrapper {
+    /* @apply flex flex-row space-y-0 justify-between gap-x-4; */
+    @apply grid gap-x-4;
+    grid-template-columns: 80px 1fr 1fr 70px 25px;
+  }
+  .recordList__fields-wrapper.mx {
+    grid-template-columns: 80px 3fr 1fr 2fr 70px 25px;
   }
   .name {
     @apply col-span-1;
-    flex-basis: 320px;
   }
   .value {
-    flex-basis: 320px;
+    @apply col-span-1;
   }
   .ttl {
-    @apply col-start-4 row-start-1 flex-shrink-0;
-    flex-basis: 60px;
+    @apply col-start-4 row-start-1;
+  }
+  .recordList__fields-wrapper.mx .ttl {
+    @apply col-start-5;
   }
   .options {
-    @apply flex-shrink-0;
-    flex-basis: 25px;
+    @apply row-start-1 col-start-5 col-span-1;
+  }
+  .recordList__fields-wrapper.mx .options {
+    @apply col-start-6;
   }
 
   .options__dropdown {
-    @apply flex flex-col space-x-0 space-y-2 pl-2 pr-4 py-2;
+    @apply flex flex-col space-x-0 space-y-2 pl-2 pr-3 py-2;
     @apply absolute right-0 top-8 z-10 w-max overflow-auto text-base bg-white rounded-md shadow-lg ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
   }
   .tableButton {
-    @apply flex items-center;
+    @apply flex items-center w-full;
   }
   button:disabled .tableButton__icon {
     @apply text-gray-500;

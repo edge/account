@@ -98,8 +98,8 @@
           v-model="ttl"
         />
         <div v-if="ttlError" class="errorMessage">
-            <span class="errorMessage__text">{{ ttlError }}</span>
-          </div>
+          <span class="errorMessage__text">{{ ttlError }}</span>
+        </div>
       </div>
 
       <!-- submit button -->
