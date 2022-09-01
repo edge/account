@@ -11,7 +11,7 @@
       <!-- eslint-disable-next-line max-len -->
       <div class="float-left"><InformationCircleIcon class="w-5 mr-1"/></div>
       <span>You need to update your nameservers with your domain registrar in order for these records to work.
-        <a href="" target="#" class="underline hover:text-green">Learn more</a>.
+        <a class="underline hover:text-green">Learn more</a>.
       </span>
     </div>
 
@@ -78,16 +78,7 @@
             <!-- configure -->
             <TabPanel>
               <div class="flex flex-col space-y-4">
-                <div class="box">
-                  <h4 class="mb-4">Configure Nameservers</h4>
-                  <!-- eslint-disable-next-line max-len -->
-                  <span>In order for Edge DNS to work for this domain, you need to configure the nameservers with your domain registrar to use the following:</span>
-                  <ul class="my-4 ml-4 space-y-2">
-                    <li v-for="ns in config.dns.nameservers" :key="ns" class="list-disc">{{ ns }}</li>
-                  </ul>
-                  <!-- eslint-disable-next-line max-len -->
-                  <span>Visit the wiki to learn more about <a href="" target="#" class="underline hover:text-green">how nameservers work</a>.</span>
-                </div>
+                <NameserversConfigure />
                 <DomainDelete :domain=domain @delete-domain=onDeleteDomain />
               </div>
             </TabPanel>
@@ -102,6 +93,7 @@
 /* global process */
 
 import * as utils from '@/account-utils'
+import NameserversConfigure from '@/components/domain/NameserversConfigure'
 import DomainDelete from '@/components/domain/DomainDelete'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
 import NewRecordForm from '@/components/domain/NewRecordForm'
@@ -116,6 +108,7 @@ export default {
   },
   components: {
     ArrowLeftIcon,
+    NameserversConfigure,
     DomainDelete,
     DomainRecordsList,
     InformationCircleIcon,
