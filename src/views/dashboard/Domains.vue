@@ -99,13 +99,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['serverCount', 'session']),
     canAddDomain() {
       return !this.v$.newDomainName.$invalid
     },
     dnsChargesApply() {
-      /** @todo determine if DNS charges apply */
-      return false
+      return !this.serverCount
     }
   },
   methods: {
