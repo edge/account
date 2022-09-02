@@ -114,7 +114,6 @@
         </div>
         <span v-else>Create Record</span>
       </button>
-
     </div>
     <!-- synced records warning -->
     <div v-if=displaySyncRecordsWarning class="w-full mt-2 bg-gray-300 rounded text-black p-2">
@@ -137,13 +136,13 @@ import { ChevronDownIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { mapState } from 'vuex'
 import {
   Listbox,
   ListboxButton,
   ListboxOption,
   ListboxOptions
 } from '@headlessui/vue'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'NewRecordForm',
@@ -175,12 +174,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['config', 'session']),
+    ...mapGetters(['balanceSuspend']),
+    ...mapState(['balance', 'config', 'session']),
     canCreateRecord() {
-      if (this.type === 'MX') {
-        if (this.priorityError) return false
-      }
-      return this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
+      if (this.type === 'MX' && this.priorityError) return false
+      // eslint-disable-next-line max-len
+      return !this.balanceSuspend && this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
     },
     displaySyncRecordsWarning() {
       return this.canCreateRecord && this.syncRecordsCount && this.syncRecordsTTL !== this.ttl
@@ -267,6 +266,7 @@ export default {
     },
     resetForm() {
       this.hostname = ''
+      this.priority = ''
       this.ttl = 3600
       this.type = this.types[0]
       this.value = ''

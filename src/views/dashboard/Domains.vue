@@ -33,7 +33,14 @@
 
       </div>
       <!-- errors -->
-      <div class="errorMessage">
+      <div class="mt-1">
+        <HttpError :error=httpError />
+      </div>
+      <div v-if="balanceSuspend || balanceWarning" class="text-red">
+        You are unable to add new domains while you balance is below ${{ balance.threshold.warning.usd }}.
+        Please add funds to enable this service.
+      </div>
+      <div v-else class="errorMessage">
         <span
           v-for="error in v$.newDomainName.$errors"
           :key="error.$uid"
@@ -42,10 +49,8 @@
           {{ error.$message }}
         </span>
       </div>
-      <div class="mt-1">
-        <HttpError :error=httpError />
-      </div>
-      <div class="flex flex-col items-baseline mt-2">
+      <!-- estimated costs -->
+      <div v-if="!balanceSuspend && !balanceWarning" class="flex flex-col items-baseline mt-2">
         <span class="text-green">Estimated Cost</span>
         <div v-if="dnsChargesApply" class="cost flex">
           <span><span class="flex-shrink-0">$0.0333</span> per day</span>
@@ -73,8 +78,8 @@ import * as validation from '../../utils/validation'
 import DomainsList from '@/components/domain/DomainsList'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'Domains',
@@ -99,9 +104,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['balance', 'session']),
     canAddDomain() {
-      return !this.v$.newDomainName.$invalid
+      return !this.balanceWarning && !this.balanceSuspend && !this.v$.newDomainName.$invalid
     },
     dnsChargesApply() {
       return !this.balance.consumption.anyExcludingDNS

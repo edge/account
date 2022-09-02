@@ -74,6 +74,13 @@
           <TabPanels class="mt-5">
             <!-- records -->
             <TabPanel>
+              <!-- balance suspend warning -->
+              <div v-if="balanceSuspend" class="box mb-5 suspend">
+                <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
+                <!-- eslint-disable-next-line max-len -->
+                <div class="mt-2 text-red">You are unable to add, edit or delete records while you balance is below ${{ balance.threshold.warning.usd }}.
+                Please add funds to enable this service.</div>
+              </div>
               <div class="box">
                 <h4 class="mb-2">Add a new record</h4>
                 <NewRecordForm @createRecord=onCreateRecord />
@@ -103,9 +110,9 @@ import DomainRecordsList from '@/components/domain/DomainRecordsList'
 import DomainStatus from '@/components/domain/DomainStatus'
 import NameserversConfigure from '@/components/domain/NameserversConfigure'
 import NewRecordForm from '@/components/domain/NewRecordForm'
-import { mapState } from 'vuex'
-import { ArrowLeftIcon, InformationCircleIcon } from '@heroicons/vue/outline'
+import { ArrowLeftIcon, ExclamationIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'Domain',
@@ -117,6 +124,7 @@ export default {
     DomainDelete,
     DomainRecordsList,
     DomainStatus,
+    ExclamationIcon,
     InformationCircleIcon,
     NameserversConfigure,
     NewRecordForm,
@@ -136,7 +144,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['config', 'session']),
+    ...mapGetters(['balanceSuspend']),
+    ...mapState(['balance', 'config', 'session']),
     domainName() {
       return this.$route.params.key
     }
@@ -179,6 +188,9 @@ export default {
 <style scoped>
 .box {
   @apply w-full p-6 bg-white rounded-lg;
+}
+.box.suspend {
+  @apply pt-4;
 }
 .mainContent__inner.domain {
   @apply pt-0 mt-6;

@@ -136,6 +136,7 @@
               <PopoverButton as='button'
                 @click=startEditing
                 class="tableButton edit w-max sm:hover:underline"
+                :disabled="balanceSuspend"
               >
                 <div><PencilIcon class="tableButton__icon" /></div>
                 Edit
@@ -143,6 +144,7 @@
               <PopoverButton as='button'
                 @click=toggleDeleteConfirmationModal
                 class="tableButton delete w-max text-red sm:hover:underline"
+                :disabled="balanceSuspend"
               >
                 <div>
                   <LoadingSpinner v-if=isDeleting class="tableButton__icon" />
@@ -185,7 +187,6 @@ import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DeleteRecordConfirmation from '@/components/confirmations/DeleteRecordConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { mapState } from 'vuex'
 import moment from 'moment'
 import {
   CheckIcon,
@@ -204,6 +205,7 @@ import {
   PopoverButton,
   PopoverPanel
 } from '@headlessui/vue'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'DomainRecordsListItem',
@@ -248,9 +250,12 @@ export default {
   },
   props: ['record', 'template'],
   computed: {
+    ...mapGetters(['balanceSuspend']),
     ...mapState(['config','session']),
     canConfirmEdit() {
-      return this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
+      if (this.type === 'MX' && this.priorityError) return false
+      // eslint-disable-next-line max-len
+      return !this.balanceSuspend && this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
     },
     created() {
       const created = moment(this.record.created).fromNow()
@@ -601,8 +606,8 @@ input[type=number] {
   .tableButton {
     @apply flex items-center w-full;
   }
-  button:disabled .tableButton__icon {
-    @apply text-gray-500;
+  button:disabled, button:disabled .tableButton__icon {
+    @apply text-gray-400 hover:no-underline;
   }
   .tableButton__icon {
     @apply w-4 mr-1;
