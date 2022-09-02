@@ -14,7 +14,6 @@ const store = createStore({
     backupCodes: null,
     balance: null,
     isAuthed: false,
-    serverCount: null,
     session: null,
     tasks: []
   },
@@ -39,9 +38,6 @@ const store = createStore({
     },
     setIsAuthed(state, isAuthed) {
       state.isAuthed = isAuthed
-    },
-    setServerCount(state, count) {
-      state.serverCount = count
     },
     setSession(state, session) {
       state.session = session
@@ -102,14 +98,6 @@ const store = createStore({
       const response = await utils.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
       commit('setConfig', response)
 
-    },
-    async updateServerCount({ commit, state }) {
-      const response = await utils.servers.getServers(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key,
-        { limit: 1}
-      )
-      commit('setServerCount', response.metadata.totalCount)
     },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks

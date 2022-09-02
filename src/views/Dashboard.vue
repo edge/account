@@ -30,9 +30,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account', 'balance', 'config', 'serverCount', 'tasks']),
+    ...mapState(['account', 'balance', 'config', 'tasks']),
     loaded() {
-      return this.account && this.balance && (this.serverCount !== null) && this.config
+      return this.account && this.balance && this.config
     }
   },
   components: {
@@ -54,13 +54,11 @@ export default {
     this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
     this.$store.dispatch('updateBalance')
-    this.$store.dispatch('updateServerCount')
 
     // poll all active tasks, balance and server count
     this.iAccount = setInterval(() => {
       this.$store.dispatch('updateAccount')
       this.$store.dispatch('updateBalance')
-      this.$store.dispatch('updateServerCount')
       this.$store.dispatch('updateTasks')
     }, STORE_REFRESH_INTERVAL)
 

@@ -104,7 +104,7 @@ export default {
       return !this.v$.newDomainName.$invalid
     },
     dnsChargesApply() {
-      return !this.balance.freeDNS
+      return !this.balance.consumption.anyExcludingDNS
     }
   },
   methods: {
