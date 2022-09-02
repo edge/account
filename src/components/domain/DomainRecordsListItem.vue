@@ -47,12 +47,18 @@
             class="w-full input input--floating"
             :placeholder="nameLabel.placeholder"
             required
-            v-model="hostname"
+            v-model=hostname
+            :title=hostname
           />
-          <span v-else class="recordList__value">{{ record.name }}</span>
+          <span v-else class="recordList__value"
+            :title="`${record.name}${record.name ? '.' : ''}${domainName}`"
+          >
+            {{ record.name }}{{ record.name ? '.' : '' }}{{ domainName }}
+          </span>
           <span
-            class="border-gray-400 text-black"
-            :class="isEditing ? 'border-b text-gray-400' : ''"
+            v-if=isEditing
+            class="border-b text-gray-400 md:hidden lg:inline-block border-gray-400"
+            :title="`${record.name ? '.' : ''}${domainName}`"
           >
             {{ record.name ? '.' : ''}}{{ domainName }}
           </span>
@@ -78,16 +84,21 @@
         </div>
       </div>
       <!-- value -->
-      <div class="recordList__field input-group value">
+      <div class="recordList__field input-group value overflow-hidden">
         <span class="recordList__header">{{ valueLabel.label }}</span>
         <input v-if=isEditing
           autocomplete="off"
           class="w-full input input--floating"
           :placeholder="valueLabel.placeholder"
           required
-          v-model="value"
+          v-model=value
+          :title=value
         />
-        <span v-else class="recordList__value">{{ mxValue ? mxValue.value : record.value }}</span>
+        <span v-else class="recordList__value"
+          :title="mxValue ? mxValue.value : record.value"
+        >
+          {{ mxValue ? mxValue.value : record.value }}
+        </span>
         <div v-if="isEditing && valueError" class="errorMessage">
           <span class="errorMessage__text">{{ valueError }}</span>
         </div>
@@ -110,7 +121,7 @@
       </div>
       <!-- options -->
       <div class="recordList__field options justify-center">
-        <div v-if="!template">
+        <div>
           <div v-if=isEditing class="flex space-x-2 sm:flex-col sm:space-x-0 sm:space-y-2 sm:items-center">
             <button
               @click=confirmEditRecord
@@ -248,7 +259,7 @@ export default {
       windowWidth: window.innerWidth
     }
   },
-  props: ['record', 'template'],
+  props: ['record'],
   computed: {
     ...mapGetters(['balanceSuspend']),
     ...mapState(['config','session']),
@@ -281,7 +292,7 @@ export default {
       const value = this.record.value.split(' ')
       return {
         priority: value[0],
-        value: value[1].slice(0, value[1].length - 1)
+        value: value[1]
       }
     },
     nameLabel() {
@@ -582,7 +593,7 @@ input[type=number] {
     grid-template-columns: 80px 1fr 1fr 70px 25px;
   }
   .recordList__fields-wrapper.mx {
-    grid-template-columns: 80px 3fr 1fr 2fr 70px 25px;
+    grid-template-columns: 80px 13fr 4fr 8fr 70px 25px;
   }
   .name {
     @apply col-span-1;
