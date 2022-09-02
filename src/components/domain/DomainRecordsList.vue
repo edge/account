@@ -20,16 +20,6 @@
         @change-page=changePage
       />
     </ul>
-    <!-- nameservers list -->
-    <ul v-if=config class="recordList">
-      <DomainRecordsListItem
-        v-for="record in nameserversRecords"
-        :key="record._key"
-        :record=record
-        :template="true"
-        @updateRecords=updateRecords
-      />
-    </ul>
   </div>
 </template>
 
@@ -61,18 +51,9 @@ export default {
   },
   props: ['domain'],
   computed: {
-    ...mapState(['config', 'session']),
+    ...mapState(['session']),
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
-    },
-    nameserversRecords() {
-      return this.config.dns.nameservers.map(ns => ({
-        name: '',
-        ttl: '3600',
-        type: 'NS',
-        value: ns,
-        zone: this.domain._key
-      }))
     }
   },
   methods: {
