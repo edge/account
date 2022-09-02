@@ -570,7 +570,7 @@ input[type=number] {
 
 @screen sm {
   .recordList__item {
-    @apply pr-3;
+    @apply pr-4;
   }
   .recordList__fields-wrapper {
     /* @apply flex flex-row space-y-0 justify-between gap-x-4; */

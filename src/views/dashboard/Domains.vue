@@ -2,6 +2,12 @@
   <div class="mainContent__inner">
     <h1>Edge Domains</h1>
 
+    <!-- balance suspend warning -->
+    <div v-if="balanceSuspend || balanceWarning" class="box mb-5 suspend">
+      <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
+      <!-- eslint-disable-next-line max-len -->
+      <div class="mt-2 text-red">You are unable to add new domains while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to re-enable this service.</div>
+    </div>
     <!-- add new domain input -->
     <div class="box">
       <div class="flex flex-col space-y-2 w-full sm:space-x-4 sm:space-y-0 sm:items-end sm:flex-row">
@@ -36,11 +42,7 @@
       <div class="mt-1">
         <HttpError :error=httpError />
       </div>
-      <div v-if="balanceSuspend || balanceWarning" class="text-red">
-        You are unable to add new domains while you balance is below ${{ balance.threshold.warning.usd }}.
-        Please add funds to enable this service.
-      </div>
-      <div v-else class="errorMessage">
+      <div class="errorMessage">
         <span
           v-for="error in v$.newDomainName.$errors"
           :key="error.$uid"
@@ -50,7 +52,7 @@
         </span>
       </div>
       <!-- estimated costs -->
-      <div v-if="!balanceSuspend && !balanceWarning" class="flex flex-col items-baseline mt-2">
+      <div class="flex flex-col items-baseline mt-2">
         <span class="text-green">Estimated Cost</span>
         <div v-if="dnsChargesApply" class="cost flex">
           <span><span class="flex-shrink-0">$0.0333</span> per day</span>
@@ -76,6 +78,7 @@
 import * as utils from '@/account-utils'
 import * as validation from '../../utils/validation'
 import DomainsList from '@/components/domain/DomainsList'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import useVuelidate from '@vuelidate/core'
@@ -88,6 +91,7 @@ export default {
   },
   components: {
     DomainsList,
+    ExclamationIcon,
     HttpError,
     LoadingSpinner
   },
@@ -157,6 +161,9 @@ export default {
 <style scoped>
 .box {
   @apply w-full p-6 bg-white rounded-lg;
+}
+.box.suspend {
+  @apply pt-4;
 }
 
 .cost {

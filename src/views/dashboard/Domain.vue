@@ -78,8 +78,7 @@
               <div v-if="balanceSuspend" class="box mb-5 suspend">
                 <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
                 <!-- eslint-disable-next-line max-len -->
-                <div class="mt-2 text-red">You are unable to add, edit or delete records while you balance is below ${{ balance.threshold.warning.usd }}.
-                Please add funds to enable this service.</div>
+                <div class="mt-2 text-red">You are unable to add, edit or delete records as your balance is low. Please add funds to re-enable this service.</div>
               </div>
               <div class="box">
                 <h4 class="mb-2">Add a new record</h4>
