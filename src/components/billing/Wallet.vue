@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col space-y-4">
-    <div class="flex flex-col md:flex-row space-y-4 md:space-x-4 md:space-y-0">
+    <div class="flex flex-col lg:grid lg:grid-cols-2 space-y-4 lg:gap-x-6 lg:space-y-0">
       <TransferXE />
       <div class="box">
         <div class="flex flex-col">
