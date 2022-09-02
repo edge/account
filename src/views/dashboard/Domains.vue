@@ -63,7 +63,7 @@
         </div>
         <div v-else class="flex flex-wrap items-center">
           <span class="flex-shrink-0 mr-2">No charge for DNS.</span>
-          <a class="flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Learn more.</a>
+          <!-- <a class="flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Learn more.</a> -->
         </div>
       </div>
     </div>
