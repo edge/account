@@ -59,10 +59,18 @@
           <span class="dot" />
           <span><span class="flex-shrink-0">$1.00</span> per 30 days</span>
           <span class="dot" />
-          <a class="flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Get DNS for free</a>
+          <div class="flex items-center space-x-1 flex-shrink-0">
+            <a class="text-green hover:text-green-600 underline cursor-pointer">Get DNS for free</a>
+            <Tooltip position="top" text="Pay nothing for DNS when you use other Edge services">
+              <InformationCircleIcon class="w-4 text-gray hover:text-green"/>
+            </Tooltip>
+          </div>
         </div>
         <div v-else class="flex flex-wrap items-center">
           <span class="flex-shrink-0 mr-2">No charge for DNS.</span>
+          <Tooltip position="top" text="Pay nothing for DNS when you use other Edge services">
+            <InformationCircleIcon class="w-4 text-gray hover:text-green"/>
+          </Tooltip>
           <!-- <a class="flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Learn more.</a> -->
         </div>
       </div>
@@ -78,10 +86,11 @@
 import * as utils from '@/account-utils'
 import * as validation from '../../utils/validation'
 import DomainsList from '@/components/domain/DomainsList'
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import Tooltip from '@/components/Tooltip'
 import useVuelidate from '@vuelidate/core'
+import { ExclamationIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
@@ -93,7 +102,9 @@ export default {
     DomainsList,
     ExclamationIcon,
     HttpError,
-    LoadingSpinner
+    InformationCircleIcon,
+    LoadingSpinner,
+    Tooltip
   },
   data() {
     return {

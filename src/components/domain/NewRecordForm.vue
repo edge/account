@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="record-form">
+    <div class="record-form" :class="type === 'MX' ? 'mx' : ''">
       <!-- type dropdown -->
       <div class="input-group type">
         <label class="label">Type</label>
@@ -48,7 +48,7 @@
             required
             v-model="hostname"
           />
-          <span class="text-gray-400 border-b border-gray-400">.{{ domainName }}</span>
+          <span class="domainName">.{{ domainName }}</span>
         </div>
         <div v-if="hostnameError" class="errorMessage">
           <span class="errorMessage__text">{{ hostnameError }}</span>
@@ -227,8 +227,16 @@ export default {
     async createRecord() {
       try {
         this.creatingRecord = true
-        // add priority and trailing . to MX values
-        const value = this.type === 'MX' ? `${this.priority} ${this.value}.` : this.value
+        // add priority to MX values
+        let value = this.type === 'MX' ? `${this.priority} ${this.value}` : this.value
+        // append . to MX, CNAME and ALIAS values if not done by user
+        if (['ALIAS', 'CNAME', 'NS', 'MX'].includes(this.type)) {
+          if (this.value.slice(-1) !== '.') value += '.'
+        }
+        // add double quotes to TXT values if not done by user
+        if (this.type === 'TXT') {
+          if (this.value[0] !== '"' && this.value.slice(-1) !== '"') value = `"${value}"`
+        }
         await utils.dns.createRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -240,15 +248,20 @@ export default {
             value
           }
         )
-        this.resetForm()
         this.$emit('createRecord')
+        setTimeout(async () => {
+          this.creatingRecord = false
+          await this.resetForm()
+          this.resetValidations()
+        }, 500)
       }
       catch (error) {
-        this.httpError = error
+        setTimeout(() => {
+          this.httpError = error
+          this.creatingRecord = false
+        }, 500)
       }
-      setTimeout(() => {
-        this.creatingRecord = false
-      }, 800)
+
     },
     async getSyncRecords() {
       const { results, metadata} = await utils.dns.getRecords(
@@ -267,9 +280,13 @@ export default {
     resetForm() {
       this.hostname = ''
       this.priority = ''
-      this.ttl = 3600
-      this.type = this.types[0]
       this.value = ''
+    },
+    resetValidations() {
+      this.hostnameError = ''
+      this.priorityError = ''
+      this.ttlError = ''
+      this.valueError = ''
     },
     validateHostname() {
       let error = ''
@@ -292,7 +309,7 @@ export default {
     validateTtl() {
       let error = ''
       if (this.ttl === '') error = 'TTL required'
-      else if (this.ttl < 1) error = 'Minimum value is 1'
+      else if (this.ttl < 60) error = 'Minimum value is 60'
       else if (!Number.isInteger(this.ttl)) error = 'Must be integer'
       else error = ''
       this.ttlError = error
@@ -345,7 +362,13 @@ export default {
 .record-form {
   @apply grid gap-4 w-full;
   grid-template-columns: auto 1fr;
-  @apply xl:flex xl:items-start xl:flex-row;
+  @apply lg:flex lg:items-start lg:flex-row;
+}
+.record-form.mx {
+  @apply lg:grid xl:flex;
+}
+.domainName {
+  @apply text-gray-400 border-b border-gray-400 lg:hidden xl:inline-block;
 }
 .input-group.type {
   width: 80px;
@@ -408,6 +431,11 @@ input[type=number] {
   }
   .input-group.ttl {
     @apply w-full row-start-1 col-start-2;
+  }
+}
+@media (max-width: 300px) {
+  .domainName {
+    @apply hidden;
   }
 }
 </style>

@@ -6,15 +6,6 @@
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
     <!-- records list -->
-    <ul v-if=config class="recordList">
-      <DomainRecordsListItem
-        v-for="record in nameserversRecords"
-        :key="record._key"
-        :record=record
-        :template="true"
-        @updateRecords=updateRecords
-      />
-    </ul>
     <ul v-if="records.length" class="recordList">
       <DomainRecordsListItem
         v-for="record in records"
@@ -27,6 +18,16 @@
         :limit=limit
         :totalCount="metadata.totalCount"
         @change-page=changePage
+      />
+    </ul>
+    <!-- nameservers list -->
+    <ul v-if=config class="recordList">
+      <DomainRecordsListItem
+        v-for="record in nameserversRecords"
+        :key="record._key"
+        :record=record
+        :template="true"
+        @updateRecords=updateRecords
       />
     </ul>
   </div>

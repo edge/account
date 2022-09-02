@@ -333,8 +333,12 @@ export default {
     async confirmEditRecord() {
       this.httpError = null
       if(!this.hasEdited) this.cancelEditing()
-      // add priority and trailing . to MX values
-      const value = this.type === 'MX' ? `${this.priority} ${this.value}.` : this.value
+      // add priority to MX values
+      let value = this.type === 'MX' ? `${this.priority} ${this.value}` : this.value
+      // append . to MX, CNAME and ALIAS values if not done by user
+      if (['ALIAS', 'CNAME', 'MX'].includes(this.type)) {
+        if (this.value.slice(-1) !== '.') value += '.'
+      }
       try {
         await utils.dns.editRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -437,7 +441,7 @@ export default {
     validateTtl() {
       let error = ''
       if (this.ttl === '') error = 'TTL required'
-      else if (this.ttl < 1) error = 'Minimum value is 1'
+      else if (this.ttl < 60) error = 'Minimum value is 60'
       else if (!Number.isInteger(this.ttl)) error = 'Must be integer'
       else error = ''
       this.ttlError = error
