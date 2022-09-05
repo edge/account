@@ -143,20 +143,20 @@
               <span class="sm:hidden">Cancel</span>
             </button>
           </div>
-          <Popover v-else as='div' class="relative w-full">
-            <PopoverButton class="flex items-center hidden sm:block">
+          <Menu v-else as='div' class="relative w-full">
+            <MenuButton class="flex items-center hidden sm:block">
               <CogIcon class="w-6" />
-            </PopoverButton>
-            <PopoverPanel :static="!sm" class="options__dropdown">
-              <PopoverButton as='button'
+            </MenuButton>
+            <MenuItems :static="!sm" class="options__dropdown">
+              <MenuItem as='button'
                 @click=startEditing
                 class="tableButton edit w-max sm:hover:underline"
                 :disabled="balanceSuspend"
               >
                 <div><PencilIcon class="tableButton__icon" /></div>
                 Edit
-              </PopoverButton>
-              <PopoverButton as='button'
+              </MenuItem>
+              <MenuItem as='button'
                 @click=toggleDeleteConfirmationModal
                 class="tableButton delete w-max text-red sm:hover:underline"
                 :disabled="balanceSuspend"
@@ -166,9 +166,9 @@
                   <TrashIcon v-else class="tableButton__icon" />
                 </div>
                 Delete
-              </PopoverButton>
-            </PopoverPanel>
-          </Popover>
+              </MenuItem>
+            </MenuItems>
+          </Menu>
         </div>
       </div>
     </div>
@@ -216,9 +216,10 @@ import {
   ListboxButton,
   ListboxOption,
   ListboxOptions,
-  Popover,
-  PopoverButton,
-  PopoverPanel
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems
 } from '@headlessui/vue'
 import { mapGetters, mapState } from 'vuex'
 
@@ -237,9 +238,10 @@ export default {
     ListboxOptions,
     LoadingSpinner,
     PencilIcon,
-    Popover,
-    PopoverButton,
-    PopoverPanel,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems,
     TrashIcon,
     XIcon
   },
@@ -341,8 +343,9 @@ export default {
     }
   },
   methods: {
-    cancelEditing() {
-      this.resetEditForm()
+    async cancelEditing() {
+      await this.resetEditForm()
+      this.resetValidations()
       this.isEditing = false
     },
     async confirmEditRecord() {
@@ -418,18 +421,21 @@ export default {
       this.windowWidth = window.innerWidth
     },
     resetEditForm() {
-      this.hostnameError = null
-      this.valueError = null
-      this.httpError = null
       this.hostname = ''
       this.priority = ''
       this.ttl = 3600
       this.type = null
       this.value = ''
     },
+    resetValidations() {
+      this.hostnameError = ''
+      this.priorityError = ''
+      this.ttlError = ''
+      this.valueError = ''
+    },
     async startEditing() {
       this.httpError = null
-      this.hostname = this.record.name
+      this.hostname = this.record.name || '@'
       this.priority = this.mxValue ? Number(this.mxValue.priority) : ''
       this.ttl = this.record.ttl
       this.type = this.record.type
@@ -492,7 +498,8 @@ export default {
     hostname() {
       this.httpError = null
       this.getSyncRecords()
-      this.validateHostname()
+      if (this.hostnameTimeout) clearTimeout(this.hostnameTimeout)
+      this.hostnameTimeout = setTimeout(this.validateHostname, 400)
     },
     priority() {
       this.httpError = null
@@ -505,14 +512,16 @@ export default {
     type() {
       this.httpError = null
       this.getSyncRecords()
-      this.validateHostname()
-      this.validateValue()
-      this.validatePriority()
-      this.validateTtl()
+      this.resetValidations()
+      if (this.hostname) this.validateHostname()
+      if (this.value) this.validateValue()
+      if (this.priority) this.validatePriority()
+      if (this.ttl) this.validateTtl()
     },
     value() {
       this.httpError = null
-      this.validateValue()
+      if (this.valueTimeout) clearTimeout(this.valueTimeout)
+      this.valueTimeout = setTimeout(this.validateValue, 400)
     }
   }
 }
