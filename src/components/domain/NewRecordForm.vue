@@ -165,6 +165,7 @@ export default {
       creatingRecord: false,
       hostname: '',
       hostnameError: '',
+      hostnameTimeout: null,
       httpError: null,
       priority: '',
       priorityError: '',
@@ -174,7 +175,8 @@ export default {
       syncRecordsTTL: null,
       type: 'A',
       value: '',
-      valueError: ''
+      valueError: '',
+      valueTimeout: ''
     }
   },
   computed: {
@@ -259,9 +261,9 @@ export default {
         )
         this.$emit('createRecord')
         setTimeout(async () => {
-          this.creatingRecord = false
           await this.resetForm()
           this.resetValidations()
+          this.creatingRecord = false
         }, 500)
       }
       catch (error) {
@@ -342,7 +344,10 @@ export default {
     hostname() {
       this.httpError = null
       this.getSyncRecords()
-      this.validateHostname()
+      if (!this.creatingRecord) {
+        if (this.hostnameTimeout) clearTimeout(this.hostnameTimeout)
+        this.hostnameTimeout = setTimeout(this.validateHostname, 400)
+      }
     },
     priority() {
       this.httpError = null
@@ -355,14 +360,18 @@ export default {
     type() {
       this.httpError = null
       this.getSyncRecords()
-      this.validateHostname()
-      this.validateValue()
-      this.validatePriority()
-      this.validateTtl()
+      this.resetValidations()
+      if (this.hostname) this.validateHostname()
+      if (this.value) this.validateValue()
+      if (this.priority) this.validatePriority()
+      if (this.ttl) this.validateTtl()
     },
     value() {
       this.httpError = null
-      this.validateValue()
+      if (!this.creatingRecord) {
+        if (this.valueTimeout) clearTimeout(this.valueTimeout)
+        this.valueTimeout = setTimeout(this.validateValue, 400)
+      }
     }
   }
 }
