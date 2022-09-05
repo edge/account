@@ -41,6 +41,13 @@
       <!-- errors -->
       <div class="mt-1">
         <HttpError :error=httpError />
+        <div v-if="alreadyExistsError" class="error_wrapper errorMessage">
+          <div class="float-left">
+            <ExclamationIcon class="w-3.5 text-red" />
+          </div>
+          <!-- eslint-disable-next-line max-len -->
+          <span class="errorMessage__text text-red">The domain {{ newDomainName }} already exists within Edge DNS. If this is a mistake, please contact support@edge.network</span>
+        </div>
       </div>
       <div class="errorMessage">
         <span
@@ -108,6 +115,7 @@ export default {
   },
   data() {
     return {
+      alreadyExistsError: false,
       addingDomain: false,
       httpError: null,
       newDomainName: ''
@@ -144,7 +152,9 @@ export default {
         this.$refs.domainsList.updateDomains()
       }
       catch (error) {
-        this.httpError = error
+        const body = error.response.body
+        if (body.param === 'zone' && body.reason === 'already exists') this.alreadyExistsError = true
+        else this.httpError = error
       }
       setTimeout(async () => {
         this.addingDomain = false
@@ -164,6 +174,7 @@ export default {
   },
   watch: {
     async newDomainName() {
+      this.alreadyExistsError = false
       this.httpError = null
     }
   }
