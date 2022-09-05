@@ -10,7 +10,9 @@
       <span class="font-semibold">This action cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
         <!-- eslint-disable-next-line max-len -->
-        <li>Please confirm deletion of record <span class="monospace">{{ record.name }}.{{ record.zone }}</span> ({{ record.type }})</li>
+        <li>Please confirm deletion of record <span class="monospace">
+          {{ record.name ? `${record.name}.` : '' }}{{ record.zone }}</span> ({{ record.type }})
+        </li>
       </div>
     </template>
     <template v-slot:buttons>
