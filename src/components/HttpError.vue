@@ -15,6 +15,7 @@ const paramLookup = {
   'comment': 'Comment',
   'name': 'Hostname',
   'otp': 'TOTP',
+  'paymentMethod': 'Payment Method',
   'region': 'Region',
   'region.servers': 'Servers',
   'spec.cpus': 'vCPU',

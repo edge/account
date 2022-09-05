@@ -100,6 +100,9 @@
         <div class="ml-1" v-if="enabling"><LoadingSpinner /></div>
       </button>
     </div>
+    <div v-if=httpError class="mt-2">
+      <HttpError :error=httpError />
+    </div>
     <DisableAutoTopUpConfirmation
       v-if=showDisableConfirmation
       @modal-confirm=disableAutoTopUp
@@ -114,6 +117,7 @@
 import * as utils from '@/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableAutoTopUpConfirmation from '@/components/confirmations/DisableAutoTopUpConfirmation'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import {
@@ -134,6 +138,7 @@ export default {
     CheckIcon,
     ChevronDownIcon,
     DisableAutoTopUpConfirmation,
+    HttpError,
     Listbox,
     ListboxButton,
     ListboxOption,
@@ -142,8 +147,9 @@ export default {
   },
   data() {
     return {
-      enabling: false,
       disabling: false,
+      enabling: false,
+      httpError: '',
       paymentCard: null,
       showDisableConfirmation: false,
       targetBalance: '10.00',
@@ -179,6 +185,7 @@ export default {
   },
   methods: {
     async disableAutoTopUp() {
+      this.httpError = ''
       try {
         this.disabling = true
         await utils.billing.disableAutoTopUp(
@@ -193,7 +200,7 @@ export default {
         }, 1000)
       }
       catch (error) {
-        console.error(error)
+        this.httpError = error
         this.disabling = false
       }
     },
@@ -203,6 +210,7 @@ export default {
       this.enableAutoTopUp()
     },
     async enableAutoTopUp() {
+      this.httpError = ''
       try {
         this.enabling = true
         await utils.billing.enableAutoTopUp(
@@ -220,7 +228,7 @@ export default {
         }, 1000)
       }
       catch (error) {
-        console.error(error)
+        this.httpError = error
         this.enabling = false
       }
     },
