@@ -46,7 +46,7 @@
         <!-- eslint-disable-next-line max-len -->
         <span class="">This domain already exists within Edge DNS. If this is a mistake, please contact support@edge.network</span>
       </div>
-      <div class="errorMessage">
+      <div class="errorMessage" v-if=showValidationError>
         <span
           v-for="error in v$.newDomainName.$errors"
           :key="error.$uid"
@@ -115,7 +115,9 @@ export default {
       alreadyExistsError: false,
       addingDomain: false,
       httpError: null,
-      newDomainName: ''
+      newDomainName: '',
+      showValidationError: false,
+      validationTimeout: null
     }
   },
   validations() {
@@ -173,6 +175,12 @@ export default {
     async newDomainName() {
       this.alreadyExistsError = false
       this.httpError = null
+      if (this.newDomainName) {
+        if (this.validationTimeout) clearTimeout(this.validationTimeout)
+        this.validationTimeout = setTimeout(() => {
+          this.showValidationError = true
+        }, 400)
+      }
     }
   }
 }
