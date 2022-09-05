@@ -1,9 +1,9 @@
 <template>
   <li class="recordList__item">
     <div class="recordList__fields-wrapper" :class="isMx ? 'mx' : ''">
+      <!-- type -->
       <div class="recordList__field input-group type">
         <span class="recordList__header">Type</span>
-        <!-- type -->
         <Listbox v-if=isEditing v-model="type" >
           <div class="relative w-full mt-1">
             <ListboxButton class="listButton">
@@ -49,6 +49,7 @@
             required
             v-model=hostname
             :title=hostname
+            @keypress="editOnEnter"
           />
           <span v-else class="recordList__value"
             :title="`${record.name}${record.name ? '.' : ''}${domainName}`"
@@ -77,6 +78,7 @@
           placeholder="Enter priority"
           required
           v-model="priority"
+          @keypress="editOnEnter"
         />
         <span v-else class="recordList__value">{{ mxValue.priority }}</span>
         <div v-if="isEditing && priorityError" class="errorMessage">
@@ -93,6 +95,7 @@
           required
           v-model=value
           :title=value
+          @keypress="editOnEnter"
         />
         <span v-else class="recordList__value"
           :title="mxValue ? mxValue.value : record.value"
@@ -113,6 +116,7 @@
           placeholder="Enter TTL"
           required
           v-model="ttl"
+          @keypress="editOnEnter"
         />
         <span v-else class="recordList__value">{{ record.ttl }}</span>
         <div v-if="isEditing && ttlError" class="errorMessage">
@@ -387,6 +391,11 @@ export default {
         this.httpError = error
       }
       this.isDeleting = false
+    },
+    editOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.confirmEditRecord()
     },
     async getSyncRecords() {
       const { results, metadata} = await utils.dns.getRecords(

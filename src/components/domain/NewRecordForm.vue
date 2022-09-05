@@ -47,6 +47,7 @@
             :placeholder="nameLabel.placeholder"
             required
             v-model="hostname"
+            @keypress="createOnEnter"
           />
           <span class="domainName">.{{ domainName }}</span>
         </div>
@@ -66,6 +67,7 @@
             placeholder="Enter priority"
             required
             v-model="priority"
+            @keypress="createOnEnter"
           />
           <div v-if="priorityError" class="errorMessage">
             <span class="errorMessage__text">{{ priorityError }}</span>
@@ -80,6 +82,7 @@
             :placeholder="valueLabel.placeholder"
             required
             v-model="value"
+            @keypress="createOnEnter"
           />
           <div v-if="valueError" class="errorMessage">
             <span class="errorMessage__text">{{ valueError }}</span>
@@ -96,6 +99,7 @@
           placeholder="Enter TTL"
           required
           v-model="ttl"
+          @keypress="createOnEnter"
         />
         <div v-if="ttlError" class="errorMessage">
           <span class="errorMessage__text">{{ ttlError }}</span>
@@ -121,7 +125,7 @@
       <!-- eslint-disable-next-line max-len -->
       <span>The current TTL for {{ type }} {{ hostname }} is {{ syncRecordsTTL }} and changing it will update {{ syncRecordsCount }} other record{{ syncRecordsCount > 1 ? 's' : '' }}.</span>
     </div>
-    <div class="mt-1">
+    <div v-if=httpError class="mt-1">
       <HttpError :error=httpError />
     </div>
   </div>
@@ -224,6 +228,11 @@ export default {
     }
   },
   methods: {
+    createOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.createRecord()
+    },
     async createRecord() {
       try {
         this.creatingRecord = true
