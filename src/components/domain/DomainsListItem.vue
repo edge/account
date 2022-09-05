@@ -6,21 +6,15 @@
       <!-- server details -->
       <div class="domainList__field name overflow-hidden">
         <!-- server name -->
-        <span class="domainList__name">{{ domain._key }}</span>
+        <span class="domainList__name" :title="domain._key">{{ domain._key }}</span>
       </div>
       <!-- domain records -->
-      <div class="domainList__field records">
+      <div class="domainList__field records overflow-hidden">
         <!-- records -->
         <span class="domainList__header">Records</span>
-        <div>
-          <div v-if="domain.records" class="domainList__stats text-m">
-            <div v-for="(count, type, index) in domain.records"
-              :key="type"
-              class="flex space-x-2"
-            >
-              <span>{{count}} {{type}}</span>
-              <span v-if="index !== recordTypesCount - 1" class="divider"></span>
-            </div>
+        <div class="truncate">
+          <div v-if="domain.records" class="domainList__records text-m truncate">
+            <span :title="recordsList" class="truncate">{{ recordsList }}</span>
           </div>
           <span v-else class="italic text-gray-400">No records</span>
         </div>
@@ -55,6 +49,13 @@ export default {
     created() {
       const created = moment(this.domain.created).fromNow()
       return created === 'a few seconds ago' ? 'Just now' : created
+    },
+    recordsList() {
+      let title = ''
+      for (const key in this.domain.records) {
+        title += `${this.domain.records[key]} ${key} | `
+      }
+      return title ? title.slice(0, title.length - 3) : 'No records'
     },
     recordTypesCount() {
       return this.domain && Object.keys(this.domain.records).length
@@ -95,7 +96,7 @@ export default {
 .domainList__name {
   @apply text-md text-green truncate;
 }
-.domainList__stats {
+.domainList__records {
   @apply flex space-x-1.5;
 }
 /* status dot */
@@ -119,7 +120,7 @@ export default {
 /* tablet sized screens up to desktop */
 @media (min-width: 470px) {
   .domainList__item {
-    @apply gap-x-4;
+    @apply gap-x-2;
     grid-template-columns: 1fr 100px 80px;
   }
   .domainList__header {
@@ -141,18 +142,18 @@ export default {
 
 @screen lg {
   .domainList__item {
-    @apply flex justify-between gap-x-4;
+    @apply flex justify-between gap-x-2;
   }
   .name {
-    @apply col-span-1 row-span-2 justify-center;
-    flex-basis: 280px;
+    @apply flex-1 col-span-1 row-span-2 justify-center;
+    flex-basis: 150px;
   }
   .records {
-    @apply flex-shrink-0;
-    flex-basis: 240px;
+    @apply flex-1 flex-shrink-0;
+    flex-basis: 300px;
   }
   .created, .status {
-    @apply row-start-1 flex-shrink-0;
+    @apply flex-1 row-start-1 flex-shrink-0;
   }
   .created {
     flex-basis: 100px;
@@ -163,11 +164,11 @@ export default {
 }
 
 @media (max-width: 370px) {
-  .domainList__stats {
+  .domainList__records {
     @apply flex-col space-x-0;
   }
 
-  .domainList__stats .divider {
+  .domainList__records .divider {
     @apply hidden;
   }
 }
