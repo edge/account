@@ -44,6 +44,8 @@ export default {
       let message = ''
       if (['spec.disk', 'spec.ram'].includes(body.param)) message = this.formatMiBInError(body.reason)
       else message = body.reason || body.message
+      // format power dns error messages
+      if (message.includes('RRset')) message = this.formatPowerDnsError(message)
 
       return field ? [field, message].join(': ') : message
     }
@@ -53,6 +55,16 @@ export default {
       const MiB = errorMessage.replace(/^\D+/g, '')
       const GB =  MiB ? `${MiB / 1024} GB` : ''
       return errorMessage.replace(MiB, GB)
+    },
+    formatPowerDnsError(message) {
+      const splitMessage = message.split(' ')
+      const type = splitMessage[splitMessage.indexOf('IN') + 1]
+      let a = 'A'
+      if (['A', 'AAAA', 'ALIAS'].includes(type)) a += 'n'
+      // eslint-disable-next-line max-len
+      if (message.includes('Duplicate record')) return `${a} ${type} record with that hostname and value already exists.`
+      if (message.includes('has more than one record')) return `${a} ${type} record with that hostname already exists.`
+      if (message.includes('Conflicts with pre-existing RRset')) return 'This record conflicts with an existing record.'
     }
   }
 }
