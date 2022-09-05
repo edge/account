@@ -42,10 +42,7 @@
       <div v-if=httpError class="mt-1">
         <HttpError :error=httpError />
       </div>
-      <div v-if="alreadyExistsError" class="block mt-2 bg-gray-300 rounded-md p-2">
-        <div class="float-left">
-          <ExclamationIcon class="w-3.5 mt-1 mr-1" />
-        </div>
+      <div v-if="alreadyExistsError" class="mt-2 bg-gray-300 rounded-md p-2">
         <!-- eslint-disable-next-line max-len -->
         <span class="">This domain already exists within Edge DNS. If this is a mistake, please contact support@edge.network</span>
       </div>
