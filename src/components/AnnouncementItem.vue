@@ -1,13 +1,13 @@
 <template>
   <div
     v-if="!dismissed"
-    class="w-full p-6 bg-white rounded-lg flex justify-between items-center space-x-2"
+    class="w-full px-4 md:px-6 py-4 bg-white rounded-lg flex justify-between items-center space-x-2"
   >
     <div class="anc__text" v-html=announcementText></div>
-    <button @click=dismissAnnouncement class="button button--outline button--small hidden md:block">
+    <button @click=dismissAnnouncement class="text-gray-500 hover:underline hidden sm:block">
       <span>Dismiss</span>
     </button>
-    <button @click=dismissAnnouncement class="md:hidden"><XIcon class="w-4 text-gray-500" /></button>
+    <button @click=dismissAnnouncement class="sm:hidden"><XIcon class="w-4 text-gray-500" /></button>
   </div>
 </template>
 
