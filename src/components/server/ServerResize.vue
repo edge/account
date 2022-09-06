@@ -24,14 +24,11 @@
       </button>
       <HttpError :error=httpError />
       <!-- eslint-disable-next-line max-len -->
-      <span v-if="haveSpecsIncreased && (balanceSuspend || balanceWarning)" class="text-red">
-        You are unable to increase this servers specs while your balance is below ${{ balance.threshold.warning.usd }}.
-        Please add funds to enable this service.
-      </span>
+      <span v-if="haveSpecsIncreased && (balanceSuspend || balanceWarning)" class="text-red">You are unable to increase this server's specs while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to enable this service.</span>
       <div v-if=internalServerError class="server__error">
         <span class="font-bold">Something went wrong</span>
         <!-- eslint-disable-next-line max-len -->
-        <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
+        <span>There was an issue while deploying this server. Please try again, or contact support@edge.network if the issue persists.</span>
       </div>
     </div>
     <!-- resize confirmation modal -->

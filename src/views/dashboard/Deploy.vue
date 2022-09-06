@@ -51,11 +51,11 @@
           :hostname=hostname
           :isRegionDisabled="isRegionDisabled"
         />
-        <div v-if="serverNameUpdated" class="flex flex-col">
+        <div v-if="serverNameUpdated" class="errorMessage">
           <span
             v-for="error in v$.serverOptions.settings.name.$errors"
             :key="error.$uid"
-            class="mt-2 text-red"
+            class="errorMessage__text"
           >
             {{ error.$message }}
           </span>
@@ -66,11 +66,11 @@
           :hostname="hostname"
           :isRegionDisabled="isRegionDisabled"
         />
-        <div v-if="serverDomainUpdated" class="flex flex-col">
+        <div v-if="serverDomainUpdated" class="errorMessage">
           <span
             v-for="error in v$.serverOptions.settings.domain.$errors"
             :key="error.$uid"
-            class="mt-2 text-red"
+            class="errorMessage__text"
           >
             {{ error.$message }}
           </span>
@@ -83,11 +83,11 @@
           @password-changed="updatePassword"
           :isRegionDisabled="isRegionDisabled"
         />
-        <div class="flex flex-col">
+        <div class="errorMessage">
           <span
             v-for="error in v$.serverOptions.settings.password.$errors"
             :key="error.$uid"
-            class="mt-2 text-red"
+            class="mt-2 errorMessage__text"
           >
             {{ error.$message }}
           </span>
@@ -117,7 +117,7 @@
         <div v-if=internalServerError class="server__error">
           <span class="font-bold">Something went wrong</span>
           <!-- eslint-disable-next-line max-len -->
-          <span>There was an issue while deplying this server. Please try again, or contact support@edge.network if the issue persists.</span>
+          <span>There was an issue while depolying this server. Please try again, or contact support@edge.network if the issue persists.</span>
         </div>
       </div>
     </form>

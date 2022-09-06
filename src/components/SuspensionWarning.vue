@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
-    ...mapState(['account', 'balance', 'serverCount']),
+    ...mapState(['account', 'balance']),
     warning() {
       const warningThreshold = this.balance.threshold.warning.usd
 
@@ -57,13 +57,13 @@ export default {
           message: 'Your balance is less than your current spend. Any services you are using will be suspended if you don\'t add funds to your account.'
         }
       }
-      else if (this.balance.total.usd < warningThreshold && !this.serverCount) {
+      else if (this.balance.total.usd < warningThreshold && !this.balance.consumption.any) {
         return {
           class: bannerClass.yellow,
           message: `Your balance is less than $${warningThreshold}. Please add funds to re-enable services.`
         }
       }
-      else if (this.balanceWarning && !this.serverCount) {
+      else if (this.balanceWarning && !this.balance.consumption.any) {
         return {
           class: bannerClass.yellow,
           message: `Your balance at the end of the day will be less than $${warningThreshold}. Please add funds to re-enable services.`

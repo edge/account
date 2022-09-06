@@ -40,8 +40,11 @@ export default {
         {
           link: '/servers',
           text: 'Servers'
-        }
-        ,
+        },
+        {
+          link: '/domains',
+          text: 'Domains'
+        },
         {
           link: '/storage',
           text: 'Storage',
@@ -55,11 +58,6 @@ export default {
         {
           link: '/databases',
           text: 'Databases',
-          disabled: true
-        },
-        {
-          link: '/domains',
-          text: 'Domains',
           disabled: true
         },
         {

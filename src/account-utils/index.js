@@ -5,6 +5,7 @@
 export * as accounts from './accounts'
 export * as billing from './billing'
 export * as config from './config'
+export * as dns from './dns'
 export * as os from './os'
 export * as purchases from './purchases'
 export * as region from './region'

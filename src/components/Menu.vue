@@ -30,6 +30,7 @@ export default {
   methods: {
     isActive(item) {
       if (item.link === '/servers') return this.location.includes('/server')
+      if (item.link === '/domains') return this.location.includes('/domain')
       return item.link === this.location
     }
   },

@@ -17,7 +17,7 @@
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
       </div> -->
     </div>
-    <div class="tabs flex space-x-2">
+    <div class="tabs flex space-x-2 pt-4">
       <div class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Wallet'}">Wallet</router-link>
       </div>
@@ -84,6 +84,9 @@ export default {
     isSelected(route) {
       return this.$route.fullPath.includes(route)
     }
+  },
+  mounted() {
+    if (this.$route.fullPath === '/billing' || this.$route.fullPath === '/billing/') this.$router.push({ name: 'Wallet' })
   }
 }
 </script>
@@ -94,25 +97,5 @@ export default {
 
 .box h4 {
   @apply w-full mb-4 font-medium;
-}
-
-.tabGroup {
-  @apply relative;
-}
-
-.tabs {
-  @apply w-full space-x-4 md:space-x-8 border-b border-gray-300 overflow-auto flex flex-nowrap;
-}
-.tab {
-  @apply pb-1 font-medium border-b text-gray-500 border-transparent;
-  @apply hover:text-black;
-}
-.tab:focus,
-.tab a:focus {
-  outline: none;
-}
-.tab.tab--selected {
-  @apply text-green border-green;
-  @apply hover:text-green;
 }
 </style>
