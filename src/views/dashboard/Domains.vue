@@ -66,19 +66,19 @@
           <span><span class="flex-shrink-0">$1.00</span> per 30 days</span>
           <span class="dot" />
             <Tooltip position="top" text="Pay nothing for DNS when you use other Edge services">
-              <div class="flex items-center space-x-1 flex-shrink-0 text-green hover:text-green-600 cursor-pointer">
-                <a class="underline">Get DNS for free</a>
+              <div class="flex items-center space-x-1 flex-shrink-0 text-green">
+                <span>Get DNS for free</span>
                 <InformationCircleIcon class="w-4"/>
               </div>
             </Tooltip>
         </div>
-        <div v-else class="flex flex-wrap items-center">
-          <span class="flex-shrink-0 mr-1">No charge for DNS.</span>
-          <Tooltip position="top" text="Pay nothing for DNS when you use other Edge services">
-            <InformationCircleIcon class="w-4 text-green hover:text-green-600"/>
+          <Tooltip v-else position="top" text="Pay nothing for DNS when you use other Edge services">
+            <div class="flex flex-wrap items-center">
+              <span class="flex-shrink-0 mr-1">No charge for DNS</span>
+             <InformationCircleIcon class="w-4 text-green"/>
+            </div>
           </Tooltip>
           <!-- <a class="flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Learn more.</a> -->
-        </div>
       </div>
     </div>
 
