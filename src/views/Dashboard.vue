@@ -64,7 +64,15 @@ export default {
 
     // keep session alive
     this.iHeartbeat = setInterval(() => {
-      this.$store.dispatch('sessionHeartbeat')
+      try {
+        this.$store.dispatch('sessionHeartbeat')
+      }
+      catch (error) {
+        clearInterval(this.iAccount)
+        clearInterval(this.iHeartbeat)
+        this.$store.dispatch('signOut')
+        this.$router.push('/signin')
+      }
     }, HEARTBEAT_INTERVAL)
   },
   unmounted() {
