@@ -7,6 +7,7 @@
         <h4>Network region</h4>
         <NetworkRegion
           @region-changed="updateRegion"
+          ref="networkRegion"
         />
       </div>
 
@@ -351,13 +352,13 @@ export default {
   },
   watch: {
     httpError() {
-      this.updateRegion()
+      this.$refs.networkRegion.updateRegions()
     },
     serverOptions() {
       this.internalServerError = false
     },
     internalServerError() {
-      this.updateRegion()
+      this.$refs.networkRegion.updateRegions()
     }
   }
 }
