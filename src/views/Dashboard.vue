@@ -16,6 +16,7 @@ import TopNavigation from '@/components/TopNavigation'
 import { mapState } from 'vuex'
 
 const STORE_REFRESH_INTERVAL = 5 * 1000
+const CHECK_SESSION_INTERVAL = 15 * 1000
 const HEARTBEAT_INTERVAL = 10 * 60 * 1000
 
 export default {
@@ -26,7 +27,8 @@ export default {
   data() {
     return {
       iAccount: null,
-      iHeartbeat: null
+      iHeartbeat: null,
+      lastHeartbeat: null
     }
   },
   computed: {
@@ -65,7 +67,9 @@ export default {
     // keep session alive
     this.iHeartbeat = setInterval(() => {
       try {
+        if (this.lastHeartbeat > Date.now() - HEARTBEAT_INTERVAL) return
         this.$store.dispatch('sessionHeartbeat')
+        this.lastHeartbeat = Date.now()
       }
       catch (error) {
         clearInterval(this.iAccount)
@@ -73,7 +77,7 @@ export default {
         this.$store.dispatch('signOut')
         this.$router.push('/signin')
       }
-    }, HEARTBEAT_INTERVAL)
+    }, CHECK_SESSION_INTERVAL)
   },
   unmounted() {
     clearInterval(this.iAccount)
