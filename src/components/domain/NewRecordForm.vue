@@ -43,6 +43,8 @@
         <div class="flex">
           <input
             autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
             class="w-full input input--floating"
             :placeholder="nameLabel.placeholder"
             required
@@ -78,6 +80,8 @@
           <label class="label">{{ valueLabel.label }}</label>
           <input
             autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
             class="w-full input input--floating"
             :placeholder="valueLabel.placeholder"
             required

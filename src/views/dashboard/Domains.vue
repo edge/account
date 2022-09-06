@@ -16,6 +16,8 @@
           <label class="label">Domain Name</label>
           <input
             autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
             class="w-full input input--floating"
             placeholder="Add a domain name"
             @keypress="addOnEnter"
