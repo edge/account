@@ -10,6 +10,7 @@ import { createStore } from 'vuex'
 const store = createStore({
   state: {
     account: null,
+    announcements: [],
     config: null,
     backupCodes: null,
     balance: null,
@@ -26,6 +27,9 @@ const store = createStore({
     },
     setAccount(state, account) {
       state.account = account
+    },
+    setAnnouncements(state, announcements) {
+      state.announcements = announcements
     },
     setBackupCodes(state, codes) {
       state.backupCodes = codes
@@ -55,6 +59,17 @@ const store = createStore({
         statusParams
       )
       commit('setTasks', response.results)
+    },
+    async getAnnouncements({ commit, state }) {
+      const response = await utils.announcements.getAnnouncements(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        state.session._key,
+        {
+          limit: 3,
+          unread: true
+        }
+      )
+      commit('setAnnouncements', response.results)
     },
     removeBackupCodes({ commit }) {
       commit('setBackupCodes', null)

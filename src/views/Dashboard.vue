@@ -4,12 +4,14 @@
     <main class="flex flex-col w-full mainContent">
       <TopNavigation />
       <SuspensionWarning v-if="loaded" />
+      <Announcements v-if="loaded" />
       <router-view v-if="loaded" />
     </main>
   </div>
 </template>
 
 <script>
+import Announcements from '@/components/Announcements'
 import SideNavigation from '@/components/SideNavigation'
 import SuspensionWarning from '@/components/SuspensionWarning'
 import TopNavigation from '@/components/TopNavigation'
@@ -36,6 +38,7 @@ export default {
     }
   },
   components: {
+    Announcements,
     SideNavigation,
     SuspensionWarning,
     TopNavigation
@@ -51,6 +54,7 @@ export default {
   mounted() {
     // get any active tasks and balance on page load
     this.$store.dispatch('getActiveTasks')
+    this.$store.dispatch('getAnnouncements')
     this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
     this.$store.dispatch('updateBalance')
