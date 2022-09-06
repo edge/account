@@ -5,14 +5,12 @@
 import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
-// dismiss (mark as read) array of announcements id
-export const dismissAnnouncement = async (host, sessionId, announcements) => {
+// dismiss (mark as read) array of announcements by id
+export const dismissAnnouncements = async (host, sessionId, announcements) => {
   const url = `${host}/announcements/read`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({
-      announcements
-    })
+    .send({ announcements })
   return response.body
 }
 
@@ -31,5 +29,14 @@ export const getAnnouncements = async (host, sessionId, params) => {
   if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+// undismiss (mark as unread) array of announcemets by id
+export const undismissAnnouncements = async (host, sessionId, announcements) => {
+  const url = `${host}/announcements/read`
+  const response = await superagent.delete(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ announcements })
   return response.body
 }
