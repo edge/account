@@ -1,5 +1,5 @@
 <template>
-  <div v-if="announcements.length" class="px-3 pt-3 md:px-5 md:pt-5 lg:px-8 lg:pt-8 flex flex-col space-y-4 z-50">
+  <div v-if="announcements.length" class="px-3 pt-3 md:px-5 md:pt-5 lg:px-8 lg:pt-8 flex flex-col space-y-4">
     <AnnouncementItem
       v-for="announcement in announcements"
       :key="announcement._key"
