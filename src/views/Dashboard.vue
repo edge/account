@@ -110,6 +110,6 @@ export default {
 }
 
 .mainContent__inner {
-  @apply p-3 md:p-5 lg:p-8 mt-7;
+  @apply px-3 pb-3 md:px-5 md:pb-5 lg:px-8 lg:pb-8 pt-0 mt-7;
 }
 </style>

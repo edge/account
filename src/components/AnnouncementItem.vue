@@ -62,7 +62,8 @@ export default {
   @apply break-words;
 }
 .anc__text h1, .anc__text h2, .anc__text h3, .anc__text h4, .anc__text h5, .anc__text h6 {
-  @apply text-lg mb-1;
+  @apply mb-1;
+  font-size: 0.95rem
 }
 .anc__text p {
   @apply mb-0;
