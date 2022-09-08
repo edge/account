@@ -28,9 +28,11 @@ export default {
   },
   mounted() {
     window.addEventListener('keydown', this.closeOnEscape)
+    document.documentElement.style.overflow = 'hidden'
   },
   unmounted() {
     window.removeEventListener('keydown', this.closeOnEscape)
+    document.documentElement.style.overflow = 'auto'
   }
 }
 </script>
