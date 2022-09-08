@@ -46,13 +46,12 @@ export default {
           text: 'Domains'
         },
         {
-          link: '/storage',
-          text: 'Storage',
-          disabled: true
+          link: '/content-delivery',
+          text: 'Content Delivery'
         },
         {
-          link: '/content-deliver',
-          text: 'Content Delivery',
+          link: '/storage',
+          text: 'Storage',
           disabled: true
         },
         {
