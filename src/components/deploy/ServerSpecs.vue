@@ -10,15 +10,9 @@
             dotSize=20
             width="100%"
             contained=true
-            :min=1
-            :max=16
-            :marks="{
-              '1': '1',
-              '4': '4',
-              '8': '8',
-              '12': '12',
-              '16': '16'
-            }"
+            :min="cpuOptions.min"
+            :max="cpuOptions.max"
+            :marks="cpuOptions.marks"
             adsorb
             tooltip="always"
             :tooltip-formatter="'{value} vCPU'"
@@ -41,15 +35,13 @@
           <vue-slider
             :disabled=isRegionDisabled
             v-model=ramValue
-            :vData=ramOptions
+            :vData="ramOptions.data"
             ref="ramSlider"
             :marks="true"
             dotSize=20
             adsorb
             width="100%"
             contained=true
-            :min=0.5
-            :max=1
             tooltip="always"
             :tooltip-formatter=formatSliderRAM
             tooltipPlacement="top"
@@ -75,9 +67,7 @@
             dotSize=20
             width="100%"
             contained=true
-            :min=10
-            :max=512
-            :vData=diskOptions
+            :vData="diskOptions.data"
             :marks="true"
             adsorb
             tooltip="always"
@@ -113,20 +103,9 @@
             dotSize=20
             width="100%"
             contained=true
-            :min=10
-            :max=100
-            :marks="{
-              '10': '10',
-              '20': '20',
-              '30': '30',
-              '40': '40',
-              '50': '50',
-              '60': '60',
-              '70': '70',
-              '80': '80',
-              '90': '90',
-              '100': '100'
-            }"
+            :min="bandwidthOptions.min"
+            :max="bandwidthOptions.max"
+            :marks="bandwidthOptions.marks"
             adsorb
             tooltip="always"
             :tooltip-formatter="'{value} Mbps'"
@@ -222,6 +201,7 @@
 import 'vue-slider-component/theme/antd.css'
 import * as format from '../../utils/format'
 import VueSlider from 'vue-slider-component'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ServerSpecs',
@@ -242,24 +222,6 @@ export default {
       cpusValue: null,
       ramValue: null,
       diskValue: null,
-      ramOptions: [
-        { value:'0.5', label:'512MiB' },
-        { value:'1', label:'1GiB' },
-        { value:'2', label:'2GiB' },
-        { value:'4', label:'4GiB' },
-        { value:'6', label:'6GiB' },
-        { value:'8', label:'8GiB' },
-        { value:'16', label:'16GiB' }
-      ],
-      diskOptions: [
-        { value:'10', label:'10GiB' },
-        { value:'16', label:'16GiB' },
-        { value:'32', label:'32GiB' },
-        { value:'64', label:'64GiB' },
-        { value:'128', label:'128GiB' },
-        { value:'256', label:'256GiB' },
-        { value:'512', label:'512GiB' }
-      ],
       styles: {
         activeStep: { background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' },
         dots: { background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' },
@@ -270,6 +232,21 @@ export default {
     }
   },
   computed: {
+    ...mapState(['config']),
+    bandwidthOptions() {
+      const min = this.config.server.limit.bandwidth.min
+      const max = this.config.server.limit.bandwidth.max
+      const marks = { }
+      for (let i = min; i <= max; i += 10) marks[i] = i
+      return { min, max, marks }
+    },
+    cpuOptions() {
+      const min = this.config.server.limit.cpu.min
+      const max = this.config.server.limit.cpu.max
+      const marks = { '1': '1' }
+      for (let i = 4; i <= max; i += 4) marks[i] = i
+      return { min, max, marks }
+    },
     currentHourlyCostFormatted() {
       return format.usd(this.currentHourlyCost, 4)
     },
@@ -278,6 +255,16 @@ export default {
     },
     dailyCostFormatted() {
       return format.usd(this.hourlyCost * 24, 2)
+    },
+    diskOptions() {
+      const min = this.config.server.limit.disk.min / 1024
+      const max = this.config.server.limit.disk.max / 1024
+      const data = [{ value: '10', label: '10GiB'}]
+      for (let i = 16; i <= max; i = i * 2) {
+        const label = i < 1 ? `${i}MiB` : `${i}GiB`
+        data.push({ value: i.toString(), label})
+      }
+      return { min, max, data }
     },
     diskValueDecreased() {
       if (this.current) return this.spec.disk < this.current.spec.disk
@@ -289,6 +276,16 @@ export default {
     },
     hourlyCostFormatted() {
       return format.usd(this.hourlyCost, 4)
+    },
+    ramOptions() {
+      const min = this.config.server.limit.ram.min / 1024
+      const max = this.config.server.limit.ram.max / 1024
+      const data = []
+      for (let i = min; i <= max; i = i * 2) {
+        const label = i < 1 ? `${i}MiB` : `${i}GiB`
+        data.push({ value: i.toString(), label})
+      }
+      return { min, max, data }
     },
     spec() {
       return {
