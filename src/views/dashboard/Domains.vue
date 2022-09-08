@@ -30,7 +30,7 @@
         <button
           @click.prevent="addDomain"
           :disabled="!canAddDomain"
-          class="button button--success"
+          class="button button--success button--small"
         >
           <div v-if="addingDomain" class="flex items-center">
             <span>Adding</span>

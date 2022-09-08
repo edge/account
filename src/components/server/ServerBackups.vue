@@ -15,10 +15,10 @@
             @keypress="createOnEnter"
           />
         </div>
-        <div>
+        <div class="sm:flex sm:justify-end">
           <button @click="createBackup"
             :disabled="!canCreate"
-            class="mt-5 lg:mt-0 button button--success w-full sm:max-w-xs"
+            class="mt-5 lg:mt-0 button button--success button--small w-full sm:max-w-xs"
           >
             <div v-if="isCreating" class="flex items-center">
               <span>Creating</span>
