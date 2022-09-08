@@ -74,7 +74,7 @@ const routes = [
         ]
       },
       {
-        path: 'content-delivery',
+        path: 'cdn',
         name: 'ContentDelivery',
         component: ContentDelivery
       },

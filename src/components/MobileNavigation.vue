@@ -46,7 +46,7 @@ export default {
           text: 'Domains'
         },
         {
-          link: '/content-delivery',
+          link: '/cdn',
           text: 'Content Delivery'
         },
         {
