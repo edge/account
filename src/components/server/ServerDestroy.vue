@@ -20,7 +20,7 @@
         <p class="text-gray-500">Upon destruction, you will no longer be billed for this server.</p>
         <div class="flex flex-col space-y-2">
           <button
-            class="button button--error w-full md:max-w-xs"
+            class="button button--error button--small w-full md:max-w-xs"
             :disabled="isLoading || disableActions"
             @click.prevent="toggleConfirmationModal"
           >

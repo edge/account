@@ -43,6 +43,8 @@
         <div class="flex">
           <input
             autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
             class="w-full input input--floating"
             :placeholder="nameLabel.placeholder"
             required
@@ -78,6 +80,8 @@
           <label class="label">{{ valueLabel.label }}</label>
           <input
             autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
             class="w-full input input--floating"
             :placeholder="valueLabel.placeholder"
             required
@@ -107,17 +111,19 @@
       </div>
 
       <!-- submit button -->
-      <button
-        @click.prevent="createRecord"
-        :disabled="!canCreateRecord"
-        class="button button--success col-span-2"
-      >
-        <div v-if="creatingRecord" class="flex items-center">
-          <span>Creating</span>
-          <div><LoadingSpinner class="ml-1 w-4" /></div>
-        </div>
-        <span v-else>Create Record</span>
-      </button>
+      <div class="col-span-2 flex justify-end button__wrapper w-full lg:w-max">
+        <button
+          @click.prevent="createRecord"
+          :disabled="!canCreateRecord"
+          class="button button--success button--small w-full lg:w-max sm:max-w-xs"
+        >
+          <div v-if="creatingRecord" class="flex items-center">
+            <span>Creating</span>
+            <div><LoadingSpinner class="ml-1 w-4" /></div>
+          </div>
+          <span v-else>Create Record</span>
+        </button>
+      </div>
     </div>
     <!-- synced records warning -->
     <div v-if=displaySyncRecordsWarning class="w-full mt-2 bg-gray-300 rounded text-black p-2">
@@ -380,7 +386,7 @@ export default {
 .record-form {
   @apply grid gap-4 w-full;
   grid-template-columns: auto 1fr;
-  @apply lg:flex lg:items-start lg:flex-row;
+  @apply lg:flex lg:items-end lg:flex-row;
 }
 .record-form.mx {
   @apply lg:grid xl:flex;
@@ -436,6 +442,11 @@ input[type=number] {
 .listOption.active, .listOption.selected {
   @apply text-green bg-green bg-opacity-5;
 }
+
+.record-form .button__wrapper {
+  justify-self: end;
+}
+
 
 @media (max-width: 400px) {
   .input-group.hostname, .input-group.value, .mx-wrapper {

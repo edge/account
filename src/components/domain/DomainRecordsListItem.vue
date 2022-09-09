@@ -44,6 +44,8 @@
         <div class="flex">
           <input v-if=isEditing
             autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
             class="w-full input input--floating"
             :placeholder="nameLabel.placeholder"
             required
@@ -90,6 +92,8 @@
         <span class="recordList__header">{{ valueLabel.label }}</span>
         <input v-if=isEditing
           autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
           class="w-full input input--floating"
           :placeholder="valueLabel.placeholder"
           required

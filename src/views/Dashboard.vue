@@ -4,18 +4,21 @@
     <main class="flex flex-col w-full mainContent">
       <TopNavigation />
       <SuspensionWarning v-if="loaded" />
+      <Announcements v-if="loaded" />
       <router-view v-if="loaded" />
     </main>
   </div>
 </template>
 
 <script>
+import Announcements from '@/components/Announcements'
 import SideNavigation from '@/components/SideNavigation'
 import SuspensionWarning from '@/components/SuspensionWarning'
 import TopNavigation from '@/components/TopNavigation'
 import { mapState } from 'vuex'
 
 const STORE_REFRESH_INTERVAL = 5 * 1000
+const CHECK_SESSION_INTERVAL = 15 * 1000
 const HEARTBEAT_INTERVAL = 10 * 60 * 1000
 
 export default {
@@ -26,7 +29,8 @@ export default {
   data() {
     return {
       iAccount: null,
-      iHeartbeat: null
+      iHeartbeat: null,
+      lastHeartbeat: null
     }
   },
   computed: {
@@ -36,6 +40,7 @@ export default {
     }
   },
   components: {
+    Announcements,
     SideNavigation,
     SuspensionWarning,
     TopNavigation
@@ -51,6 +56,7 @@ export default {
   mounted() {
     // get any active tasks and balance on page load
     this.$store.dispatch('getActiveTasks')
+    this.$store.dispatch('getAnnouncements')
     this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
     this.$store.dispatch('updateBalance')
@@ -64,8 +70,18 @@ export default {
 
     // keep session alive
     this.iHeartbeat = setInterval(() => {
-      this.$store.dispatch('sessionHeartbeat')
-    }, HEARTBEAT_INTERVAL)
+      try {
+        if (this.lastHeartbeat > Date.now() - HEARTBEAT_INTERVAL) return
+        this.$store.dispatch('sessionHeartbeat')
+        this.lastHeartbeat = Date.now()
+      }
+      catch (error) {
+        clearInterval(this.iAccount)
+        clearInterval(this.iHeartbeat)
+        this.$store.dispatch('signOut')
+        this.$router.push('/signin')
+      }
+    }, CHECK_SESSION_INTERVAL)
   },
   unmounted() {
     clearInterval(this.iAccount)
@@ -94,6 +110,6 @@ export default {
 }
 
 .mainContent__inner {
-  @apply p-3 md:p-5 lg:p-8 mt-7;
+  @apply px-3 pb-3 md:px-5 md:pb-5 lg:px-8 lg:pb-8 pt-0 mt-7;
 }
 </style>

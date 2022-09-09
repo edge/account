@@ -3,6 +3,7 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 export * as accounts from './accounts'
+export * as announcements from './announcements'
 export * as billing from './billing'
 export * as config from './config'
 export * as dns from './dns'

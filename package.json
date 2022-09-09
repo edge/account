@@ -1,6 +1,6 @@
 {
   "name": "account",
-  "version": "1.8.2",
+  "version": "1.9.1",
   "description": "Edge Account Portal",
   "private": true,
   "license": "GPL",
@@ -45,6 +45,7 @@
     "express": "^4.17.1",
     "flat": "^5.0.2",
     "js-cookie": "^3.0.1",
+    "markdown-it": "^13.0.1",
     "moment": "^2.29.3",
     "morgan": "^1.10.0",
     "path": "^0.12.7",

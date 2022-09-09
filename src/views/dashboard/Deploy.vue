@@ -7,6 +7,7 @@
         <h4>Network region</h4>
         <NetworkRegion
           @region-changed="updateRegion"
+          ref="networkRegion"
         />
       </div>
 
@@ -99,7 +100,7 @@
         <button
           @click.prevent="deploy"
           :disabled="!canDeploy"
-          class="button button--success w-full md:max-w-xs"
+          class="button button--success button--small self-end w-full md:max-w-xs"
         >
           <div v-if=isLoading class="flex">
             <span>Deploying</span>
@@ -351,13 +352,13 @@ export default {
   },
   watch: {
     httpError() {
-      this.updateRegion()
+      this.$refs.networkRegion.updateRegions()
     },
     serverOptions() {
       this.internalServerError = false
     },
     internalServerError() {
-      this.updateRegion()
+      this.$refs.networkRegion.updateRegions()
     }
   }
 }
