@@ -15,7 +15,7 @@
     <div class="box mb-4" v-if="domain && !deleted">
       <!-- eslint-disable-next-line max-len -->
       <div class="float-left"><InformationCircleIcon class="w-5 mr-1"/></div>
-      <span>You need to update your nameservers with your domain registrar in order for these records to work.
+      <span>You will need to update your nameservers with your domain registrar in order for these records to work.
         <!-- <a class="underline hover:text-green cursor-pointer">Learn more</a>. -->
       </span>
     </div>
