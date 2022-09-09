@@ -49,8 +49,8 @@ export default {
         this.dismissed = true
       }
       catch (error) {
-        /** @todo handle error */
-        console.error(error)
+        // treat failure as success. On refresh user will have to re-dismiss
+        this.dismissed = true
       }
     }
   }
