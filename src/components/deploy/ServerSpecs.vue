@@ -330,11 +330,11 @@ export default {
       const max = this.getMaxAvailableInput(spec)
       if (spec === 'cpus') this.cpusValue = max
       if (spec === 'disk') {
-        const values = this.diskOptions.map(option => option.value).reverse()
+        const values = this.diskOptions.data.map(option => option.value).reverse()
         this.diskValue = values.find(value => value <= max)
       }
       if (spec === 'ram') {
-        const values = this.ramOptions.map(option => option.value).reverse()
+        const values = this.ramOptions.data.map(option => option.value).reverse()
         this.ramValue = values.find(value => value <= max)
       }
     }
