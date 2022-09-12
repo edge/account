@@ -100,7 +100,7 @@
         <button
           @click.prevent="deploy"
           :disabled="!canDeploy"
-          class="button button--success button--small self-end w-full md:max-w-xs"
+          class="button button--success self-end w-full md:max-w-xs"
         >
           <div v-if=isLoading class="flex">
             <span>Deploying</span>
