@@ -112,7 +112,7 @@ export default {
     return {
       attemptingAction: false,
       backups: null,
-      comment: '',
+      comment: this.server.settings.name,
       httpError: null,
       iBackups: null,
       isCreating: false,
