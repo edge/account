@@ -4,8 +4,8 @@
       <h4>Create a backup</h4>
       <!-- eslint-disable-next-line max-len -->
       <p class="mt-3 text-gray-500">A backup is a disk image of your server, which can be used for recovery in case of data loss.</p>
-      <div class="flex flex-col w-full mt-5 lg:space-x-4 lg:items-end lg:flex-row">
-        <div class="flex-1 w-full lg:w-auto input-group">
+      <div class="flex flex-col w-full mt-5 sm:space-x-4 sm:items-end sm:flex-row">
+        <div class="flex-1 w-full sm:w-auto input-group">
           <label class="label">Backup name</label>
           <input
             type="text"
@@ -18,7 +18,7 @@
         <div class="sm:flex sm:justify-end">
           <button @click="createBackup"
             :disabled="!canCreate"
-            class="mt-5 lg:mt-0 button button--success button--small w-full sm:max-w-xs"
+            class="mt-5 sm:mt-0 button button--success button--small w-full sm:max-w-xs"
           >
             <div v-if="isCreating" class="flex items-center">
               <span>Creating</span>
@@ -30,14 +30,14 @@
       </div>
       <HttpError :error=httpError class="mt-2" />
     </div>
-    <div class="box">
+    <div class="box backups__table">
       <h4>Existing backups</h4>
       <!-- desktop table view -->
-      <div class="mt-4 overflow-hidden lg:border lg:border-gray-300 lg:rounded-lg">
+      <div class="mt-4 sm:border sm:border-gray-300 sm:rounded-lg">
         <table class="divide-y divide-gray-200">
-          <thead class="hidden lg:table-header-group tableHead">
+          <thead class="hidden sm:table-header-group tableHead">
             <tr>
-              <th scope="col" class="tableHead__cell" width="120">
+              <th scope="col" class="tableHead__cell sm:rounded-tl-lg" width="120">
                 Date
               </th>
               <th scope="col" class="tableHead__cell" width="70">
@@ -49,7 +49,7 @@
               <th scope="col" class="tableHead__cell" width="">
                 Status
               </th>
-              <th scope="col" class="tableHead__cell actions" width="250"></th>
+              <th scope="col" class="tableHead__cell actions sm:rounded-tr-lg" width="50"></th>
             </tr>
           </thead>
           <tbody class="tableBody">
@@ -221,6 +221,10 @@ export default {
 .box {
   @apply rounded-lg bg-white w-full overflow-auto p-4 md:p-6;
 }
+.box.backups__table {
+  text-overflow: unset;
+  overflow: unset;
+}
 .tableHead {
   @apply border-gray-300 border-b rounded-lg w-full bg-gray-50;
 }
@@ -238,9 +242,11 @@ table, tbody {
   @apply block;
 }
 
-@screen lg {
+@screen sm {
   table {
     @apply table;
+    border-collapse: separate;
+    border-spacing: 0;
   }
 
   tbody {
