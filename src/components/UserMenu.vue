@@ -89,7 +89,7 @@ export default {
           this.session._key
         )
         this.$store.dispatch('signOut')
-        this.$router.push('/signin')
+        this.$router.push('/sign-in')
       }
       catch (error) {
         console.error(error)
