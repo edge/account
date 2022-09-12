@@ -14,7 +14,7 @@
       <button
         @click="toggleConfirmationModal"
         :disabled=!canSubmitResize
-        class="button button--success button--small md:self-end w-full md:max-w-xs"
+        class="button button--success md:self-end w-full md:max-w-xs"
       >
         <span v-if="isLoading">Resizing</span>
         <span v-else>Resize</span>
