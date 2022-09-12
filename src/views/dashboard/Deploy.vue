@@ -247,6 +247,8 @@ export default {
   methods: {
     async deploy() {
       this.isLoading = true
+      this.httpError = null
+      this.internalServerError = false
       try {
         const response = await utils.servers.createServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -353,9 +355,6 @@ export default {
   watch: {
     httpError() {
       this.$refs.networkRegion.updateRegions()
-    },
-    serverOptions() {
-      this.internalServerError = false
     },
     internalServerError() {
       this.$refs.networkRegion.updateRegions()
