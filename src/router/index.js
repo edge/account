@@ -117,7 +117,7 @@ const routes = [
     ]
   },
   {
-    path: '/signin',
+    path: '/sign-in',
     name: 'Landing',
     component: Landing,
     meta: { guest: true },
@@ -171,7 +171,7 @@ router.beforeEach(async (to, from, next) => {
       next()
       return
     }
-    next('/signin')
+    next('/sign-in')
   }
   else {
     next()

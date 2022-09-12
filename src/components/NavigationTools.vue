@@ -36,7 +36,7 @@ import { mapState } from 'vuex'
 import {
   CashIcon,
   LogoutIcon,
-  SupportIcon,
+  // SupportIcon,
   UserIcon
 } from '@heroicons/vue/outline'
 
@@ -46,7 +46,7 @@ export default {
   components: {
     CashIcon,
     LogoutIcon,
-    SupportIcon,
+    // SupportIcon,
     UserIcon
   },
   computed: {
@@ -60,7 +60,7 @@ export default {
           this.session._key
         )
         this.$store.dispatch('signOut')
-        this.$router.push('/signin')
+        this.$router.push('/sign-in')
       }
       catch (error) {
         console.error(error)

@@ -79,7 +79,7 @@ export default {
         clearInterval(this.iAccount)
         clearInterval(this.iHeartbeat)
         this.$store.dispatch('signOut')
-        this.$router.push('/signin')
+        this.$router.push('/sign-in')
       }
     }, CHECK_SESSION_INTERVAL)
   },
