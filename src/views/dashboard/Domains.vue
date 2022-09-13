@@ -146,7 +146,7 @@ export default {
         const { zone } = await utils.dns.addZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.newDomainName
+          this.newDomainName.toLowerCase()
         )
         domain = zone
         this.newDomainName = null
