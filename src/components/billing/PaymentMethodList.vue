@@ -44,7 +44,7 @@ export default {
       this.updatePaymentMethods()
     },
     async updatePaymentMethods() {
-      const paymentMethods = await utils.billing.getPaymentMethods(
+      const { results, metadata } = await utils.billing.getPaymentMethods(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {
@@ -52,9 +52,9 @@ export default {
           page: this.currentPage
         }
       )
-      this.paymentMethods = paymentMethods.results
-      this.metadata = paymentMethods.metadata
-      this.$emit('updatePaymentMethods', paymentMethods.results)
+      this.paymentMethods = results
+      this.metadata = metadata
+      this.$emit('updatePaymentMethods', results)
     }
   },
   mounted() {

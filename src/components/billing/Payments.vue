@@ -160,9 +160,11 @@ export default {
     },
     async startAddPaymentMethod() {
       if (this.showAddNewCard) return
-      const intent = await utils.billing.createStripeSetupIntent(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
-
-      this.stripeElements = this.stripe.elements({ clientSecret: intent.client_secret })
+      const { setup } = await utils.billing.createStripeSetupIntent(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      this.stripeElements = this.stripe.elements({ clientSecret: setup.client_secret })
       this.paymentElement = this.stripeElements.create('payment')
       this.paymentElement.mount(this.$refs.paymentElement)
       this.showAddNewCard = true
@@ -182,7 +184,7 @@ export default {
         }
       }
 
-      const purchase = await utils.purchases.createPurchase(
+      const { purchase } = await utils.purchases.createPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         data

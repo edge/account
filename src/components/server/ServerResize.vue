@@ -14,7 +14,7 @@
       <button
         @click="toggleConfirmationModal"
         :disabled=!canSubmitResize
-        class="button button--success button--small md:self-end w-full md:max-w-xs"
+        class="button button--success md:self-end w-full md:max-w-xs"
       >
         <span v-if="isLoading">Resizing</span>
         <span v-else>Resize</span>
@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     async getLastResize() {
-      const tasks = await utils.servers.getTasks(
+      const { tasks } = await utils.servers.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.server._key,
@@ -143,13 +143,13 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        const response = await utils.servers.resizeServer(
+        const { tasks } = await utils.servers.resizeServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.server._key,
           this.newSpec
         )
-        response.tasks.forEach(task => {
+        tasks.forEach(task => {
           this.$store.commit('addTask', task)
         })
         this.isLoading = false

@@ -16,7 +16,7 @@
       <span class="backup-comment">{{ backup.comment }}</span>
     </td>
     <td class="tableBody__cell status" :title="backup.status">
-      <span class="mr-2 lg:hidden">Status:</span>
+      <span class="mr-2 sm:hidden">Status:</span>
       <span
         class="flex items-center capitalize text-gray-500"
         :class="isInactive ? 'text-red' : ''"
@@ -26,36 +26,26 @@
       </span>
     </td>
     <td class="tableBody__cell actions">
-      <div class="flex items-center w-full space-x-2 action_buttons">
-        <button
-          :disabled="disableActions || balanceSuspend"
-          class="tableButton restore"
-          @click.prevent="toggleRestoreConfirmationModal"
-        >
-          <div class="flex items-center">
-            <div>
-              <LoadingSpinner v-if=isRestoring class="tableButton__icon" />
-              <RefreshIcon v-else class="tableButton__icon" />
-            </div>
-            <span class="leading-none">Restore</span>
-          </div>
-        </button>
-        <button
-          :disabled="disableActions"
-          class="tableButton button-error delete"
-          @click.prevent="toggleDestroyConfirmationModal"
-        >
-          <div class="flex items-center">
-            <div>
-              <LoadingSpinner v-if=isDeleting class="tableButton__icon" />
-              <TrashIcon v-else class="tableButton__icon" />
-            </div>
-            <span class="leading-none">Delete</span>
-          </div>
-        </button>
-        <Tooltip v-if="httpError" :text="httpError" theme="error" position="left">
-          <ExclamationIcon class="w-5 mt-1 text-red" />
-        </Tooltip>
+      <div class="w-full flex flex-col sm:flex-row sm:items-center">
+        <div class="w-full sm:w-max relative">
+          <BackupMenu
+            @delete-backup=toggleDestroyConfirmationModal
+            @restore-backup=toggleRestoreConfirmationModal
+            :isDeleting=isDeleting
+            :isRestoring=isRestoring
+            :disableActions=disableActions
+            :balanceSuspend=balanceSuspend
+          />
+        </div>
+        <div class="hidden sm:block">
+          <Tooltip v-if="httpError" :text="httpError" theme="error" position="left">
+            <ExclamationIcon class="w-5 mt-1 text-red" />
+          </Tooltip>
+        </div>
+        <div v-if="httpError" class="sm:hidden flex items-center text-red mt-1">
+          <ExclamationIcon class="w-5" />
+          <span>{{ httpError }}</span>
+        </div>
       </div>
     </td>
   </tr>
@@ -80,6 +70,7 @@
 
 import * as format from '../../utils/format'
 import * as utils from '../../account-utils'
+import BackupMenu from '@/components/server/BackupMenu'
 import DestroyBackupConfirmation from '@/components/confirmations/DestroyBackupConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import RestoreBackupConfirmation from '@/components/confirmations/RestoreBackupConfirmation'
@@ -87,24 +78,21 @@ import Tooltip from '@/components/Tooltip'
 import {
   CalendarIcon,
   ClockIcon,
-  ExclamationIcon,
-  RefreshIcon,
-  TrashIcon
+  ExclamationIcon
 } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'ServerBackupItem',
   components: {
+    BackupMenu,
     CalendarIcon,
     ClockIcon,
     DestroyBackupConfirmation,
     ExclamationIcon,
     LoadingSpinner,
-    RefreshIcon,
     RestoreBackupConfirmation,
-    Tooltip,
-    TrashIcon
+    Tooltip
   },
   props: [
     'activeTasks',
@@ -117,7 +105,7 @@ export default {
     return {
       attemptingDestroy: false,
       attemptingRestore: false,
-      httpError: null,
+      httpError: '',
       showDestroyConfirmationModal: false,
       showRestoreConfirmationModal: false
     }
@@ -165,14 +153,14 @@ export default {
       this.attemptingDestroy = true
       this.toggleDestroyConfirmationModal()
       try {
-        const response = await utils.servers.deleteBackup(
+        const { task } = await utils.servers.deleteBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
           this.backupId
         )
         this.$emit('update-backups')
-        this.$store.commit('addTask', response.task)
+        this.$store.commit('addTask', task)
         this.attemptingDestroy = false
       }
       catch (error) {
@@ -187,14 +175,14 @@ export default {
       this.attemptingRestore = true
       this.toggleRestoreConfirmationModal()
       try {
-        const response = await utils.servers.restoreBackup(
+        const { task } = await utils.servers.restoreBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
           this.backupId
         )
         this.$emit('update-backups')
-        this.$store.commit('addTask', response.task)
+        this.$store.commit('addTask', task)
         this.attemptingRestore = false
       }
       catch (error) {
@@ -227,7 +215,8 @@ export default {
 <style scoped>
 tr {
   @apply grid grid-rows-4 py-2 gap-x-5 gap-y-1;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
 }
 
 .tableBody__cell {
@@ -237,20 +226,20 @@ tr {
   @apply row-start-1 col-span-3;
 }
 .tableBody__cell.status {
-  @apply row-start-2 col-span-3 sm:col-start-3 sm:col-span-1;
+  @apply justify-self-end;
 }
 .tableBody__cell.date {
-  @apply sm:row-start-2;
+  @apply col-start-1;
 }
 .tableBody__cell.time {
-  @apply sm:row-start-2 col-start-2;
+  @apply col-start-2;
 }
 .tableBody__cell.actions {
-  @apply col-span-3 lg:px-0;
+  @apply col-span-3 sm:px-0;
 }
 
 .table__icon {
-  @apply w-3.5 h-3.5 text-gray-500 mr-1 lg:hidden
+  @apply w-3.5 h-3.5 text-gray-500 mr-1 sm:hidden
 }
 
 .backup-comment {
@@ -258,30 +247,27 @@ tr {
 }
 
 .tableButton {
-  @apply button button--extraSmall w-1/2 lg:w-24;
+  @apply button button--extraSmall w-1/2 sm:w-24;
 }
-
 .tableButton.restore {
   @apply button--success
 }
-
 .tableButton.delete {
  @apply button--error
 }
-
 .tableButton__icon {
   @apply w-3.5 h-3.5 mr-1;
 }
 
 @screen sm {
   tr {
-  @apply grid-rows-3;
-}
-}
-
-@screen lg {
-  tr {
     @apply table-row py-0;
+  }
+  td:first-child {
+    @apply rounded-bl-lg;
+  }
+  td:last-child {
+    @apply rounded-br-lg;
   }
 
   .tableBody__cell {
@@ -292,12 +278,23 @@ tr {
     @apply text-sm text-gray-500;
   }
 
-  .action_buttons {
-    @apply space-x-2
-  }
-
   .tableButton__icon {
     @apply w-4 h-4 mr-1;
+  }
+}
+
+@media (max-width: 550px) {
+  tr {
+    grid-template-rows: repeat(3, 1fr) auto;
+  }
+  .tableBody__cell.status {
+    @apply row-start-3 col-span-3 justify-self-start;
+  }
+  .tableBody__cell.date {
+    @apply col-start-1;
+  }
+  .tableBody__cell.time {
+    @apply col-start-2;
   }
 }
 
@@ -305,14 +302,13 @@ tr {
   tr {
     @apply gap-y-3;
     grid-template-rows: repeat(4, 1fr) auto;
+    grid-template-columns: 1fr;
   }
-
+  .tableBody__cell.status {
+    @apply row-start-4;
+  }
   .tableBody__cell.time {
-    @apply row-start-4 col-start-1;
-  }
-
-  .action_buttons {
-    @apply flex-col space-x-0 space-y-2 items-start;
+    @apply row-start-3 col-start-1;
   }
   .tableButton {
     @apply w-full;

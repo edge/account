@@ -79,7 +79,7 @@ export default {
         clearInterval(this.iAccount)
         clearInterval(this.iHeartbeat)
         this.$store.dispatch('signOut')
-        this.$router.push('/signin')
+        this.$router.push('/sign-in')
       }
     }, CHECK_SESSION_INTERVAL)
   },
@@ -92,7 +92,7 @@ export default {
       this.tasks.forEach(task => {
         // remove any tasks that compelte from the store
         if (['complete', 'gone'].includes(task.status)) this.removeTask(task)
-        // TODO - handle failed tasks
+        /**  @todo - handle failed tasks */
         if (task.status === 'failed') console.error(`failed task: ${task._key}`)
       })
     }

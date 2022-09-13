@@ -75,14 +75,14 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRegions() {
-      const regions = await utils.region.getRegions(
+      const { results } = await utils.region.getRegions(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
-      this.regions = regions.results
+      this.regions = results
     },
     async updateServers() {
-      const servers = await utils.servers.getServers(
+      const { results, metadata } = await utils.servers.getServers(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {
@@ -90,8 +90,8 @@ export default {
           page: this.currentPage
         }
       )
-      this.servers = servers.results
-      this.metadata = servers.metadata
+      this.servers = results
+      this.metadata = metadata
       this.loaded = true
     }
   },

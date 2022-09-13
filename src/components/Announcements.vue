@@ -9,9 +9,6 @@
 </template>
 
 <script>
-/* global process */
-
-import * as utils from '@/account-utils'
 import AnnouncementItem from '@/components/AnnouncementItem.vue'
 import { mapState } from 'vuex'
 
@@ -21,23 +18,7 @@ export default {
     AnnouncementItem
   },
   computed: {
-    ...mapState(['announcements', 'session'])
-  },
-  methods: {
-    async dismissAnnouncement(id) {
-      try {
-        const res = await utils.announcements.dismissAnnouncements(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          [id]
-        )
-        if (res.ok) this.animateDismissal()
-      }
-      catch (error) {
-        /** @todo handle error */
-        console.error(error)
-      }
-    }
+    ...mapState(['announcements'])
   }
 }
 </script>

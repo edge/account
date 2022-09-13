@@ -63,7 +63,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateDomains() {
-      const domains = await utils.dns.getZones(
+      const { results, metadata } = await utils.dns.getZones(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {
@@ -71,8 +71,8 @@ export default {
           page: this.currentPage
         }
       )
-      this.domains = domains.results
-      this.metadata = domains.metadata
+      this.domains = results
+      this.metadata = metadata
       this.loaded = true
     }
   },

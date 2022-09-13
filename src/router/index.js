@@ -105,7 +105,7 @@ const routes = [
     ]
   },
   {
-    path: '/signin',
+    path: '/sign-in',
     name: 'Landing',
     component: Landing,
     meta: { guest: true },
@@ -139,9 +139,9 @@ const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 const confirmSessionKey = async () => {
   const sessionKey = localStorage.getItem('session')
   try {
-    const session = await utils.sessions.getSession(ACCOUNT_API_URL, sessionKey)
+    const { session } = await utils.sessions.getSession(ACCOUNT_API_URL, sessionKey)
     if (session._key) {
-      const account = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
+      const { account } = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
       await store.commit('setAccount', account)
       await store.commit('setSession', session)
       await store.commit('setIsAuthed', true)
@@ -159,7 +159,7 @@ router.beforeEach(async (to, from, next) => {
       next()
       return
     }
-    next('/signin')
+    next('/sign-in')
   }
   else {
     next()

@@ -159,11 +159,12 @@ export default {
     },
     async updateDomain() {
       try {
-        this.domain = await utils.dns.getZone(
+        const { zone } = await utils.dns.getZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.domainName
         )
+        this.domain = zone
       }
       catch (error) {
         this.notFound = true
