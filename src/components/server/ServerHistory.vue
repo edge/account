@@ -80,7 +80,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateTasks() {
-      const tasks = await utils.servers.getTasks(
+      const { results, metadata } = await utils.servers.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId,
@@ -89,8 +89,8 @@ export default {
           page: this.currentPage
         }
       )
-      this.tasks = tasks.results
-      this.metadata = tasks.metadata
+      this.tasks = results
+      this.metadata = metadata
     }
   },
   mounted() {

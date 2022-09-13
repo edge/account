@@ -232,12 +232,12 @@ export default {
       this.isLoading = true
 
       try {
-        const session = await utils.sessions.createSession(
+        const { session } = await utils.sessions.createSession(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.signInBody
         )
         if (session._key) {
-          const account = await utils.accounts.getAccount(
+          const { account } = await utils.accounts.getAccount(
             process.env.VUE_APP_ACCOUNT_API_URL,
             session._key
           )

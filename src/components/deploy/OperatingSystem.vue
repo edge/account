@@ -86,12 +86,12 @@ export default {
     },
     async updateOS() {
       try {
-        const os = await utils.os.getOS(
+        const { results } = await utils.os.getOS(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
-        this.osVersionList = os.results
-        this.osList = os.results.reduce((o, d) => {
+        this.osVersionList = results
+        this.osList = results.reduce((o, d) => {
           if (!d.active) return
           if (!o[d.group]) {
             o[d.group] = []
@@ -102,7 +102,7 @@ export default {
           o[d.group].unshift(d)
           return o
         }, {})
-        this.selectedOS = os.results[0].group
+        this.selectedOS = results[0].group
       }
       catch (error) {
         console.error(error)

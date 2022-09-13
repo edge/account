@@ -154,14 +154,14 @@ export default {
       this.isCreating = true
       try {
         this.httpError = null
-        const response = await utils.servers.createBackup(
+        const { task } = await utils.servers.createBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
           this.comment
         )
         this.$emit('update-backups')
-        this.$store.commit('addTask', response.task)
+        this.$store.commit('addTask', task)
         this.comment = ''
         this.isCreating = false
       }
@@ -182,7 +182,7 @@ export default {
       this.attemptingAction = newState
     },
     async updateBackups() {
-      const response = await utils.servers.getBackups(
+      const { results, metadata } = await utils.servers.getBackups(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId,
@@ -191,8 +191,8 @@ export default {
           page: this.currentPage
         }
       )
-      this.backups = response.results
-      this.metadata = response.metadata
+      this.backups = results
+      this.metadata = metadata
       this.loadedBackups = true
     }
   },

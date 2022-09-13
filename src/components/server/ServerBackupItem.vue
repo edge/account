@@ -153,14 +153,14 @@ export default {
       this.attemptingDestroy = true
       this.toggleDestroyConfirmationModal()
       try {
-        const response = await utils.servers.deleteBackup(
+        const { task } = await utils.servers.deleteBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
           this.backupId
         )
         this.$emit('update-backups')
-        this.$store.commit('addTask', response.task)
+        this.$store.commit('addTask', task)
         this.attemptingDestroy = false
       }
       catch (error) {
@@ -175,14 +175,14 @@ export default {
       this.attemptingRestore = true
       this.toggleRestoreConfirmationModal()
       try {
-        const response = await utils.servers.restoreBackup(
+        const { task } = await utils.servers.restoreBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
           this.backupId
         )
         this.$emit('update-backups')
-        this.$store.commit('addTask', response.task)
+        this.$store.commit('addTask', task)
         this.attemptingRestore = false
       }
       catch (error) {
