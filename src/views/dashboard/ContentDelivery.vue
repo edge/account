@@ -5,7 +5,7 @@
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
         <span>No content delivery deployments yet</span>
         <router-link
-          :to="{ name: 'ContentDeliveryDeploy' }"
+          :to="{ name: 'CdnDeploy' }"
           class="button button--success button--small"
         >
           Deploy CDN
