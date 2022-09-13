@@ -86,7 +86,7 @@
       <span>Store your codes in a safe place. <strong>They will no longer be visible after you close the page or confirm you have stored them</strong>.</span>
       <div class="backupCodes__grid text-center grid grid-cols-2 sm:grid-cols-5 gap-y-2 gap-x-2 py-4">
         <span v-for="code in backupCodes" :key="code"
-          class="code monospace text-lg rounded bg-gray-300 p-1"
+          class="monospace text-lg rounded bg-gray-300 p-1"
         >{{ code }}</span>
       </div>
       <button @click="confirmStoredCodes" class="button button--success mt-4">
@@ -161,7 +161,7 @@ export default {
 
       this.isLoading = true
       try {
-        const response = await utils.accounts.enable2FA(
+        const { account } = await utils.accounts.enable2FA(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
@@ -169,7 +169,7 @@ export default {
             secret: this.secret.base32
           }
         )
-        this.$store.commit('setBackupCodes', response.account.totp.backupCodes)
+        this.$store.commit('setBackupCodes', account.totp.backupCodes)
         await this.updateAccount()
         this.isLoading = false
       }

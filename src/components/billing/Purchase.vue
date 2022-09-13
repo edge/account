@@ -259,11 +259,12 @@ export default {
       }
     },
     async cancelPurchase() {
-      this.purchase = await utils.purchases.cancelPurchase(
+      const { purchase } = await utils.purchases.cancelPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.purchaseId
       )
+      this.purchase = purchase
       this.$router.push({ name: 'Payments' })
     },
     async confirmPurchase() {
@@ -295,23 +296,24 @@ export default {
       }
     },
     async getPaymentMethods() {
-      const paymentMethods = await utils.billing.getPaymentMethods(
+      const { results } = await utils.billing.getPaymentMethods(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
-      this.paymentMethods = paymentMethods.results
-      this.paymentCard = paymentMethods.results[0]
+      this.paymentMethods = results
+      this.paymentCard = results[0]
     },
     isPurchaseUnpaid(purchase) {
       return purchase.status === 'unpaid'
     },
     async getPurchase() {
       try {
-        this.purchase = await utils.purchases.getPurchase(
+        const { purchase } = await utils.purchases.getPurchase(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.purchaseId
         )
+        this.purchase = purchase
         setTimeout(async () => {
           if (this.isPurchaseUnpaid(this.purchase)) {
             await this.getPaymentMethods()
@@ -335,11 +337,12 @@ export default {
     },
     async refreshPurchase() {
       try {
-        this.purchase = await utils.purchases.refreshPurchase(
+        const { purchase } = await utils.purchases.refreshPurchase(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.purchaseId
         )
+        this.purchase = purchase
       }
       catch (error) {
         this.error = error

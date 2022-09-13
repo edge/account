@@ -102,13 +102,13 @@ export default {
       return this.isRegionAtCapacity(region) || !region.active
     },
     async updateRegions() {
-      const regions = await utils.region.getRegions(
+      const { results } = await utils.region.getRegions(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
-      this.regions = regions.results.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
+      this.regions = results.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
       // pre-select first active region
-      this.selected = regions.results.find(region => region.active)
+      this.selected = results.find(region => region.active)
     }
   },
   mounted() {

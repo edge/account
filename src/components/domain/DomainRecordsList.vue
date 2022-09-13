@@ -61,7 +61,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRecords() {
-      const records = await utils.dns.getRecords(
+      const { results, metadata } = await utils.dns.getRecords(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.domain._key,
@@ -70,8 +70,8 @@ export default {
           page: this.currentPage
         }
       )
-      this.records = records.results
-      this.metadata = records.metadata
+      this.records = results
+      this.metadata = metadata
       this.loaded = true
     }
   },

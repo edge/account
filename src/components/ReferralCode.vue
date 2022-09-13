@@ -60,11 +60,11 @@ export default {
       }, 1000)
     },
     async updateReferralCount() {
-      const response = await utils.accounts.getReferrals(
+      const { metadata } = await utils.accounts.getReferrals(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
-      this.referralCount = response.metadata.totalCount
+      this.referralCount = metadata.totalCount
     }
   },
   mounted() {
@@ -79,7 +79,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .referralCode h4 {
   @apply w-full mb-4 font-medium;
 }

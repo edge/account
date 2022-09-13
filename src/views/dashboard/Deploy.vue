@@ -250,15 +250,15 @@ export default {
       this.httpError = null
       this.internalServerError = false
       try {
-        const response = await utils.servers.createServer(
+        const { server, task } = await utils.servers.createServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.account._key,
           this.serverOptions
         )
         // add task to store and redirect to server page
-        this.$store.commit('addTask', response.task)
-        this.$router.push({ name: 'Server', params: { id: response.server._key }})
+        this.$store.commit('addTask', task)
+        this.$router.push({ name: 'Server', params: { id: server._key }})
         this.isLoading = false
       }
       catch (error) {
@@ -279,12 +279,12 @@ export default {
       return this.selectedRegion.capacity[spec] - (this.selectedRegion.usage && this.selectedRegion.usage[spec] || 0)
     },
     async getHostname() {
-      const response = await utils.servers.getHostname(
+      const { hostname } = await utils.servers.getHostname(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
-      this.hostname = response.hostname
-      this.updateServerName(response.hostname)
+      this.hostname = hostname
+      this.updateServerName(hostname)
     },
     // toggleBackups () {
     //   this.selectServerProperty({ property: 'enableBackups', value: !this.$store.state.enableBackups })

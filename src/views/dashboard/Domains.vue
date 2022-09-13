@@ -143,11 +143,12 @@ export default {
       let domain
       try {
         this.addingDomain = true
-        domain = await utils.dns.addZone(
+        const { zone } = await utils.dns.addZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.newDomainName
         )
+        domain = zone
         this.newDomainName = null
         await this.v$.$reset()
         this.$refs.domainsList.updateDomains()

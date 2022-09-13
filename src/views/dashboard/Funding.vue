@@ -121,11 +121,12 @@ export default {
         }
       }
 
-      this.purchase = await utils.purchases.createPurchase(
+      const { purchase } = await utils.purchases.createPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         data
       )
+      this.purchase = purchase
 
       this.stripeElements = this.stripe.elements({ clientSecret: this.purchase.intent.client_secret })
       this.paymentElement = this.stripeElements.create('payment')

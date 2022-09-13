@@ -377,7 +377,7 @@ export default {
     },
     async updateRegion() {
       try {
-        const region = await utils.region.getRegion(
+        const { region } = await utils.region.getRegion(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.server.region
@@ -390,7 +390,7 @@ export default {
     },
     async updateServer() {
       try {
-        const server = await utils.servers.getServer(
+        const { server } = await utils.servers.getServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId

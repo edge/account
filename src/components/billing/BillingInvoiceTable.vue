@@ -82,7 +82,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateInvoices() {
-      const invoices = await utils.billing.getInvoices(
+      const { results, metadata } = await utils.billing.getInvoices(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {
@@ -90,8 +90,8 @@ export default {
           page: this.currentPage
         }
       )
-      this.invoices = invoices.results
-      this.metadata = invoices.metadata
+      this.invoices = results
+      this.metadata = metadata
     }
   },
   mounted() {
