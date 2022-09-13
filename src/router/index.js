@@ -8,7 +8,7 @@ import * as utils from '../account-utils/index'
 import Account from '@/views/dashboard/Account'
 import Billing from '@/views/dashboard/Billing'
 import ContentDelivery from '@/views/dashboard/ContentDelivery'
-import ContentDeliveryDeploy  from '@/components/cdn/ContentDeliveryDeploy'
+import CdnDeploy  from '@/components/cdn/CdnDeploy'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
 import Deploy from '@/views/dashboard/Deploy'
@@ -81,8 +81,8 @@ const routes = [
       },
       {
         path: 'cdn/deploy',
-        name: 'ContentDeliveryDeploy',
-        component: ContentDeliveryDeploy
+        name: 'CdnDeploy',
+        component: CdnDeploy
       },
       {
         path: 'domain/:key',
