@@ -259,10 +259,10 @@ export default {
           this.session._key,
           this.domainName,
           {
-            name: this.hostname,
+            name: this.hostname.toLowerCase(),
             ttl: this.ttl,
             type: this.type,
-            value
+            value: value.toLowerCase()
           }
         )
         this.$emit('createRecord')

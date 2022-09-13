@@ -289,10 +289,10 @@ export default {
       return this.record.zone
     },
     hasEdited() {
-      return this.hostname !== this.record.name ||
+      return this.hostname.toLowerCase() !== this.record.name ||
         this.ttl !== this.record.ttl ||
         this.type !== this.record.type ||
-        this.value !== this.record.value
+        this.value.toLowerCase() !== this.record.value
     },
     isMx() {
       return (!this.isEditing && this.record.type === 'MX') || this.type === 'MX'
@@ -354,7 +354,10 @@ export default {
     },
     async confirmEditRecord() {
       this.httpError = null
-      if(!this.hasEdited) this.cancelEditing()
+      if(!this.hasEdited) {
+        this.cancelEditing()
+        return
+      }
       // add priority to MX values
       let value = this.type === 'MX' ? `${this.priority} ${this.value}` : this.value
       // append . to MX, CNAME and ALIAS values if not done by user
@@ -368,10 +371,10 @@ export default {
           this.record.zone,
           this.record._key,
           {
-            name: this.hostname,
+            name: this.hostname.toLowerCase(),
             ttl: this.ttl,
             type: this.type,
-            value
+            value: value.toLowerCase()
           }
         )
         this.$emit('updateRecords')
