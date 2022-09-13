@@ -1,6 +1,17 @@
 <template>
   <div class="mainContent__inner">
     <h1>Edge CDN</h1>
+    <div class="box">
+      <div class="flex flex-col space-y-4 items-center justify-center py-4">
+        <span>No content delivery deployments yet</span>
+        <router-link
+          :to="{ name: 'ContentDeliveryDeploy' }"
+          class="button button--success button--small"
+        >
+          Deploy CDN
+        </router-link>
+      </div>
+    </div>
   </div>
 </template>
 

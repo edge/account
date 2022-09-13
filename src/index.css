@@ -13,6 +13,12 @@ html {
  font-family: 'Roboto Mono', monospace;
 }
 
+.box {
+  @apply w-full p-6 bg-white rounded-lg;
+}
+.box h4 {
+  @apply w-full mb-4 font-medium;
+}
 
 /*
   FORM STYLES
