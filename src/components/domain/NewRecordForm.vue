@@ -115,7 +115,7 @@
         <button
           @click.prevent="createRecord"
           :disabled="!canCreateRecord"
-          class="button button--success button--small w-full lg:w-max sm:max-w-xs"
+          class="button button--success button--small w-full lg:w-max sm:max-w-xs lg:mt-2.5"
         >
           <div v-if="creatingRecord" class="flex items-center">
             <span>Creating</span>
@@ -386,7 +386,7 @@ export default {
 .record-form {
   @apply grid gap-4 w-full;
   grid-template-columns: auto 1fr;
-  @apply lg:flex lg:items-end lg:flex-row;
+  @apply lg:flex lg:items-start lg:flex-row;
 }
 .record-form.mx {
   @apply lg:grid xl:flex;
