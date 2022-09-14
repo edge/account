@@ -2,16 +2,13 @@
   <div class="box">
     <h4>Configuration</h4>
     <div>
-      <RadioGroup v-model="mode">
+      <RadioGroup v-model="configMode">
         <!-- default config -->
         <RadioGroupOption v-slot="{ checked }" value="default" class="cursor-pointer">
           <div class="flex items-center space-x-2">
             <div class="checkmark"
-              :class="[
-                active ? 'active' : '',
-                checked ? 'checked' : ''
-              ]"
-            ><CheckIcon class="checkmark__icon" /></div>
+              :class="checked ? 'checked' : ''"
+            ></div>
             <span class="text-lg">Default settings</span>
           </div>
           <div class="flex flex-col space-y-1 text-gray-500 pl-7">
@@ -23,16 +20,18 @@
         <RadioGroupOption v-slot="{ checked }" value="custom" class="cursor-pointer mt-2">
           <div class="flex items-center space-x-2">
             <div class="checkmark"
-              :class="[
-                active ? 'active' : '',
-                checked ? 'checked' : ''
-              ]"
-            ><CheckIcon class="checkmark__icon" /></div>
+              :class="checked ? 'checked' : ''"
+            ></div>
             <span class="text-lg">Custom configuration</span>
           </div>
         </RadioGroupOption>
-        <CdnConfigCustom v-if="mode === 'custom'" />
       </RadioGroup>
+      <CdnConfigCustom
+        v-if="configMode === 'custom'"
+        :config=config
+        @add-path=onAddPath
+        @update-config=onUpdateConfig
+      />
     </div>
   </div>
 </template>
@@ -53,7 +52,36 @@ export default {
   },
   data() {
     return {
-      mode: 'default'
+      config: {
+        origin: 'aneur.in',
+        cache: {
+          enabled: true,
+          ttl: 86400,
+          paths: {
+            '/demo': {
+              ttl: 604800
+            }
+          }
+        }
+      },
+      configMode: 'default'
+    }
+  },
+  methods: {
+    onAddPath(path) {
+      this.config = {
+        ...this.config,
+        cache: {
+          ...this.config.cache,
+          paths: {
+            ...this.config.cache.paths,
+            ...path
+          }
+        }
+      }
+    },
+    onUpdateConfig(config) {
+      this.config = { ...this.config, ...config }
     }
   }
 }
@@ -69,9 +97,6 @@ export default {
 }
 .checkmark.checked {
   @apply border-green bg-green;
-}
-.checkmark .checkmark__icon {
-  @apply opacity-0 w-3 h-3;
 }
 .checkmark.active .checkmark__icon {
   @apply opacity-40;

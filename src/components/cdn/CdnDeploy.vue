@@ -1,7 +1,7 @@
 <template>
-  <div class="mainContent__inner">
+  <div class="mainContent__inner mb-16">
     <h1>Edge CDN</h1>
-    <div class="space-y-4">
+    <div class="flex flex-col space-y-4">
       <!-- details -->
       <div class="box">
         <h4>Details</h4>
@@ -9,10 +9,10 @@
           <div class="input-group">
             <label class="label">Name</label>
             <input
-              v-model="name"
+              v-model="deployName"
               class="input input--floating"
-              :disabled="isDisabledTBD"
-              :class="isDisabledTBD ? 'disabled' : ''"
+              :disabled="false"
+              :class="false ? 'disabled' : ''"
               placeholder="Enter a deploy name"
               type="text"
               required
@@ -23,8 +23,8 @@
             <input
               v-model="originUrl"
               class="input input--floating"
-              :disabled="isDisabledTBD"
-              :class="isDisabledTBD ? 'disabled' : ''"
+              :disabled="false"
+              :class="false ? 'disabled' : ''"
               placeholder="e.g. https://yoursite.com/photos"
               type="text"
               required
@@ -40,10 +40,10 @@
           <div class="flex-1 input-group">
             <label class="label">Add Domain</label>
             <input
-              v-model="name"
+              v-model="domainName"
               class="input input--floating"
-              :disabled="isDisabledTBD"
-              :class="isDisabledTBD ? 'disabled' : ''"
+              :disabled="false"
+              :class="false ? 'disabled' : ''"
               placeholder="e.g. cdn.yoursite.com"
               type="text"
               required
@@ -52,10 +52,10 @@
           <!-- add button -->
           <button
             @click.prevent="addDomain"
-            :disabled="!canAddDomain"
-            class="button button--success button--small"
+            :disabled="true"
+            class="button button--success button--small w-20"
           >
-            <div v-if="addingDomain" class="flex items-center">
+            <div v-if="false" class="flex items-center">
               <span>Adding</span>
               <div><LoadingSpinner class="ml-1 w-4" /></div>
             </div>
@@ -67,18 +67,18 @@
         <div class="flex flex-col space-y-2 divide-y-2 divide-solid pt-4">
           <div class="flex items-center justify-between pt-2">
             <span class="text-lg">cdn.radiotimes.com</span>
-            <div><DotsHorizontalIcon class="w-4" /></div>
+            <button class="flex justify-center w-20"><DotsHorizontalIcon class="w-4" /></button>
           </div>
           <div class="flex items-center justify-between pt-2">
             <span class="text-lg">images.radiotimes.com</span>
-            <div><DotsHorizontalIcon class="w-4" /></div>
+            <button class="flex justify-center w-20"><DotsHorizontalIcon class="w-4" /></button>
           </div>
         </div>
         <!-- PLACEHOLDER END -->
       </div>
       <!-- config -->
       <CdnConfig />
-      <button class="button button--success">Deploy</button>
+      <button class="button button--success self-end w-full md:max-w-xs">Deploy</button>
     </div>
   </div>
 </template>
@@ -86,12 +86,21 @@
 <script>
 import CdnConfig from '@/components/cdn/CdnConfig.vue'
 import { DotsHorizontalIcon } from '@heroicons/vue/outline'
+import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 
 export default {
   name: 'CdnDeploy',
   components: {
     CdnConfig,
-    DotsHorizontalIcon
+    DotsHorizontalIcon,
+    LoadingSpinner
+  },
+  data() {
+    return {
+      deployName: '',
+      originUrl: '',
+      domainName: ''
+    }
   }
 }
 </script>

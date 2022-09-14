@@ -1,92 +1,106 @@
 <template>
-  <div class="flex space-x-6">
-    <!-- asset path -->
-    <div class="input-group flex-1 path">
-      <label class="label">Asset path</label>
-      <input
-        v-model="name"
-        class="input input--floating"
-        :disabled="isDisabledTBD"
-        :class="isDisabledTBD ? 'disabled' : ''"
-        placeholder="e.g. /photos/*.jpg"
-        type="text"
-        required
-      />
-    </div>
-    <!-- cache enabled -->
-    <div class="input-group flex-1 cache">
-      <ListboxLabel class="label">Cache enabled</ListboxLabel>
-      <Listbox v-model="cacheEnabled">
-        <div class="relative w-full mt-1">
-          <ListboxButton class="listButton input--floating">
-            <span class="block truncate">{{ cacheEnabled ? 'Yes' : 'No' }}</span>
-            <span class="listButton__icon">
-              <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
-            </span>
-          </ListboxButton>
-          <transition
-            leave-active-class="transition duration-100 ease-in"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
-          >
-            <ListboxOptions class="listOptions">
-              <ListboxOption v-slot="{ active, selected }" :value="true" as="template">
-                <li :class="[active ? 'active' : '']" class="listOption">
-                  <span :class="['block truncate']">Yes</span>
-                  <span v-if="selected" class="checkmark" >
-                    <CheckIcon class="w-5 h-5" aria-hidden="true" />
-                  </span>
-                </li>
-              </ListboxOption>
-              <ListboxOption v-slot="{ active, selected }" :value="false" as="template">
-                <li :class="[active ? 'active' : '']" class="listOption">
-                  <span :class="['block truncate']">No</span>
-                  <span v-if="selected" class="checkmark" >
-                    <CheckIcon class="w-5 h-5" aria-hidden="true" />
-                  </span>
-                </li>
-              </ListboxOption>
-            </ListboxOptions>
-          </transition>
-        </div>
-      </Listbox>
-    </div>
-    <!-- ttl -->
-    <div class="input-group flex-1 ttl">
-      <label class="label">Cache TTL</label>
-      <input
-        type="number"
-        autocomplete="off"
-        class="w-full input input--floating"
-        placeholder="Enter TTL"
-        required
-        v-model="ttl"
-        @keypress="createOnEnter"
-      />
-      <!-- <div v-if="ttlError" class="errorMessage">
-        <span class="errorMessage__text">{{ ttlError }}</span>
-      </div> -->
-    </div>
-    <!-- add button -->
-    <button
-      @click.prevent="addDomain"
-      :disabled="!canAddDomain"
-      class="button button--success button--small h-full mt-4"
-    >
-      <div v-if="addingDomain" class="flex items-center">
-        <span>Adding</span>
-        <div><LoadingSpinner class="ml-1 w-4" /></div>
+  <div class="flex flex-col">
+    <!-- path form -->
+    <div class="flex space-x-6">
+      <!-- asset path -->
+      <div class="input-group flex-1 path">
+        <label class="label">Asset path</label>
+        <input
+          v-model="newPath"
+          class="input input--floating"
+          placeholder="e.g. /photos/*.jpg"
+          type="text"
+          required
+        />
       </div>
-      <span v-else>Add</span>
-    </button>
+      <!-- cache enabled -->
+      <div class="input-group flex-1 cache">
+        <Listbox v-model="newPathEnabled">
+          <ListboxLabel class="label">Cache enabled</ListboxLabel>
+          <div class="relative w-full mt-1">
+            <ListboxButton class="listButton input--floating">
+              <span class="block truncate">{{ cacheEnabledDisplay }}</span>
+              <span class="listButton__icon">
+                <ChevronDownIcon class="w-5 h-5" aria-hidden="true" />
+              </span>
+            </ListboxButton>
+            <transition
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100"
+              leave-to-class="opacity-0"
+            >
+              <ListboxOptions class="listOptions">
+                <ListboxOption v-slot="{ active, selected }" :value="undefined" as="template">
+                  <li :class="[active ? 'active' : '']" class="listOption">
+                    <span :class="['block truncate']">Auto</span>
+                    <span v-if="selected" class="checkmark" >
+                      <CheckIcon class="w-5 h-5" aria-hidden="true" />
+                    </span>
+                  </li>
+                </ListboxOption>
+                <ListboxOption v-slot="{ active, selected }" :value="true" as="template">
+                  <li :class="[active ? 'active' : '']" class="listOption">
+                    <span :class="['block truncate']">True</span>
+                    <span v-if="selected" class="checkmark" >
+                      <CheckIcon class="w-5 h-5" aria-hidden="true" />
+                    </span>
+                  </li>
+                </ListboxOption>
+                <ListboxOption v-slot="{ active, selected }" :value="false" as="template">
+                  <li :class="[active ? 'active' : '']" class="listOption">
+                    <span :class="['block truncate']">False</span>
+                    <span v-if="selected" class="checkmark" >
+                      <CheckIcon class="w-5 h-5" aria-hidden="true" />
+                    </span>
+                  </li>
+                </ListboxOption>
+              </ListboxOptions>
+            </transition>
+          </div>
+        </Listbox>
+      </div>
+      <!-- ttl -->
+      <div class="input-group flex-1 ttl">
+        <label class="label">Cache TTL</label>
+        <input
+          type="number"
+          autocomplete="off"
+          class="w-full input input--floating"
+          placeholder="Auto"
+          required
+          v-model="newPathTtl"
+          @keypress="createOnEnter"
+        />
+      </div>
+      <!-- add button -->
+      <button
+        @click=addPath
+        :disabled="false"
+        class="button button--success button--small w-20 h-full mt-4"
+      >
+        <div v-if="addingPath" class="flex items-center">
+          <span>Adding</span>
+          <div><LoadingSpinner class="ml-1 w-4" /></div>
+        </div>
+        <span v-else>Add</span>
+      </button>
+    </div>
+    <!-- path list -->
+    <div class="flex flex-col mt-4 divide-y space-y-2">
+      <CdnConfigPath v-for="(options, path) in globalPath" :path=path :options=options :key=path />
+      <CdnConfigPath v-for="(options, path) in config.cache.paths" :path=path :options=options :key=path />
+    </div>
   </div>
 </template>
 
 <script>
+import CdnConfigPath from '@/components/cdn/CdnConfigPath.vue'
+import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/solid'
 import {
   Listbox,
   ListboxButton,
+  ListboxLabel,
   ListboxOption,
   ListboxOptions
 } from '@headlessui/vue'
@@ -94,17 +108,46 @@ import {
 export default {
   name: 'CdnConfigCustomSimple',
   components: {
+    CdnConfigPath,
     CheckIcon,
     ChevronDownIcon,
     Listbox,
     ListboxButton,
+    ListboxLabel,
     ListboxOption,
-    ListboxOptions
+    ListboxOptions,
+    LoadingSpinner
   },
+  props: ['config'],
   data() {
     return {
-      cacheEnabled: true,
-      ttl: 3600
+      addingPath: false,
+      newPath: '',
+      newPathEnabled: undefined,
+      newPathTtl: undefined
+    }
+  },
+  computed: {
+    cacheEnabledDisplay() {
+      if (this.newPathEnabled === undefined) return 'Auto'
+      else return this.newPathEnabled ? 'Yes' : 'No'
+    },
+    globalPath() {
+      return {
+        '(global)': {
+          enabled: this.config.cache.enabled,
+          ttl: this.config.cache.ttl
+        }
+      }
+    }
+  },
+  methods: {
+    addPath() {
+      const path = {}
+      path[this.newPath] = {}
+      if(this.newPathEnabled !== undefined) path[this.newPath].enabled = this.newPathEnabled
+      if(this.newPathTtl) path[this.newPath].ttl = this.newPathTtl
+      this.$emit('add-path', path)
     }
   }
 }
@@ -119,6 +162,9 @@ export default {
 }
 .input-group.ttl {
   flex-basis: 100px;
+}
+.input-group.ttl input::placeholder {
+  @apply text-gray-500
 }
 
 /* remove input defualt focus and arrows */
