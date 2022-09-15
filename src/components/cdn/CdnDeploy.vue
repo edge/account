@@ -32,51 +32,7 @@
           </div>
         </div>
       </div>
-      <!-- domains -->
-      <div class="box">
-        <h4>Domains</h4>
-        <!-- add domain form -->
-        <div class="flex flex-col space-y-2 w-full sm:space-x-4 sm:space-y-0 sm:items-end sm:flex-row">
-          <div class="flex-1 input-group">
-            <label class="label">Add Domain</label>
-            <input
-              v-model="domainName"
-              class="input input--floating"
-              :disabled="false"
-              :class="false ? 'disabled' : ''"
-              placeholder="e.g. cdn.yoursite.com"
-              type="text"
-              required
-            />
-          </div>
-          <!-- add button -->
-          <button
-            @click.prevent="addDomain"
-            :disabled="true"
-            class="button button--success button--small w-20"
-          >
-            <div v-if="false" class="flex items-center">
-              <span>Adding</span>
-              <div><LoadingSpinner class="ml-1 w-4" /></div>
-            </div>
-            <span v-else>Add</span>
-          </button>
-        </div>
-        <!-- domains -->
-        <!-- PLACEHOLDER START -->
-        <div class="flex flex-col space-y-2 divide-y-2 divide-solid pt-4">
-          <div class="flex items-center justify-between pt-2">
-            <span class="text-lg">cdn.radiotimes.com</span>
-            <button class="flex justify-center w-20"><DotsHorizontalIcon class="w-4" /></button>
-          </div>
-          <div class="flex items-center justify-between pt-2">
-            <span class="text-lg">images.radiotimes.com</span>
-            <button class="flex justify-center w-20"><DotsHorizontalIcon class="w-4" /></button>
-          </div>
-        </div>
-        <!-- PLACEHOLDER END -->
-      </div>
-      <!-- config -->
+      <CdnDomains />
       <CdnConfig />
       <button class="button button--success self-end w-full md:max-w-xs">Deploy</button>
     </div>
@@ -85,21 +41,18 @@
 
 <script>
 import CdnConfig from '@/components/cdn/CdnConfig.vue'
-import { DotsHorizontalIcon } from '@heroicons/vue/outline'
-import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
+import CdnDomains from '@/components/cdn/CdnDomains.vue'
 
 export default {
   name: 'CdnDeploy',
   components: {
     CdnConfig,
-    DotsHorizontalIcon,
-    LoadingSpinner
+    CdnDomains
   },
   data() {
     return {
       deployName: '',
-      originUrl: '',
-      domainName: ''
+      originUrl: ''
     }
   }
 }
