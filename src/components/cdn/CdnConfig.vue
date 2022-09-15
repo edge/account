@@ -28,8 +28,12 @@
       </RadioGroup>
       <CdnConfigCustom
         v-if="configMode === 'custom'"
-        :config=config
+        :globalConfig=globalConfig
+        :paths=paths
         @add-path=onAddPath
+        @delete-path=onDeletePath
+        @edit-global-config=onEditGlobalConfig
+        @edit-path=onEditPath
         @update-config=onUpdateConfig
       />
     </div>
@@ -52,36 +56,52 @@ export default {
   },
   data() {
     return {
-      config: {
-        origin: 'aneur.in',
-        cache: {
-          enabled: true,
-          ttl: 86400,
-          paths: {
-            '/demo': {
-              ttl: 604800
-            }
-          }
-        }
+      configMode: 'default',
+      globalConfig: {
+        enabled: true,
+        ttl: 86400
       },
-      configMode: 'default'
+      paths: [
+        {
+          path: '/demo',
+          ttl: 604800
+        }
+      ]
     }
   },
   methods: {
     onAddPath(path) {
-      this.config = {
-        ...this.config,
-        cache: {
-          ...this.config.cache,
-          paths: {
-            ...this.config.cache.paths,
-            ...path
-          }
-        }
+      this.paths = [ ...this.paths, path]
+    },
+    onDeletePath(pathName) {
+      this.paths = this.paths.filter(path => path.path !== pathName)
+    },
+    onEditGlobalConfig(enabled, ttl) {
+      this.globalConfig = {
+        enabled: enabled,
+        ttl: ttl
       }
     },
+    onEditPath(oldPathName, newPath) {
+      const index = this.paths.findIndex(path => path.path === oldPathName)
+      const newPaths = [ ...this.paths ]
+      newPaths[index] = newPath
+      this.paths = newPaths
+    },
     onUpdateConfig(config) {
-      this.config = { ...this.config, ...config }
+      this.globalConfig = {
+        enabled: config.cache.enabled,
+        ttl: config.cache.ttl
+      }
+
+      const paths = []
+      for (const path in config.cache.paths) {
+        const pathObject = { path }
+        if (config.cache.paths[path].enabled !== undefined) pathObject.enabled = config.cache.paths[path].enabled
+        if (config.cache.paths[path].ttl) pathObject.ttl = config.cache.paths[path].ttl
+        paths.push(pathObject)
+      }
+      this.paths = paths
     }
   }
 }

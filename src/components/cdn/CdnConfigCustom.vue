@@ -10,11 +10,16 @@
     </div>
     <div class="mt-5">
       <CdnConfigCustomSimple v-if="isSelected('simple')"
-        :config=config
+        :globalConfig=globalConfig
+        :paths=paths
         @add-path=onAddPath
+        @edit-global-config=onEditGlobalConfig
+        @edit-path=onEditPath
+        @delete-path=onDeletePath
       />
       <CdnConfigCustomAdvanced v-if="isSelected('advanced')"
-        :config=config
+        :globalConfig=globalConfig
+        :paths=paths
         @update-config=onUpdateConfig
       />
     </div>
@@ -31,7 +36,7 @@ export default {
     CdnConfigCustomAdvanced,
     CdnConfigCustomSimple
   },
-  props: ['config'],
+  props: ['globalConfig', 'paths'],
   data () {
     return {
       selectedTab: 'simple'
@@ -43,6 +48,15 @@ export default {
     },
     onAddPath(path) {
       this.$emit('add-path', path)
+    },
+    onDeletePath(path) {
+      this.$emit('delete-path', path)
+    },
+    onEditGlobalConfig(enabled, ttl) {
+      this.$emit('edit-global-config', enabled, ttl)
+    },
+    onEditPath(oldPathName, newPath) {
+      this.$emit('edit-path', oldPathName, newPath)
     },
     onUpdateConfig(config) {
       this.$emit('update-config', config)

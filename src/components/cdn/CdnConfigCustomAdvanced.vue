@@ -8,22 +8,29 @@
     </textarea>
     <div class="flex justify-between items-start">
       <!-- error -->
-      <div><div v-if="jsonError" class="flex flex-col text-red">
-        <span>JSON error around line {{ jsonError.lineNumber }}:</span>
-        <div>
-          <div v-if="jsonError.prevLineContent">
-            <span class="w-6 inline-block">{{ jsonError.lineNumber - 1 }}: </span>
-            <span class="monospace">{{ jsonError.prevLineContent }}</span>
-          </div>
+      <div>
+        <div v-if="jsonError" class="text-red flex flex-col">
           <div>
-            <span class="w-6 inline-block">{{ jsonError.lineNumber }}: </span>
-            <span class="monospace">{{ jsonError.lineContent }}</span>
+            <span v-if="jsonError.lineNumber">JSON Syntax Error around line {{ jsonError.lineNumber }}:</span>
+            <span v-else>{{ jsonError.error }}</span>
           </div>
-          <div v-if="jsonError.nextLineContent">
-            <span class="w-6 inline-block">{{ jsonError.lineNumber + 1 }}: </span>
-            <span class="monospace">{{ jsonError.nextLineContent }}</span>
+          <div v-if="jsonError.lineNumber" class="flex flex-col">
+            <div>
+              <div v-if="jsonError.prevLineContent">
+                <span class="w-6 inline-block">{{ jsonError.lineNumber - 1 }}: </span>
+                <span class="monospace">{{ jsonError.prevLineContent }}</span>
+              </div>
+              <div>
+                <span class="w-6 inline-block">{{ jsonError.lineNumber }}: </span>
+                <span class="monospace">{{ jsonError.lineContent }}</span>
+              </div>
+              <div v-if="jsonError.nextLineContent">
+                <span class="w-6 inline-block">{{ jsonError.lineNumber + 1 }}: </span>
+                <span class="monospace">{{ jsonError.nextLineContent }}</span>
+              </div>
+            </div>
           </div>
-        </div></div>
+        </div>
       </div>
       <button @click="updateConfig"
         :disabled="!hasChanges"
@@ -38,7 +45,7 @@
 <script>
 export default {
   name: 'CdnConfigCustomAdvanced',
-  props: ['config'],
+  props: ['globalConfig', 'paths'],
   data() {
     return {
       initialJson: '',
@@ -61,34 +68,52 @@ export default {
         this.initialJson = this.json
       }
       catch (error) {
+        console.error(error)
         // get where error occurs
         const splitError = error.toString().split(' ')
         const position = Number(splitError[splitError.findIndex(word => word === 'position') + 1])
 
-        // get lineNumber
-        const subStr = this.json.substring(0, position)
-        const lineNumber = subStr.split('\n').length
-        // get content of lines around where error occurs
-        let lineContent = this.json.split('\n')[lineNumber - 1]
-        if (lineContent) lineContent = lineContent.trim()
-        let prevLineContent = this.json.split('\n')[lineNumber - 2]
-        if (prevLineContent) prevLineContent = prevLineContent.trim()
-        let nextLineContent = this.json.split('\n')[lineNumber]
-        if (nextLineContent) nextLineContent = nextLineContent.trim()
-
-        this.jsonError = {
-          lineNumber,
-          lineContent,
-          prevLineContent,
-          nextLineContent
+        let jsonError = {
+          error: error.toString()
         }
+        if (position) {
+          // get lineNumber
+          const subStr = this.json.substring(0, position)
+          const lineNumber = subStr.split('\n').length
+          // get content of lines around where error occurs
+          let lineContent = this.json.split('\n')[lineNumber - 1]
+          if (lineContent) lineContent = lineContent.trim()
+          let prevLineContent = this.json.split('\n')[lineNumber - 2]
+          if (prevLineContent) prevLineContent = prevLineContent.trim()
+          let nextLineContent = this.json.split('\n')[lineNumber]
+          if (nextLineContent) nextLineContent = nextLineContent.trim()
+
+          jsonError = {
+            ...jsonError,
+            lineNumber,
+            lineContent,
+            prevLineContent,
+            nextLineContent
+          }
+        }
+        this.jsonError = jsonError
       }
     }
   },
   mounted() {
-    const configDisplay = { ...this.config }
-    delete configDisplay.origin
-    const jsonCache = JSON.stringify(configDisplay, undefined, 2)
+    const paths = {}
+    this.paths.forEach(path => {
+      paths[path.path] = {}
+      if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
+      if (path.ttl) paths[path.path].ttl = path.ttl
+    })
+    const config = {
+      cache: {
+        ...this.globalConfig,
+        paths
+      }
+    }
+    const jsonCache = JSON.stringify(config, undefined, 2)
     this.json = jsonCache
     this.initialJson = jsonCache
   }

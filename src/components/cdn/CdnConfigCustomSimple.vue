@@ -86,9 +86,17 @@
       </button>
     </div>
     <!-- path list -->
-    <div class="flex flex-col mt-4 divide-y space-y-2">
-      <CdnConfigPath v-for="(options, path) in globalPath" :path=path :options=options :key=path />
-      <CdnConfigPath v-for="(options, path) in config.cache.paths" :path=path :options=options :key=path />
+    <div class="flex flex-col mt-4 space-y-2">
+      <CdnConfigPath
+        :path=globalPath
+        @edit-global-config=onEditGlobalConfig
+      />
+      <CdnConfigPath v-for="path in paths"
+        :key=path.path
+        :path=path
+        @delete-path=onDeletePath
+        @edit-path=onEditPath
+      />
     </div>
   </div>
 </template>
@@ -118,7 +126,7 @@ export default {
     ListboxOptions,
     LoadingSpinner
   },
-  props: ['config'],
+  props: ['globalConfig', 'paths'],
   data() {
     return {
       addingPath: false,
@@ -130,24 +138,33 @@ export default {
   computed: {
     cacheEnabledDisplay() {
       if (this.newPathEnabled === undefined) return 'Auto'
-      else return this.newPathEnabled ? 'Yes' : 'No'
+      else return this.newPathEnabled ? 'True' : 'False'
     },
     globalPath() {
       return {
-        '(global)': {
-          enabled: this.config.cache.enabled,
-          ttl: this.config.cache.ttl
-        }
+        path: '(global)',
+        enabled: this.globalConfig.enabled,
+        ttl: this.globalConfig.ttl
       }
     }
   },
   methods: {
     addPath() {
-      const path = {}
-      path[this.newPath] = {}
-      if(this.newPathEnabled !== undefined) path[this.newPath].enabled = this.newPathEnabled
-      if(this.newPathTtl) path[this.newPath].ttl = this.newPathTtl
+      const path = {
+        path: this.newPath
+      }
+      if(this.newPathEnabled !== undefined) path.enabled = this.newPathEnabled
+      if(this.newPathTtl) path.ttl = this.newPathTtl
       this.$emit('add-path', path)
+    },
+    onDeletePath(path) {
+      this.$emit('delete-path', path)
+    },
+    onEditGlobalConfig(enabled, ttl) {
+      this.$emit('edit-global-config', enabled, ttl)
+    },
+    onEditPath(oldPathName, newPath) {
+      this.$emit('edit-path', oldPathName, newPath)
     }
   }
 }
