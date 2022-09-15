@@ -17,7 +17,7 @@
         @edit-path=onEditPath
         @delete-path=onDeletePath
       />
-      <CdnConfigCustomAdvanced v-if="isSelected('advanced')"
+      <CdnConfigCustomAdvanced v-show="isSelected('advanced')"
         :globalConfig=globalConfig
         :paths=paths
         @update-config=onUpdateConfig

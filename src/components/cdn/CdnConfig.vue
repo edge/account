@@ -27,7 +27,7 @@
         </RadioGroupOption>
       </RadioGroup>
       <CdnConfigCustom
-        v-if="configMode === 'custom'"
+        v-show="configMode === 'custom'"
         :globalConfig=globalConfig
         :paths=paths
         @add-path=onAddPath
