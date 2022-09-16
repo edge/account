@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex space-x-6 items-center">
+    <div class="flex space-x-6 items-center py-2" :class="isEditing ? 'border-r-2 border-green' : ''">
       <!-- asset path -->
       <div class="input-group flex-1 path" :class="isGlobal ? '' : 'self-end'">
         <!-- editing -->
@@ -9,7 +9,7 @@
           class="input input--floating"
           placeholder="e.g. /photos/*.jpg"
           type="text"
-          required
+          @keypress="confirmEditOnEnter"
         />
         <!-- not editing -->
         <span v-else class="text-md">{{ path.path }}</span>
@@ -76,7 +76,7 @@
           class="w-full input input--floating"
           :placeholder="isGlobal ? 'Enter TTL' : 'Auto'"
           v-model="newTtl"
-          @keypress="createOnEnter"
+          @keypress="confirmEditOnEnter"
         />
         <!-- not editing -->
         <span v-else
@@ -226,6 +226,11 @@ export default {
       }
       this.isEditing = false
     },
+    confirmEditOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.confirmEdit()
+    },
     deletePath() {
       this.$emit('delete-path', this.path.path)
     },
@@ -299,7 +304,6 @@ input[type=number] {
 .checkmark {
   @apply absolute inset-y-0 left-0 flex items-center pl-3 text-green;
 }
-
 
 .options {
   @apply col-span-3;

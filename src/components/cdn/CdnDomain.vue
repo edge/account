@@ -1,65 +1,78 @@
 <template>
-  <div class="flex items-center justify-between pt-2">
-    <div>
-      <span class="text-md">{{ domain.name }}</span>
-      <span v-if="isPrimary" class="pl-2 text-gray">(Primary)</span>
-    </div>
-    <!-- options button -->
-      <div class="w-20 options">
-        <!-- confirm and cancel editing buttons -->
-        <div v-if="isEditing" class="flex space-x-1 justify-center">
-          <button
-            @click=confirmEdit
-            class="domainButton save"
-          >
-            <div><CheckIcon class="domainButton__icon sm:text-green sm:w-5" /></div>
-            <span class="sm:hidden">Save</span>
-          </button>
-          <button
-            @click=cancelEdit
-            class="domainButton cancel"
-          >
-            <div><XIcon class="domainButton__icon sm:text-red sm:w-5" /></div>
-            <span class="sm:hidden">Cancel</span>
-          </button>
+  <div>
+    <div class="flex items-center justify-between py-2"
+      :class="isEditing ? 'border-r-2 border-green' : ''"
+    >
+      <div class="flex items-center flex-1">
+        <div class="input-group w-full name" v-if=isEditing>
+          <input
+            v-model="newDomainName"
+            class="input input--floating"
+            placeholder="e.g. cdn.yoursite.com"
+            type="text"
+            @keypress="confirmEditOnEnter"
+          />
         </div>
-        <!-- edit and delete buttoins -->
-        <Menu v-else as='div' class="relative w-full flex justify-center">
-          <MenuButton class="flex items-center hidden sm:block">
-            <DotsHorizontalIcon class="w-4" />
-          </MenuButton>
-          <MenuItems :static="!sm" class="options__dropdown">
-            <MenuItem as='button'
-              v-if="!isPrimary"
-              @click=makePrimary
-              class="domainButton primary w-max sm:hover:underline"
-            >
-              <div>
-                <SortAscendingIcon class="domainButton__icon" />
-              </div>
-              Make Primary
-            </MenuItem>
-            <MenuItem as='button'
-              @click=startEdit
-              class="domainButton edit w-max sm:hover:underline"
-            >
-              <div>
-                <PencilIcon class="domainButton__icon" />
-              </div>
-              Edit Domain
-            </MenuItem>
-            <MenuItem as='button'
-              @click=deleteDomain
-              class="domainButton delete w-max text-red sm:hover:underline"
-            >
-              <div>
-                <TrashIcon class="domainButton__icon" />
-              </div>
-              Delete
-            </MenuItem>
-          </MenuItems>
-        </Menu>
+        <span v-else class="text-md">{{ domain.name }}</span>
+        <span v-if="isPrimary" class="pl-2 text-gray">(Primary)</span>
       </div>
+      <!-- options button -->
+        <div class="w-20 options">
+          <!-- confirm and cancel editing buttons -->
+          <div v-if="isEditing" class="flex space-x-1 justify-center">
+            <button
+              @click=confirmEdit
+              class="domainButton save"
+            >
+              <div><CheckIcon class="domainButton__icon sm:text-green sm:w-5" /></div>
+              <span class="sm:hidden">Save</span>
+            </button>
+            <button
+              @click=cancelEdit
+              class="domainButton cancel"
+            >
+              <div><XIcon class="domainButton__icon sm:text-red sm:w-5" /></div>
+              <span class="sm:hidden">Cancel</span>
+            </button>
+          </div>
+          <!-- edit and delete buttoins -->
+          <Menu v-else as='div' class="relative w-full flex justify-center">
+            <MenuButton class="flex items-center hidden sm:block">
+              <DotsHorizontalIcon class="w-4" />
+            </MenuButton>
+            <MenuItems :static="!sm" class="options__dropdown">
+              <MenuItem as='button'
+                v-if="!isPrimary"
+                @click=makePrimary
+                class="domainButton primary w-max sm:hover:underline"
+              >
+                <div>
+                  <SortAscendingIcon class="domainButton__icon" />
+                </div>
+                Make Primary
+              </MenuItem>
+              <MenuItem as='button'
+                @click=startEdit
+                class="domainButton edit w-max sm:hover:underline"
+              >
+                <div>
+                  <PencilIcon class="domainButton__icon" />
+                </div>
+                Edit Domain
+              </MenuItem>
+              <MenuItem as='button'
+                @click=deleteDomain
+                class="domainButton delete w-max text-red sm:hover:underline"
+              >
+                <div>
+                  <TrashIcon class="domainButton__icon" />
+                </div>
+                Delete
+              </MenuItem>
+            </MenuItems>
+          </Menu>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -116,6 +129,11 @@ export default {
     confirmEdit() {
       this.$emit('edit-domain', this.domain.name, this.newDomainName)
     },
+    confirmEditOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.confirmEdit()
+    },
     deleteDomain() {
       this.$emit('delete-domain', this.domain.name)
     },
@@ -140,6 +158,10 @@ export default {
 </script>
 
 <style scoped>
+.input-group.name .input--floating {
+  @apply text-md
+}
+
 .options {
   @apply col-span-3;
 }

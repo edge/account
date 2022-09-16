@@ -10,7 +10,7 @@
           class="input input--floating"
           placeholder="e.g. /photos/*.jpg"
           type="text"
-          required
+          @keypress=addPathOnEnter
         />
       </div>
       <!-- cache enabled -->
@@ -67,9 +67,8 @@
           autocomplete="off"
           class="w-full input input--floating"
           placeholder="Auto"
-          required
           v-model="newPathTtl"
-          @keypress="createOnEnter"
+          @keypress=addPathOnEnter
         />
       </div>
       <!-- add button -->
@@ -86,7 +85,7 @@
       </button>
     </div>
     <!-- path list -->
-    <div class="flex flex-col mt-4 space-y-2">
+    <div class="flex flex-col mt-1">
       <CdnConfigPath
         :path=globalPath
         @edit-global-config=onEditGlobalConfig
@@ -156,6 +155,14 @@ export default {
       if(this.newPathEnabled !== undefined) path.enabled = this.newPathEnabled
       if(this.newPathTtl) path.ttl = this.newPathTtl
       this.$emit('add-path', path)
+      this.newPath = ''
+      this.newPathTtl = null
+      this.newPathEnabled = undefined
+    },
+    addPathOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.addPath()
     },
     onDeletePath(path) {
       this.$emit('delete-path', path)

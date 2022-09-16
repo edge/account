@@ -10,6 +10,7 @@
           class="input input--floating"
           placeholder="e.g. cdn.yoursite.com"
           type="text"
+          @keypress="addDomainOnEnter"
         />
       </div>
       <!-- add button -->
@@ -22,13 +23,15 @@
       </button>
     </div>
     <!-- domains -->
-    <CdnDomain v-for="domain in domains"
-      :key=domain.name
-      :domain=domain
-      @delete-domain=onDeleteDomain
-      @edit-domain=onEditDomain
-      @make-domain-primary=onMakeDomainPrimary
-    />
+    <div class="flex flex-col mt-1">
+      <CdnDomain v-for="domain in domains"
+        :key=domain.name
+        :domain=domain
+        @delete-domain=onDeleteDomain
+        @edit-domain=onEditDomain
+        @make-domain-primary=onMakeDomainPrimary
+      />
+    </div>
   </div>
 </template>
 
@@ -52,6 +55,11 @@ export default {
       if (!this.domains.length) newDomain.primary = true
       this.domains = [ ...this.domains, newDomain]
       this.newDomainName = ''
+    },
+    addDomainOnEnter(event) {
+      if (event.charCode !== 13) return
+      event.preventDefault()
+      this.addDomain()
     },
     onDeleteDomain(domainName) {
       const newDomains = [...this.domains.filter(domain => domain.name !== domainName)]
