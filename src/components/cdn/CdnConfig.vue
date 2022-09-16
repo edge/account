@@ -13,7 +13,7 @@
           </div>
           <div class="flex flex-col space-y-1 text-gray-500 pl-7">
             <span>Caching enabled for all asset types</span>
-            <span>Cache TTL 3600</span>
+            <span>Cache TTL 86400</span>
           </div>
         </RadioGroupOption>
         <!-- custom config -->
@@ -62,10 +62,6 @@ export default {
         ttl: 86400
       },
       paths: [
-        {
-          path: '/demo',
-          ttl: 604800
-        }
       ]
     }
   },
@@ -102,6 +98,37 @@ export default {
         paths.push(pathObject)
       }
       this.paths = paths
+    },
+    updateConfigCache() {
+      const configCache = {}
+      if (this.configMode === 'default') {
+        configCache.enabled = true
+        configCache.ttl = 86400
+        configCache.paths = {}
+      }
+      else {
+        configCache.enabled = this.globalConfig.enabled
+        configCache.ttl = this.globalConfig.ttl
+        const paths = {}
+        this.paths.forEach(path => {
+          paths[path.path] = {}
+          if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
+          if (path.ttl) paths[path.path].ttl = path.ttl
+        })
+        configCache.paths = paths
+      }
+      this.$emit('update-config', configCache)
+    }
+  },
+  watch: {
+    configMode() {
+      this.updateConfigCache()
+    },
+    globalConfig() {
+      this.updateConfigCache()
+    },
+    paths() {
+      this.updateConfigCache()
     }
   }
 }

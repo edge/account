@@ -79,6 +79,11 @@ export default {
       })
       this.domains = newDomains
     }
+  },
+  watch: {
+    domains() {
+      this.$emit('update-domains', this.domains)
+    }
   }
 }
 </script>
