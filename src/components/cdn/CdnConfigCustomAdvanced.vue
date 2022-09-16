@@ -116,6 +116,25 @@ export default {
     const jsonCache = JSON.stringify(config, undefined, 2)
     this.json = jsonCache
     this.initialJson = jsonCache
+  },
+  watch: {
+    paths() {
+      const paths = {}
+      this.paths.forEach(path => {
+        paths[path.path] = {}
+        if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
+        if (path.ttl) paths[path.path].ttl = path.ttl
+      })
+      const config = {
+        cache: {
+          ...this.globalConfig,
+          paths
+        }
+      }
+      const jsonCache = JSON.stringify(config, undefined, 2)
+      this.json = jsonCache
+      this.initialJson = jsonCache
+    }
   }
 }
 </script>
