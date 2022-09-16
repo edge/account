@@ -32,12 +32,20 @@
           </div>
         </div>
       </div>
-      <button @click="updateConfig"
-        :disabled="!hasChanges"
-        class="button button--success button--small w-max"
-      >
-        Save changes
-      </button>
+      <div class="flex space-x-2">
+        <button @click="resetConfig"
+          :disabled="!hasChanges"
+          class="button button--outline button--small w-max"
+        >
+          Reset changes
+        </button>
+        <button @click="updateConfig"
+          :disabled="!hasChanges"
+          class="button button--success button--small w-max"
+        >
+          Save changes
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -59,6 +67,23 @@ export default {
     }
   },
   methods: {
+    resetConfig() {
+      const paths = {}
+      this.paths.forEach(path => {
+        paths[path.path] = {}
+        if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
+        if (path.ttl) paths[path.path].ttl = path.ttl
+      })
+      const config = {
+        cache: {
+          ...this.globalConfig,
+          paths
+        }
+      }
+      const jsonCache = JSON.stringify(config, undefined, 2)
+      this.json = jsonCache
+      this.initialJson = jsonCache
+    },
     updateConfig() {
       // const json = document.getElementById('json-input').value
       try {
@@ -101,39 +126,14 @@ export default {
     }
   },
   mounted() {
-    const paths = {}
-    this.paths.forEach(path => {
-      paths[path.path] = {}
-      if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
-      if (path.ttl) paths[path.path].ttl = path.ttl
-    })
-    const config = {
-      cache: {
-        ...this.globalConfig,
-        paths
-      }
-    }
-    const jsonCache = JSON.stringify(config, undefined, 2)
-    this.json = jsonCache
-    this.initialJson = jsonCache
+    this.resetConfig()
   },
   watch: {
+    hasChanges() {
+      this.$emit('display-if-unsaved', this.hasChanges)
+    },
     paths() {
-      const paths = {}
-      this.paths.forEach(path => {
-        paths[path.path] = {}
-        if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
-        if (path.ttl) paths[path.path].ttl = path.ttl
-      })
-      const config = {
-        cache: {
-          ...this.globalConfig,
-          paths
-        }
-      }
-      const jsonCache = JSON.stringify(config, undefined, 2)
-      this.json = jsonCache
-      this.initialJson = jsonCache
+      this.resetConfig()
     }
   }
 }
