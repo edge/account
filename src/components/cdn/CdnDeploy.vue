@@ -27,6 +27,9 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'CdnDeploy',
+  title() {
+    return 'Edge Account Portal » CDN'
+  },
   components: {
     CdnConfig,
     CdnDetails,

@@ -1,7 +1,20 @@
 <template>
   <div class="mainContent__inner">
-    <h1>Edge CDN</h1>
-    <div class="box">
+    <div class="flex justify-between">
+      <h1>Edge CDN</h1>
+      <router-link
+        v-if=displayIntegrationList
+        :to="{ name: 'CdnDeploy' }"
+        class="button button--success button--small h-full"
+      >
+        Deploy CDN
+      </router-link>
+    </div>
+    <CdnIntegrationList
+      v-if=displayIntegrationList
+      @update-integration-count=onUpdateIntegrationCount
+    />
+    <div v-else class="box">
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
         <span>No content delivery deployments yet</span>
         <router-link
@@ -16,44 +29,31 @@
 </template>
 
 <script>
-/* global process */
-
-import * as utils from '../../account-utils/index'
-import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import Pagination from '@/components/Pagination'
-import { mapState } from 'vuex'
+import CdnIntegrationList from '@/components/cdn/CdnIntegrationList'
 
 export default {
-  name: 'Servers',
+  name: 'ContentDelivery',
   title() {
     return 'Edge Account Portal » CDN'
   },
   components: {
-    LoadingSpinner,
-    Pagination
+    CdnIntegrationList
   },
   data() {
     return {
-      limit: 10,
-      loaded: false,
-      metadata: { totalCount: 0 },
-      pageHistory: [1]
+      integrationCount: null,
+      loaded: false
     }
   },
   computed: {
-    ...mapState(['account', 'session']),
-    currentPage() {
-      return this.pageHistory[this.pageHistory.length - 1]
+    displayIntegrationList() {
+      return this.integrationCount || !this.loaded
     }
   },
   methods: {
-    changePage(newPage) {
-      this.pageHistory = [...this.pageHistory, newPage]
-    }
-  },
-  watch: {
-    pageHistory() {
-      this.updateServers()
+    onUpdateIntegrationCount(count) {
+      this.integrationCount = count
+      this.loaded = true
     }
   }
 }

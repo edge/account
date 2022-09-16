@@ -37,7 +37,7 @@
           :disabled="!hasChanges"
           class="button button--outline button--small w-max"
         >
-          Reset changes
+          Cancel
         </button>
         <button @click="updateConfig"
           :disabled="!hasChanges"
