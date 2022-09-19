@@ -6,8 +6,10 @@
       <CdnDetails @update-details=onUpdateDetails />
       <CdnDomains @update-domains=onUpdateDomains />
       <CdnConfig @update-config=onUpdateConfigCache />
+      <!-- deploy button -->
       <button
         @click=deployCdn
+        :disabled="!canDeploy"
         class="button button--success self-end w-full md:max-w-xs"
       >
         Deploy
@@ -46,6 +48,9 @@ export default {
           additionalDomains: [],
           config: {
             origin: '',
+            maxAssetSize: undefined,
+            requestTimeout: undefined,
+            retryTimeout: undefined,
             cache: {
               enabled: true,
               ttl: 86400,
@@ -57,7 +62,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session'])
+    ...mapState(['session']),
+    canDeploy() {
+      return this.integration.name &&
+        this.integration.data.domain &&
+        this.integration.data.config.origin
+    }
   },
   methods: {
     async deployCdn() {
@@ -77,7 +87,7 @@ export default {
     },
     onUpdateConfigCache(configCache) {
       const integration = { ...this.integration }
-      integration.data.config.cache = configCache
+      integration.data.config = { ...integration.data.config, ...configCache }
       this.integration = integration
     },
     onUpdateDetails(name, origin) {

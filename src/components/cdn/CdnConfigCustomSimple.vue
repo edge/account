@@ -6,15 +6,16 @@
       <div class="input-group flex-1 path">
         <label class="label">Asset path</label>
         <input
-          v-model="newPath"
+          v-model="v$.newPath.$model"
           class="input input--floating"
           placeholder="e.g. /photos/*.jpg"
           type="text"
           @keypress=addPathOnEnter
         />
+        <ValidationError :errors="v$.newPath.$errors" />
       </div>
       <!-- cache enabled -->
-      <div class="input-group flex-1 cache">
+      <div class="input-group flex-1 cache flex-shrink-0">
         <Listbox v-model="newPathEnabled">
           <ListboxLabel class="label">Cache enabled</ListboxLabel>
           <div class="relative w-full mt-1">
@@ -60,21 +61,22 @@
         </Listbox>
       </div>
       <!-- ttl -->
-      <div class="input-group flex-1 ttl">
+      <div class="input-group flex-1 ttl  flex-shrink-0">
         <label class="label">Cache TTL</label>
         <input
           type="number"
           autocomplete="off"
           class="w-full input input--floating"
           placeholder="Auto"
-          v-model="newPathTtl"
+          v-model="v$.newPathTtl.$model"
           @keypress=addPathOnEnter
         />
+        <ValidationError :errors="v$.newPathTtl.$errors" />
       </div>
       <!-- add button -->
       <button
         @click=addPath
-        :disabled="false"
+        :disabled="!canAddPath"
         class="button button--success button--small w-20 h-full mt-4"
       >
         <div v-if="addingPath" class="flex items-center">
@@ -101,8 +103,11 @@
 </template>
 
 <script>
+import * as validation from '../../utils/validation'
 import CdnConfigPath from '@/components/cdn/CdnConfigPath.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
+import ValidationError from '@/components/ValidationError.vue'
+import useVuelidate from '@vuelidate/core'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/solid'
 import {
   Listbox,
@@ -123,7 +128,8 @@ export default {
     ListboxLabel,
     ListboxOption,
     ListboxOptions,
-    LoadingSpinner
+    LoadingSpinner,
+    ValidationError
   },
   props: ['globalConfig', 'paths'],
   data() {
@@ -134,10 +140,24 @@ export default {
       newPathTtl: undefined
     }
   },
+  validations() {
+    return {
+      newPath: [
+        validation.integrationPath
+      ],
+      newPathTtl : [
+        validation.integrationTtl
+      ]
+    }
+  },
   computed: {
     cacheEnabledDisplay() {
       if (this.newPathEnabled === undefined) return 'Auto'
       else return this.newPathEnabled ? 'True' : 'False'
+    },
+    canAddPath() {
+      return !this.v$.newPath.$invalid &&
+        !this.v$.newPathTtl.$invalid
     },
     globalPath() {
       return {
@@ -148,7 +168,8 @@ export default {
     }
   },
   methods: {
-    addPath() {
+    async addPath() {
+      if (!this.canAddPath) return
       const path = {
         path: this.newPath
       }
@@ -158,6 +179,7 @@ export default {
       this.newPath = ''
       this.newPathTtl = null
       this.newPathEnabled = undefined
+      await this.v$.$reset()
     },
     addPathOnEnter(event) {
       if (event.charCode !== 13) return
@@ -172,6 +194,11 @@ export default {
     },
     onEditPath(oldPathName, newPath) {
       this.$emit('edit-path', oldPathName, newPath)
+    }
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
     }
   }
 }

@@ -75,17 +75,14 @@ export default {
         if (path.ttl) paths[path.path].ttl = path.ttl
       })
       const config = {
-        cache: {
-          ...this.globalConfig,
-          paths
-        }
+        ...this.globalConfig
       }
+      config.cache.paths = paths
       const jsonCache = JSON.stringify(config, undefined, 2)
       this.json = jsonCache
       this.initialJson = jsonCache
     },
     updateConfig() {
-      // const json = document.getElementById('json-input').value
       try {
         const config = JSON.parse(this.json)
         this.jsonError = null

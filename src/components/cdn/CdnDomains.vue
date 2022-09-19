@@ -6,7 +6,7 @@
       <div class="flex-1 input-group">
         <label class="label">Add Domain</label>
         <input
-          v-model="newDomainName"
+          v-model="v$.newDomainName.$model"
           class="input input--floating"
           placeholder="e.g. cdn.yoursite.com"
           type="text"
@@ -16,12 +16,13 @@
       <!-- add button -->
       <button
         @click.prevent="addDomain"
-        :disabled="!newDomainName"
+        :disabled="!canAddDomain"
         class="button button--success button--small w-20"
       >
         <span>Add</span>
       </button>
     </div>
+    <ValidationError :errors="v$.newDomainName.$errors" />
     <!-- domains -->
     <div class="flex flex-col mt-1">
       <CdnDomain v-for="domain in domains"
@@ -36,12 +37,16 @@
 </template>
 
 <script>
+import * as validation from '../../utils/validation'
 import CdnDomain from '@/components/cdn/CdnDomain.vue'
+import ValidationError from '@/components/ValidationError.vue'
+import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'CdnDomains',
   components: {
-    CdnDomain
+    CdnDomain,
+    ValidationError
   },
   data() {
     return {
@@ -49,12 +54,25 @@ export default {
       newDomainName: ''
     }
   },
+  validations() {
+    return {
+      newDomainName: [
+        validation.domain
+      ]
+    }
+  },
+  computed: {
+    canAddDomain() {
+      return !this.v$.newDomainName.$invalid
+    }
+  },
   methods: {
-    addDomain() {
+    async addDomain() {
       const newDomain = { name: this.newDomainName }
       if (!this.domains.length) newDomain.primary = true
       this.domains = [ ...this.domains, newDomain]
       this.newDomainName = ''
+      await this.v$.$reset()
     },
     addDomainOnEnter(event) {
       if (event.charCode !== 13) return
@@ -78,6 +96,11 @@ export default {
         else newDomains.push({ name: domain.name })
       })
       this.domains = newDomains
+    }
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
     }
   },
   watch: {

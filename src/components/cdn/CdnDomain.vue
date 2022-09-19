@@ -1,12 +1,10 @@
 <template>
-  <div>
-    <div class="flex items-center justify-between py-2"
-      :class="isEditing ? 'border-r-2 border-green' : ''"
-    >
+  <div class="py-2">
+    <div class="flex items-center justify-between">
       <div class="flex items-center flex-1">
         <div class="input-group w-full name" v-if=isEditing>
           <input
-            v-model="newDomainName"
+            v-model="v$.newDomainName.$model"
             class="input input--floating"
             placeholder="e.g. cdn.yoursite.com"
             type="text"
@@ -22,6 +20,7 @@
           <div v-if="isEditing" class="flex space-x-1 justify-center">
             <button
               @click=confirmEdit
+              :disabled="!canConfirmEdit"
               class="domainButton save"
             >
               <div><CheckIcon class="domainButton__icon sm:text-green sm:w-5" /></div>
@@ -73,10 +72,14 @@
           </Menu>
         </div>
     </div>
+    <ValidationError :errors="v$.newDomainName.$errors" />
   </div>
 </template>
 
 <script>
+import * as validation from '../../utils/validation'
+import ValidationError from '@/components/ValidationError.vue'
+import useVuelidate from '@vuelidate/core'
 import {
   CheckIcon,
   DotsHorizontalIcon,
@@ -104,6 +107,7 @@ export default {
     PencilIcon,
     SortAscendingIcon,
     TrashIcon,
+    ValidationError,
     XIcon
   },
   props: ['domain'],
@@ -114,7 +118,17 @@ export default {
       windowWidth: window.innerWidth
     }
   },
+  validations() {
+    return {
+      newDomainName: [
+        validation.domain
+      ]
+    }
+  },
   computed: {
+    canConfirmEdit() {
+      return !this.v$.newDomainName.$invalid
+    },
     isPrimary() {
       return this.domain.primary
     },
@@ -123,10 +137,12 @@ export default {
     }
   },
   methods: {
-    cancelEdit() {
+    async cancelEdit() {
+      await this.v$.$reset()
       this.isEditing = false
     },
-    confirmEdit() {
+    async confirmEdit() {
+      await this.v$.$reset()
       this.$emit('edit-domain', this.domain.name, this.newDomainName)
     },
     confirmEditOnEnter(event) {
@@ -153,13 +169,18 @@ export default {
   },
   unmounted() {
     window.removeEventListener('resize', this.onWindowResize)
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
   }
 }
 </script>
 
 <style scoped>
 .input-group.name .input--floating {
-  @apply text-md
+  @apply text-md leading-none;
 }
 
 .options {

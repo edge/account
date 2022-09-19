@@ -5,32 +5,51 @@
       <div class="input-group">
         <label class="label">Name</label>
         <input
-          v-model="displayName"
+          v-model="v$.displayName.$model"
           class="input input--floating"
           placeholder="Enter a display name"
           type="text"
         />
+        <ValidationError :errors="v$.displayName.$errors" />
       </div>
       <div class="input-group">
         <label class="label">Origin URL</label>
         <input
-          v-model="originUrl"
+          v-model="v$.originUrl.$model"
           class="input input--floating"
           placeholder="e.g. https://yoursite.com/photos"
           type="text"
         />
+        <ValidationError :errors="v$.originUrl.$errors" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import * as validation from '../../utils/validation'
+import ValidationError from '@/components/ValidationError.vue'
+import useVuelidate from '@vuelidate/core'
+
 export default {
   name: 'CdnDetails',
+  components: {
+    ValidationError
+  },
   data() {
     return {
       displayName: '',
       originUrl: ''
+    }
+  },
+  validations() {
+    return {
+      displayName: [
+        validation.required
+      ],
+      originUrl : [
+        validation.domain
+      ]
     }
   },
   methods: {
@@ -38,11 +57,18 @@ export default {
       this.$emit('update-details', this.displayName, this.originUrl)
     }
   },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
+  },
   watch: {
     displayName() {
+      if (this.v$.displayName.$invalid) return
       this.updateDetails()
     },
     originUrl() {
+      if (this.v$.originUrl.$invalid) return
       this.updateDetails()
     }
   }

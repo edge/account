@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <div class="flex space-x-6 items-center py-2" :class="isEditing ? 'border-r-2 border-green' : ''">
+  <div class="py-2">
+    <div class="flex space-x-6 items-center">
       <!-- asset path -->
       <div class="input-group flex-1 path" :class="isGlobal ? '' : 'self-end'">
         <!-- editing -->
         <input v-if="isEditing && !isGlobal"
-          v-model="newPath"
+          v-model="v$.newPath.$model"
           class="input input--floating"
           placeholder="e.g. /photos/*.jpg"
           type="text"
@@ -15,7 +15,7 @@
         <span v-else class="text-md">{{ path.path }}</span>
       </div>
       <!-- cache enabled -->
-      <div class="input-group flex-1 cache self-end">
+      <div class="input-group flex-1 flex-shrink-0 cache self-end">
         <!-- editing -->
         <Listbox v-if=isEditing v-model="newEnabled">
           <div class="relative w-full mt-1">
@@ -67,7 +67,7 @@
         </span>
       </div>
       <!-- ttl -->
-      <div class="input-group flex-1 ttl self-end">
+      <div class="input-group flex-1  flex-shrink-0 ttl self-end">
         <!-- editing -->
         <input
           v-if=isEditing
@@ -75,7 +75,7 @@
           autocomplete="off"
           class="w-full input input--floating"
           :placeholder="isGlobal ? 'Enter TTL' : 'Auto'"
-          v-model="newTtl"
+          v-model="v$.newTtl.$model"
           @keypress="confirmEditOnEnter"
         />
         <!-- not editing -->
@@ -92,6 +92,7 @@
         <div v-if="isEditing" class="flex space-x-1 justify-center">
           <button
             @click=confirmEdit
+            :disabled="!canConfirmEdit"
             class="pathButton save"
           >
             <div><CheckIcon class="pathButton__icon sm:text-green sm:w-5" /></div>
@@ -134,10 +135,15 @@
         </Menu>
       </div>
     </div>
+  <ValidationError :errors="v$.newPath.$errors" />
+  <ValidationError :errors="v$.newTtl.$errors" />
   </div>
 </template>
 
 <script>
+import * as validation from '../../utils/validation'
+import ValidationError from '@/components/ValidationError.vue'
+import useVuelidate from '@vuelidate/core'
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -160,6 +166,7 @@ import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'CdnConfigPath',
+  props: ['path'],
   components: {
     CheckIcon,
     ChevronDownIcon,
@@ -174,9 +181,19 @@ export default {
     MenuItems,
     PencilIcon,
     TrashIcon,
+    ValidationError,
     XIcon
   },
-  props: ['path'],
+  validations() {
+    return {
+      newPath: [
+        validation.integrationPath
+      ],
+      newTtl : [
+        validation.integrationTtl
+      ]
+    }
+  },
   data() {
     return {
       isEditing: false,
@@ -194,8 +211,8 @@ export default {
       else return this.path.enabled ? 'True' : 'False'
     },
     canConfirmEdit() {
-      /** @todo */
-      return true
+      return !this.v$.newPath.$invalid &&
+        !this.v$.newTtl.$invalid
     },
     isGlobal() {
       return this.path.path === '(global)'
@@ -209,10 +226,12 @@ export default {
     }
   },
   methods: {
-    cancelEdit() {
+    async cancelEdit() {
       this.isEditing = false
+      await this.v$.$reset()
     },
-    confirmEdit() {
+    async confirmEdit() {
+      if (!this.canConfirmEdit) return
       if (this.isGlobal) {
         this.$emit('edit-global-config', this.newEnabled, this.newTtl)
       }
@@ -225,6 +244,7 @@ export default {
         this.$emit('edit-path', this.path.path, newPath)
       }
       this.isEditing = false
+      await this.v$.$reset()
     },
     confirmEditOnEnter(event) {
       if (event.charCode !== 13) return
@@ -249,6 +269,11 @@ export default {
   },
   unmounted() {
     window.removeEventListener('resize', this.onWindowResize)
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
   }
 }
 </script>

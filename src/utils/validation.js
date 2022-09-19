@@ -87,9 +87,27 @@ export const domain = helpers.withMessage(
 
 /**
  * Server backup comment validator.
- */
+*/
 const serverCommentLengthRegexp = /^.{1,128}$/
 export const serverCommentLength = helpers.withMessage(
   'Must be between 1 and 128 characters',
   v => serverCommentLengthRegexp.test(v)
+)
+
+/**
+ * CDN integration ttl validator.
+*/
+const isValidTtl = ttl => ttl === undefined || ttl === '' || ttl > 0
+export const integrationTtl = helpers.withMessage(
+  'Minimum TTL is 1',
+  v => isValidTtl(v)
+)
+
+/**
+ * CDN integration path validator.
+*/
+const isValidPath = path => path.charAt(0) === '/' || path.charAt(0) === '*'
+export const integrationPath = helpers.withMessage(
+  'Path must begin with / or a wildcard (*)',
+  v => isValidPath(v)
 )

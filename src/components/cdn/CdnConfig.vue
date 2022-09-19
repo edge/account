@@ -58,8 +58,13 @@ export default {
     return {
       configMode: 'default',
       globalConfig: {
-        enabled: true,
-        ttl: 86400
+        maxAssetSize: undefined,
+        requestTimeout: undefined,
+        retryTimeout: undefined,
+        cache: {
+          enabled: true,
+          ttl: 86400
+        }
       },
       paths: [
       ]
@@ -74,8 +79,11 @@ export default {
     },
     onEditGlobalConfig(enabled, ttl) {
       this.globalConfig = {
-        enabled: enabled,
-        ttl: ttl
+        ...this.globalConfig,
+        cache: {
+          enabled,
+          ttl
+        }
       }
     },
     onEditPath(oldPathName, newPath) {
@@ -86,8 +94,13 @@ export default {
     },
     onUpdateConfig(config) {
       this.globalConfig = {
-        enabled: config.cache.enabled,
-        ttl: config.cache.ttl
+        maxAssetSize: config.maxAssetSize,
+        requestTimeout: config.requestTimeout,
+        retryTimeout: config.retryTimeout,
+        cache: {
+          enabled: config.cache.enabled,
+          ttl: config.cache.ttl
+        }
       }
 
       const paths = []
@@ -100,15 +113,17 @@ export default {
       this.paths = paths
     },
     updateConfigCache() {
-      const configCache = {}
+      const configCache = {
+        cache: {}
+      }
       if (this.configMode === 'default') {
         configCache.enabled = true
         configCache.ttl = 86400
         configCache.paths = {}
       }
       else {
-        configCache.enabled = this.globalConfig.enabled
-        configCache.ttl = this.globalConfig.ttl
+        configCache.cache.enabled = this.globalConfig.cache.enabled
+        configCache.cache.ttl = this.globalConfig.cache.ttl
         const paths = {}
         this.paths.forEach(path => {
           paths[path.path] = {}
