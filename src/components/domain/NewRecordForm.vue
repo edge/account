@@ -51,7 +51,7 @@
             v-model="hostname"
             @keypress="createOnEnter"
           />
-          <span class="domainName">.{{ domainName }}</span>
+          <span class="domainName truncate">.{{ domainName }}</span>
         </div>
         <div v-if="hostnameError" class="errorMessage">
           <span class="errorMessage__text">{{ hostnameError }}</span>

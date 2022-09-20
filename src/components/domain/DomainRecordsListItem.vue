@@ -60,10 +60,10 @@
           </span>
           <span
             v-if=isEditing
-            class="border-b text-gray-400 md:hidden lg:inline-block border-gray-400"
-            :title="`${record.name ? '.' : ''}${domainName}`"
+            class="border-b text-gray-400 md:hidden lg:inline-block border-gray-400 truncate"
+            :title="`.${domainName}`"
           >
-            {{ record.name ? '.' : ''}}{{ domainName }}
+            .{{ domainName }}
           </span>
         </div>
         <div v-if="isEditing && hostnameError" class="errorMessage">
