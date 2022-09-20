@@ -6,6 +6,7 @@
       <CdnDetails @update-details=onUpdateDetails />
       <CdnDomains @update-domains=onUpdateDomains />
       <CdnConfig @update-config=onUpdateConfig />
+      <CdnEstimatedCosts />
       <!-- deploy button -->
       <button
         @click=deployCdn
@@ -25,6 +26,7 @@ import * as utils from '@/account-utils/'
 import CdnConfig from '@/components/cdn/CdnConfig.vue'
 import CdnDetails from '@/components/cdn/CdnDetails.vue'
 import CdnDomains from '@/components/cdn/CdnDomains.vue'
+import CdnEstimatedCosts from '@/components/cdn/CdnEstimatedCosts.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -35,7 +37,8 @@ export default {
   components: {
     CdnConfig,
     CdnDetails,
-    CdnDomains
+    CdnDomains,
+    CdnEstimatedCosts
   },
   data() {
     return {
