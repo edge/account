@@ -218,9 +218,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply rounded-lg bg-white w-full overflow-auto p-4 md:p-6;
-}
 .box.backups__table {
   text-overflow: unset;
   overflow: unset;

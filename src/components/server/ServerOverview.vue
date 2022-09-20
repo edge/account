@@ -1,6 +1,6 @@
 <template>
   <div class="grid gap-4 xl:grid-cols-2">
-    <div class="box server__details xl:col-span-2">
+    <div class="box overflow_hidden server__details xl:col-span-2">
       <h4 class="section__title">Server details</h4>
       <div class="overview__grid">
         <!-- name, hostname, ip, region -->
@@ -52,7 +52,7 @@
         </div>
       </div>
     </div>
-    <div class="box server__specs">
+    <div class="box overflow_hidden server__specs">
       <h4 class="section__title">Server specs</h4>
       <!-- vcpus, ram, disk, bandwidth -->
       <div class="overview__grid">
@@ -70,7 +70,7 @@
         </div>
       </div>
     </div>
-    <div class="box server__costs">
+    <div class="box overflow_hidden server__costs">
       <h4 class="section__title">Estimated costs</h4>
       <!-- hourly and daily costs -->
       <div class="overview__grid">
@@ -186,9 +186,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply p-4 md:p-6 bg-white rounded-lg w-full overflow-hidden;
-}
 .section__title {
   @apply mb-4;
 }

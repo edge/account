@@ -1,6 +1,6 @@
 <template>
   <div class="pb-20">
-    <div class="box">
+    <div class="box domain_delete">
       <h4>Delete domain and records</h4>
       <!-- server not yet deleted -->
       <div>
@@ -89,7 +89,4 @@ export default {
 }
 </script>
 <style scoped>
-  .box {
-    @apply bg-white rounded-lg w-full p-4 md:p-6;
-  }
 </style>

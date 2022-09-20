@@ -2,7 +2,7 @@
   <div>
     <div class="specs__grid">
       <div class="flex flex-col">
-        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
+        <div class="slider_box" :class="isRegionDisabled ? 'disabled' : ''">
           <span class="box__title">vCPU</span>
           <vue-slider
             :disabled=isRegionDisabled
@@ -30,7 +30,7 @@
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
+        <div class="slider_box" :class="isRegionDisabled ? 'disabled' : ''">
           <span class="box__title">RAM (GiB)</span>
           <vue-slider
             :disabled=isRegionDisabled
@@ -58,7 +58,7 @@
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
+        <div class="slider_box" :class="isRegionDisabled ? 'disabled' : ''">
           <span class="box__title">Disk (GiB)</span>
           <vue-slider
             :disabled=isRegionDisabled
@@ -94,7 +94,7 @@
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
+        <div class="slider_box" :class="isRegionDisabled ? 'disabled' : ''">
           <span class="box__title">Bandwidth (Mbps)</span>
           <vue-slider
             :disabled=isRegionDisabled
@@ -367,10 +367,10 @@ export default {
 }
 
 /* radio option */
-.box {
+.slider_box {
   @apply relative flex space-x-3 items-start justify-center pr-5 pl-2 pt-14 pb-8 border border-gray-300 rounded-md;
 }
-.box.disabled {
+.slider_box.disabled {
   @apply cursor-not-allowed opacity-50;
 }
 

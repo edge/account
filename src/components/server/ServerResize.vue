@@ -187,10 +187,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply p-4 md:p-6 bg-white rounded-lg w-full;
-}
-
 .server__error {
   @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
 }

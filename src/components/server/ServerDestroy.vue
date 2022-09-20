@@ -108,7 +108,4 @@ export default {
 }
 </script>
 <style scoped>
-  .box {
-    @apply bg-white rounded-lg w-full p-4 md:p-6;
-  }
 </style>

@@ -92,10 +92,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-
 .recordList {
   @apply mt-2 space-y-2;
 }

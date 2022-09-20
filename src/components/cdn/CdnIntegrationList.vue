@@ -1,12 +1,12 @@
 <template>
   <div>
     <!-- loading -->
-    <div v-if="!loaded" class="box mt-2 flex items-center">
+    <div v-if="!loaded" class="box flex items-center">
       <span>Loading</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
     <!-- cdn integrations list -->
-    <ul v-else-if="integrations.length" class="cdnList">
+    <ul v-else-if="integrations.length" class="space-y-2">
       <CdnIntegrationListItem
         v-for="integration in integrations"
         :key="integration._key"
@@ -90,11 +90,4 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-
-.cdnList {
-  @apply mt-5 lg:mt-5 space-y-2;
-}
 </style>

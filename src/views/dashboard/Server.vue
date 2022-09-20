@@ -469,9 +469,6 @@ export default {
   @apply absolute top-0 right-0 w-10 h-full pointer-events-none bg-gradient-to-l from-gray-200;
 }
 
-.box {
-  @apply p-4 md:p-6 bg-white rounded-lg w-full;
-}
 .box.box--tall {
   @apply py-20 !important;
 }

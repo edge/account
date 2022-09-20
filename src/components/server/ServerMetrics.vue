@@ -236,9 +236,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply p-4 md:p-6 bg-white rounded-lg w-full;
-}
 .box.box--tall {
   @apply py-20 !important;
 }

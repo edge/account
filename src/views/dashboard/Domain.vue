@@ -192,9 +192,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
 .box.suspend {
   @apply pt-4;
 }

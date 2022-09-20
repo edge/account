@@ -1,5 +1,5 @@
 <template>
-  <div class="box flex flex-col justify-between">
+  <div class="box flex flex-col justify-start">
     <h4>Transfer XE</h4>
     <div class="flex flex-col">
       <!-- eslint-disable-next-line max-len -->
@@ -54,14 +54,6 @@ export default {
 </script>
 
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg justify-start;
-}
-
-.box h4 {
-  @apply w-full mb-4 font-medium;
-}
-
 .address {
   @apply break-words text-md;
   width: calc(100% - 30px)
