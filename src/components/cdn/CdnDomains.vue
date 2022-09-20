@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     async addDomain() {
-      const newDomain = { name: this.newDomainName }
+      const newDomain = { name: this.newDomainName.toLowerCase() }
       if (!this.domains.length) newDomain.primary = true
       this.domains = [ ...this.domains, newDomain]
       this.newDomainName = ''

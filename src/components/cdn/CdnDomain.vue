@@ -143,7 +143,7 @@ export default {
     },
     async confirmEdit() {
       await this.v$.$reset()
-      this.$emit('edit-domain', this.domain.name, this.newDomainName)
+      this.$emit('edit-domain', this.domain.name, this.newDomainName.toLowerCase())
     },
     confirmEditOnEnter(event) {
       if (event.charCode !== 13) return
