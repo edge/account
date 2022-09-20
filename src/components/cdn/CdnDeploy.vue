@@ -5,7 +5,7 @@
       <!-- details -->
       <CdnDetails @update-details=onUpdateDetails />
       <CdnDomains @update-domains=onUpdateDomains />
-      <CdnConfig @update-config=onUpdateConfigCache />
+      <CdnConfig @update-config=onUpdateConfig />
       <!-- deploy button -->
       <button
         @click=deployCdn
@@ -72,6 +72,7 @@ export default {
   methods: {
     async deployCdn() {
       try {
+        console.log(this.integration)
         const { integration } = await utils.cdn.addIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -85,9 +86,9 @@ export default {
         this.httpError = error
       }
     },
-    onUpdateConfigCache(configCache) {
+    onUpdateConfig(config) {
       const integration = { ...this.integration }
-      integration.data.config = { ...integration.data.config, ...configCache }
+      integration.data.config = { ...integration.data.config, ...config }
       this.integration = integration
     },
     onUpdateDetails(name, origin) {

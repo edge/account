@@ -112,38 +112,37 @@ export default {
       }
       this.paths = paths
     },
-    updateConfigCache() {
-      const configCache = {
+    updateConfig() {
+      let config = {
         cache: {}
       }
       if (this.configMode === 'default') {
-        configCache.enabled = true
-        configCache.ttl = 86400
-        configCache.paths = {}
+        config.enabled = true
+        config.ttl = 86400
+        config.paths = {}
       }
       else {
-        configCache.cache.enabled = this.globalConfig.cache.enabled
-        configCache.cache.ttl = this.globalConfig.cache.ttl
+        config = { ...this.globalConfig }
         const paths = {}
         this.paths.forEach(path => {
           paths[path.path] = {}
           if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
           if (path.ttl) paths[path.path].ttl = path.ttl
         })
-        configCache.paths = paths
+        config.cache.paths = paths
       }
-      this.$emit('update-config', configCache)
+      this.$emit('update-config', config)
     }
   },
   watch: {
     configMode() {
-      this.updateConfigCache()
+      this.updateConfig()
     },
     globalConfig() {
-      this.updateConfigCache()
+      this.updateConfig()
     },
     paths() {
-      this.updateConfigCache()
+      this.updateConfig()
     }
   }
 }
