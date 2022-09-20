@@ -48,7 +48,7 @@ export default {
         validation.required
       ],
       originUrl : [
-        validation.domain
+        validation.origin
       ]
     }
   },
