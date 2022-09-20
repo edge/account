@@ -27,21 +27,21 @@
       <!-- status dot -->
       <div class="domainList__field status">
         <span class="domainList__header">Status</span>
-        <DomainStatus :domain=domain />
+        <StatusDot :isActive=isActive :isInactive="!isActive" :small="true" :statusText=statusText />
       </div>
     </li>
 </template>
 
 <script>
 // import * as format from '@/utils/format'
-import DomainStatus from '@/components/domain/DomainStatus'
+import StatusDot from '@/components/StatusDot'
 import { mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
   name: 'DomainsListItem',
   components: {
-    DomainStatus
+    StatusDot
   },
   props: ['domain'],
   computed: {
@@ -49,6 +49,9 @@ export default {
     created() {
       const created = moment(this.domain.created).fromNow()
       return created === 'a few seconds ago' ? 'Just now' : created
+    },
+    isActive() {
+      return this.domain.active
     },
     recordsList() {
       let title = ''
@@ -59,6 +62,9 @@ export default {
     },
     recordTypesCount() {
       return this.domain && Object.keys(this.domain.records).length
+    },
+    statusText() {
+      return this.isActive ? 'Active' : 'Inactive'
     }
   },
   methods: {

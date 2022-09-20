@@ -28,20 +28,20 @@
       <!-- status dot -->
       <div class="domainList__field status">
         <span class="domainList__header">Status</span>
-        <CdnIntegrationStatus :integration=integration />
+        <StatusDot :isActive="true" :isInactive="false" :small="true" :statusText="'active'" />
       </div>
     </li>
 </template>
 
 <script>
 // import * as format from '@/utils/format'
-import CdnIntegrationStatus from '@/components/cdn/CdnIntegrationStatus'
+import StatusDot from '@/components/StatusDot'
 import moment from 'moment'
 
 export default {
   name: 'CdnIntegrationListItem',
   components: {
-    CdnIntegrationStatus
+    StatusDot
   },
   props: ['integration'],
   computed: {

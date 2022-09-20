@@ -59,7 +59,7 @@
       <!-- status dot -->
       <div class="serverList__field status">
         <span class="serverList__header">Status</span>
-        <ServerStatus extraClass="text-m" :server=server />
+        <StatusDot :isActive=isActive :isInactive=isInactive :small="true" :statusText=statusText />
       </div>
     </li>
 </template>
@@ -67,7 +67,7 @@
 <script>
 import * as format from '../utils/format'
 import DistroIcon from '@/components/icons/DistroIcon'
-import ServerStatus from '@/components/server/ServerStatus'
+import StatusDot from '@/components/StatusDot'
 import { mapState } from 'vuex'
 import moment from 'moment'
 
@@ -75,7 +75,7 @@ export default {
   name: 'ServerListItem',
   components: {
     DistroIcon,
-    ServerStatus
+    StatusDot
   },
   props: ['server', 'regions'],
   computed: {
@@ -128,6 +128,14 @@ export default {
     },
     region() {
       return this.regions.find(region => region._key === this.server.region)
+    },
+    statusText() {
+      if (this.isStopping) return 'Stopping'
+      if (this.isDestroying) return 'Deleting'
+      if (this.isResizing) return 'Resizing'
+      if (this.isRestoring) return 'Restoring'
+      if (this.isStarting) return 'Starting'
+      return this.server.status
     },
     os() {
       return this.server.settings.os

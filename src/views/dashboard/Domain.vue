@@ -8,7 +8,7 @@
     <div class="w-full flex flex-wrap justify-between items-center">
       <h1 class="mr-2">{{domainName}}</h1>
       <div class="mb-5" v-if=domain>
-        <DomainStatus :domain=domain :large="true" />
+        <StatusDot :isActive="true" :isInactive="false" :large="true" :statusText="'active'" />
       </div>
     </div>
 
@@ -106,9 +106,9 @@
 import * as utils from '@/account-utils'
 import DomainDelete from '@/components/domain/DomainDelete'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
-import DomainStatus from '@/components/domain/DomainStatus'
 import NameserversConfigure from '@/components/domain/NameserversConfigure'
 import NewRecordForm from '@/components/domain/NewRecordForm'
+import StatusDot from '@/components/StatusDot'
 import { ArrowLeftIcon, ExclamationIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { mapGetters, mapState } from 'vuex'
@@ -122,11 +122,11 @@ export default {
     ArrowLeftIcon,
     DomainDelete,
     DomainRecordsList,
-    DomainStatus,
     ExclamationIcon,
     InformationCircleIcon,
     NameserversConfigure,
     NewRecordForm,
+    StatusDot,
     TabGroup,
     TabList,
     Tab,
@@ -147,6 +147,12 @@ export default {
     ...mapState(['balance', 'config', 'session']),
     domainName() {
       return this.$route.params.key
+    },
+    isActive() {
+      return this.domain.active
+    },
+    statusText() {
+      return this.isActive ? 'Active' : 'Inactive'
     }
   },
   methods: {

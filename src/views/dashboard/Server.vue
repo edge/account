@@ -41,7 +41,11 @@
           </div>
           <span class="divider"/>
           <div class="flex items-center space-x-1">
-            <ServerStatus :server=server />
+            <StatusDot
+              :isActive=isActive
+              :isInactive=isInactive
+              :statusText=statusText
+            />
             <!-- eslint-disable-next-line max-len -->
             <Tooltip v-if="server.suspended" position="right" theme="error" text="Your server has been suspended due to unpaid invoices. When you add funds to your account it will automatically restart."
             >
@@ -164,6 +168,7 @@
             <!-- overview -->
             <TabPanel>
               <ServerOverview
+                :activeTasks=activeTasks
                 :region=region
                 :server=server
               />
@@ -260,7 +265,7 @@ import ServerOverview from '@/components/server/ServerOverview'
 // import ServerMetrics from '@/components/server/ServerMetrics'
 import ServerPowerToggle from '@/components/server/ServerPowerToggle'
 import ServerResize from '@/components/server/ServerResize'
-import ServerStatus from '@/components/server/ServerStatus'
+import StatusDot from '@/components/StatusDot'
 import Tooltip from '@/components/Tooltip'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { mapActions, mapState } from 'vuex'
@@ -298,7 +303,7 @@ export default {
     ServerOverview,
     ServerPowerToggle,
     ServerResize,
-    ServerStatus,
+    StatusDot,
     TabGroup,
     TabList,
     Tab,
@@ -314,6 +319,11 @@ export default {
     disableActions() {
       return this.activeTasks.length > 0 || this.isDestroyed
     },
+    disablingTaskInProgress() {
+      // server status and active tasks aren't always 100% in sync
+      // these tasks are where the status will be displayed in grey whilst running
+      return this.isStopping || this.isStarting || this.isResizing || this.isRestoring
+    },
     formattedDisk() {
       return format.mib(this.server.spec.disk)
     },
@@ -323,11 +333,18 @@ export default {
     isCreating() {
       return this.activeTasks.some(task => task.action === 'create')
     },
+    isActive() {
+      return (!this.disablingTaskInProgress) && this.server.status === 'active'
+    },
     isDestroyed() {
       return this.server.status === 'deleted' && !this.activeTasks.some(task => task.action === 'destroy')
     },
     isDestroying() {
       return this.activeTasks.some(task => task.action === 'destroy')
+    },
+    isInactive() {
+      // eslint-disable-next-line max-len
+      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying)
     },
     isLoadingBackups() {
       if (this.backups.length) return false
@@ -340,6 +357,20 @@ export default {
     },
     isRestoring() {
       return this.activeTasks.some(task => task.action === 'restoreBackup')
+    },
+    isStarting() {
+      return this.activeTasks.some(task => task.action === 'start')
+    },
+    isStopping() {
+      return this.activeTasks.some(task => task.action === 'stop')
+    },
+    statusText() {
+      if (this.isStopping) return 'Stopping'
+      if (this.isDestroying) return 'Deleting'
+      if (this.isResizing) return 'Resizing'
+      if (this.isRestoring) return 'Restoring'
+      if (this.isStarting) return 'Starting'
+      return this.server.status
     },
     os() {
       return this.server.settings.os
