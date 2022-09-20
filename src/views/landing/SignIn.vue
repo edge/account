@@ -21,13 +21,7 @@
           />
         </div>
         <!-- error message  -->
-        <div class="flex items-center errorMessage mt-2"
-          v-for="error of v$.accountNumberInput.$errors"
-          :key="error.$uid"
-        >
-          <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{ error.$message }}</span>
-        </div>
+        <ValidationError :errors="v$.accountNumberInput.$errors" />
         <div v-if="errors.accountNumberInput" class="flex items-center errorMessage mt-2">
           <ExclamationIcon class="w-3.5 h-3.5" />
           <span class="errorMessage__text">{{ errors.accountNumberInput }}</span>
@@ -112,14 +106,9 @@
           :resetErrors="resetOtpErrors"
         />
         <!-- error message  -->
-        <div v-if="useBackupCode"><div class="flex items-center errorMessage mt-2"
-          v-for="error of v$.backupCode.$errors"
-          :key="error.$uid"
-        >
-          <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{ error.$message }}</span>
-        </div>
-        <div class="mt-2"><HttpError :error=httpError /></div>
+        <div v-if="useBackupCode">
+          <ValidationError :errors="v$.backupCode.$errors" />
+          <div class="mt-2"><HttpError :error=httpError /></div>
         </div>
 
         <button v-if="useBackupCode" @click="toggleUseBackupCode" class="underline mt-2">
@@ -152,6 +141,7 @@ import AuthCodeInput from '@/components/AuthCodeInput'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { ExclamationIcon, ShieldExclamationIcon } from '@heroicons/vue/outline'
 
@@ -166,7 +156,8 @@ export default {
     HttpError,
     LoadingSpinner,
     Logo,
-    ShieldExclamationIcon
+    ShieldExclamationIcon,
+    ValidationError
   },
   data() {
     return {

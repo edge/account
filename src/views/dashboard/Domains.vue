@@ -48,15 +48,7 @@
         <!-- eslint-disable-next-line max-len -->
         <span class="">This domain already exists within Edge DNS. If this is a mistake, please contact support@edge.network</span>
       </div>
-      <div class="errorMessage" v-if=showValidationError>
-        <span
-          v-for="error in v$.newDomainName.$errors"
-          :key="error.$uid"
-          class="mt-2 errorMessage__text"
-        >
-          {{ error.$message }}
-        </span>
-      </div>
+      <ValidationError v-if="showValidationError" :errors="v$.newDomainName.$errors" />
       <!-- estimated costs -->
       <div class="flex flex-col items-baseline mt-2">
         <span class="text-green">Estimated Cost</span>
@@ -95,6 +87,7 @@ import DomainsList from '@/components/domain/DomainsList'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { ExclamationIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
@@ -110,7 +103,8 @@ export default {
     HttpError,
     InformationCircleIcon,
     LoadingSpinner,
-    Tooltip
+    Tooltip,
+    ValidationError
   },
   data() {
     return {

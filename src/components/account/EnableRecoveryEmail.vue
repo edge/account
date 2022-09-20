@@ -30,10 +30,7 @@
         </button>
       </div>
       <!-- error message  -->
-      <div class="flex items-center errorMessage mt-2" v-for="error of v$.email.$errors" :key="error.$uid">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div>
+      <ValidationError :errors="v$.email.$errors" />
       <div class="mt-2" v-if="errors.email">
         <HttpError :error="errors.email" />
       </div>
@@ -84,10 +81,7 @@
         </button>
       </div>
       <!-- error message  -->
-      <div class="flex items-center errorMessage mt-2" v-for="error of v$.confirmationCode.$errors" :key="error.$uid">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div>
+      <ValidationError :errors="v$.confirmationCode.$errors" />
       <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-1">
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
@@ -106,6 +100,7 @@ import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { mapActions, mapState } from 'vuex'
 
@@ -114,7 +109,8 @@ export default {
     BadgeCheckIcon,
     ExclamationIcon,
     HttpError,
-    LoadingSpinner
+    LoadingSpinner,
+    ValidationError
   },
   data() {
     return {

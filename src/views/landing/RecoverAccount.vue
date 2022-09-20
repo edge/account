@@ -17,10 +17,7 @@
         />
       </div>
       <!-- error message  -->
-      <div class="flex items-center errorMessage mt-2" v-for="error of v$.email.$errors" :key="error.$uid">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div>
+      <ValidationError :errors="v$.email.$errors" />
       <div v-if="errors.email" class="flex items-center errorMessage mt-1">
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ errors.email }}</span>
@@ -133,6 +130,7 @@ import AuthCodeInput from '@/components/AuthCodeInput'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 
@@ -147,7 +145,8 @@ export default {
     DuplicateIcon,
     ExclamationIcon,
     LoadingSpinner,
-    Logo
+    Logo,
+    ValidationError
   },
   data() {
     return {

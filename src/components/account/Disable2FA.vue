@@ -51,20 +51,10 @@
       </button>
     </div>
     <!-- error message  -->
-    <div v-if="useBackupCode"><div class="flex items-center errorMessage mt-2"
-      v-for="error of v$.backupCode.$errors"
-      :key="error.$uid"
-    >
-      <ExclamationIcon class="w-3.5 h-3.5" />
-      <span class="errorMessage__text">{{ error.$message }}</span>
-    </div></div>
-    <div v-else><div class="flex items-center errorMessage mt-2"
-      v-for="error of v$.confirmationCode.$errors"
-      :key="error.$uid"
-    >
-      <ExclamationIcon class="w-3.5 h-3.5" />
-      <span class="errorMessage__text">{{ error.$message }}</span>
-    </div></div>
+    <div v-if="useBackupCode"><ValidationError :errors="v$.backupCode.$errors"/></div>
+    <div v-else>
+      <ValidationError :errors="v$.confirmationCode.$errors"/>
+    </div>
     <div class="mt-2"><HttpError :error=httpError /></div>
   </div>
 </template>
@@ -76,18 +66,18 @@ import * as format from '../../utils/format'
 import * as utils from '../../account-utils/index'
 import * as validation from '../../utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
     BadgeCheckIcon,
-    ExclamationIcon,
     HttpError,
-    LoadingSpinner
+    LoadingSpinner,
+    ValidationError
   },
   data() {
     return {

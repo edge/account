@@ -63,10 +63,7 @@
         </button>
       </div>
       <!-- error message  -->
-      <div class="flex items-center errorMessage mt-2" v-for="error of v$.confirmationCode.$errors" :key="error.$uid">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div>
+      <ValidationError :errors="v$.confirmationCode.$errors" />
       <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-2">
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
@@ -105,6 +102,7 @@ import * as validation from '../../utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import ValidationError from '@/components/ValidationError.vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import speakeasy from 'speakeasy'
 import useVuelidate from '@vuelidate/core'
@@ -116,6 +114,7 @@ export default {
     BadgeCheckIcon,
     ExclamationIcon,
     LoadingSpinner,
+    ValidationError,
     VueQrcode
   },
   data() {

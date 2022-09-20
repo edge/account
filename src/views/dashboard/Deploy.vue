@@ -52,30 +52,14 @@
           :hostname=hostname
           :isRegionDisabled="isRegionDisabled"
         />
-        <div v-if="serverNameUpdated" class="errorMessage">
-          <span
-            v-for="error in v$.serverOptions.settings.name.$errors"
-            :key="error.$uid"
-            class="errorMessage__text"
-          >
-            {{ error.$message }}
-          </span>
-        </div>
+        <ValidationError v-if="serverNameUpdated" :errors="v$.serverOptions.settings.name.$errors" />
 
         <Domain
           @domain-changed="updateDomain"
           :hostname="hostname"
           :isRegionDisabled="isRegionDisabled"
         />
-        <div v-if="serverDomainUpdated" class="errorMessage">
-          <span
-            v-for="error in v$.serverOptions.settings.domain.$errors"
-            :key="error.$uid"
-            class="errorMessage__text"
-          >
-            {{ error.$message }}
-          </span>
-        </div>
+        <ValidationError v-if="serverDomainUpdated" :errors="v$.serverOptions.settings.domain.$errors" />
       </div>
 
       <!-- password -->
@@ -84,15 +68,7 @@
           @password-changed="updatePassword"
           :isRegionDisabled="isRegionDisabled"
         />
-        <div class="errorMessage">
-          <span
-            v-for="error in v$.serverOptions.settings.password.$errors"
-            :key="error.$uid"
-            class="mt-2 errorMessage__text"
-          >
-            {{ error.$message }}
-          </span>
-        </div>
+        <ValidationError :errors="v$.serverOptions.settings.password.$errors" />
       </div>
 
       <!-- deploy button & error message -->
@@ -138,7 +114,7 @@ import OperatingSystem from '@/components/deploy/OperatingSystem'
 import Password from '@/components/deploy/Password'
 import ServerName from '@/components/deploy/ServerName'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
-// import Toggle from '@vueform/toggle'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { mapGetters, mapState } from 'vuex'
 
@@ -156,8 +132,8 @@ export default {
     OperatingSystem,
     Password,
     ServerName,
-    ServerSpecs
-    // Toggle
+    ServerSpecs,
+    ValidationError
   },
   data() {
     return {
