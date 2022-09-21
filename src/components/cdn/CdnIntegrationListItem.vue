@@ -28,7 +28,7 @@
       <!-- status dot -->
       <div class="domainList__field status">
         <span class="domainList__header">Status</span>
-        <StatusDot :isActive="true" :isInactive="false" :small="true" :statusText="'active'" />
+        <StatusDot :isActive="isActive" :isInactive="!isActive" :small="true" :statusText="statusText" />
       </div>
     </li>
 </template>
@@ -36,7 +36,6 @@
 <script>
 // import * as format from '@/utils/format'
 import StatusDot from '@/components/StatusDot'
-import moment from 'moment'
 
 export default {
   name: 'CdnIntegrationListItem',
@@ -45,9 +44,11 @@ export default {
   },
   props: ['integration'],
   computed: {
-    created() {
-      const created = moment(this.integration.created).fromNow()
-      return created === 'a few seconds ago' ? 'Just now' : created
+    isActive() {
+      return this.integration.active
+    },
+    statusText() {
+      return this.isActive ? 'Active' : 'Inactive'
     }
   },
   methods: {
