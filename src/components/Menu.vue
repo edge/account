@@ -31,6 +31,7 @@ export default {
     isActive(item) {
       if (item.link === '/servers') return this.location.includes('/server')
       if (item.link === '/domains') return this.location.includes('/domain')
+      if (item.link === '/cdn') return this.location.includes('/cdn')
       return item.link === this.location
     }
   },
