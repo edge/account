@@ -1,8 +1,9 @@
 <template>
   <div class="py-2">
-    <div class="flex space-x-6 items-center">
+    <div class="path__item">
       <!-- asset path -->
       <div class="input-group flex-1 path" :class="isGlobal ? '' : 'self-end'">
+        <label class="text-xs lg:hidden">Asset path</label>
         <!-- editing -->
         <input v-if="isEditing && !isGlobal"
           v-model="v$.newPath.$model"
@@ -16,6 +17,7 @@
       </div>
       <!-- cache enabled -->
       <div class="input-group flex-1 flex-shrink-0 cache self-end">
+        <label class="text-xs lg:hidden">Cache enabled</label>
         <!-- editing -->
         <Listbox v-if=isEditing v-model="newEnabled">
           <div class="relative w-full mt-1">
@@ -68,6 +70,7 @@
       </div>
       <!-- ttl -->
       <div class="input-group flex-1  flex-shrink-0 ttl self-end">
+        <label class="text-xs lg:hidden">Cache TTL</label>
         <!-- editing -->
         <input
           v-if=isEditing
@@ -95,26 +98,26 @@
             :disabled="!canConfirmEdit"
             class="pathButton save"
           >
-            <div><CheckIcon class="pathButton__icon sm:text-green sm:w-5" /></div>
-            <span class="sm:hidden">Save</span>
+            <div><CheckIcon class="pathButton__icon lg:text-green lg:w-5" /></div>
+            <span class="lg:hidden">Save</span>
           </button>
           <button
             @click=cancelEdit
             class="pathButton cancel"
           >
-            <div><XIcon class="pathButton__icon sm:text-red sm:w-5" /></div>
-            <span class="sm:hidden">Cancel</span>
+            <div><XIcon class="pathButton__icon lg:text-red lg:w-5" /></div>
+            <span class="lg:hidden">Cancel</span>
           </button>
         </div>
         <!-- edit and delete buttoins -->
         <Menu v-else as='div' class="relative w-full flex justify-center">
-          <MenuButton class="flex items-center hidden sm:block">
+          <MenuButton class="flex items-center hidden lg:block">
             <DotsHorizontalIcon class="w-4" />
           </MenuButton>
-          <MenuItems :static="!sm" class="options__dropdown">
+          <MenuItems :static="!lg" class="options__dropdown">
             <MenuItem as='button'
               @click=startEdit
-              class="pathButton edit w-max sm:hover:underline"
+              class="pathButton edit w-max lg:hover:underline"
             >
               <div>
                 <PencilIcon class="pathButton__icon" />
@@ -124,7 +127,7 @@
             <MenuItem as='button'
               v-if="!isGlobal"
               @click=deletePath
-              class="pathButton delete w-max text-red sm:hover:underline"
+              class="pathButton delete w-max text-red lg:hover:underline"
             >
               <div>
                 <TrashIcon class="pathButton__icon" />
@@ -135,8 +138,8 @@
         </Menu>
       </div>
     </div>
-  <ValidationError :errors="v$.newPath.$errors" />
-  <ValidationError :errors="v$.newTtl.$errors" />
+    <ValidationError :errors="v$.newPath.$errors" />
+    <ValidationError :errors="v$.newTtl.$errors" />
   </div>
 </template>
 
@@ -221,8 +224,8 @@ export default {
       if (this.newEnabled === undefined) return 'Auto'
       else return this.newEnabled ? 'True' : 'False'
     },
-    sm() {
-      return this.windowWidth >= 640
+    lg() {
+      return this.windowWidth >= 1024
     }
   },
   methods: {
@@ -279,15 +282,39 @@ export default {
 </script>
 
 <style scoped>
+.path__item {
+  @apply grid grid-cols-2 gap-x-4 gap-y-2;
+  grid-template-rows: repeat(3, max-content);
+}
 .input-group.path {
-  flex-basis: 350px;
+  @apply col-span-2;
 }
 .input-group.cache {
-  flex-basis: 100px;
 }
 .input-group.ttl {
-  flex-basis: 100px;
 }
+.options {
+  @apply row-start-3 col-span-2 w-full;
+}
+
+@screen lg {
+  .path__item {
+    @apply flex items-center;
+  }
+  .input-group.path {
+    flex-basis: 350px;
+  }
+  .input-group.cache {
+    flex-basis: 100px;
+  }
+  .input-group.ttl {
+    flex-basis: 100px;
+  }
+  .options {
+    @apply w-20;
+  }
+}
+
 .input-group.ttl input::placeholder {
   @apply text-gray-500
 }
@@ -330,16 +357,14 @@ input[type=number] {
   @apply absolute inset-y-0 left-0 flex items-center pl-3 text-green;
 }
 
-.options {
-  @apply col-span-3;
-}
 .options__dropdown {
   @apply flex w-full space-x-2 justify-between
 }
-@screen sm {
-  .options {
-    @apply row-start-1 col-start-5 col-span-1;
-  }
+.pathButton__icon {
+  @apply w-4 mr-1;
+}
+
+@screen lg {
   .options__dropdown {
     @apply flex flex-col space-x-0 space-y-2 pl-2 pr-3 py-2;
     @apply absolute right-8 top-8 z-10 w-max overflow-auto text-base bg-white rounded-md shadow-lg ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
@@ -350,9 +375,29 @@ input[type=number] {
   button:disabled, button:disabled .pathButton__icon {
     @apply text-gray-400 hover:no-underline;
   }
+}
+
+@media (max-width: 1024px) {
+  .pathButton {
+    @apply button button--extraSmall w-1/2 leading-none;
+  }
+  .pathButton.edit, .pathButton.save {
+    @apply button--success
+  }
+  .pathButton.delete, .pathButton.cancel {
+    @apply button--error
+  }
   .pathButton__icon {
-    @apply w-4 mr-1;
+    @apply w-3.5 mr-1;
   }
 }
 
+@media (max-width: 400px) {
+  .options__dropdown {
+    @apply flex-col space-x-0 space-y-2
+  }
+  .pathButton {
+    @apply w-full;
+  }
+}
 </style>

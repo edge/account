@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
     <!-- path form -->
-    <div class="flex space-x-6">
+    <div class="path__form">
       <!-- asset path -->
       <div class="input-group flex-1 path">
         <label class="label">Asset path</label>
@@ -77,7 +77,7 @@
       <button
         @click=addPath
         :disabled="!canAddPath"
-        class="button button--success button--small w-20 h-full mt-4"
+        class="button button--success button--small"
       >
         <div v-if="addingPath" class="flex items-center">
           <span>Adding</span>
@@ -87,7 +87,7 @@
       </button>
     </div>
     <!-- path list -->
-    <div class="flex flex-col mt-1">
+    <div class="flex flex-col mt-1 divide-y">
       <CdnConfigPath
         :path=globalPath
         @edit-global-config=onEditGlobalConfig
@@ -162,8 +162,8 @@ export default {
     globalPath() {
       return {
         path: '(global)',
-        enabled: this.globalConfig.enabled,
-        ttl: this.globalConfig.ttl
+        enabled: this.globalConfig.cache.enabled,
+        ttl: this.globalConfig.cache.ttl
       }
     }
   },
@@ -205,15 +205,21 @@ export default {
 </script>
 
 <style scoped>
+.path__form {
+  @apply grid grid-cols-2 gap-x-4 gap-y-2 border-b pb-2;
+  grid-template-rows: repeat(3, max-content);
+}
 .input-group.path {
-  flex-basis: 350px;
+  @apply col-span-2;
 }
 .input-group.cache {
-  flex-basis: 100px;
 }
 .input-group.ttl {
-  flex-basis: 100px;
 }
+.path__form .button {
+  @apply w-full h-full col-span-2 mt-0;
+}
+
 .input-group.ttl input::placeholder {
   @apply text-gray-500
 }
@@ -249,5 +255,24 @@ input[type=number] {
 /* listbox checkmark */
 .checkmark {
   @apply absolute inset-y-0 left-0 flex items-center pl-3 text-green;
+}
+
+
+@screen lg {
+  .path__form {
+    @apply flex pb-0 border-b-0;
+  }
+  .input-group.path {
+    flex-basis: 350px;
+  }
+  .input-group.cache {
+    flex-basis: 100px;
+  }
+  .input-group.ttl {
+    flex-basis: 100px;
+  }
+  .path__form .button {
+    @apply w-20 h-full mt-4;
+  }
 }
 </style>

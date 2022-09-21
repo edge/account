@@ -2,7 +2,7 @@
   <div class="box">
     <h4>Domains</h4>
     <!-- add domain form -->
-    <div class="flex flex-col space-y-2 w-full sm:space-x-4 sm:space-y-0 sm:items-end sm:flex-row">
+    <div class="domainName__form">
       <div class="flex-1 input-group">
         <label class="label">Add Domain</label>
         <input
@@ -17,14 +17,14 @@
       <button
         @click.prevent="addDomain"
         :disabled="!canAddDomain"
-        class="button button--success button--small w-20"
+        class="button button--success button--small w-full"
       >
         <span>Add</span>
       </button>
     </div>
     <ValidationError :errors="v$.newDomainName.$errors" />
     <!-- domains -->
-    <div class="flex flex-col mt-1">
+    <div class="flex flex-col mt-1 divide-y">
       <CdnDomain v-for="domain in domains"
         :key=domain.name
         :domain=domain
@@ -68,6 +68,7 @@ export default {
   },
   methods: {
     async addDomain() {
+      if (!this.canAddDomain) return
       const newDomain = { name: this.newDomainName.toLowerCase() }
       if (!this.domains.length) newDomain.primary = true
       this.domains = [ ...this.domains, newDomain]
@@ -81,7 +82,6 @@ export default {
     },
     onDeleteDomain(domainName) {
       const newDomains = [...this.domains.filter(domain => domain.name !== domainName)]
-      console.log(newDomains)
       if (newDomains.length && !newDomains[0].primary) newDomains[0].primary = true
       this.domains = newDomains
     },
@@ -112,5 +112,16 @@ export default {
 </script>
 
 <style scoped>
+.domainName__form {
+  @apply flex flex-col space-y-2 w-full;
+}
 
+@media (min-width: 450px) {
+  .domainName__form {
+    @apply space-x-4 space-y-0 items-end flex-row
+  }
+  .domainName__form .button {
+    @apply w-20;
+  }
+}
 </style>
