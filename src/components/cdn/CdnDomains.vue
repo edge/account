@@ -37,6 +37,8 @@
         @make-domain-primary=onMakeDomainPrimary
       />
     </div>
+    <!-- for save/cancel buttons when editing existing integrations -->
+    <slot name="buttons" />
   </div>
 </template>
 

@@ -17,15 +17,11 @@
         @edit-path=onEditPath
         @delete-path=onDeletePath
       />
-      <CdnConfigCustomAdvanced v-show="isSelected('advanced')"
+      <CdnConfigCustomAdvanced v-if="isSelected('advanced')"
         :globalConfig=globalConfig
         :paths=paths
-        @display-if-unsaved=onDisplayIfUnsaved
         @update-config=onUpdateConfig
       />
-      <div v-if="displayUnsavedChangesWarning && isSelected('simple')">
-        <span class="text-red">You have unsaved changes in Advanced configuration</span>
-      </div>
     </div>
   </div>
 </template>
@@ -43,7 +39,6 @@ export default {
   props: ['globalConfig', 'paths'],
   data () {
     return {
-      displayUnsavedChangesWarning: false,
       selectedTab: 'simple'
     }
   },

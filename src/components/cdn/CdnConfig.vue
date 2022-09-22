@@ -49,6 +49,7 @@ import {
 
 export default {
   name: 'CdnConfig',
+  props: ['initialConfig'],
   components: {
     CdnConfigCustom,
     RadioGroup,
@@ -66,11 +67,32 @@ export default {
           ttl: 86400
         }
       },
-      paths: [
-      ]
+      paths: []
     }
   },
   methods: {
+    formatGlobalConfig(config) {
+      const globalConfig = {
+        maxAssetSize: config.maxAssetSize,
+        requestTimeout: config.requestTimeout,
+        retryTimeout: config.retryTimeout,
+        cache: {
+          enabled: config.cache.enabled,
+          ttl: config.cache.ttl
+        }
+      }
+      return globalConfig
+    },
+    formatPaths(config) {
+      const paths = []
+      for (const path in config.cache.paths) {
+        paths.push({
+          path,
+          ...config.cache.paths[path]
+        })
+      }
+      return paths
+    },
     onAddPath(path) {
       this.paths = [ ...this.paths, path]
     },
@@ -132,6 +154,13 @@ export default {
         config.cache.paths = paths
       }
       this.$emit('update-config', config)
+    }
+  },
+  mounted() {
+    if (this.initialConfig) {
+      this.globalConfig = this.formatGlobalConfig(this.initialConfig)
+      this.paths = this.formatPaths(this.initialConfig)
+      this.configMode = 'custom'
     }
   },
   watch: {

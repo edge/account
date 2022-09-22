@@ -2,6 +2,8 @@
   <div class="flex flex-col space-y-2">
     <textarea
       v-model="json"
+      @keydown=checkErrors
+      @change=updateConfig
       class="w-full border border-gray rounded p-4 monospace"
       cols="30" rows="15"
     >
@@ -32,7 +34,7 @@
           </div>
         </div>
       </div>
-      <div class="flex space-x-2">
+      <!-- <div class="flex space-x-2">
         <button @click="resetConfig"
           :disabled="!hasChanges"
           class="button button--outline button--small w-max"
@@ -45,7 +47,7 @@
         >
           Save changes
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -67,6 +69,42 @@ export default {
     }
   },
   methods: {
+    checkErrors() {
+      try {
+        JSON.parse(this.json)
+        this.jsonError = ''
+      }
+      catch (error) {
+        // get where error occurs
+        const splitError = error.toString().split(' ')
+        const position = Number(splitError[splitError.findIndex(word => word === 'position') + 1])
+
+        let jsonError = {
+          error: error.toString()
+        }
+        if (position) {
+          // get lineNumber
+          const subStr = this.json.substring(0, position)
+          const lineNumber = subStr.split('\n').length
+          // get content of lines around where error occurs
+          let lineContent = this.json.split('\n')[lineNumber - 1]
+          if (lineContent) lineContent = lineContent.trim()
+          let prevLineContent = this.json.split('\n')[lineNumber - 2]
+          if (prevLineContent) prevLineContent = prevLineContent.trim()
+          let nextLineContent = this.json.split('\n')[lineNumber]
+          if (nextLineContent) nextLineContent = nextLineContent.trim()
+
+          jsonError = {
+            ...jsonError,
+            lineNumber,
+            lineContent,
+            prevLineContent,
+            nextLineContent
+          }
+        }
+        this.jsonError = jsonError
+      }
+    },
     resetConfig() {
       const paths = {}
       this.paths.forEach(path => {
@@ -90,7 +128,6 @@ export default {
         this.initialJson = this.json
       }
       catch (error) {
-        console.error(error)
         // get where error occurs
         const splitError = error.toString().split(' ')
         const position = Number(splitError[splitError.findIndex(word => word === 'position') + 1])
@@ -126,8 +163,8 @@ export default {
     this.resetConfig()
   },
   watch: {
-    hasChanges() {
-      this.$emit('display-if-unsaved', this.hasChanges)
+    json() {
+      this.checkErrors()
     },
     paths() {
       this.resetConfig()

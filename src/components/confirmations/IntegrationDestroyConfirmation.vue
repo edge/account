@@ -4,14 +4,14 @@
       <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
     </template>
     <template v-slot:header>
-      <span>Destroy {{ serverName }}</span>
+      <span>Destroy {{ integrationName }}</span>
     </template>
     <template v-slot:body>
       <span class="font-semibold">Warning: this cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>All data will be lost and cannot be recovered</li>
-        <li>Server will be powered off immediately</li>
-        <li>IP Address will be unassigned</li>
+        <li>PLACEHOLDER</li>
+        <li>PLACEHOLDER</li>
+        <li>PLACEHOLDER</li>
       </div>
     </template>
     <template v-slot:buttons>
@@ -19,7 +19,7 @@
         class="w-full button button--small button--error"
         @click="confirm"
       >
-        Yes, Destroy Deployment
+        Yes, Destroy Server
       </button>
       <button
         class="w-full mt-3 button button--small button--outline sm:mt-0"
@@ -36,8 +36,8 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'DestroyConfirmation',
-  props: ['serverName'],
+  name: 'IntegrationDestroyConfirmation',
+  props: ['integrationName'],
   components: {
     ExclamationIcon,
     Modal

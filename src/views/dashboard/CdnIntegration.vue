@@ -23,19 +23,13 @@
           class="tab"
           :class="[selected ? 'tab--selected' : '']"
         >
-          <span>Domains</span>
+          <span>Cache</span>
         </button></Tab>
         <Tab v-slot="{selected}"><button
           class="tab"
           :class="[selected ? 'tab--selected' : '']"
         >
-          <span>Configuration</span>
-        </button></Tab>
-        <Tab v-slot="{selected}"><button
-          class="tab"
-          :class="[selected ? 'tab--selected' : '']"
-        >
-          <span>Cache Flush</span>
+          <span>Settings</span>
         </button></Tab>
         <Tab v-slot="{selected}"><button
           class="tab"
@@ -51,30 +45,19 @@
             <IntegrationOverview :integration=integration />
           </div>
         </TabPanel>
-        <!-- domains -->
-        <TabPanel>
-          <div class="space-y-4">
-            <IntegrationDomains :integration=integration />
-          </div>
-        </TabPanel>
-        <!-- configuration -->
-        <TabPanel>
-          <div class="space-y-4">
-            <CdnDetails />
-            <CdnConfig />
-          </div>
-        </TabPanel>
         <!-- cache flush -->
         <TabPanel>
           <div class="space-y-4">
-            <div class="box"><h4>Cache Flush</h4></div>
+            <div class="box"><h4>Flush Cache</h4></div>
           </div>
+        </TabPanel>
+        <!-- settings -->
+        <TabPanel>
+          <IntegrationSettings :integration=integration />
         </TabPanel>
         <!-- destroy -->
         <TabPanel>
-          <div class="space-y-4">
-            <div class="box"><h4>Destroy</h4></div>
-          </div>
+          <IntegrationDestroy :integration=integration />
         </TabPanel>
       </TabPanels>
     </TabGroup>
@@ -86,10 +69,9 @@
 
 import * as utils from '../../account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
-import CdnConfig from '@/components/cdn/CdnConfig'
-import CdnDetails from '@/components/cdn/CdnDetails'
-import IntegrationDomains from '@/components/cdn/IntegrationDomains'
+import IntegrationDestroy from '@/components/cdn/IntegrationDestroy'
 import IntegrationOverview from '@/components/cdn/IntegrationOverview'
+import IntegrationSettings from '@/components/cdn/IntegrationSettings'
 import { mapState } from 'vuex'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 
@@ -97,10 +79,9 @@ export default {
   name: 'CdnIntegration',
   components: {
     ArrowLeftIcon,
-    CdnConfig,
-    CdnDetails,
-    IntegrationDomains,
+    IntegrationDestroy,
     IntegrationOverview,
+    IntegrationSettings,
     Tab,
     TabGroup,
     TabList,

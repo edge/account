@@ -33,13 +33,14 @@ import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'CdnDetails',
+  props: ['initialDisplayName', 'initialOriginUrl'],
   components: {
     ValidationError
   },
   data() {
     return {
-      displayName: '',
-      originUrl: ''
+      displayName: this.initialDisplayName || '',
+      originUrl: this.initialOriginUrl || ''
     }
   },
   validations() {

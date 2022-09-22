@@ -214,7 +214,7 @@ export default {
       else return this.path.enabled ? 'True' : 'False'
     },
     canConfirmEdit() {
-      return !this.v$.newPath.$invalid &&
+      return (this.isGlobal || !this.v$.newPath.$invalid) &&
         !this.v$.newTtl.$invalid
     },
     isGlobal() {
