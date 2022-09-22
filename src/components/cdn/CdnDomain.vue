@@ -1,7 +1,8 @@
 <template>
-  <div class="py-2">
-    <div class="flex items-center justify-between space-x-2">
-      <div class="flex items-center flex-1 truncate">
+  <div class="py-2" :class="isEditing ? 'editing' : ''">
+    <div class="domain">
+      <!-- domain name -->
+      <div class="flex items-center flex-1 truncate w-full">
         <div class="input-group w-full name" v-if=isEditing>
           <input
             v-model="v$.newDomainName.$model"
@@ -15,9 +16,9 @@
         <span v-if="isPrimary && sm" class="pl-2 text-gray">(Primary)</span>
       </div>
       <!-- options button -->
-      <div class="options">
+      <div class="options" :class="isEditing ? 'editing' : ''">
         <!-- confirm and cancel editing buttons -->
-        <div v-if="isEditing" class="flex space-x-1 justify-center">
+        <div v-if="isEditing" class="editingButtons flex space-x-1 justify-center">
           <button
             @click=confirmEdit
             :disabled="!canConfirmEdit"
@@ -180,10 +181,13 @@ export default {
 </script>
 
 <style scoped>
+.domain {
+  @apply flex items-center justify-between space-x-2
+}
+
 .input-group.name .input--floating {
   @apply text-md leading-none;
 }
-
 .options {
   @apply w-10;
 }
@@ -213,6 +217,45 @@ button:disabled, button:disabled .domainButton__icon {
 @media (min-width: 450px) {
   .options {
     @apply w-20;
+  }
+}
+
+
+@media (max-width: 450px) {
+  .editing .domain {
+    @apply flex-col space-x-0 space-y-2;
+  }
+  .editing .options {
+    @apply w-full
+  }
+  .editing .domainButton {
+    @apply button button--extraSmall w-1/2 leading-none;
+  }
+  .editing .domainButton.save {
+    @apply button--success
+  }
+  .editing .domainButton.cancel {
+    @apply button--error
+  }
+  .editing .domainButton__icon {
+    @apply w-3.5 mr-1;
+  }
+  .editing .domainButton__icon.save {
+    @apply text-white;
+  }
+  .editing .domainButton__icon.cancel {
+    @apply text-white;
+  }
+  .editing .domainButton__text {
+    @apply block;
+  }
+}
+@media (max-width: 300px) {
+  .editingButtons {
+    @apply flex-col space-x-0 space-y-2
+  }
+  .editing .domainButton {
+    @apply w-full
   }
 }
 </style>

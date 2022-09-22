@@ -113,12 +113,12 @@ export default {
 
 <style scoped>
 .domainName__form {
-  @apply flex flex-col space-y-2 w-full;
+  @apply flex flex-col space-y-2 w-full border-b pb-4;
 }
 
 @media (min-width: 450px) {
   .domainName__form {
-    @apply space-x-4 space-y-0 items-end flex-row
+    @apply space-x-4 space-y-0 items-end flex-row border-b-0 pb-0;
   }
   .domainName__form .button {
     @apply w-20;

@@ -92,7 +92,7 @@
       <!-- options button -->
       <div class="w-20 options">
         <!-- confirm and cancel editing buttons -->
-        <div v-if="isEditing" class="flex space-x-1 justify-center">
+        <div v-if="isEditing" class="editingButtons flex space-x-1 justify-center">
           <button
             @click=confirmEdit
             :disabled="!canConfirmEdit"
@@ -392,8 +392,8 @@ input[type=number] {
   }
 }
 
-@media (max-width: 400px) {
-  .options__dropdown {
+@media (max-width: 300px) {
+  .options__dropdown, .editingButtons {
     @apply flex-col space-x-0 space-y-2
   }
   .pathButton {

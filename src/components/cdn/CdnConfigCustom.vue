@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-4 pl-7">
+  <div class="wrapper">
     <div class="tabs">
       <button @click="selectTab('simple')"
         class="tab" :class="[isSelected('simple') ? 'tab--selected' : '']"
@@ -77,4 +77,13 @@ export default {
 </script>
 
 <style scoped>
+.wrapper {
+  @apply pt-4 pl-7;
+}
+
+@media (max-width: 500px) {
+  .wrapper {
+    @apply pl-0
+  }
+}
 </style>
