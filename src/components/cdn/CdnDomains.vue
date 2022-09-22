@@ -23,6 +23,10 @@
       </button>
     </div>
     <ValidationError :errors="v$.newDomainName.$errors" />
+    <div v-if=domainAlreadyExists class="errorMessage mt-1">
+      <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
+      <span class="errorMessage__text">Domain already in use</span>
+    </div>
     <!-- domains -->
     <div class="flex flex-col mt-1 divide-y">
       <CdnDomain v-for="domain in domains"
@@ -39,13 +43,16 @@
 <script>
 import * as validation from '../../utils/validation'
 import CdnDomain from '@/components/cdn/CdnDomain.vue'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'CdnDomains',
+  props: ['liveDomains'],
   components: {
     CdnDomain,
+    ExclamationIcon,
     ValidationError
   },
   data() {
@@ -63,7 +70,10 @@ export default {
   },
   computed: {
     canAddDomain() {
-      return !this.v$.newDomainName.$invalid
+      return !this.v$.newDomainName.$invalid && !this.domainAlreadyExists
+    },
+    domainAlreadyExists() {
+      return this.domains.some(domain => domain.name === this.newDomainName)
     }
   },
   methods: {
@@ -97,6 +107,9 @@ export default {
       })
       this.domains = newDomains
     }
+  },
+  mounted() {
+    if (this.liveDomains) this.domains = [ ...this.liveDomains ]
   },
   setup() {
     return {

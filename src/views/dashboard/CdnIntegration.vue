@@ -54,7 +54,7 @@
         <!-- domains -->
         <TabPanel>
           <div class="space-y-4">
-            <CdnDomains />
+            <IntegrationDomains :integration=integration />
           </div>
         </TabPanel>
         <!-- configuration -->
@@ -88,7 +88,7 @@ import * as utils from '../../account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import CdnConfig from '@/components/cdn/CdnConfig'
 import CdnDetails from '@/components/cdn/CdnDetails'
-import CdnDomains from '@/components/cdn/CdnDomains'
+import IntegrationDomains from '@/components/cdn/IntegrationDomains'
 import IntegrationOverview from '@/components/cdn/IntegrationOverview'
 import { mapState } from 'vuex'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
@@ -99,7 +99,7 @@ export default {
     ArrowLeftIcon,
     CdnConfig,
     CdnDetails,
-    CdnDomains,
+    IntegrationDomains,
     IntegrationOverview,
     Tab,
     TabGroup,
