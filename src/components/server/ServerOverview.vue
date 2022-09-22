@@ -180,7 +180,7 @@ export default {
       }, 1000)
     },
     formatTimestamp(ts) {
-      return `${format.time(ts)}, ${format.date(ts)}`
+      return `${format.date(ts)}, ${format.time(ts)}`
     }
   }
 }
