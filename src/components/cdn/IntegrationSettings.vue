@@ -4,19 +4,46 @@
       :initialDisplayName=liveDisplayName
       :initialOriginUrl=liveOriginUrl
       @update-details=onUpdateDetails
-    />
+    >
+      <template v-slot:buttons>
+        <div class="flex space-x-2 justify-end mt-2">
+          <button
+            class="button button--outline button--small"
+          >
+            Cancel
+          </button>
+          <button
+            @click=saveChanges
+            :disabled="!canSaveChanges"
+            class="button button--success button--small"
+          >
+            Save Changes
+          </button>
+        </div>
+      </template>
+    </CdnDetails>
     <IntegrationDomains :integration=integration />
     <CdnConfig
       :initialConfig=liveConfig
       @update-config=onUpdateConfig
-    />
-    <button
-      @click=saveChanges
-      :disabled="!canSaveChanges"
-      class="button button--success self-end w-full md:max-w-xs"
     >
-      Save Changes
-    </button>
+      <template v-slot:buttons>
+        <div class="flex space-x-2 justify-end mt-2">
+          <button
+            class="button button--outline button--small"
+          >
+            Cancel
+          </button>
+          <button
+            @click=saveChanges
+            :disabled="!canSaveChanges"
+            class="button button--success button--small"
+          >
+            Save Changes
+          </button>
+        </div>
+      </template>
+    </CdnConfig>
   </div>
 </template>
 

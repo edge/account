@@ -23,6 +23,8 @@
         <ValidationError :errors="v$.originUrl.$errors" />
       </div>
     </div>
+    <!-- for save/cancel buttons when editing existing integrations -->
+    <slot name="buttons" />
   </div>
 </template>
 
