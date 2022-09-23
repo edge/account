@@ -8,16 +8,21 @@
       <div class="flex space-x-2 justify-end mt-4">
         <button
           @click=resetChanges
+          :disabled=isSaving
           class="button button--outline button--small"
         >
           Cancel
         </button>
         <button
           @click=saveChanges
-          :disabled="!canSaveChanges"
+          :disabled="!canSaveChanges || isSaving"
           class="button button--success button--small"
         >
-          Save Changes
+          <div v-if="isSaving" class="flex items-center">
+            <span>Saving</span>
+            <span class="ml-2"><LoadingSpinner /></span>
+          </div>
+          <span v-else>Save Changes</span>
         </button>
       </div>
     </template>
@@ -25,21 +30,29 @@
 </template>
 
 <script>
+/* global process */
+
+import * as utils from '@/account-utils'
 import CdnConfig from '@/components/cdn/CdnConfig'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import _ from 'lodash'
+import { mapState } from 'vuex'
 
 export default {
   name: 'IntegrationConfig',
   props: ['integration'],
   components: {
-    CdnConfig
+    CdnConfig,
+    LoadingSpinner
   },
   data() {
     return {
+      isSaving: false,
       workingConfig: null
     }
   },
   computed: {
+    ...mapState(['session']),
     canSaveChanges() {
       return this.hasConfigChanges
     },
@@ -67,8 +80,26 @@ export default {
       this.$refs.cdnConfig.resetConfig()
       this.workingConfig = { ...this.integration.data.config }
     },
-    saveChanges() {
-      console.log('saving')
+    async saveChanges() {
+      const updatedIntegration = { ...this.integration }
+      updatedIntegration.data.config = { ...updatedIntegration.data.config, ...this.workingConfig }
+      try {
+        this.isSaving = true
+        await utils.cdn.updateIntegration(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.integration._key,
+          updatedIntegration
+        )
+        this.$emit('refresh-integration')
+      }
+      catch (error) {
+        /** @todo handle error */
+        console.error(error)
+      }
+      setTimeout(() => {
+        this.isSaving = false
+      }, 800)
     }
   },
   mounted() {

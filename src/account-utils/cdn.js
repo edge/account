@@ -41,8 +41,8 @@ export const getIntegrations = async (host, sessionId, params) => {
 }
 
 // create a new integration
-export const updateIntegration = async (host, sessionId, integration) => {
-  const url = `${host}/integrations`
+export const updateIntegration = async (host, sessionId, integrationKey, integration) => {
+  const url = `${host}/integrations/${integrationKey}`
   const response = await superagent.put(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send(integration)
