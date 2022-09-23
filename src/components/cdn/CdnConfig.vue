@@ -182,10 +182,7 @@ export default {
       this.globalConfig = this.formatGlobalConfig(this.initialConfig)
       this.paths = this.formatPaths(this.initialConfig)
       const cache = this.initialConfig.cache
-      console.log(cache.enabled)
-      console.log(cache.ttl)
-      console.log(cache.paths)
-      if (!cache.enabled || cache.ttl !== 86400 || !Object.keys(cache.paths).length) this.configMode = 'custom'
+      if (!cache.enabled || cache.ttl !== 86400 || Object.keys(cache.paths).length) this.configMode = 'custom'
     }
   },
   watch: {
