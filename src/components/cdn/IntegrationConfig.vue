@@ -5,25 +5,30 @@
     @update-config=onUpdateConfig
   >
     <template v-slot:buttons>
-      <div class="flex space-x-2 justify-end mt-4">
-        <button
-          @click=resetChanges
-          :disabled=isSaving
-          class="button button--outline button--small"
-        >
-          Cancel
-        </button>
-        <button
-          @click=saveChanges
-          :disabled="!canSaveChanges || isSaving"
-          class="button button--success button--small"
-        >
-          <div v-if="isSaving" class="flex items-center">
-            <span>Saving</span>
-            <span class="ml-2"><LoadingSpinner /></span>
-          </div>
-          <span v-else>Save Changes</span>
-        </button>
+      <div>
+        <div class="flex space-x-2 justify-end mt-4">
+          <button
+            @click=resetChanges
+            :disabled=isSaving
+            class="button button--outline button--small"
+          >
+            Cancel Changes
+          </button>
+          <button
+            @click=saveChanges
+            :disabled="!canSaveChanges || isSaving"
+            class="button button--success button--small"
+          >
+            <div v-if="isSaving" class="flex items-center">
+              <span>Saving</span>
+              <span class="ml-2"><LoadingSpinner /></span>
+            </div>
+            <span v-else>Save Changes</span>
+          </button>
+        </div>
+        <div class="w-full mt-2 flex justify-end">
+          <HttpError :error=httpError />
+        </div>
       </div>
     </template>
   </CdnConfig>
@@ -34,6 +39,7 @@
 
 import * as utils from '@/account-utils'
 import CdnConfig from '@/components/cdn/CdnConfig'
+import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import _ from 'lodash'
 import { mapState } from 'vuex'
@@ -43,10 +49,12 @@ export default {
   props: ['integration'],
   components: {
     CdnConfig,
+    HttpError,
     LoadingSpinner
   },
   data() {
     return {
+      httpError: null,
       isSaving: false,
       workingConfig: null
     }
@@ -58,13 +66,8 @@ export default {
     },
     hasConfigChanges() {
       if(this.workingConfig) {
-        // top level keys
-        const keys = ['maxAssetSize', 'requestTimeout', 'resetTimeout']
-        keys.forEach(key => {
-          if (this.liveConfig[key] !== this.workingConfig[key]) return true
-        })
-        // cache
-        if (!_.isEqual(this.liveConfig.cache, this.workingConfig.cache)) return true
+        const working = { ...this.workingConfig, origin: this.integration.data.config.origin }
+        if (!_.isEqual(this.liveConfig, working)) return true
       }
       return false
     },
@@ -77,6 +80,7 @@ export default {
       this.workingConfig = newConfig
     },
     resetChanges() {
+      this.httpError = null
       this.$refs.cdnConfig.resetConfig()
       this.workingConfig = { ...this.integration.data.config }
     },
@@ -95,6 +99,7 @@ export default {
       }
       catch (error) {
         /** @todo handle error */
+        this.httpError = error
         console.error(error)
       }
       setTimeout(() => {

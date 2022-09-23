@@ -6,25 +6,30 @@
     @update-details=onUpdateDetails
   >
     <template v-slot:buttons>
-      <div class="flex space-x-2 justify-end mt-4">
-        <button
-          @click=resetChanges
-          :disabled=isSaving
-          class="button button--outline button--small"
-        >
-          Cancel
-        </button>
-        <button
-          @click=saveChanges
-          :disabled="!canSaveChanges || isSaving"
-          class="button button--success button--small"
-        >
-          <div v-if="isSaving" class="flex items-center">
-            <span>Saving</span>
-            <span class="ml-2"><LoadingSpinner /></span>
-          </div>
-          <span v-else>Save Changes</span>
-        </button>
+      <div>
+        <div class="flex space-x-2 justify-end mt-4">
+          <button
+            @click=resetChanges
+            :disabled=isSaving
+            class="button button--outline button--small"
+          >
+            Cancel Changes
+          </button>
+          <button
+            @click=saveChanges
+            :disabled="!canSaveChanges || isSaving"
+            class="button button--success button--small"
+          >
+            <div v-if="isSaving" class="flex items-center">
+              <span>Saving</span>
+              <span class="ml-2"><LoadingSpinner /></span>
+            </div>
+            <span v-else>Save Changes</span>
+          </button>
+        </div>
+        <div class="w-full mt-2 flex justify-end">
+          <HttpError :error=httpError />
+        </div>
       </div>
     </template>
   </CdnDetails>
@@ -35,6 +40,7 @@
 
 import * as utils from '@/account-utils'
 import CdnDetails from '@/components/cdn/CdnDetails'
+import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 
@@ -43,10 +49,12 @@ export default {
   props: ['integration'],
   components: {
     CdnDetails,
+    HttpError,
     LoadingSpinner
   },
   data() {
     return {
+      httpError: null,
       isSaving: false,
       workingDisplayName: '',
       workingOriginUrl: ''
@@ -73,6 +81,7 @@ export default {
       this.workingOriginUrl = newOriginUrl
     },
     resetChanges() {
+      this.httpError = null
       this.$refs.cdnDetails.resetDetails()
     },
     async saveChanges() {
@@ -91,6 +100,7 @@ export default {
       }
       catch (error) {
         /** @todo handle error */
+        this.httpError = error
         console.error(error)
       }
       setTimeout(() => {

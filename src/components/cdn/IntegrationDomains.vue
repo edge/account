@@ -16,7 +16,7 @@
               :disabled=isSaving
               class="button button--outline button--small"
             >
-              Cancel
+              Cancel Changes
             </button>
             <button
               @click=saveChanges
@@ -30,6 +30,9 @@
               <span v-else>Save Changes</span>
             </button>
           </div>
+          <div class="w-full mt-2 flex justify-end">
+            <HttpError :error=httpError />
+          </div>
         </div>
       </template>
     </CdnDomains>
@@ -41,6 +44,7 @@
 
 import * as utils from '@/account-utils'
 import CdnDomains from '@/components/cdn/CdnDomains'
+import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import _ from 'lodash'
 import { mapState } from 'vuex'
@@ -50,10 +54,12 @@ export default {
   props: ['integration'],
   components: {
     CdnDomains,
+    HttpError,
     LoadingSpinner
   },
   data() {
     return {
+      httpError: null,
       isSaving: false,
       workingDomains: [
         {
@@ -87,6 +93,7 @@ export default {
       this.workingDomains = domains
     },
     resetChanges() {
+      this.httpError = null
       this.$refs.cdnDomains.resetDomains()
     },
     async saveChanges() {
@@ -108,6 +115,7 @@ export default {
       catch (error) {
         /** @todo handle error */
         console.error(error)
+        this.httpError = error
       }
       setTimeout(() => {
         this.isSaving = false
