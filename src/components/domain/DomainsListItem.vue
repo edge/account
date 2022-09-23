@@ -2,11 +2,18 @@
     <li
       @click=goToDomain
       class="domainList__item"
+      :class="isActive ? 'active' : isInactive ? 'inactive' : ''"
     >
       <!-- server details -->
       <div class="domainList__field name overflow-hidden">
         <!-- server name -->
-        <span class="domainList__name" :title="domain._key">{{ domain._key }}</span>
+        <span
+          class="domainList__name"
+          :title="domain._key"
+          :class="isActive ? 'text-green' : 'text-red'"
+        >
+          {{ domain._key }}
+        </span>
       </div>
       <!-- domain records -->
       <div class="domainList__field records overflow-hidden">
@@ -85,8 +92,14 @@ export default {
 
 /* list item */
 .domainList__item {
-  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 rounded-md w-full p-5;
+  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-t-8 border-gray-400 rounded-md w-full p-5;
   @apply cursor-pointer transition-all duration-100;
+}
+.domainList__item.active {
+  @apply border-green;
+}
+.domainList__item.inactive {
+  @apply border-red;
 }
 
 /* list item content */
@@ -100,7 +113,7 @@ export default {
   @apply flex flex-col;
 }
 .domainList__name {
-  @apply text-md text-green truncate;
+  @apply text-md truncate;
 }
 .domainList__records {
   @apply flex space-x-1.5;
@@ -143,6 +156,12 @@ export default {
   }
   .divider {
     @apply block;
+  }
+}
+
+@screen sm {
+  .domainList__item {
+    @apply border-l-8 border-t-0;
   }
 }
 

@@ -2,11 +2,17 @@
     <li
       @click=goToIntegration
       class="cdnList__item"
+      :class="isActive ? 'active' : isInactive ? 'inactive' : ''"
     >
       <!-- name -->
       <div class="cdnList__field name overflow-hidden">
-        <span class="cdnList__header">Name</span>
-        <span class="text-m" :title="integration.name">{{ integration.name }}</span>
+        <span
+          class="text-md truncate"
+          :class="isActive ? 'text-green' : 'text-red'"
+          :title="integration.name"
+        >
+          {{ integration.name }}
+        </span>
       </div>
       <!-- domain -->
       <div class="cdnList__field domain overflow-hidden">
@@ -69,8 +75,14 @@ export default {
 
 /* list item */
 .cdnList__item {
-  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 rounded-md w-full p-5;
+  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-t-8 border-gray-400 rounded-md w-full p-5;
   @apply cursor-pointer transition-all duration-100;
+}
+.cdnList__item.active {
+  @apply border-green;
+}
+.cdnList__item.inactive {
+  @apply border-red;
 }
 
 /* list item content */
@@ -130,17 +142,23 @@ export default {
   }
 }
 
+@screen sm {
+  .cdnList__item {
+    @apply border-l-8 border-t-0;
+  }
+}
+
 @screen lg {
   .cdnList__item {
     @apply flex justify-between gap-x-2;
   }
   .name {
     @apply flex-1 flex-shrink-0 col-span-1 row-span-2 justify-center;
-    flex-basis: 100px;
+    flex-basis: 150px;
   }
   .domain {
     @apply flex-1;
-    flex-basis: 300px;
+    flex-basis: 200px;
   }
   .status {
     @apply flex-1 row-start-1 flex-shrink-0;
