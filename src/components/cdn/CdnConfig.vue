@@ -27,9 +27,12 @@
         </RadioGroupOption>
       </RadioGroup>
       <CdnConfigCustom
+        ref="cdnConfigCustom"
         v-show="configMode === 'custom'"
         :globalConfig=globalConfig
         :paths=paths
+        :initialGlobalConfig=initialGlobalConfig
+        :initialPaths=initialPaths
         @add-path=onAddPath
         @delete-path=onDeletePath
         @edit-global-config=onEditGlobalConfig
@@ -69,6 +72,8 @@ export default {
           ttl: 86400
         }
       },
+      initialGlobalConfig: null,
+      initialPaths: null,
       paths: []
     }
   },
@@ -140,7 +145,10 @@ export default {
       if (this.initialConfig) {
         this.globalConfig = this.formatGlobalConfig(this.initialConfig)
         this.paths = this.formatPaths(this.initialConfig)
-        this.configMode = 'custom'
+        const cache = this.initialConfig.cache
+        if (!cache.enabled || cache.ttl !== 86400 || Object.keys(cache.paths).length) this.configMode = 'custom'
+        this.initialGlobalConfig = this.globalConfig
+        this.initialPaths = this.paths
       }
       else {
         this.globalConfig = {
@@ -154,6 +162,7 @@ export default {
         }
         this.paths = []
       }
+      this.$refs.cdnConfigCustom.resetConfig()
     },
     updateConfig() {
       let config = {
@@ -165,7 +174,10 @@ export default {
         config.paths = {}
       }
       else {
-        config = { ...this.globalConfig }
+        config = { cache: { ...this.globalConfig.cache } }
+        if(this.globalConfig.maxAssetSize !== undefined) config.maxAssetSize = this.globalConfig.maxAssetSize
+        if(this.globalConfig.requestTimeout !== undefined) config.requestTimeout = this.globalConfig.requestTimeout
+        if(this.globalConfig.retryTimeout !== undefined) config.retryTimeout = this.globalConfig.retryTimeout
         const paths = {}
         this.paths.forEach(path => {
           paths[path.path] = {}
@@ -178,12 +190,7 @@ export default {
     }
   },
   mounted() {
-    if (this.initialConfig) {
-      this.globalConfig = this.formatGlobalConfig(this.initialConfig)
-      this.paths = this.formatPaths(this.initialConfig)
-      const cache = this.initialConfig.cache
-      if (!cache.enabled || cache.ttl !== 86400 || Object.keys(cache.paths).length) this.configMode = 'custom'
-    }
+    this.resetConfig()
   },
   watch: {
     configMode() {

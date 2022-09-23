@@ -18,8 +18,11 @@
         @delete-path=onDeletePath
       />
       <CdnConfigCustomAdvanced v-if="isSelected('advanced')"
+        ref="cdnConfigCustomAdvanced"
         :globalConfig=globalConfig
         :paths=paths
+        :initialGlobalConfig=initialGlobalConfig
+        :initialPaths=initialPaths
         @update-config=onUpdateConfig
       />
     </div>
@@ -36,7 +39,7 @@ export default {
     CdnConfigCustomAdvanced,
     CdnConfigCustomSimple
   },
-  props: ['globalConfig', 'paths'],
+  props: ['globalConfig', 'initialGlobalConfig', 'initialPaths', 'paths'],
   data () {
     return {
       selectedTab: 'simple'
@@ -63,6 +66,9 @@ export default {
     },
     onUpdateConfig(config) {
       this.$emit('update-config', config)
+    },
+    resetConfig() {
+      if (this.isSelected('advanced')) this.$refs.cdnConfigCustomAdvanced.resetConfig()
     },
     selectTab(tab) {
       this.selectedTab = tab

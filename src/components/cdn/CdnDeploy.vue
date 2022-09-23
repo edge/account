@@ -15,6 +15,7 @@
       >
         Deploy
       </button>
+      <HttpError :error=httpError />
     </div>
   </div>
 </template>
@@ -27,6 +28,7 @@ import CdnConfig from '@/components/cdn/CdnConfig.vue'
 import CdnDetails from '@/components/cdn/CdnDetails.vue'
 import CdnDomains from '@/components/cdn/CdnDomains.vue'
 import CdnEstimatedCosts from '@/components/cdn/CdnEstimatedCosts.vue'
+import HttpError from '@/components/HttpError.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -38,7 +40,8 @@ export default {
     CdnConfig,
     CdnDetails,
     CdnDomains,
-    CdnEstimatedCosts
+    CdnEstimatedCosts,
+    HttpError
   },
   data() {
     return {
@@ -75,7 +78,7 @@ export default {
   methods: {
     async deployCdn() {
       try {
-        console.log(this.integration)
+        this.httpError = null
         const { integration } = await utils.cdn.addIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,

@@ -2,8 +2,7 @@
   <div class="flex flex-col space-y-2">
     <textarea
       v-model="json"
-      @keydown=checkErrors
-      @change=updateConfig
+      @keydown=updateConfig
       class="w-full border border-gray rounded p-4 monospace"
       cols="30" rows="15"
     >
@@ -13,10 +12,16 @@
       <div>
         <div v-if="jsonError" class="text-red flex flex-col">
           <div>
-            <span v-if="jsonError.lineNumber">JSON Syntax Error around line {{ jsonError.lineNumber }}:</span>
+            <div v-if="jsonError.lineNumber">
+              <button @click="toggleShowErrorDetail" class="flex items-center space-x-2">
+                <span>JSON Syntax Error around line {{ jsonError.lineNumber }}</span>
+                <ChevronUpIcon v-if=showErrorDetail class="w-3.5" />
+                <ChevronDownIcon v-else class="w-3.5" />
+              </button>
+            </div>
             <span v-else>{{ jsonError.error }}</span>
           </div>
-          <div v-if="jsonError.lineNumber" class="flex flex-col">
+          <div v-if="jsonError.lineNumber && showErrorDetail" class="flex flex-col">
             <div>
               <div v-if="jsonError.prevLineContent">
                 <span class="w-6 inline-block">{{ jsonError.lineNumber - 1 }}: </span>
@@ -34,33 +39,27 @@
           </div>
         </div>
       </div>
-      <!-- <div class="flex space-x-2">
-        <button @click="resetConfig"
-          :disabled="!hasChanges"
-          class="button button--outline button--small w-max"
-        >
-          Cancel
-        </button>
-        <button @click="updateConfig"
-          :disabled="!hasChanges"
-          class="button button--success button--small w-max"
-        >
-          Save changes
-        </button>
-      </div> -->
     </div>
   </div>
 </template>
 
 <script>
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/outline'
+
 export default {
   name: 'CdnConfigCustomAdvanced',
-  props: ['globalConfig', 'paths'],
+  props: ['globalConfig', 'initialGlobalConfig', 'initialPaths', 'paths'],
+  components: {
+    ChevronUpIcon,
+    ChevronDownIcon
+  },
   data() {
     return {
+      configTimeout: null,
       initialJson: '',
       json: '',
-      jsonError: null
+      jsonError: null,
+      showErrorDetail: false
     }
   },
   computed: {
@@ -69,105 +68,75 @@ export default {
     }
   },
   methods: {
-    checkErrors() {
-      try {
-        JSON.parse(this.json)
-        this.jsonError = ''
-      }
-      catch (error) {
-        // get where error occurs
-        const splitError = error.toString().split(' ')
-        const position = Number(splitError[splitError.findIndex(word => word === 'position') + 1])
-
-        let jsonError = {
-          error: error.toString()
-        }
-        if (position) {
-          // get lineNumber
-          const subStr = this.json.substring(0, position)
-          const lineNumber = subStr.split('\n').length
-          // get content of lines around where error occurs
-          let lineContent = this.json.split('\n')[lineNumber - 1]
-          if (lineContent) lineContent = lineContent.trim()
-          let prevLineContent = this.json.split('\n')[lineNumber - 2]
-          if (prevLineContent) prevLineContent = prevLineContent.trim()
-          let nextLineContent = this.json.split('\n')[lineNumber]
-          if (nextLineContent) nextLineContent = nextLineContent.trim()
-
-          jsonError = {
-            ...jsonError,
-            lineNumber,
-            lineContent,
-            prevLineContent,
-            nextLineContent
-          }
-        }
-        this.jsonError = jsonError
-      }
-    },
     resetConfig() {
-      const paths = {}
-      this.paths.forEach(path => {
-        paths[path.path] = {}
-        if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
-        if (path.ttl) paths[path.path].ttl = path.ttl
+      this.setJson(this.initialPaths, this.initialGlobalConfig)
+    },
+    setJson(paths, globalConfig) {
+      const jsonPaths = {}
+      paths.forEach(path => {
+        jsonPaths[path.path] = {}
+        if (path.enabled !== undefined) jsonPaths[path.path].enabled = path.enabled
+        if (path.ttl) jsonPaths[path.path].ttl = path.ttl
       })
-      const config = {
-        ...this.globalConfig
+      const jsonGlobalConfig = {
+        ...globalConfig
       }
-      config.cache.paths = paths
-      const jsonCache = JSON.stringify(config, undefined, 2)
+      jsonGlobalConfig.cache.paths = jsonPaths
+      const jsonCache = JSON.stringify(jsonGlobalConfig, undefined, 2)
       this.json = jsonCache
-      this.initialJson = jsonCache
+    },
+    toggleShowErrorDetail() {
+      this.showErrorDetail = !this.showErrorDetail
     },
     updateConfig() {
-      try {
-        const config = JSON.parse(this.json)
-        this.jsonError = null
-        this.$emit('update-config', config)
-        this.initialJson = this.json
-      }
-      catch (error) {
-        // get where error occurs
-        const splitError = error.toString().split(' ')
-        const position = Number(splitError[splitError.findIndex(word => word === 'position') + 1])
-
-        let jsonError = {
-          error: error.toString()
+      // debounce update config and errors
+      if (this.configTimeout) clearTimeout(this.configTimeout)
+      this.configTimeout = setTimeout(() => {
+        try {
+          const config = JSON.parse(this.json)
+          this.jsonError = null
+          this.showErrorDetail = false
+          this.$emit('update-config', config)
         }
-        if (position) {
-          // get lineNumber
-          const subStr = this.json.substring(0, position)
-          const lineNumber = subStr.split('\n').length
-          // get content of lines around where error occurs
-          let lineContent = this.json.split('\n')[lineNumber - 1]
-          if (lineContent) lineContent = lineContent.trim()
-          let prevLineContent = this.json.split('\n')[lineNumber - 2]
-          if (prevLineContent) prevLineContent = prevLineContent.trim()
-          let nextLineContent = this.json.split('\n')[lineNumber]
-          if (nextLineContent) nextLineContent = nextLineContent.trim()
+        catch (error) {
+          // get where error occurs
+          const splitError = error.toString().split(' ')
+          const position = Number(splitError[splitError.findIndex(word => word === 'position') + 1])
 
-          jsonError = {
-            ...jsonError,
-            lineNumber,
-            lineContent,
-            prevLineContent,
-            nextLineContent
+          let jsonError = {
+            error: error.toString()
           }
+          if (position) {
+            // get lineNumber
+            const subStr = this.json.substring(0, position)
+            const lineNumber = subStr.split('\n').length
+            // get content of lines around where error occurs
+            let lineContent = this.json.split('\n')[lineNumber - 1]
+            if (lineContent) lineContent = lineContent.trim()
+            let prevLineContent = this.json.split('\n')[lineNumber - 2]
+            if (prevLineContent) prevLineContent = prevLineContent.trim()
+            let nextLineContent = this.json.split('\n')[lineNumber]
+            if (nextLineContent) nextLineContent = nextLineContent.trim()
+
+            jsonError = {
+              ...jsonError,
+              lineNumber,
+              lineContent,
+              prevLineContent,
+              nextLineContent
+            }
+          }
+          this.jsonError = jsonError
         }
-        this.jsonError = jsonError
-      }
+      }, 400)
     }
   },
   mounted() {
-    this.resetConfig()
+    this.setJson(this.paths, this.globalConfig)
   },
   watch: {
     json() {
-      this.checkErrors()
-    },
-    paths() {
-      this.resetConfig()
+      this.updateConfig()
     }
   }
 }
