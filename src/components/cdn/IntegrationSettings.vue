@@ -1,63 +1,22 @@
 <template>
   <div class="flex flex-col space-y-4">
-    <CdnDetails
-      :initialDisplayName=liveDisplayName
-      :initialOriginUrl=liveOriginUrl
-      @update-details=onUpdateDetails
-    >
-      <template v-slot:buttons>
-        <div class="flex space-x-2 justify-end mt-2">
-          <button
-            class="button button--outline button--small"
-          >
-            Cancel
-          </button>
-          <button
-            @click=saveChanges
-            :disabled="!canSaveChanges"
-            class="button button--success button--small"
-          >
-            Save Changes
-          </button>
-        </div>
-      </template>
-    </CdnDetails>
+    <IntegrationDetails :integration=integration />
     <IntegrationDomains :integration=integration />
-    <CdnConfig
-      :initialConfig=liveConfig
-      @update-config=onUpdateConfig
-    >
-      <template v-slot:buttons>
-        <div class="flex space-x-2 justify-end mt-2">
-          <button
-            class="button button--outline button--small"
-          >
-            Cancel
-          </button>
-          <button
-            @click=saveChanges
-            :disabled="!canSaveChanges"
-            class="button button--success button--small"
-          >
-            Save Changes
-          </button>
-        </div>
-      </template>
-    </CdnConfig>
+    <IntegrationConfig :integration=integration />
   </div>
 </template>
 
 <script>
-import CdnConfig from '@/components/cdn/CdnConfig'
-import CdnDetails from '@/components/cdn/CdnDetails'
+import IntegrationConfig from '@/components/cdn/IntegrationConfig'
+import IntegrationDetails from '@/components/cdn/IntegrationDetails'
 import IntegrationDomains from '@/components/cdn/IntegrationDomains'
 
 export default {
   name: 'IntegrationSettings',
   props: ['integration'],
   components: {
-    CdnConfig,
-    CdnDetails,
+    IntegrationConfig,
+    IntegrationDetails,
     IntegrationDomains
   },
   data() {

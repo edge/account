@@ -108,6 +108,10 @@ export default {
         else newDomains.push({ name: domain.name })
       })
       this.domains = newDomains
+    },
+    resetDomains() {
+      if (this.liveDomains) this.domains = [ ...this.liveDomains ]
+      else this.domains = []
     }
   },
   mounted() {

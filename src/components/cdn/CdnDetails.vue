@@ -56,6 +56,10 @@ export default {
     }
   },
   methods: {
+    resetDetails() {
+      this.displayName = this.initialDisplayName || '',
+      this.originUrl = this.initialOriginUrl || ''
+    },
     updateDetails() {
       this.$emit('update-details', this.displayName, this.originUrl)
     }

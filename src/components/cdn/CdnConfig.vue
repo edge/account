@@ -136,6 +136,25 @@ export default {
       }
       this.paths = paths
     },
+    resetConfig() {
+      if (this.initialConfig) {
+        this.globalConfig = this.formatGlobalConfig(this.initialConfig)
+        this.paths = this.formatPaths(this.initialConfig)
+        this.configMode = 'custom'
+      }
+      else {
+        this.globalConfig = {
+          maxAssetSize: undefined,
+          requestTimeout: undefined,
+          retryTimeout: undefined,
+          cache: {
+            enabled: true,
+            ttl: 86400
+          }
+        }
+        this.paths = []
+      }
+    },
     updateConfig() {
       let config = {
         cache: {}
