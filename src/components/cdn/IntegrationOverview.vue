@@ -41,11 +41,11 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import StatusDot from '@/components/StatusDot'
 
 export default {
-  name: 'CdnIntegrationOverview',
+  name: 'IntegrationOverview',
   props: ['integration'],
   components: {
     StatusDot

@@ -10,7 +10,7 @@
           class="input input--floating"
           placeholder="e.g. /photos/*.jpg"
           type="text"
-          @keypress=addPathOnEnter
+          @keypress.enter=addPath
         />
         <ValidationError :errors="v$.newPath.$errors" />
       </div>
@@ -69,7 +69,7 @@
           class="w-full input input--floating"
           placeholder="Auto"
           v-model="v$.newPathTtl.$model"
-          @keypress=addPathOnEnter
+          @keypress.enter=addPath
         />
         <ValidationError :errors="v$.newPathTtl.$errors" />
       </div>
@@ -180,11 +180,6 @@ export default {
       this.newPathTtl = null
       this.newPathEnabled = undefined
       await this.v$.$reset()
-    },
-    addPathOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.addPath()
     },
     onDeletePath(path) {
       this.$emit('delete-path', path)

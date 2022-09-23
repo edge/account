@@ -47,9 +47,7 @@
         </TabPanel>
         <!-- cache flush -->
         <TabPanel>
-          <div class="space-y-4">
-            <div class="box"><h4>Flush Cache</h4></div>
-          </div>
+          <IntegrationCache :integration=integration />
         </TabPanel>
         <!-- settings -->
         <TabPanel>
@@ -69,6 +67,7 @@
 
 import * as utils from '../../account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
+import IntegrationCache from '@/components/cdn/IntegrationCache'
 import IntegrationDestroy from '@/components/cdn/IntegrationDestroy'
 import IntegrationOverview from '@/components/cdn/IntegrationOverview'
 import IntegrationSettings from '@/components/cdn/IntegrationSettings'
@@ -79,6 +78,7 @@ export default {
   name: 'CdnIntegration',
   components: {
     ArrowLeftIcon,
+    IntegrationCache,
     IntegrationDestroy,
     IntegrationOverview,
     IntegrationSettings,
