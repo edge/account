@@ -81,7 +81,7 @@ export const serverPassword = helpers.withMessage(
  */
 const domainRegexp = /((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}/i
 export const domain = helpers.withMessage(
-  'Must be a valid FQDN.',
+  'Must be a valid domain name',
   v => domainRegexp.test(v)
 )
 
@@ -99,7 +99,7 @@ export const serverCommentLength = helpers.withMessage(
 */
 const originRegexp = /^https?:\/\/((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}(\/.+)?/
 export const origin = helpers.withMessage(
-  'Must be a valid URL partial.',
+  'Must be a valid URL',
   v => originRegexp.test(v)
 )
 

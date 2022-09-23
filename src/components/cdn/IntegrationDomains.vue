@@ -6,25 +6,30 @@
       @update-domains=onUpdateDomains
     >
       <template v-slot:buttons>
-        <div class="flex space-x-2 justify-end mt-2">
-          <button
-            @click=resetChanges
-            :disabled=isSaving
-            class="button button--outline button--small"
-          >
-            Cancel
-          </button>
-          <button
-          @click=saveChanges
-          :disabled="!canSaveChanges || isSaving"
-          class="button button--success button--small"
-        >
-          <div v-if="isSaving" class="flex items-center">
-            <span>Saving</span>
-            <span class="ml-2"><LoadingSpinner /></span>
+        <div>
+          <div v-if="!workingDomains.length" class="errorMessage">
+            <span class="errorMessage__text">Must have at least one domain</span>
           </div>
-          <span v-else>Save Changes</span>
-        </button>
+          <div class="flex space-x-2 justify-end mt-2">
+            <button
+              @click=resetChanges
+              :disabled=isSaving
+              class="button button--outline button--small"
+            >
+              Cancel
+            </button>
+            <button
+              @click=saveChanges
+              :disabled="!canSaveChanges || isSaving"
+              class="button button--success button--small"
+            >
+              <div v-if="isSaving" class="flex items-center">
+                <span>Saving</span>
+                <span class="ml-2"><LoadingSpinner /></span>
+              </div>
+              <span v-else>Save Changes</span>
+            </button>
+          </div>
         </div>
       </template>
     </CdnDomains>

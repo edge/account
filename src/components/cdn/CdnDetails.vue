@@ -71,11 +71,9 @@ export default {
   },
   watch: {
     displayName() {
-      if (this.v$.displayName.$invalid) return
       this.updateDetails()
     },
     originUrl() {
-      if (this.v$.originUrl.$invalid) return
       this.updateDetails()
     }
   }
