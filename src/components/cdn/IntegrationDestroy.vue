@@ -67,20 +67,21 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        await utils.cdn.deleteIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key
-        )
-        /** @todo show integration destroyed */
-        this.$emit('confirm-delete')
-        this.isLoading = false
+        setTimeout(async () => {
+          await utils.cdn.deleteIntegration(
+            process.env.VUE_APP_ACCOUNT_API_URL,
+            this.session._key,
+            this.integration._key
+          )
+          this.$emit('confirm-delete')
+          this.isLoading = false
+        }, 800)
       }
       catch (error) {
         setTimeout(() => {
           this.httpError = error
           this.isLoading = false
-        }, 500)
+        }, 800)
       }
     },
     toggleConfirmationModal() {
