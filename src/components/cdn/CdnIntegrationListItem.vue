@@ -97,33 +97,41 @@ export default {
 
 @media (min-width: 350px) {
   .cdnList__item {
-    grid-template-columns: 1fr 80px;
+    grid-template-columns: repeat(2, 1fr);
   }
   .status {
-    @apply row-start-1 col-start-2;
+    @apply row-start-2 col-start-2;
   }
-}
-
-/* tablet sized screens up to desktop */
-@media (min-width: 470px) {
-  .cdnList__item {
-    @apply gap-x-2;
-    grid-template-columns: 1fr 100px 80px;
+  .domain {
+    @apply row-start-2;
   }
-  .cdnList__header {
-    @apply mr-0;
-  }
-  .name {
-    @apply col-span-3;
-  }
-  .status {
-    @apply row-start-2 col-span-1 justify-self-end
+  .requests, .traffic {
+    @apply row-start-3;
   }
 }
 
 @screen sm {
   .cdnList__item {
     @apply border-l-8 border-t-0;
+    grid-template-columns: repeat(3, 1fr) 80px;
+  }
+  .name {
+    @apply row-start-1 col-span-4;
+  }
+  .domain {
+    @apply row-start-2 col-start-1;
+  }
+  .requests, .traffic {
+    @apply row-start-2;
+  }
+  .requests {
+    @apply col-start-2;
+  }
+  .traffic {
+    @apply col-start-3;
+  }
+  .status {
+    @apply col-start-4 row-start-2;
   }
 }
 
@@ -147,12 +155,6 @@ export default {
   .requests, .traffic {
     @apply flex-1 flex-shrink-0;
     flex-basis: 150px;
-  }
-}
-
-@media (max-width: 370px) {
-  .cdnList__records {
-    @apply flex-col space-x-0;
   }
 }
 </style>
