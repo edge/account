@@ -92,20 +92,30 @@ export default {
   },
   methods: {
     async startServer() {
-      const { task } = await utils.servers.startServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.$store.commit('addTask', task)
+      try {
+        const { task } = await utils.servers.startServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.$store.commit('addTask', task)
+      }
+      catch (error) {
+        console.error(error)
+      }
     },
     async stopServer() {
-      const { task } = await utils.servers.stopServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.$store.commit('addTask', task)
+      try {
+        const { task } = await utils.servers.stopServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.$store.commit('addTask', task)
+      }
+      catch (error) {
+        console.error(error)
+      }
       this.toggleConfirmationModal()
     },
     toggleConfirmationModal() {
