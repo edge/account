@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     async getLastResize() {
-      const { tasks } = await utils.servers.getTasks(
+      const tasks = await utils.servers.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.server._key,
