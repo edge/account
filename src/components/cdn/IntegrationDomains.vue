@@ -10,13 +10,13 @@
           <div v-if="!workingDomains.length" class="errorMessage">
             <span class="errorMessage__text">Must have at least one domain</span>
           </div>
-          <div class="flex space-x-2 justify-end mt-2">
+          <div class="save__buttons">
             <button
               @click=resetChanges
               :disabled=isSaving
               class="button button--outline button--small"
             >
-              Cancel Changes
+              Cancel
             </button>
             <button
               @click=saveChanges
@@ -135,5 +135,22 @@ export default {
 </script>
 
 <style scoped>
+.save__buttons {
+  @apply flex space-x-2 justify-end mt-4;
+}
 
+@media (max-width: 550px) {
+  .save__buttons {
+    @apply w-full;
+  }
+  .save__buttons .button {
+    @apply w-full
+  }
+}
+
+@media (max-width: 400px) {
+  .save__buttons {
+    @apply flex-col space-x-0 space-y-2;
+  }
+}
 </style>
