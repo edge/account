@@ -69,10 +69,6 @@ export default {
   font-size: 0.8rem;
 }
 
-.flagIcon {
-  @apply h-4 w-4 rounded-xl mr-1;
-}
-
 /* list item */
 .cdnList__item {
   @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-t-8 border-gray-400 rounded-md w-full p-5;
@@ -98,17 +94,6 @@ export default {
 .cdnList__name {
   @apply text-md text-green truncate;
 }
-.cdnList__records {
-  @apply flex space-x-1.5;
-}
-/* status dot */
-.cdnList__statusDot {
-  @apply w-2.5 h-2.5 rounded-full mr-1 bg-gray-400;
-}
-.divider {
-  @apply h-full bg-gray-400;
-  width: 1px
-}
 
 @media (min-width: 350px) {
   .cdnList__item {
@@ -131,14 +116,8 @@ export default {
   .name {
     @apply col-span-3;
   }
-  .records, .created, .status {
-    @apply row-start-2 col-span-1
-  }
   .status {
-    @apply justify-self-end
-  }
-  .divider {
-    @apply block;
+    @apply row-start-2 col-span-1 justify-self-end
   }
 }
 
@@ -174,10 +153,6 @@ export default {
 @media (max-width: 370px) {
   .cdnList__records {
     @apply flex-col space-x-0;
-  }
-
-  .cdnList__records .divider {
-    @apply hidden;
   }
 }
 </style>

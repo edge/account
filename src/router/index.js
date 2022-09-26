@@ -7,7 +7,7 @@
 import * as utils from '../account-utils/index'
 import Account from '@/views/dashboard/Account'
 import Billing from '@/views/dashboard/Billing'
-import CdnDeploy  from '@/components/cdn/CdnDeploy'
+import CdnDeploy  from '@/views/dashboard/CdnDeploy'
 import CdnIntegration  from '@/views/dashboard/CdnIntegration'
 import CdnIntegrations from '@/views/dashboard/CdnIntegrations'
 import CreateAccount from '@/views/landing/CreateAccount'
