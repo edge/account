@@ -13,7 +13,11 @@
         :disabled="!canDeploy"
         class="button button--success self-end w-full md:max-w-xs"
       >
-        Deploy
+          <div v-if="deploying" class="flex flex-row items-center">
+            <span>Deploying</span>
+            <span class="ml-2"><LoadingSpinner /></span>
+          </div>
+        <span v-else>Deploy</span>
       </button>
       <HttpError :error=httpError />
     </div>
@@ -29,6 +33,7 @@ import CdnDetails from '@/components/cdn/CdnDetails.vue'
 import CdnDomains from '@/components/cdn/CdnDomains.vue'
 import CdnEstimatedCosts from '@/components/cdn/CdnEstimatedCosts.vue'
 import HttpError from '@/components/HttpError.vue'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 
 export default {
@@ -41,10 +46,12 @@ export default {
     CdnDetails,
     CdnDomains,
     CdnEstimatedCosts,
-    HttpError
+    HttpError,
+    LoadingSpinner
   },
   data() {
     return {
+      deploying: false,
       httpError: null,
       integration: {
         name: '',
@@ -70,7 +77,8 @@ export default {
   computed: {
     ...mapState(['session']),
     canDeploy() {
-      return this.integration.name &&
+      return !this.deploying &&
+        this.integration.name &&
         this.integration.data.domain &&
         this.integration.data.config.origin
     }
@@ -78,18 +86,23 @@ export default {
   methods: {
     async deployCdn() {
       try {
+        this.deploying = true
         this.httpError = null
         const { integration } = await utils.cdn.addIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration
         )
-        console.log(integration)
-        /** @todo redirect on complete */
+        setTimeout(() => {
+          this.$router.push({ name: 'CdnIntegration', params: { key: integration._key } })
+        }, 800)
       }
       catch (error) {
         console.error(error)
-        this.httpError = error
+        setTimeout(() => {
+          this.deploying = false
+          this.httpError = error
+        }, 800)
       }
     },
     onUpdateConfig(config) {
