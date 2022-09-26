@@ -2,22 +2,22 @@
   <div class="space-y-4">
     <div class="box">
       <h4>Details</h4>
-      <div class="flex flex-col space-y-4">
+      <div class="details__grid">
         <div class="details__item">
           <span class="details__label">Display Name</span>
           <span class="details__info">{{ integration.name }}</span>
         </div>
-        <div class="details__item">
-          <span class="details__label">Origin URL</span>
+        <div class="details__item lg:row-start-2 lg:col-start-2">
+          <span class="details__label col-2">Origin URL</span>
           <span class="details__info">{{ integration.data.config.origin }}</span>
         </div>
         <div class="details__item">
           <span class="details__label">Primary Domain</span>
           <span class="details__info">{{ integration.data.domain }}</span>
         </div>
-        <div class="details__item" v-if="integration.data.additionalDomains.length">
+        <div class="details__item lg:row-start-3" v-if="integration.data.additionalDomains.length">
           <span class="details__label">Additional Domains</span>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2 truncate">
             <span
               v-for="domain in integration.data.additionalDomains"
               :key="domain"
@@ -27,14 +27,14 @@
             </span>
           </div>
         </div>
-        <div class="details__item">
-          <span class="details__label">Status</span>
+        <div class="details__item lg:row-start-1 lg:col-start-2">
+          <span class="details__label col-2">Status</span>
           <span class="details__info">
             <StatusDot :isActive=isActive :isInactive="!isActive" :statusText=statusText />
           </span>
         </div>
-        <div class="details__item">
-          <span class="details__label">Created</span>
+        <div class="details__item lg:col-start-2">
+          <span class="details__label col-2">Created</span>
           <span class="details__info">{{ created }}</span>
         </div>
       </div>
@@ -76,11 +76,26 @@ export default {
 </script>
 
 <style scoped>
-.details__item {
-  @apply flex
+.details__grid {
+  @apply grid lg:grid-cols-2 gap-4
 }
 
+.details__item {
+  @apply flex truncate;
+}
+.details__info {
+  @apply truncate;
+}
 .details__label {
-  @apply font-bold block mr-2 flex-shrink-0 w-40;
+  @apply font-bold block mr-2 flex-shrink-0 w-36;
+}
+.details__label.col-2 {
+  @apply lg:w-20
+}
+
+@media (max-width: 500px) {
+  .details__item {
+    @apply flex-col
+  }
 }
 </style>
