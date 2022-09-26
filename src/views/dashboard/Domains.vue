@@ -20,7 +20,7 @@
             autocapitalize="off"
             class="w-full input input--floating"
             placeholder="Add a domain name"
-            @keypress="addOnEnter"
+            @keypress.enter=addDomain
             required
             v-model="v$.newDomainName.$model"
           />
@@ -156,11 +156,6 @@ export default {
         this.addingDomain = false
         if (domain) this.$router.push({ name: 'Domain', params: { key: domain._key } })
       }, 800)
-    },
-    addOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.addDomain()
     }
   },
   setup() {

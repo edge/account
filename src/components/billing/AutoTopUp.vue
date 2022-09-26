@@ -19,7 +19,7 @@
               type="number"
               v-model="threshold"
               @focusout="formatThreshold"
-              @keypress="enableOnEnter"
+              @keypress.enter=enableAutoTopUp
             />
             USD
           </div>
@@ -31,7 +31,7 @@
               type="number"
               v-model="targetBalance"
               @focusout="formatTargetBalance"
-              @keypress="enableOnEnter"
+              @keypress.enter=enableAutoTopUp
             />
             USD
           </div>
@@ -203,11 +203,6 @@ export default {
         this.httpError = error
         this.disabling = false
       }
-    },
-    enableOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.enableAutoTopUp()
     },
     async enableAutoTopUp() {
       this.httpError = ''

@@ -9,7 +9,7 @@
             class="input input--floating"
             placeholder="e.g. cdn.yoursite.com"
             type="text"
-            @keypress="confirmEditOnEnter"
+            @keypress.enter=confirmEdit
           />
         </div>
         <span v-else class="text-md truncate">{{ domain.name }}</span>
@@ -146,11 +146,6 @@ export default {
       if (!this.canConfirmEdit) return
       await this.v$.$reset()
       this.$emit('edit-domain', this.domain.name, this.newDomainName.toLowerCase())
-    },
-    confirmEditOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.confirmEdit()
     },
     deleteDomain() {
       this.$emit('delete-domain', this.domain.name)

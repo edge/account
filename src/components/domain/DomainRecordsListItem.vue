@@ -51,7 +51,7 @@
             required
             v-model=hostname
             :title=hostname
-            @keypress="editOnEnter"
+            @keypress.enter=confirmEditRecord
           />
           <span v-else class="recordList__value"
             :title="`${record.name}${record.name ? '.' : ''}${domainName}`"
@@ -80,7 +80,7 @@
           placeholder="Enter priority"
           required
           v-model="priority"
-          @keypress="editOnEnter"
+          @keypress.enter=confirmEditRecord
         />
         <span v-else class="recordList__value">{{ mxValue.priority }}</span>
         <div v-if="isEditing && priorityError" class="errorMessage">
@@ -99,7 +99,7 @@
           required
           v-model=value
           :title=value
-          @keypress="editOnEnter"
+          @keypress.enter=confirmEditRecord
         />
         <span v-else class="recordList__value"
           :title="mxValue ? mxValue.value : record.value"
@@ -120,7 +120,7 @@
           placeholder="Enter TTL"
           required
           v-model="ttl"
-          @keypress="editOnEnter"
+          @keypress.enter=confirmEditRecord
         />
         <span v-else class="recordList__value">{{ record.ttl }}</span>
         <div v-if="isEditing && ttlError" class="errorMessage">
@@ -401,11 +401,6 @@ export default {
         this.httpError = error
       }
       this.isDeleting = false
-    },
-    editOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.confirmEditRecord()
     },
     async getSyncRecords() {
       const { results, metadata} = await utils.dns.getRecords(

@@ -17,7 +17,7 @@
             v-model="v$.accountNumberInput.$model"
             placeholder="1234 5678 9012 3456"
             autocomplete
-            @keypress="signInOnEnter"
+            @keypress.enter=signIn
           />
         </div>
         <!-- error message  -->
@@ -84,7 +84,7 @@
             class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
             v-mask="'NNNNNNNN'"
             placeholder="1a2bc34d"
-            @keypress="signInOnEnter"
+            @keypress.enter=signIn
           />
           <button
             class="order-2 rounded-l-none text-sm py-3 button button--error py-2 w-36"
@@ -260,11 +260,6 @@ export default {
           }
         }
       }
-    },
-    signInOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.signIn()
     },
     async toggleUseBackupCode() {
       this.backupCode = ''

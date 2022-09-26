@@ -12,7 +12,7 @@
             v-model=comment
             placeholder="Add backup name here"
             class="bg-transparent input input--floating"
-            @keypress="createOnEnter"
+            @keypress.enter=createBackup
           />
         </div>
         <div class="sm:flex sm:justify-end">
@@ -172,11 +172,6 @@ export default {
           this.isCreating = false
         }, 500)
       }
-    },
-    createOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.createBackup()
     },
     updateAttemptingAction(newState) {
       this.attemptingAction = newState

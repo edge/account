@@ -49,7 +49,7 @@
             :placeholder="nameLabel.placeholder"
             required
             v-model="hostname"
-            @keypress="createOnEnter"
+            @keypress.enter=createRecord
           />
           <span class="domainName truncate">.{{ domainName }}</span>
         </div>
@@ -69,7 +69,7 @@
             placeholder="Enter priority"
             required
             v-model="priority"
-            @keypress="createOnEnter"
+            @keypress.enter=createRecord
           />
           <div v-if="priorityError" class="errorMessage">
             <span class="errorMessage__text">{{ priorityError }}</span>
@@ -86,7 +86,7 @@
             :placeholder="valueLabel.placeholder"
             required
             v-model="value"
-            @keypress="createOnEnter"
+            @keypress.enter=createRecord
           />
           <div v-if="valueError" class="errorMessage">
             <span class="errorMessage__text">{{ valueError }}</span>
@@ -103,7 +103,7 @@
           placeholder="Enter TTL"
           required
           v-model="ttl"
-          @keypress="createOnEnter"
+          @keypress.enter=createRecord
         />
         <div v-if="ttlError" class="errorMessage">
           <span class="errorMessage__text">{{ ttlError }}</span>
@@ -236,11 +236,6 @@ export default {
     }
   },
   methods: {
-    createOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.createRecord()
-    },
     async createRecord() {
       try {
         this.creatingRecord = true

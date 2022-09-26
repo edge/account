@@ -10,7 +10,7 @@
           class="input input--floating"
           placeholder="e.g. cdn.yoursite.com"
           type="text"
-          @keypress="addDomainOnEnter"
+          @keypress.enter=addDomain
         />
       </div>
       <!-- add button -->
@@ -86,11 +86,6 @@ export default {
       this.domains = [ ...this.domains, newDomain]
       this.newDomainName = ''
       await this.v$.$reset()
-    },
-    addDomainOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.addDomain()
     },
     onDeleteDomain(domainName) {
       const newDomains = [...this.domains.filter(domain => domain.name !== domainName)]

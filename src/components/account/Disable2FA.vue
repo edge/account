@@ -26,7 +26,7 @@
         class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
         v-mask="'NNNNNNNN'"
         placeholder="1a2bc34d"
-        @keypress="disableOnEnter"
+        @keypress.enter=disable2FA
       />
       <input
         v-else
@@ -36,7 +36,7 @@
         class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
         v-mask="'# # # # # #'"
         placeholder="1 2 3 4 5 6"
-        @keypress="disableOnEnter"
+        @keypress.enter=disable2FA
       />
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--error py-2 w-32"
@@ -134,11 +134,6 @@ export default {
           this.isLoading = false
         }, 500)
       }
-    },
-    disableOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.disable2FA()
     },
     async toggleUseBackupCode() {
       this.backupCode = ''

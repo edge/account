@@ -13,7 +13,7 @@
           autocomplete="off"
           class="border border-gray flex-1 px-3 py-2 text-lg rounded-md focus:outline-none max-w-full"
           placeholder="Enter your email address"
-          @keypress="requestOnEnter"
+          @keypress.enter=requestEmail
         />
       </div>
       <!-- error message  -->
@@ -241,11 +241,6 @@ export default {
           this.isLoading = false
         }, 1000)
       }
-    },
-    requestOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.requestEmail()
     },
     async verifyCode() {
       try {

@@ -10,7 +10,7 @@
           class="input input--floating"
           placeholder="e.g. /photos/*.jpg"
           type="text"
-          @keypress="confirmEditOnEnter"
+          @keypress.enter=confirmEdit
         />
         <!-- not editing -->
         <span v-else class="text-md">{{ path.path }}</span>
@@ -79,7 +79,7 @@
           class="w-full input input--floating"
           :placeholder="isGlobal ? 'Enter TTL' : 'Auto'"
           v-model="v$.newTtl.$model"
-          @keypress="confirmEditOnEnter"
+          @keypress.enter=confirmEdit
         />
         <!-- not editing -->
         <span v-else
@@ -248,11 +248,6 @@ export default {
       }
       this.isEditing = false
       await this.v$.$reset()
-    },
-    confirmEditOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.confirmEdit()
     },
     deletePath() {
       this.$emit('delete-path', this.path.path)
