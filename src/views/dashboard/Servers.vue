@@ -1,6 +1,15 @@
 <template>
   <div class="mainContent__inner">
-    <h1>Edge Servers</h1>
+    <div class="flex justify-between">
+      <h1>Edge Servers</h1>
+      <router-link
+        v-if="!loaded || servers.length"
+        :to="{ name: 'Deploy' }"
+        class="button button--success button--small h-full"
+      >
+        Deploy Server
+      </router-link>
+    </div>
 
     <div v-if="!loaded" class="flex items-center">
       <span>Loading servers</span>

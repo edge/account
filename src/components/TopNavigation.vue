@@ -32,9 +32,6 @@
         </div>
       </div>
       <span class="topNavigation__right">
-        <router-link to="/servers/deploy">
-          <button class="h-full button button--success">Deploy Server</button>
-        </router-link>
         <UserMenu />
       </span>
     </div>
