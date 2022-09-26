@@ -169,9 +169,9 @@ export default {
         cache: {}
       }
       if (this.configMode === 'default') {
-        config.enabled = true
-        config.ttl = 86400
-        config.paths = {}
+        config.cache.enabled = true
+        config.cache.ttl = 86400
+        config.cache.paths = {}
       }
       else {
         config = { cache: { ...this.globalConfig.cache } }
