@@ -238,10 +238,27 @@
   </div>
 
   <!-- shows if server not yet loaded -->
-  <div v-else class="mainContent__inner">
+  <div v-else-if=loading class="mainContent__inner server">
     <div class="flex items-center">
       <span>Loading server</span>
       <LoadingSpinner />
+    </div>
+  </div>
+
+  <div v-else-if=notFound class="mainContent__inner server">
+    <div class="box">
+      <div class="flex flex-col items-center justify-center text-center">
+        <div class="flex items-center mt-4">
+          <h4>Server not found</h4>
+        </div>
+        <p class="mt-3 mb-1 text-gray-500">This server does not exist or has been destroyed.</p>
+        <router-link
+          class="mt-4 button button--success button--small"
+          :to="{ name: 'Servers'}"
+        >
+          <span>Return to Servers</span>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -283,6 +300,7 @@ export default {
       isUpdatingBackups: false,
       loadedBackups: false,
       loading: false,
+      notFound: false,
       region: null,
       selectedIndex: 0,
       server: null
@@ -430,6 +448,11 @@ export default {
       }
       catch (error) {
         console.error(error)
+        if (error.status === 404) {
+          this.loading = false
+          this.notFound = true
+          clearInterval(this.iServer)
+        }
       }
     }
   },

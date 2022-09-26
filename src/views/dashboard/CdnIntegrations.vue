@@ -32,9 +32,9 @@
 import CdnIntegrationList from '@/components/cdn/CdnIntegrationList'
 
 export default {
-  name: 'ContentDelivery',
+  name: 'CdnIntegrations',
   title() {
-    return 'Edge Account Portal » CDN'
+    return 'Edge Account Portal » Content Delivery'
   },
   components: {
     CdnIntegrationList

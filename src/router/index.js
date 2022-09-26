@@ -9,7 +9,7 @@ import Account from '@/views/dashboard/Account'
 import Billing from '@/views/dashboard/Billing'
 import CdnDeploy  from '@/components/cdn/CdnDeploy'
 import CdnIntegration  from '@/views/dashboard/CdnIntegration'
-import ContentDelivery from '@/views/dashboard/ContentDelivery'
+import CdnIntegrations from '@/views/dashboard/CdnIntegrations'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
 import Deploy from '@/views/dashboard/Deploy'
@@ -77,8 +77,8 @@ const routes = [
       },
       {
         path: 'cdn',
-        name: 'ContentDelivery',
-        component: ContentDelivery
+        name: 'CdnIntegrations',
+        component: CdnIntegrations
       },
       {
         path: 'cdn/:key',

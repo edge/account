@@ -27,7 +27,7 @@
         </div>
         <p class="mt-3 mb-1 text-gray-500">This domain and all of its associated records have been destroyed.</p>
         <router-link
-          class="mt-4 button button--success"
+          class="mt-4 button button--success button--small"
           :to="{ name: 'Domains'}"
         >
           <span>Return to Domains</span>
@@ -40,8 +40,9 @@
         <div class="flex items-center mt-4">
           <h4>Domain not found</h4>
         </div>
+        <p class="mt-3 mb-1 text-gray-500">This domain either does not exist or has destroyed.</p>
         <router-link
-          class="mt-4 button button--success"
+          class="mt-4 button button--success button--small"
           :to="{ name: 'Domains'}"
         >
           <span>Return to Domains</span>
@@ -173,7 +174,11 @@ export default {
         this.domain = zone
       }
       catch (error) {
-        this.notFound = true
+        console.error(error)
+        if (error.status === 404) {
+          this.notFound = true
+          clearInterval(this.iDomain)
+        }
       }
     }
   },

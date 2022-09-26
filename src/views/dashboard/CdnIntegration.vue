@@ -1,13 +1,27 @@
 <template>
   <div class="mainContent__inner integration">
     <div class="w-max">
-      <router-link :to="{ name: 'ContentDelivery' }" class="flex items-center space-x-1 hover:text-green mb-4">
+      <router-link :to="{ name: 'CdnIntegrations' }" class="flex items-center space-x-1 hover:text-green mb-4">
         <ArrowLeftIcon class="w-4" /><span>Content Delivery</span>
       </router-link>
     </div>
     <h1>{{ displayName }}</h1>
+    <div v-if=deleted class="box">
+      <div class="flex flex-col items-center justify-center text-center">
+        <div class="flex items-center mt-4">
+          <h4>CDN Deployment Deleted</h4>
+        </div>
+        <p class="mt-3 mb-1 text-gray-500">This deployment has been destroyed.</p>
+        <router-link
+          class="mt-4 button button--success button--small"
+          :to="{ name: 'CdnIntegrations'}"
+        >
+          <span>Return to Content Delivery</span>
+        </router-link>
+      </div>
+    </div>
     <TabGroup
-      v-if=integration
+      v-else-if=integration
       as="div"
       class="tabGroup"
     >
@@ -55,10 +69,24 @@
         </TabPanel>
         <!-- destroy -->
         <TabPanel>
-          <IntegrationDestroy :integration=integration />
+          <IntegrationDestroy :integration=integration @confirm-delete=onConfirmDelete />
         </TabPanel>
       </TabPanels>
     </TabGroup>
+    <div v-else-if=notFound class="box">
+      <div class="flex flex-col items-center justify-center text-center">
+        <div class="flex items-center mt-4">
+          <h4>CDN deployment not found</h4>
+        </div>
+        <p class="mt-3 mb-1 text-gray-500">This deployment either does not exist or has destroyed.</p>
+        <router-link
+          class="mt-4 button button--success button--small"
+          :to="{ name: 'Domains'}"
+        >
+          <span>Return to Content Delivery</span>
+        </router-link>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -76,6 +104,9 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 
 export default {
   name: 'CdnIntegration',
+  title() {
+    return 'Edge Account Portal » Content Delivery'
+  },
   components: {
     ArrowLeftIcon,
     IntegrationCache,
@@ -90,8 +121,10 @@ export default {
   },
   data() {
     return {
+      deleted: false,
       iIntegration: null,
-      integration: null
+      integration: null,
+      notFound: false
     }
   },
   computed: {
@@ -104,6 +137,9 @@ export default {
     }
   },
   methods: {
+    onConfirmDelete() {
+      this.deleted = true
+    },
     async updateIntegration() {
       try {
         const { integration } = await utils.cdn.getIntegration(
@@ -115,6 +151,10 @@ export default {
       }
       catch (error) {
         console.error(error)
+        if (error.status === 404) {
+          this.notFound = true
+          clearInterval(this.iIntegration)
+        }
       }
     }
   },
