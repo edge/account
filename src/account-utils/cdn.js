@@ -30,6 +30,14 @@ export const getIntegration = async (host, sessionId, integrationKey) => {
   return response.body
 }
 
+// get integration by key
+export const getIntegrationMetrics = async (host, sessionId, integrationKey) => {
+  const url = `${host}/integrations/${integrationKey}/usage/day`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // get all integration managed by the current account
 export const getIntegrations = async (host, sessionId, params) => {
   let url = `${host}/integrations`
