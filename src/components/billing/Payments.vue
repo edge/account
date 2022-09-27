@@ -42,21 +42,28 @@
               class="mb-5"
               ref="paymentElement"
             />
-            <div class="flex flex-col space-y-2">
+            <div v-if=showAddNewCard class="flex flex-col space-y-2">
               <button
-                v-if=showAddNewCard
                 @click=cancelAddPaymentMethod
                 class="w-full button button--small button--outline"
               >
                 Cancel
               </button>
               <button
-                v-if="showAddNewCard"
                 @click="addPaymentMethod"
+                :disabled=addingCard
                 class="w-full button button--small button--success"
               >
-                Add card
+                <div v-if=addingCard class="flex items-center">
+                  <span>Adding</span>
+                  <span class="ml-2"><LoadingSpinner /></span>
+                </div>
+                <span v-else>Add card</span>
               </button>
+              <div class="errorMessage" v-if=addCardError>
+                <span class="errorMessage__text">{{ addCardError.message }}</span>
+              </div>
+              <LoadingOverlay v-if=addingCard @cancel-stripe=onCancelStripe />
             </div>
           </div>
         </div>
@@ -76,6 +83,8 @@ import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
 import AutoTopUp from '@/components/billing/AutoTopUp'
+import LoadingOverlay from '@/components/billing/LoadingOverlay'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentMethodList from '@/components/billing/PaymentMethodList'
 import { PlusCircleIcon } from '@heroicons/vue/outline'
 import PurchaseTable from '@/components/billing/PurchaseTable'
@@ -86,6 +95,8 @@ export default {
   name: 'Payments',
   data() {
     return {
+      addCardError: null,
+      addingCard: false,
       copied: false,
       iBalance: null,
       rate: null,
@@ -104,6 +115,8 @@ export default {
   components: {
     AddFundsCalculator,
     AutoTopUp,
+    LoadingOverlay,
+    LoadingSpinner,
     PaymentMethodList,
     PlusCircleIcon,
     PurchaseTable
@@ -125,16 +138,29 @@ export default {
   },
   methods: {
     async addPaymentMethod() {
+      this.addCardError = null
       // eslint-disable-next-line max-len
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments`
-
-      const { error } = await this.stripe.confirmSetup({
-        elements: this.stripeElements,
-        confirmParams: { return_url }
-      })
-      if (error) throw error
+      this.addingCard = true
+      try {
+        const { error } = await this.stripe.confirmSetup({
+          elements: this.stripeElements,
+          confirmParams: { return_url }
+        })
+        if (error) {
+          this.addingCard = false
+          this.addCardError = error
+          throw error
+        }
+      }
+      catch (error) {
+        console.error(error)
+        this.addingCard = false
+        this.addCardError = error
+      }
     },
     cancelAddPaymentMethod() {
+      this.addCardError = null
       this.showAddNewCard = false
       this.paymentElement = null
     },
@@ -154,6 +180,10 @@ export default {
     onCalculatorUpdate({ usd, xe }) {
       this.calculatedUSD = usd
       this.calculatedXE = xe
+    },
+    onCancelStripe() {
+      this.addCardError = null
+      this.addingCard = false
     },
     onUpdatePaymentMethods(paymentMethods) {
       this.paymentMethods = paymentMethods
