@@ -108,12 +108,12 @@
                   <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
                 </button>
               </div>
-              <div v-if="error" class="flex items-center errorMessage mt-2">
-                <ExclamationIcon class="w-3.5 text-red" />
-                <span class="errorMessage__text">{{
+              <div v-if="error" class="errorMessage mt-2">
+                <span class="errorMessage__text inline-block">{{
                   error.message || 'Payment Declined'
                 }}</span>
               </div>
+              <LoadingOverlay v-if=completing @cancel-stripe=onCancelStripe />
             </div>
           </div>
           <div v-else>
@@ -151,6 +151,7 @@
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
+import LoadingOverlay from '@/components/billing/LoadingOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentSelectionItem from '@/components/billing/PaymentSelectionItem'
 import Tooltip from '@/components/Tooltip'
@@ -158,7 +159,6 @@ import { mapState } from 'vuex'
 import moment from 'moment'
 import {
   ArrowLeftIcon,
-  ExclamationIcon,
   PlusCircleIcon
 } from '@heroicons/vue/outline'
 
@@ -182,8 +182,8 @@ export default {
   },
   components: {
     ArrowLeftIcon,
-    ExclamationIcon,
     InformationCircleIcon,
+    LoadingOverlay,
     LoadingSpinner,
     PaymentSelectionItem,
     PlusCircleIcon,
@@ -259,13 +259,18 @@ export default {
       }
     },
     async cancelPurchase() {
-      const { purchase } = await utils.purchases.cancelPurchase(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.purchaseId
-      )
-      this.purchase = purchase
-      this.$router.push({ name: 'Payments' })
+      try {
+        const { purchase } = await utils.purchases.cancelPurchase(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.purchaseId
+        )
+        this.purchase = purchase
+        this.$router.push({ name: 'Payments' })
+      }
+      catch (error) {
+        console.error(error)
+      }
     },
     async confirmPurchase() {
       this.completing = true
@@ -289,6 +294,7 @@ export default {
           })
         }
         this.error = purchase.error || null
+        this.completing = false
       }
       catch (error) {
         this.error = error
@@ -324,6 +330,11 @@ export default {
       catch (error) {
         if (error.status === 500) this.purchaseNotFound = true
       }
+    },
+    onCancelStripe() {
+      this.error = null
+      this.completing = false
+      this.cancelPurchase()
     },
     onSelectCard(card) {
       this.useNewCard = false

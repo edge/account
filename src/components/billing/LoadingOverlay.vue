@@ -38,7 +38,7 @@ export default {
     document.documentElement.style.overflow = 'hidden'
     setTimeout(() => {
       this.showCancel = true
-    }, 30 * 1000)
+    }, 15 * 1000)
   },
   unmounted() {
     document.documentElement.style.overflow = 'auto'

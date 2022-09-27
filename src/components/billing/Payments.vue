@@ -154,9 +154,9 @@ export default {
         }
       }
       catch (error) {
-        console.error(error)
         this.addingCard = false
         this.addCardError = error
+        console.error(error)
       }
     },
     cancelAddPaymentMethod() {
