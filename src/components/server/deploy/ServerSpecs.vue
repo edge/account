@@ -199,7 +199,7 @@
 
 <script>
 import 'vue-slider-component/theme/antd.css'
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import VueSlider from 'vue-slider-component'
 import { mapState } from 'vuex'
 

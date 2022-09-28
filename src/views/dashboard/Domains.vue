@@ -82,7 +82,7 @@
 /* global process */
 
 import * as utils from '@/account-utils'
-import * as validation from '../../utils/validation'
+import * as validation from '@/utils/validation'
 import DomainsList from '@/components/domain/DomainsList'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'

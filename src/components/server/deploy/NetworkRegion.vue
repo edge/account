@@ -56,7 +56,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
+import * as utils from '@/account-utils/index'
 import { CheckIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 import {

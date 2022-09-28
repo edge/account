@@ -51,7 +51,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as utils from '@/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import CardBrandIcon from '@/components/icons/CardBrandIcon'
 import DeletePaymentMethodConfirmation from '@/components/confirmations/DeletePaymentMethodConfirmation'

@@ -46,7 +46,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as utils from '@/account-utils'
 import BillingInvoiceTableItem from '@/components/billing/BillingInvoiceTableItem'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'

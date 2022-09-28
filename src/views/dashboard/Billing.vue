@@ -27,7 +27,7 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import DetailsBox from '@/components/account/DetailsBox'
 import ReferralCode from '@/components/ReferralCode'
 import { mapState } from 'vuex'

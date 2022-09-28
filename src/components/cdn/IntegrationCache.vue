@@ -35,7 +35,7 @@
 /* global process */
 
 import * as utils from '@/account-utils'
-import * as validation from '../../utils/validation'
+import * as validation from '@/utils/validation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'

@@ -49,11 +49,11 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as utils from '@/account-utils'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ResizeServerConfirmation from '@/components/confirmations/ResizeServerConfirmation'
-import ServerSpecs from '@/components/deploy/ServerSpecs'
+import ServerSpecs from '@/components/server/deploy/ServerSpecs'
 import { mapGetters, mapState } from 'vuex'
 
 export default {

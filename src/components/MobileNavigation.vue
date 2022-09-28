@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import * as format from '../utils/format'
+import * as format from '@/utils/format'
 import Menu from '@/components/Menu'
 import NavigationTools from '@/components/NavigationTools'
 // import Search from '@/components/Search'

@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import * as validation from '../../utils/validation'
+import * as validation from '@/utils/validation'
 import CdnConfigPath from '@/components/cdn/CdnConfigPath.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import ValidationError from '@/components/ValidationError.vue'

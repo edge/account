@@ -50,8 +50,8 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
-import OperatingSystemOptions from '@/components/deploy/OperatingSystemOptions'
+import * as utils from '@/account-utils/index'
+import OperatingSystemOptions from '@/components/server/deploy/OperatingSystemOptions'
 import { mapState } from 'vuex'
 import {
   RadioGroup,

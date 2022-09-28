@@ -31,7 +31,7 @@
 <script>
 /* global process */
 
-import * as utils from '../account-utils/index'
+import * as utils from '@/account-utils/index'
 import { mapState } from 'vuex'
 import {
   CashIcon,

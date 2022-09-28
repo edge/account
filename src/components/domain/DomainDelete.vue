@@ -36,7 +36,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as utils from '@/account-utils'
 import DeleteDomainConfirmation from '@/components/confirmations/DeleteDomainConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'

@@ -57,8 +57,8 @@
 <script>
 /* global process */
 
-import * as format from '../utils/format'
-import * as utils from '../account-utils/index'
+import * as format from '@/utils/format'
+import * as utils from '@/account-utils/index'
 import {ChevronDownIcon} from '@heroicons/vue/solid'
 import { mapState } from 'vuex'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'

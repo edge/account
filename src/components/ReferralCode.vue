@@ -28,7 +28,7 @@
 <script>
 /* global process */
 
-import * as utils from '../account-utils/index'
+import * as utils from '@/account-utils/index'
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 

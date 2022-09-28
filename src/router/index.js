@@ -4,7 +4,7 @@
 
 /* global process */
 
-import * as utils from '../account-utils/index'
+import * as utils from '@/account-utils/index'
 import Account from '@/views/dashboard/Account'
 import Billing from '@/views/dashboard/Billing'
 import CdnDeploy  from '@/views/dashboard/CdnDeploy'
@@ -27,7 +27,7 @@ import Servers from '@/views/dashboard/Servers'
 import SignIn from '@/views/landing/SignIn'
 import Vnc from '@/views/Vnc'
 import Wallet from '@/components/billing/Wallet'
-import store from '../store'
+import store from '@/store'
 import { createRouter, createWebHistory } from 'vue-router'
 
 

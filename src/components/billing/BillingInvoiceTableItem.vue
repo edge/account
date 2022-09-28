@@ -71,8 +71,8 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils'
+import * as format from '@/utils/format'
+import * as utils from '@/account-utils'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import { CalendarIcon, DocumentDownloadIcon, ExclamationIcon } from '@heroicons/vue/outline'

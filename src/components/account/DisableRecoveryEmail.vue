@@ -28,7 +28,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
+import * as utils from '@/account-utils/index'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableRecoveryConfirmation from '@/components/confirmations/DisableRecoveryConfirmation'
 import HttpError from '@/components/HttpError'

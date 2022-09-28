@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import * as validation from '../../utils/validation'
+import * as validation from '@/utils/validation'
 import CdnDomain from '@/components/cdn/CdnDomain.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import ValidationError from '@/components/ValidationError.vue'

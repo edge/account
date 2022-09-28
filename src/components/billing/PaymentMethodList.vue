@@ -13,7 +13,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as utils from '@/account-utils'
 import PaymentMethodItem from '@/components/billing/PaymentMethodItem'
 import { mapState } from 'vuex'
 

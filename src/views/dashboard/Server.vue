@@ -266,8 +266,8 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils'
+import * as format from '@/utils/format'
+import * as utils from '@/account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import DistroIcon from '@/components/icons/DistroIcon'
 import { InformationCircleIcon } from '@heroicons/vue/solid'

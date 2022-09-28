@@ -177,8 +177,8 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils/index'
+import * as format from '@/utils/format'
+import * as utils from '@/account-utils/index'
 import Cookies from 'js-cookie'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'

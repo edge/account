@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import Disable2FA from '@/components/account/Disable2FA'
 import DisableRecoveryEmail from '@/components/account/DisableRecoveryEmail'
 import Enable2FA from '@/components/account/Enable2FA'

@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import * as validation from '../../utils/validation'
+import * as validation from '@/utils/validation'
 import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import {

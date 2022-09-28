@@ -33,7 +33,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as utils from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import StopServerConfirmation from '@/components/confirmations/StopServerConfirmation'
 import { Switch } from '@headlessui/vue'

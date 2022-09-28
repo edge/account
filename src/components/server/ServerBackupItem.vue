@@ -68,8 +68,8 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils'
+import * as format from '@/utils/format'
+import * as utils from '@/account-utils'
 import BackupMenu from '@/components/server/BackupMenu'
 import DestroyBackupConfirmation from '@/components/confirmations/DestroyBackupConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'

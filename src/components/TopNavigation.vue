@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import * as format from '../utils/format'
+import * as format from '@/utils/format'
 import BurgerButton from '@/components/BurgerButton'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
 import Logo from '@/components/Logo'

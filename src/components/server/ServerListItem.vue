@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import * as format from '../utils/format'
+import * as format from '@/utils/format'
 import DistroIcon from '@/components/icons/DistroIcon'
 import StatusDot from '@/components/StatusDot'
 import { mapState } from 'vuex'

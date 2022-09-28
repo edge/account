@@ -93,7 +93,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as utils from '@/account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import IntegrationCache from '@/components/cdn/IntegrationCache'
 import IntegrationDestroy from '@/components/cdn/IntegrationDestroy'

@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import Tooltip from '@/components/Tooltip'
 import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'

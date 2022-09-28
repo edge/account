@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import StatusDot from '@/components/StatusDot'
 

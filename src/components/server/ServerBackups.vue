@@ -84,8 +84,8 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
-import * as validation from '../../utils/validation'
+import * as utils from '@/account-utils'
+import * as validation from '@/utils/validation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'

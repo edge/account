@@ -46,11 +46,11 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
+import * as utils from '@/account-utils/index'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import { ServerIcon } from '@heroicons/vue/outline'
-import ServerListItem from '@/components/ServerListItem'
+import ServerListItem from '@/components/server/ServerListItem'
 import { mapState } from 'vuex'
 
 export default {
