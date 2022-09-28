@@ -63,7 +63,7 @@
               <div class="errorMessage" v-if=addCardError>
                 <span class="errorMessage__text">{{ addCardError.message }}</span>
               </div>
-              <LoadingOverlay v-if=addingCard @cancel-stripe=onCancelStripe />
+              <StripeLoadingOverlay v-if=addingCard @cancel-stripe=onCancelStripe />
             </div>
           </div>
         </div>
@@ -83,11 +83,11 @@ import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
 import AutoTopUp from '@/components/billing/AutoTopUp'
-import LoadingOverlay from '@/components/billing/LoadingOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentMethodList from '@/components/billing/PaymentMethodList'
 import { PlusCircleIcon } from '@heroicons/vue/outline'
 import PurchaseTable from '@/components/billing/PurchaseTable'
+import StripeLoadingOverlay from '@/components/billing/StripeLoadingOverlay'
 
 import { mapState } from 'vuex'
 
@@ -115,11 +115,11 @@ export default {
   components: {
     AddFundsCalculator,
     AutoTopUp,
-    LoadingOverlay,
     LoadingSpinner,
     PaymentMethodList,
     PlusCircleIcon,
-    PurchaseTable
+    PurchaseTable,
+    StripeLoadingOverlay
   },
   computed: {
     ...mapState(['account', 'balance', 'session']),
@@ -141,22 +141,26 @@ export default {
       this.addCardError = null
       // eslint-disable-next-line max-len
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments`
-      this.addingCard = true
+      const overlayTimeout = setTimeout(() => {
+        this.addingCard = true
+      }, 100)
       try {
         const { error } = await this.stripe.confirmSetup({
           elements: this.stripeElements,
           confirmParams: { return_url }
         })
         if (error) {
+          clearTimeout(overlayTimeout)
           this.addingCard = false
-          this.addCardError = error
+          if (error.type !== 'validation_error') this.addCardError = error
           throw error
         }
       }
       catch (error) {
-        this.addingCard = false
-        this.addCardError = error
+        clearTimeout(overlayTimeout)
         console.error(error)
+        this.addingCard = false
+        if (error.type !== 'validation_error') this.addCardError = error
       }
     },
     cancelAddPaymentMethod() {

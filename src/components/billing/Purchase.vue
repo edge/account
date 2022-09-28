@@ -113,7 +113,7 @@
                   error.message || 'Payment Declined'
                 }}</span>
               </div>
-              <LoadingOverlay v-if=completing @cancel-stripe=onCancelStripe />
+              <StripeLoadingOverlay v-if=completing @cancel-stripe=onCancelStripe />
             </div>
           </div>
           <div v-else>
@@ -151,9 +151,9 @@
 import * as format from '@/utils/format'
 import * as utils from '@/account-utils'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
-import LoadingOverlay from '@/components/billing/LoadingOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentSelectionItem from '@/components/billing/PaymentSelectionItem'
+import StripeLoadingOverlay from '@/components/billing/StripeLoadingOverlay'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import moment from 'moment'
@@ -183,10 +183,10 @@ export default {
   components: {
     ArrowLeftIcon,
     InformationCircleIcon,
-    LoadingOverlay,
     LoadingSpinner,
     PaymentSelectionItem,
     PlusCircleIcon,
+    StripeLoadingOverlay,
     Tooltip
   },
   computed: {
@@ -273,7 +273,9 @@ export default {
       }
     },
     async confirmPurchase() {
-      this.completing = true
+      const overlayTimeout = setTimeout(() => {
+        this.completing = true
+      }, 100)
       // eslint-disable-next-line max-len
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments/purchase/${this.purchase._key}`
 
@@ -293,10 +295,15 @@ export default {
             confirmParams: { return_url }
           })
         }
-        this.error = purchase.error || null
-        this.completing = false
+        if (purchase.error) {
+          clearTimeout(overlayTimeout)
+          this.completing = false
+          this.error = purchase.error.type === 'validation_error' ? null : purchase.error
+        }
+        else await this.refreshPurchase()
       }
       catch (error) {
+        clearTimeout(overlayTimeout)
         this.error = error
         this.completing = false
       }
@@ -353,6 +360,7 @@ export default {
           this.session._key,
           this.purchaseId
         )
+        if (purchase.status !== 'unpaid') this.completing = false
         this.purchase = purchase
       }
       catch (error) {

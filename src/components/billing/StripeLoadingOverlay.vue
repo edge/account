@@ -20,7 +20,7 @@
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 
 export default {
-  name: 'LoadingOverlay',
+  name: 'StripeLoadingOverlay',
   components: {
     LoadingSpinner
   },
