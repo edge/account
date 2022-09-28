@@ -120,7 +120,7 @@ import { mapGetters, mapState } from 'vuex'
 
 
 export default {
-  name: 'Deploy',
+  name: 'ServerDeploy',
   title() {
     return 'Edge Account Portal » Deploy a new server'
   },

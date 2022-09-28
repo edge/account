@@ -12,7 +12,6 @@ import CdnIntegration  from '@/views/dashboard/CdnIntegration'
 import CdnIntegrations from '@/views/dashboard/CdnIntegrations'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
-import Deploy from '@/views/dashboard/Deploy'
 import Domain from '@/views/dashboard/Domain'
 import Domains from '@/views/dashboard/Domains'
 import Index from '@/views/dashboard/Index'
@@ -23,6 +22,7 @@ import Payments from '@/components/billing/Payments'
 import Purchase from '@/components/billing/Purchase'
 import RecoverAccount from '@/views/landing/RecoverAccount'
 import Server from '@/views/dashboard/Server'
+import ServerDeploy from '@/views/dashboard/ServerDeploy'
 import Servers from '@/views/dashboard/Servers'
 import SignIn from '@/views/landing/SignIn'
 import Vnc from '@/views/Vnc'
@@ -107,8 +107,8 @@ const routes = [
       },
       {
         path: 'servers/deploy',
-        name: 'Deploy',
-        component: Deploy
+        name: 'ServerDeploy',
+        component: ServerDeploy
       },
       {
         path: 'server/:id',
