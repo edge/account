@@ -215,7 +215,7 @@ export default {
       const capacity = this.selectedRegion.capacity
       const usage = this.selectedRegion.usage || {}
       for (const spec in capacity) {
-        if (usage[spec] >= capacity[spec]) return true
+        if (spec !== 'bandwidth' && usage[spec] >= capacity[spec]) return true
       }
       return !this.selectedRegion.active
     }
