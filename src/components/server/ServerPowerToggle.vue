@@ -21,7 +21,7 @@
       />
     </Switch>
     <!-- stop confirmation modal -->
-    <StopConfirmation
+    <StopServerConfirmation
       v-if=showConfirmationModal
       @modal-confirm=stopServer
       @modal-close=toggleConfirmationModal
@@ -35,7 +35,7 @@
 
 import * as utils from '../../account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import StopConfirmation from '@/components/confirmations/StopConfirmation'
+import StopServerConfirmation from '@/components/confirmations/StopServerConfirmation'
 import { Switch } from '@headlessui/vue'
 import { mapGetters, mapState } from 'vuex'
 
@@ -49,7 +49,7 @@ export default {
   },
   components: {
     LoadingSpinner,
-    StopConfirmation,
+    StopServerConfirmation,
     Switch
   },
   computed: {

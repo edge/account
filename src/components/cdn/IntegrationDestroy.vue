@@ -24,7 +24,6 @@
     <!-- destroy confirmation modal -->
     <IntegrationDestroyConfirmation
       v-if=showConfirmationModal
-      ref="destroyConfirmation"
       @modal-confirm=destroyIntegration
       @modal-close=toggleConfirmationModal
       :integrationName="integration.name"

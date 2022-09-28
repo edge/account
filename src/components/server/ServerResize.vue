@@ -32,9 +32,8 @@
       </div>
     </div>
     <!-- resize confirmation modal -->
-    <ResizeConfirmation
+    <ResizeServerConfirmation
       v-if=showConfirmationModal
-      ref="destroyConfirmation"
       @modal-confirm=resizeServer
       @modal-close=toggleConfirmationModal
       :currentCost=currentHourlyCost
@@ -53,7 +52,7 @@
 import * as utils from '../../account-utils'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import ResizeConfirmation from '@/components/confirmations/ResizeConfirmation'
+import ResizeServerConfirmation from '@/components/confirmations/ResizeServerConfirmation'
 import ServerSpecs from '@/components/deploy/ServerSpecs'
 import { mapGetters, mapState } from 'vuex'
 
@@ -63,7 +62,7 @@ export default {
   components: {
     HttpError,
     LoadingSpinner,
-    ResizeConfirmation,
+    ResizeServerConfirmation,
     ServerSpecs
   },
   data: function () {

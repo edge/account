@@ -9,9 +9,8 @@
     <template v-slot:body>
       <span class="font-semibold">Warning: this cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>PLACEHOLDER</li>
-        <li>PLACEHOLDER</li>
-        <li>PLACEHOLDER</li>
+        <li>All metrics and cached assets will be lost and cannot be recovered</li>
+        <li>Content delivery deployment will stop immediately</li>
       </div>
     </template>
     <template v-slot:buttons>

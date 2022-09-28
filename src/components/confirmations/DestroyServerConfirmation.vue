@@ -36,7 +36,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'DestroyConfirmation',
+  name: 'DestroyServerConfirmation',
   props: ['serverName'],
   components: {
     ExclamationIcon,

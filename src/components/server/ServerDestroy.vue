@@ -35,7 +35,7 @@
       </div>
     </div>
     <!-- destroy confirmation modal -->
-    <DestroyConfirmation
+    <DestroyServerConfirmation
       v-if=showConfirmationModal
       ref="destroyConfirmation"
       @modal-confirm=destroyServer
@@ -49,7 +49,7 @@
 /* global process */
 
 import * as utils from '../../account-utils'
-import DestroyConfirmation from '@/components/confirmations/DestroyConfirmation'
+import DestroyServerConfirmation from '@/components/confirmations/DestroyServerConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -65,7 +65,7 @@ export default {
     }
   },
   components: {
-    DestroyConfirmation,
+    DestroyServerConfirmation,
     HttpError,
     LoadingSpinner
   },
