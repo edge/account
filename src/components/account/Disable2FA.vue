@@ -63,7 +63,7 @@
 /* global process */
 
 import * as format from '@/utils/format'
-import * as utils from '@/account-utils/index'
+import * as api from '@/account-utils/index'
 import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
@@ -120,7 +120,7 @@ export default {
         const body = {}
         this.useBackupCode ? body.backupCode = this.backupCode : body.otp = this.otp
 
-        await utils.accounts.disable2FA(
+        await api.accounts.disable2FA(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           body

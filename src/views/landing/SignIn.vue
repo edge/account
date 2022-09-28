@@ -135,7 +135,7 @@
 /* global process */
 
 import * as format from '@/utils/format'
-import * as utils from '@/account-utils/index'
+import * as api from '@/account-utils/index'
 import * as validation from '@/utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import HttpError from '@/components/HttpError'
@@ -223,12 +223,12 @@ export default {
       this.isLoading = true
 
       try {
-        const { session } = await utils.sessions.createSession(
+        const { session } = await api.sessions.createSession(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.signInBody
         )
         if (session._key) {
-          const { account } = await utils.accounts.getAccount(
+          const { account } = await api.accounts.getAccount(
             process.env.VUE_APP_ACCOUNT_API_URL,
             session._key
           )

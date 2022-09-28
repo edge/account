@@ -14,7 +14,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import MarkdownIt from 'markdown-it'
 import { XIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
@@ -41,7 +41,7 @@ export default {
   methods: {
     async dismissAnnouncement() {
       try {
-        await utils.announcements.dismissAnnouncements(
+        await api.announcements.dismissAnnouncements(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           [this.announcement._key]

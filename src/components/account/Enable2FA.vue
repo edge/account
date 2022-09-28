@@ -97,7 +97,7 @@
 /* global process */
 
 import * as format from '@/utils/format'
-import * as utils from '@/account-utils/index'
+import * as api from '@/account-utils/index'
 import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon } from '@heroicons/vue/outline'
@@ -160,7 +160,7 @@ export default {
 
       this.isLoading = true
       try {
-        const { account } = await utils.accounts.enable2FA(
+        const { account } = await api.accounts.enable2FA(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {

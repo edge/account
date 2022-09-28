@@ -42,7 +42,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import CdnDomains from '@/components/cdn/CdnDomains'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -104,7 +104,7 @@ export default {
       updatedIntegration.data.additionalDomains = this.workingDomains.filter(domain =>  !domain.primary).map(domain => domain.name)
       try {
         this.isSaving = true
-        await utils.cdn.updateIntegration(
+        await api.cdn.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,

@@ -43,7 +43,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import ServerHistoryItem from '@/components/server/ServerHistoryItem'
@@ -80,7 +80,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateTasks() {
-      const { results, metadata } = await utils.servers.getTasks(
+      const { results, metadata } = await api.servers.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId,

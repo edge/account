@@ -93,7 +93,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import IntegrationCache from '@/components/cdn/IntegrationCache'
 import IntegrationDestroy from '@/components/cdn/IntegrationDestroy'
@@ -142,7 +142,7 @@ export default {
     },
     async updateIntegration() {
       try {
-        const { integration } = await utils.cdn.getIntegration(
+        const { integration } = await api.cdn.getIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integrationKey

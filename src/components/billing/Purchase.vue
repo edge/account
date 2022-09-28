@@ -149,7 +149,7 @@
 /* global process */
 
 import * as format from '@/utils/format'
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentSelectionItem from '@/components/billing/PaymentSelectionItem'
@@ -260,7 +260,7 @@ export default {
     },
     async cancelPurchase() {
       try {
-        const { purchase } = await utils.purchases.cancelPurchase(
+        const { purchase } = await api.purchases.cancelPurchase(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.purchaseId
@@ -309,7 +309,7 @@ export default {
       }
     },
     async getPaymentMethods() {
-      const { results } = await utils.billing.getPaymentMethods(
+      const { results } = await api.billing.getPaymentMethods(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
@@ -321,7 +321,7 @@ export default {
     },
     async getPurchase() {
       try {
-        const { purchase } = await utils.purchases.getPurchase(
+        const { purchase } = await api.purchases.getPurchase(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.purchaseId
@@ -355,7 +355,7 @@ export default {
     },
     async refreshPurchase() {
       try {
-        const { purchase } = await utils.purchases.refreshPurchase(
+        const { purchase } = await api.purchases.refreshPurchase(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.purchaseId

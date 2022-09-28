@@ -25,7 +25,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils/'
+import * as api from '@/account-utils/'
 import CdnIntegrationListItem from '@/components/cdn/CdnIntegrationListItem'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
@@ -59,7 +59,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateIntegrations() {
-      const { results, metadata } = await utils.cdn.getIntegrations(
+      const { results, metadata } = await api.cdn.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {

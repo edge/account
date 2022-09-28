@@ -46,7 +46,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import Line from '@/components/charts/Line'
 import { mapState } from 'vuex'
 
@@ -98,7 +98,7 @@ export default {
       return data
     },
     async updateMetrics() {
-      const results = await utils.cdn.getIntegrationMetrics(
+      const results = await api.cdn.getIntegrationMetrics(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.integration._key

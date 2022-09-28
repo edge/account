@@ -27,7 +27,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils/'
+import * as api from '@/account-utils/'
 import CdnConfig from '@/components/cdn/CdnConfig.vue'
 import CdnDetails from '@/components/cdn/CdnDetails.vue'
 import CdnDomains from '@/components/cdn/CdnDomains.vue'
@@ -88,7 +88,7 @@ export default {
       try {
         this.deploying = true
         this.httpError = null
-        const { integration } = await utils.cdn.addIntegration(
+        const { integration } = await api.cdn.addIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration

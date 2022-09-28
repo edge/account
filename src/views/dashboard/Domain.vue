@@ -104,7 +104,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import DomainDelete from '@/components/domain/DomainDelete'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
 import NameserversConfigure from '@/components/domain/NameserversConfigure'
@@ -166,7 +166,7 @@ export default {
     },
     async updateDomain() {
       try {
-        const { zone } = await utils.dns.getZone(
+        const { zone } = await api.dns.getZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.domainName

@@ -33,7 +33,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import StopServerConfirmation from '@/components/confirmations/StopServerConfirmation'
 import { Switch } from '@headlessui/vue'
@@ -93,7 +93,7 @@ export default {
   methods: {
     async startServer() {
       try {
-        const { task } = await utils.servers.startServer(
+        const { task } = await api.servers.startServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId
@@ -106,7 +106,7 @@ export default {
     },
     async stopServer() {
       try {
-        const { task } = await utils.servers.stopServer(
+        const { task } = await api.servers.stopServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId

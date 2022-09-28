@@ -38,7 +38,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import CdnDetails from '@/components/cdn/CdnDetails'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -90,7 +90,7 @@ export default {
       updatedIntegration.data.config.origin = this.workingOriginUrl
       try {
         this.isSaving = true
-        await utils.cdn.updateIntegration(
+        await api.cdn.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,

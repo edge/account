@@ -104,7 +104,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
 import Domain from '@/components/server/deploy/Domain'
 import HttpError from '@/components/HttpError'
@@ -226,7 +226,7 @@ export default {
       this.httpError = null
       this.internalServerError = false
       try {
-        const { server, task } = await utils.servers.createServer(
+        const { server, task } = await api.servers.createServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.account._key,
@@ -255,7 +255,7 @@ export default {
       return this.selectedRegion.capacity[spec] - (this.selectedRegion.usage && this.selectedRegion.usage[spec] || 0)
     },
     async getHostname() {
-      const { hostname } = await utils.servers.getHostname(
+      const { hostname } = await api.servers.getHostname(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )

@@ -81,7 +81,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
 import DomainsList from '@/components/domain/DomainsList'
 import HttpError from '@/components/HttpError'
@@ -137,7 +137,7 @@ export default {
       let domain
       try {
         this.addingDomain = true
-        const { zone } = await utils.dns.addZone(
+        const { zone } = await api.dns.addZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.newDomainName.toLowerCase()

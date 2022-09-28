@@ -80,7 +80,7 @@
 /* global process*/
 
 import * as format from '@/utils/format'
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
 import AutoTopUp from '@/components/billing/AutoTopUp'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -170,7 +170,7 @@ export default {
     },
     async handleSetupIntentRedirect() {
       if (this.$route.query.redirect_status === 'succeeded') {
-        await utils.billing.addPaymentMethod(
+        await api.billing.addPaymentMethod(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
@@ -194,7 +194,7 @@ export default {
     },
     async startAddPaymentMethod() {
       if (this.showAddNewCard) return
-      const { setup } = await utils.billing.createStripeSetupIntent(
+      const { setup } = await api.billing.createStripeSetupIntent(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
@@ -218,7 +218,7 @@ export default {
         }
       }
 
-      const { purchase } = await utils.purchases.createPurchase(
+      const { purchase } = await api.purchases.createPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         data

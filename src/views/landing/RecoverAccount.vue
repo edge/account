@@ -124,7 +124,7 @@
 /* global process */
 
 import * as format from '@/utils/format'
-import * as utils from '@/account-utils/index'
+import * as api from '@/account-utils/index'
 import * as validation from '@/utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
@@ -219,7 +219,7 @@ export default {
       if (this.v$.email.$invalid) return
       this.isLoading = true
       try {
-        await utils.accounts.recoverAccount(
+        await api.accounts.recoverAccount(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.email
         )
@@ -244,7 +244,7 @@ export default {
     },
     async verifyCode() {
       try {
-        const { account, session } = await utils.accounts.verifyRecoverAccount(
+        const { account, session } = await api.accounts.verifyRecoverAccount(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.email,
           this.recoveryCode

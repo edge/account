@@ -49,7 +49,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ResizeServerConfirmation from '@/components/confirmations/ResizeServerConfirmation'
@@ -128,7 +128,7 @@ export default {
   },
   methods: {
     async getLastResize() {
-      const tasks = await utils.servers.getTasks(
+      const tasks = await api.servers.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.server._key,
@@ -142,7 +142,7 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        const { tasks } = await utils.servers.resizeServer(
+        const { tasks } = await api.servers.resizeServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.server._key,

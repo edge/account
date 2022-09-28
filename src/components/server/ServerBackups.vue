@@ -84,7 +84,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -154,7 +154,7 @@ export default {
       this.isCreating = true
       try {
         this.httpError = null
-        const { task } = await utils.servers.createBackup(
+        const { task } = await api.servers.createBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
@@ -177,7 +177,7 @@ export default {
       this.attemptingAction = newState
     },
     async updateBackups() {
-      const { results, metadata } = await utils.servers.getBackups(
+      const { results, metadata } = await api.servers.getBackups(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId,

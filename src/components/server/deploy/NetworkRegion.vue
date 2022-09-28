@@ -56,7 +56,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils/index'
+import * as api from '@/account-utils/index'
 import { CheckIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 import {
@@ -102,7 +102,7 @@ export default {
       return this.isRegionAtCapacity(region) || !region.active
     },
     async updateRegions() {
-      const { results } = await utils.region.getRegions(
+      const { results } = await api.region.getRegions(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )

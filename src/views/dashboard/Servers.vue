@@ -46,7 +46,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils/index'
+import * as api from '@/account-utils/index'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import { ServerIcon } from '@heroicons/vue/outline'
@@ -86,14 +86,14 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRegions() {
-      const { results } = await utils.region.getRegions(
+      const { results } = await api.region.getRegions(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
       this.regions = results
     },
     async updateServers() {
-      const { results, metadata } = await utils.servers.getServers(
+      const { results, metadata } = await api.servers.getServers(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {

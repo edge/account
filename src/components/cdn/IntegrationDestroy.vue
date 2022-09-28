@@ -34,7 +34,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import HttpError from '@/components/HttpError'
 import IntegrationDestroyConfirmation from '@/components/confirmations/IntegrationDestroyConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -67,7 +67,7 @@ export default {
       try {
         this.toggleConfirmationModal()
         setTimeout(async () => {
-          await utils.cdn.deleteIntegration(
+          await api.cdn.deleteIntegration(
             process.env.VUE_APP_ACCOUNT_API_URL,
             this.session._key,
             this.integration._key

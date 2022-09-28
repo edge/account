@@ -141,7 +141,7 @@
 /* global process */
 
 import * as regex from '@/utils/regex'
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
@@ -249,7 +249,7 @@ export default {
         if (this.type === 'TXT') {
           if (this.value[0] !== '"' && this.value.slice(-1) !== '"') value = `"${value}"`
         }
-        await utils.dns.createRecord(
+        await api.dns.createRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.domainName,
@@ -276,7 +276,7 @@ export default {
 
     },
     async getSyncRecords() {
-      const { results, metadata} = await utils.dns.getRecords(
+      const { results, metadata} = await api.dns.getRecords(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.domainName,
