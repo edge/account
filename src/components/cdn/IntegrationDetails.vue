@@ -90,7 +90,7 @@ export default {
       updatedIntegration.data.config.origin = this.workingOriginUrl
       try {
         this.isSaving = true
-        await api.cdn.updateIntegration(
+        await api.integration.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,

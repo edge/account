@@ -98,7 +98,7 @@ export default {
       return data
     },
     async updateMetrics() {
-      const results = await api.cdn.getIntegrationMetrics(
+      const results = await api.integration.getIntegrationMetrics(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.integration._key

@@ -59,7 +59,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateIntegrations() {
-      const { results, metadata } = await api.cdn.getIntegrations(
+      const { results, metadata } = await api.integration.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {

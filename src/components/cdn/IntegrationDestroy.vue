@@ -67,7 +67,7 @@ export default {
       try {
         this.toggleConfirmationModal()
         setTimeout(async () => {
-          await api.cdn.deleteIntegration(
+          await api.integration.deleteIntegration(
             process.env.VUE_APP_ACCOUNT_API_URL,
             this.session._key,
             this.integration._key
