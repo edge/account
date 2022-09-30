@@ -22,11 +22,16 @@
         <span>Add</span>
       </button>
     </div>
-    <ValidationError :errors="v$.newDomainName.$errors" />
-    <div v-if=domainAlreadyExists class="errorMessage mt-1">
+    <div v-if="newDomainName && domainsLimitReached" class="errorMessage mt-1">
+      <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
+      <span class="errorMessage__text">Max domains limit reached</span>
+    </div>
+    <ValidationError v-if="!domainsLimitReached" :errors="v$.newDomainName.$errors" />
+    <div v-if="!domainsLimitReached && domainAlreadyExists" class="errorMessage mt-1">
       <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
       <span class="errorMessage__text">Domain already in use</span>
     </div>
+
     <!-- domains -->
     <div class="flex flex-col mt-1 divide-y">
       <CdnDomain v-for="domain in domains"
@@ -72,10 +77,13 @@ export default {
   },
   computed: {
     canAddDomain() {
-      return !this.v$.newDomainName.$invalid && !this.domainAlreadyExists
+      return !this.v$.newDomainName.$invalid && !this.domainAlreadyExists && !this.domainsLimitReached
     },
     domainAlreadyExists() {
       return this.domains.some(domain => domain.name === this.newDomainName)
+    },
+    domainsLimitReached() {
+      return this.domains.length >=5
     }
   },
   methods: {
