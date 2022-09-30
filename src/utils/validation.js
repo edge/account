@@ -106,11 +106,10 @@ export const origin = helpers.withMessage(
 /**
  * CDN integration ttl validator.
 */
-const isValidTtl = ttl => ttl === undefined || ttl === '' || ttl >= 60
-export const integrationTtl = helpers.withMessage(
-  'Minimum TTL is 60',
-  v => isValidTtl(v)
-)
+export const isValidTtl = (ttl, minTtl, isGlobalPath) => {
+  if (isGlobalPath) return ttl >= minTtl
+  else return ttl === undefined || ttl === '' || ttl >= minTtl
+}
 
 /**
  * CDN integration path validator.

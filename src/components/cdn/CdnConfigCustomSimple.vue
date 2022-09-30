@@ -92,12 +92,14 @@
         :path=globalPath
         @edit-global-config=onEditGlobalConfig
       />
-      <CdnConfigPath v-for="path in paths"
-        :key=path.path
-        :path=path
-        @delete-path=onDeletePath
-        @edit-path=onEditPath
-      />
+      <div v-if=paths>
+        <CdnConfigPath v-for="path in paths"
+          :key=path.path
+          :path=path
+          @delete-path=onDeletePath
+          @edit-path=onEditPath
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -107,6 +109,8 @@ import * as validation from '@/utils/validation'
 import CdnConfigPath from '@/components/cdn/CdnConfigPath.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import ValidationError from '@/components/ValidationError.vue'
+import { helpers } from '@vuelidate/validators'
+import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/vue/solid'
 import {
@@ -145,12 +149,16 @@ export default {
       newPath: [
         validation.integrationPath
       ],
-      newPathTtl : [
-        validation.integrationTtl
-      ]
+      newPathTtl : {
+        ttl: helpers.withMessage(
+          `Minimum TTL is ${this.config.cdn.minimumTTL}`,
+          v => validation.isValidTtl(v, this.config.cdn.minimumTTL)
+        )
+      }
     }
   },
   computed: {
+    ...mapState(['config']),
     cacheEnabledDisplay() {
       if (this.newPathEnabled === undefined) return 'Auto'
       else return this.newPathEnabled ? 'True' : 'False'

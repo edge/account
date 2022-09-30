@@ -146,6 +146,7 @@
 <script>
 import * as validation from '@/utils/validation'
 import ValidationError from '@/components/ValidationError.vue'
+import { helpers } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
 import {
   CheckIcon,
@@ -192,9 +193,12 @@ export default {
       newPath: [
         validation.integrationPath
       ],
-      newTtl : [
-        validation.integrationTtl
-      ]
+      newTtl : {
+        ttl: helpers.withMessage(
+          `Minimum TTL is ${this.config.cdn.minimumTTL}`,
+          v => validation.isValidTtl(v, this.config.cdn.minimumTTL, this.isGlobal)
+        )
+      }
     }
   },
   data() {
@@ -208,7 +212,7 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend']),
-    ...mapState(['session']),
+    ...mapState(['config', 'session']),
     cacheEnabledDisplay() {
       if (this.path.enabled === undefined) return 'Auto'
       else return this.path.enabled ? 'True' : 'False'

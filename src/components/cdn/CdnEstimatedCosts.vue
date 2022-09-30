@@ -5,7 +5,7 @@
     <div class="w-full grid grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2">
       <div class="flex-1 flex flex-col">
         <div class="slider__box">
-          <span class="slider__title">Traffic (GiB)</span>
+          <span class="slider__title">Traffic (GiB per day)</span>
           <vue-slider
             :disabled="false"
             v-model=trafficValue
@@ -28,13 +28,13 @@
           />
         </div>
         <div class="slider_costs">
-          <span><span class="text-md">$0.10</span> per GiB traffic</span>
+          <span><span class="text-md">${{ config.cdn.dataCost }}</span> per GiB traffic</span>
           <span><span class="text-md">${{ dailyTrafficCost.toFixed(4) }}</span> per day</span>
         </div>
       </div>
       <div class="flex-1 flex flex-col">
         <div class="slider__box">
-          <span class="slider__title">Requests</span>
+          <span class="slider__title">Requests (per day)</span>
           <vue-slider
             :disabled="false"
             v-model=requestsValue
@@ -57,7 +57,7 @@
           />
         </div>
         <div class="slider_costs">
-          <span><span class="text-md">$0.0001</span> per request</span>
+          <span><span class="text-md">${{ config.cdn.requestCost }}</span> per 10k requests</span>
           <span><span class="text-md">${{ dailyRequestsCost.toFixed(4) }}</span> per day</span>
         </div>
       </div>
@@ -81,15 +81,13 @@
         </div>
       </div>
     </div>
-    <!-- <div class="py-5 border-t border-gray-300">
-      <span>Estimated daily cost <span class="text-lg">${{ dailyTotalCost.toFixed(4) }}</span></span>
-    </div> -->
   </div>
 </template>
 
 <script>
 import 'vue-slider-component/theme/antd.css'
 import VueSlider from 'vue-slider-component'
+import { mapState } from 'vuex'
 
 export default {
   name: 'CdnEstimatedCosts',
@@ -130,14 +128,17 @@ export default {
     }
   },
   computed: {
+    ...mapState(['config']),
     dailyRequestsCost() {
-      return this.requestsValue * 0.0001
+      return this.requestsValue * 1000 * this.config.cdn.requestCost / this.config.cdn.requestCostBasis
     },
     dailyTotalCost() {
-      return this.dailyRequestsCost + this.dailyTrafficCost
+      const min = this.config.cdn.minimumCost / this.config.cdn.minimumCostBasis * 24
+      const total = this.dailyRequestsCost + this.dailyTrafficCost
+      return total < min ? min : total
     },
     dailyTrafficCost() {
-      return this.trafficValue * 0.01
+      return this.trafficValue * 1e9 * this.config.cdn.dataCost / this.config.cdn.dataCostBasis
     },
     monthlyTotalCost() {
       return this.dailyTotalCost * 30

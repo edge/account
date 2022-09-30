@@ -72,16 +72,18 @@ export default {
       this.setJson(this.initialPaths, this.initialGlobalConfig)
     },
     setJson(paths, globalConfig) {
-      const jsonPaths = {}
-      paths.forEach(path => {
-        jsonPaths[path.path] = {}
-        if (path.enabled !== undefined) jsonPaths[path.path].enabled = path.enabled
-        if (path.ttl) jsonPaths[path.path].ttl = path.ttl
-      })
       const jsonGlobalConfig = {
         ...globalConfig
       }
-      jsonGlobalConfig.cache.paths = jsonPaths
+      if (paths) {
+        const jsonPaths = {}
+        paths.forEach(path => {
+          jsonPaths[path.path] = {}
+          if (path.enabled !== undefined) jsonPaths[path.path].enabled = path.enabled
+          if (path.ttl) jsonPaths[path.path].ttl = path.ttl
+        })
+        jsonGlobalConfig.cache.paths = jsonPaths
+      }
       const jsonCache = JSON.stringify(jsonGlobalConfig, undefined, 2)
       this.json = jsonCache
     },

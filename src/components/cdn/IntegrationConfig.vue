@@ -65,14 +65,18 @@ export default {
       return this.hasConfigChanges
     },
     hasConfigChanges() {
-      if(this.workingConfig) {
-        const working = { ...this.workingConfig, origin: this.integration.data.config.origin }
+      if (this.workingConfig) {
+        const working = {
+          origin: this.integration.data.config.origin,
+          ...this.workingConfig,
+          cache: { ...this.workingConfig.cache }
+        }
         if (!_.isEqual(this.liveConfig, working)) return true
       }
       return false
     },
     liveConfig() {
-      return { ...this.integration.data.config }
+      return this.integration.data.config
     }
   },
   methods: {
@@ -98,7 +102,6 @@ export default {
         this.$emit('refresh-integration')
       }
       catch (error) {
-        /** @todo handle error */
         this.httpError = error
         console.error(error)
       }

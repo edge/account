@@ -91,17 +91,21 @@ export default {
       return globalConfig
     },
     formatPaths(config) {
+      if (config.cache.paths === undefined) return undefined
       const paths = []
-      for (const path in config.cache.paths) {
-        paths.push({
-          path,
-          ...config.cache.paths[path]
-        })
+      if (config.cache.paths) {
+        for (const path in config.cache.paths) {
+          paths.push({
+            path,
+            ...config.cache.paths[path]
+          })
+        }
       }
       return paths
     },
     onAddPath(path) {
-      this.paths = [ ...this.paths, path]
+      if (!this.paths) this.paths = [path]
+      else this.paths = [ ...this.paths, path]
     },
     onDeletePath(pathName) {
       this.paths = this.paths.filter(path => path.path !== pathName)
@@ -127,26 +131,32 @@ export default {
         requestTimeout: config.requestTimeout,
         retryTimeout: config.retryTimeout,
         cache: {
-          enabled: config.cache.enabled,
-          ttl: config.cache.ttl
+          ttl: config.cache.ttl,
+          enabled: config.cache.enabled
         }
       }
 
-      const paths = []
-      for (const path in config.cache.paths) {
-        const pathObject = { path }
-        if (config.cache.paths[path].enabled !== undefined) pathObject.enabled = config.cache.paths[path].enabled
-        if (config.cache.paths[path].ttl) pathObject.ttl = config.cache.paths[path].ttl
-        paths.push(pathObject)
+      if (config.cache.paths) {
+        const paths = []
+        for (const path in config.cache.paths) {
+          const pathObject = { path }
+          if (config.cache.paths[path].enabled !== undefined) pathObject.enabled = config.cache.paths[path].enabled
+          if (config.cache.paths[path].ttl) pathObject.ttl = config.cache.paths[path].ttl
+          paths.push(pathObject)
+        }
+        this.paths = paths
       }
-      this.paths = paths
+      else {
+        this.paths = undefined
+      }
     },
     resetConfig() {
       if (this.initialConfig) {
         this.globalConfig = this.formatGlobalConfig(this.initialConfig)
         this.paths = this.formatPaths(this.initialConfig)
         const cache = this.initialConfig.cache
-        if (!cache.enabled || cache.ttl !== 86400 || Object.keys(cache.paths).length) this.configMode = 'custom'
+        // eslint-disable-next-line max-len
+        if (!cache.enabled || cache.ttl !== 86400 || !cache.paths || Object.keys(cache.paths).length) this.configMode = 'custom'
         this.initialGlobalConfig = this.globalConfig
         this.initialPaths = this.paths
       }
@@ -178,13 +188,15 @@ export default {
         if(this.globalConfig.maxAssetSize !== undefined) config.maxAssetSize = this.globalConfig.maxAssetSize
         if(this.globalConfig.requestTimeout !== undefined) config.requestTimeout = this.globalConfig.requestTimeout
         if(this.globalConfig.retryTimeout !== undefined) config.retryTimeout = this.globalConfig.retryTimeout
-        const paths = {}
-        this.paths.forEach(path => {
-          paths[path.path] = {}
-          if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
-          if (path.ttl) paths[path.path].ttl = path.ttl
-        })
-        config.cache.paths = paths
+        if (this.paths) {
+          const paths = {}
+          this.paths.forEach(path => {
+            paths[path.path] = {}
+            if (path.enabled !== undefined) paths[path.path].enabled = path.enabled
+            if (path.ttl) paths[path.path].ttl = path.ttl
+          })
+          config.cache.paths = paths
+        }
       }
       this.$emit('update-config', config)
     }
