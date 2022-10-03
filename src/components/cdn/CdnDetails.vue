@@ -61,7 +61,12 @@ export default {
       this.originUrl = this.initialOriginUrl || ''
     },
     updateDetails() {
-      this.$emit('update-details', this.displayName, this.originUrl)
+      // convert the url to lower case (before the path)
+      // e.g. HTTPS://testTEST.com/PATHpath -> https://testtest.com/PATHpath
+      const regex = /^https?:\/\/((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}/i
+      const match = this.originUrl.match(regex)
+      const lowerCaseOrigin = match ? this.originUrl.replace(regex, match[0].toLowerCase()) : undefined
+      this.$emit('update-details', this.displayName, lowerCaseOrigin)
     }
   },
   setup() {

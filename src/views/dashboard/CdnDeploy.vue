@@ -98,7 +98,6 @@ export default {
         }, 800)
       }
       catch (error) {
-        console.error(error)
         setTimeout(() => {
           this.deploying = false
           this.httpError = error
@@ -122,6 +121,11 @@ export default {
       integration.data.domain = domain && domain.name
       integration.data.additionalDomains = domains.filter(domain =>  !domain.primary).map(domain => domain.name)
       this.integration = integration
+    }
+  },
+  watch: {
+    integration() {
+      this.httpError = null
     }
   }
 }
