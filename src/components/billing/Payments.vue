@@ -6,9 +6,13 @@
           <button
             class="w-full md:max-w-xs mt-3 button button--small button--success sm:mt-0 self-end"
             @click="startPurchase"
+            :disabled="!canStartPurchase"
           >
             Purchase XE
           </button>
+          <div v-if="!canStartPurchase" class="errorMessage md:self-end mt-1">
+            <span class="errorMessage__text">Minimum purchase is $1.00</span>
+          </div>
         </template>
       </AddFundsCalculator>
       <AutoTopUp :paymentMethods=paymentMethods />
@@ -79,8 +83,8 @@
 <script>
 /* global process*/
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils'
+import * as format from '@/utils/format'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
 import AutoTopUp from '@/components/billing/AutoTopUp'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -123,6 +127,9 @@ export default {
   },
   computed: {
     ...mapState(['account', 'balance', 'session']),
+    canStartPurchase() {
+      return this.calculatedUSD >= 1
+    },
     explorerUrlWallet() {
       return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.account.wallet.address}`
     },
