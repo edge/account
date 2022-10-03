@@ -13,12 +13,6 @@
         <span class="navigation-tools__label">Billing</span>
       </router-link>
     </li>
-    <!-- <li @click="closeNav" class="navigation-tools__item">
-      <a href="/support" class="navigation-tools__link" target="_blank" rel="noreferrer">
-        <span class=""><SupportIcon class="w-5 h-5" /></span>
-        <span class="navigation-tools__label">Support</span>
-      </a>
-    </li> -->
     <li class="navigation-tools__item mobileOnly">
       <button @click="signOut" class="navigation-tools__link">
         <span class=""><LogoutIcon class="w-5 h-5" /></span>
@@ -36,7 +30,6 @@ import { mapState } from 'vuex'
 import {
   CashIcon,
   LogoutIcon,
-  // SupportIcon,
   UserIcon
 } from '@heroicons/vue/outline'
 

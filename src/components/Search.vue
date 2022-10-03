@@ -38,7 +38,6 @@
 <script>
 
 import { ArrowRightIcon, SearchIcon } from '@heroicons/vue/solid'
-// import { search } from '@/utils/api'
 
 export default {
   name: 'Search',

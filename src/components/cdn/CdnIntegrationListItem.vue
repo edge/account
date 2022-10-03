@@ -40,7 +40,6 @@
 </template>
 
 <script>
-// import * as format from '@/utils/format'
 import StatusDot from '@/components/StatusDot'
 
 export default {
