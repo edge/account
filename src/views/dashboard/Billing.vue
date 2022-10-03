@@ -2,16 +2,8 @@
   <div class="mainContent__inner space-y-4">
     <h1>Billing</h1>
     <div class="flex flex-col space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-6 lg:space-y-0">
-      <div class="box overflow-hidden"><DetailsBox/></div>
-      <!--
-        <template v-slot:buttons>
-          <button @click=addFunds class="button button--success button--small">
-            Add Funds
-          </button>
-        </template>
-      </DetailsBox>
-      -->
-      <div class="box overflow-hidden"><ReferralCode /></div>
+      <div class="box"><DetailsBox/></div>
+      <div class="box"><ReferralCode /></div>
       <!-- <div class="box">
         <h4>Consumption</h4>
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
@@ -35,7 +27,7 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import DetailsBox from '@/components/account/DetailsBox'
 import ReferralCode from '@/components/ReferralCode'
 import { mapState } from 'vuex'
@@ -91,11 +83,4 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-
-.box h4 {
-  @apply w-full mb-4 font-medium;
-}
 </style>

@@ -55,7 +55,7 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import { mapState } from 'vuex'
 import {
   ArrowDownIcon,

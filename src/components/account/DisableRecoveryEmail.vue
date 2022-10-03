@@ -28,7 +28,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
+import * as api from '@/account-utils/index'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableRecoveryConfirmation from '@/components/confirmations/DisableRecoveryConfirmation'
 import HttpError from '@/components/HttpError'
@@ -59,7 +59,7 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        await utils.accounts.disableRecovery(
+        await api.accounts.disableRecovery(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )

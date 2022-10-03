@@ -2,8 +2,8 @@
   <div>
     <div class="specs__grid">
       <div class="flex flex-col">
-        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
-          <span class="box__title">vCPU</span>
+        <div class="slider__box" :class="isRegionDisabled ? 'disabled' : ''">
+          <span class="slider__title">vCPU</span>
           <vue-slider
             :disabled=isRegionDisabled
             v-model=cpusValue
@@ -30,8 +30,8 @@
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
-          <span class="box__title">RAM (GiB)</span>
+        <div class="slider__box" :class="isRegionDisabled ? 'disabled' : ''">
+          <span class="slider__title">RAM (GiB)</span>
           <vue-slider
             :disabled=isRegionDisabled
             v-model=ramValue
@@ -58,8 +58,8 @@
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
-          <span class="box__title">Disk (GiB)</span>
+        <div class="slider__box" :class="isRegionDisabled ? 'disabled' : ''">
+          <span class="slider__title">Disk (GiB)</span>
           <vue-slider
             :disabled=isRegionDisabled
             v-model=diskValue
@@ -94,8 +94,8 @@
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="box" :class="isRegionDisabled ? 'disabled' : ''">
-          <span class="box__title">Bandwidth (Mbps)</span>
+        <div class="slider__box" :class="isRegionDisabled ? 'disabled' : ''">
+          <span class="slider__title">Bandwidth (Mbps)</span>
           <vue-slider
             :disabled=isRegionDisabled
             v-model=bandwidthValue
@@ -199,7 +199,7 @@
 
 <script>
 import 'vue-slider-component/theme/antd.css'
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import VueSlider from 'vue-slider-component'
 import { mapState } from 'vuex'
 
@@ -367,14 +367,14 @@ export default {
 }
 
 /* radio option */
-.box {
+.slider__box {
   @apply relative flex space-x-3 items-start justify-center pr-5 pl-2 pt-14 pb-8 border border-gray-300 rounded-md;
 }
-.box.disabled {
+.slider__box.disabled {
   @apply cursor-not-allowed opacity-50;
 }
 
-.box__title {
+.slider__title {
   @apply absolute top-0 inline-block px-3 text-gray-500 transform -translate-y-1/2 bg-white;
 }
 

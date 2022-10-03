@@ -81,15 +81,41 @@ export const serverPassword = helpers.withMessage(
  */
 const domainRegexp = /((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}/i
 export const domain = helpers.withMessage(
-  'Must be a valid FQDN.',
+  'Must be a valid domain name',
   v => domainRegexp.test(v)
 )
 
 /**
  * Server backup comment validator.
- */
+*/
 const serverCommentLengthRegexp = /^.{1,128}$/
 export const serverCommentLength = helpers.withMessage(
   'Must be between 1 and 128 characters',
   v => serverCommentLengthRegexp.test(v)
+)
+
+/**
+ * CDN origin validator.
+*/
+const originRegexp = /^https?:\/\/((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}(\/.+)?/
+export const origin = helpers.withMessage(
+  'Must be a valid URL',
+  v => originRegexp.test(v)
+)
+
+/**
+ * CDN integration ttl validator.
+*/
+export const isValidTtl = (ttl, minTtl, isGlobalPath) => {
+  if (isGlobalPath) return ttl >= minTtl
+  else return ttl === undefined || ttl === '' || ttl >= minTtl
+}
+
+/**
+ * CDN integration path validator.
+*/
+const isValidPath = path => path.charAt(0) === '/' || path.charAt(0) === '*'
+export const integrationPath = helpers.withMessage(
+  'Path must begin with / or a wildcard (*)',
+  v => isValidPath(v)
 )

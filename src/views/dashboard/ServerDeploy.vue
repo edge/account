@@ -52,30 +52,14 @@
           :hostname=hostname
           :isRegionDisabled="isRegionDisabled"
         />
-        <div v-if="serverNameUpdated" class="errorMessage">
-          <span
-            v-for="error in v$.serverOptions.settings.name.$errors"
-            :key="error.$uid"
-            class="errorMessage__text"
-          >
-            {{ error.$message }}
-          </span>
-        </div>
+        <ValidationError v-if="serverNameUpdated" :errors="v$.serverOptions.settings.name.$errors" />
 
         <Domain
           @domain-changed="updateDomain"
           :hostname="hostname"
           :isRegionDisabled="isRegionDisabled"
         />
-        <div v-if="serverDomainUpdated" class="errorMessage">
-          <span
-            v-for="error in v$.serverOptions.settings.domain.$errors"
-            :key="error.$uid"
-            class="errorMessage__text"
-          >
-            {{ error.$message }}
-          </span>
-        </div>
+        <ValidationError v-if="serverDomainUpdated" :errors="v$.serverOptions.settings.domain.$errors" />
       </div>
 
       <!-- password -->
@@ -84,15 +68,7 @@
           @password-changed="updatePassword"
           :isRegionDisabled="isRegionDisabled"
         />
-        <div class="errorMessage">
-          <span
-            v-for="error in v$.serverOptions.settings.password.$errors"
-            :key="error.$uid"
-            class="mt-2 errorMessage__text"
-          >
-            {{ error.$message }}
-          </span>
-        </div>
+        <ValidationError :errors="v$.serverOptions.settings.password.$errors" />
       </div>
 
       <!-- deploy button & error message -->
@@ -128,23 +104,23 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
-import * as validation from '../../utils/validation'
-import Domain from '@/components/deploy/Domain'
+import * as api from '@/account-utils'
+import * as validation from '@/utils/validation'
+import Domain from '@/components/server/deploy/Domain'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import NetworkRegion from '@/components/deploy/NetworkRegion'
-import OperatingSystem from '@/components/deploy/OperatingSystem'
-import Password from '@/components/deploy/Password'
-import ServerName from '@/components/deploy/ServerName'
-import ServerSpecs from '@/components/deploy/ServerSpecs'
-// import Toggle from '@vueform/toggle'
+import NetworkRegion from '@/components/server/deploy/NetworkRegion'
+import OperatingSystem from '@/components/server/deploy/OperatingSystem'
+import Password from '@/components/server/deploy/Password'
+import ServerName from '@/components/server/deploy/ServerName'
+import ServerSpecs from '@/components/server/deploy/ServerSpecs'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { mapGetters, mapState } from 'vuex'
 
 
 export default {
-  name: 'Deploy',
+  name: 'ServerDeploy',
   title() {
     return 'Edge Account Portal » Deploy a new server'
   },
@@ -156,8 +132,8 @@ export default {
     OperatingSystem,
     Password,
     ServerName,
-    ServerSpecs
-    // Toggle
+    ServerSpecs,
+    ValidationError
   },
   data() {
     return {
@@ -239,7 +215,7 @@ export default {
       const capacity = this.selectedRegion.capacity
       const usage = this.selectedRegion.usage || {}
       for (const spec in capacity) {
-        if (usage[spec] >= capacity[spec]) return true
+        if (spec !== 'bandwidth' && usage[spec] >= capacity[spec]) return true
       }
       return !this.selectedRegion.active
     }
@@ -250,7 +226,7 @@ export default {
       this.httpError = null
       this.internalServerError = false
       try {
-        const { server, task } = await utils.servers.createServer(
+        const { server, task } = await api.servers.createServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.account._key,
@@ -279,7 +255,7 @@ export default {
       return this.selectedRegion.capacity[spec] - (this.selectedRegion.usage && this.selectedRegion.usage[spec] || 0)
     },
     async getHostname() {
-      const { hostname } = await utils.servers.getHostname(
+      const { hostname } = await api.servers.getHostname(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
@@ -364,11 +340,8 @@ export default {
 </script>
 
 <style src="@vueform/toggle/themes/default.css"></style>
-<style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
 
+<style scoped>
 .server__error {
   @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
 }

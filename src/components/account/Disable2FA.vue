@@ -26,7 +26,7 @@
         class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
         v-mask="'NNNNNNNN'"
         placeholder="1a2bc34d"
-        @keypress="disableOnEnter"
+        @keypress.enter=disable2FA
       />
       <input
         v-else
@@ -36,7 +36,7 @@
         class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
         v-mask="'# # # # # #'"
         placeholder="1 2 3 4 5 6"
-        @keypress="disableOnEnter"
+        @keypress.enter=disable2FA
       />
       <button
         class="order-2 rounded-l-none text-sm py-3 button button--error py-2 w-32"
@@ -51,20 +51,10 @@
       </button>
     </div>
     <!-- error message  -->
-    <div v-if="useBackupCode"><div class="flex items-center errorMessage mt-2"
-      v-for="error of v$.backupCode.$errors"
-      :key="error.$uid"
-    >
-      <ExclamationIcon class="w-3.5 h-3.5" />
-      <span class="errorMessage__text">{{ error.$message }}</span>
-    </div></div>
-    <div v-else><div class="flex items-center errorMessage mt-2"
-      v-for="error of v$.confirmationCode.$errors"
-      :key="error.$uid"
-    >
-      <ExclamationIcon class="w-3.5 h-3.5" />
-      <span class="errorMessage__text">{{ error.$message }}</span>
-    </div></div>
+    <div v-if="useBackupCode"><ValidationError :errors="v$.backupCode.$errors"/></div>
+    <div v-else>
+      <ValidationError :errors="v$.confirmationCode.$errors"/>
+    </div>
     <div class="mt-2"><HttpError :error=httpError /></div>
   </div>
 </template>
@@ -72,22 +62,22 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils/index'
-import * as validation from '../../utils/validation'
+import * as format from '@/utils/format'
+import * as api from '@/account-utils/index'
+import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
     BadgeCheckIcon,
-    ExclamationIcon,
     HttpError,
-    LoadingSpinner
+    LoadingSpinner,
+    ValidationError
   },
   data() {
     return {
@@ -130,7 +120,7 @@ export default {
         const body = {}
         this.useBackupCode ? body.backupCode = this.backupCode : body.otp = this.otp
 
-        await utils.accounts.disable2FA(
+        await api.accounts.disable2FA(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           body
@@ -144,11 +134,6 @@ export default {
           this.isLoading = false
         }, 500)
       }
-    },
-    disableOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.disable2FA()
     },
     async toggleUseBackupCode() {
       this.backupCode = ''

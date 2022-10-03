@@ -26,7 +26,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils/'
+import * as api from '@/account-utils/'
 import DomainRecordsListItem from '@/components/domain/DomainRecordsListItem'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
@@ -61,7 +61,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRecords() {
-      const { results, metadata } = await utils.dns.getRecords(
+      const { results, metadata } = await api.dns.getRecords(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.domain._key,
@@ -92,10 +92,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-
 .recordList {
   @apply mt-2 space-y-2;
 }

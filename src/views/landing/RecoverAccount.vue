@@ -13,14 +13,11 @@
           autocomplete="off"
           class="border border-gray flex-1 px-3 py-2 text-lg rounded-md focus:outline-none max-w-full"
           placeholder="Enter your email address"
-          @keypress="requestOnEnter"
+          @keypress.enter=requestEmail
         />
       </div>
       <!-- error message  -->
-      <div class="flex items-center errorMessage mt-2" v-for="error of v$.email.$errors" :key="error.$uid">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div>
+      <ValidationError :errors="v$.email.$errors" />
       <div v-if="errors.email" class="flex items-center errorMessage mt-1">
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ errors.email }}</span>
@@ -126,13 +123,14 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils/index'
-import * as validation from '../../utils/validation'
+import * as format from '@/utils/format'
+import * as api from '@/account-utils/index'
+import * as validation from '@/utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 
@@ -147,7 +145,8 @@ export default {
     DuplicateIcon,
     ExclamationIcon,
     LoadingSpinner,
-    Logo
+    Logo,
+    ValidationError
   },
   data() {
     return {
@@ -220,7 +219,7 @@ export default {
       if (this.v$.email.$invalid) return
       this.isLoading = true
       try {
-        await utils.accounts.recoverAccount(
+        await api.accounts.recoverAccount(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.email
         )
@@ -243,14 +242,9 @@ export default {
         }, 1000)
       }
     },
-    requestOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.requestEmail()
-    },
     async verifyCode() {
       try {
-        const { account, session } = await utils.accounts.verifyRecoverAccount(
+        const { account, session } = await api.accounts.verifyRecoverAccount(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.email,
           this.recoveryCode

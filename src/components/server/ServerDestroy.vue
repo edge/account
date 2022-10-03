@@ -35,7 +35,7 @@
       </div>
     </div>
     <!-- destroy confirmation modal -->
-    <DestroyConfirmation
+    <DestroyServerConfirmation
       v-if=showConfirmationModal
       ref="destroyConfirmation"
       @modal-confirm=destroyServer
@@ -48,8 +48,8 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
-import DestroyConfirmation from '@/components/confirmations/DestroyConfirmation'
+import * as api from '@/account-utils'
+import DestroyServerConfirmation from '@/components/confirmations/DestroyServerConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -65,7 +65,7 @@ export default {
     }
   },
   components: {
-    DestroyConfirmation,
+    DestroyServerConfirmation,
     HttpError,
     LoadingSpinner
   },
@@ -86,7 +86,7 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        const response = await utils.servers.deleteServer(
+        const response = await api.servers.deleteServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId
@@ -108,7 +108,4 @@ export default {
 }
 </script>
 <style scoped>
-  .box {
-    @apply bg-white rounded-lg w-full p-4 md:p-6;
-  }
 </style>

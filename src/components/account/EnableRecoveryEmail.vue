@@ -15,7 +15,7 @@
           class="overflow-hidden flex-1 px-3 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
           :class="createAccount ? 'smaller-font' : 'text-lg py-2'"
           placeholder="Enter email address"
-          @keypress="enableOnEnter"
+          @keypress.enter=enableRecovery
         />
         <button
           class="rounded-l-none text-sm py-3 button button--success w-32"
@@ -30,10 +30,7 @@
         </button>
       </div>
       <!-- error message  -->
-      <div class="flex items-center errorMessage mt-2" v-for="error of v$.email.$errors" :key="error.$uid">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div>
+      <ValidationError :errors="v$.email.$errors" />
       <div class="mt-2" v-if="errors.email">
         <HttpError :error="errors.email" />
       </div>
@@ -69,7 +66,7 @@
           class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
           v-mask="'# # # # # #'"
           placeholder="1 2 3 4 5 6"
-          @keypress="verifyOnEnter"
+          @keypress.enter=verifyRecovery
         />
         <button
           class="order-2 rounded-l-none text-sm py-3 button button--success py-2 w-32"
@@ -84,10 +81,7 @@
         </button>
       </div>
       <!-- error message  -->
-      <div class="flex items-center errorMessage mt-2" v-for="error of v$.confirmationCode.$errors" :key="error.$uid">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div>
+      <ValidationError :errors="v$.confirmationCode.$errors" />
       <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-1">
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
@@ -99,13 +93,14 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils/index'
-import * as validation from '../../utils/validation'
+import * as format from '@/utils/format'
+import * as api from '@/account-utils/index'
+import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { mapActions, mapState } from 'vuex'
 
@@ -114,7 +109,8 @@ export default {
     BadgeCheckIcon,
     ExclamationIcon,
     HttpError,
-    LoadingSpinner
+    LoadingSpinner,
+    ValidationError
   },
   data() {
     return {
@@ -161,17 +157,12 @@ export default {
   },
   methods: {
     ...mapActions(['updateAccount']),
-    enableOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.enableRecovery()
-    },
     async enableRecovery() {
       if (this.v$.email.$invalid) return
       this.isLoading = true
 
       try {
-        await utils.accounts.enableRecovery(
+        await api.accounts.enableRecovery(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.email
@@ -201,16 +192,11 @@ export default {
       this.email = ''
       this.step = 1
     },
-    verifyOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.verifyRecovery()
-    },
     async verifyRecovery() {
       if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
       try {
-        await utils.accounts.verifyRecovery(
+        await api.accounts.verifyRecovery(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.recoverySecret

@@ -4,7 +4,7 @@
 
 /* global process */
 
-import * as utils from './account-utils/index'
+import * as api from './account-utils/index'
 import { createStore } from 'vuex'
 
 const store = createStore({
@@ -53,7 +53,7 @@ const store = createStore({
   actions: {
     async getActiveTasks({ commit, state }) {
       const statusParams = 'status=created&status=running'
-      const { results } = await utils.tasks.getTasks(
+      const { results } = await api.tasks.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         state.session._key,
         statusParams
@@ -61,7 +61,7 @@ const store = createStore({
       commit('setTasks', results)
     },
     async getAnnouncements({ commit, state }) {
-      const { results } = await utils.announcements.getAnnouncements(
+      const { results } = await api.announcements.getAnnouncements(
         process.env.VUE_APP_ACCOUNT_API_URL,
         state.session._key,
         {
@@ -75,7 +75,7 @@ const store = createStore({
       commit('setBackupCodes', null)
     },
     async sessionHeartbeat({ commit, state }) {
-      const { session } = await utils.sessions.putSession(
+      const { session } = await api.sessions.putSession(
         process.env.VUE_APP_ACCOUNT_API_URL,
         state.session._key
       )
@@ -95,14 +95,14 @@ const store = createStore({
       localStorage.removeItem('session')
     },
     async updateAccount({ commit, state }) {
-      const { account } = await utils.accounts.getAccount(
+      const { account } = await api.accounts.getAccount(
         process.env.VUE_APP_ACCOUNT_API_URL,
         state.session._key
       )
       commit('setAccount', account)
     },
     async updateBalance({ commit, state }) {
-      const balance = await utils.billing.getBalance(
+      const balance = await api.billing.getBalance(
         process.env.VUE_APP_ACCOUNT_API_URL,
         state.session._key
       )
@@ -110,7 +110,7 @@ const store = createStore({
 
     },
     async updateConfig({ commit }) {
-      const config = await utils.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
+      const config = await api.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
       commit('setConfig', config)
 
     },
@@ -120,7 +120,7 @@ const store = createStore({
       if (!state.tasks.some(task => ['created', 'running'].includes(task.status))) return
 
       const keyParams = state.tasks.map(task => `key=${task._key}`).join('&')
-      const { results } = await utils.tasks.getTasks(
+      const { results } = await api.tasks.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         state.session._key,
         keyParams

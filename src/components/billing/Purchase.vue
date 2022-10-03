@@ -108,12 +108,12 @@
                   <div v-if="completing" class="ml-1"><LoadingSpinner /></div>
                 </button>
               </div>
-              <div v-if="error" class="flex items-center errorMessage mt-2">
-                <ExclamationIcon class="w-3.5 text-red" />
-                <span class="errorMessage__text">{{
+              <div v-if="error" class="errorMessage mt-2">
+                <span class="errorMessage__text inline-block">{{
                   error.message || 'Payment Declined'
                 }}</span>
               </div>
+              <StripeLoadingOverlay v-if=completing @cancel-stripe=onCancelStripe />
             </div>
           </div>
           <div v-else>
@@ -149,16 +149,16 @@
 /* global process */
 
 import * as format from '@/utils/format'
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentSelectionItem from '@/components/billing/PaymentSelectionItem'
+import StripeLoadingOverlay from '@/components/billing/StripeLoadingOverlay'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import {
   ArrowLeftIcon,
-  ExclamationIcon,
   PlusCircleIcon
 } from '@heroicons/vue/outline'
 
@@ -182,11 +182,11 @@ export default {
   },
   components: {
     ArrowLeftIcon,
-    ExclamationIcon,
     InformationCircleIcon,
     LoadingSpinner,
     PaymentSelectionItem,
     PlusCircleIcon,
+    StripeLoadingOverlay,
     Tooltip
   },
   computed: {
@@ -259,16 +259,23 @@ export default {
       }
     },
     async cancelPurchase() {
-      const { purchase } = await utils.purchases.cancelPurchase(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.purchaseId
-      )
-      this.purchase = purchase
-      this.$router.push({ name: 'Payments' })
+      try {
+        const { purchase } = await api.purchases.cancelPurchase(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.purchaseId
+        )
+        this.purchase = purchase
+        this.$router.push({ name: 'Payments' })
+      }
+      catch (error) {
+        console.error(error)
+      }
     },
     async confirmPurchase() {
-      this.completing = true
+      const overlayTimeout = setTimeout(() => {
+        this.completing = true
+      }, 100)
       // eslint-disable-next-line max-len
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments/purchase/${this.purchase._key}`
 
@@ -288,15 +295,21 @@ export default {
             confirmParams: { return_url }
           })
         }
-        this.error = purchase.error || null
+        if (purchase.error) {
+          clearTimeout(overlayTimeout)
+          this.completing = false
+          this.error = purchase.error.type === 'validation_error' ? null : purchase.error
+        }
+        else await this.refreshPurchase()
       }
       catch (error) {
+        clearTimeout(overlayTimeout)
         this.error = error
         this.completing = false
       }
     },
     async getPaymentMethods() {
-      const { results } = await utils.billing.getPaymentMethods(
+      const { results } = await api.billing.getPaymentMethods(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
@@ -308,7 +321,7 @@ export default {
     },
     async getPurchase() {
       try {
-        const { purchase } = await utils.purchases.getPurchase(
+        const { purchase } = await api.purchases.getPurchase(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.purchaseId
@@ -325,6 +338,11 @@ export default {
         if (error.status === 500) this.purchaseNotFound = true
       }
     },
+    onCancelStripe() {
+      this.error = null
+      this.completing = false
+      this.cancelPurchase()
+    },
     onSelectCard(card) {
       this.useNewCard = false
       this.paymentCard = card
@@ -337,11 +355,12 @@ export default {
     },
     async refreshPurchase() {
       try {
-        const { purchase } = await utils.purchases.refreshPurchase(
+        const { purchase } = await api.purchases.refreshPurchase(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.purchaseId
         )
+        if (purchase.status !== 'unpaid') this.completing = false
         this.purchase = purchase
       }
       catch (error) {
@@ -386,14 +405,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-
-.box h4 {
-  @apply w-full mb-4 font-medium;
-}
-
 .label {
   @apply font-bold block;
 }

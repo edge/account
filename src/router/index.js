@@ -4,12 +4,14 @@
 
 /* global process */
 
-import * as utils from '../account-utils/index'
+import * as api from '@/account-utils/index'
 import Account from '@/views/dashboard/Account'
 import Billing from '@/views/dashboard/Billing'
+import CdnDeploy  from '@/views/dashboard/CdnDeploy'
+import CdnIntegration  from '@/views/dashboard/CdnIntegration'
+import CdnIntegrations from '@/views/dashboard/CdnIntegrations'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
-import Deploy from '@/views/dashboard/Deploy'
 import Domain from '@/views/dashboard/Domain'
 import Domains from '@/views/dashboard/Domains'
 import Index from '@/views/dashboard/Index'
@@ -20,11 +22,12 @@ import Payments from '@/components/billing/Payments'
 import Purchase from '@/components/billing/Purchase'
 import RecoverAccount from '@/views/landing/RecoverAccount'
 import Server from '@/views/dashboard/Server'
+import ServerDeploy from '@/views/dashboard/ServerDeploy'
 import Servers from '@/views/dashboard/Servers'
 import SignIn from '@/views/landing/SignIn'
 import Vnc from '@/views/Vnc'
 import Wallet from '@/components/billing/Wallet'
-import store from '../store'
+import store from '@/store'
 import { createRouter, createWebHistory } from 'vue-router'
 
 
@@ -73,6 +76,21 @@ const routes = [
         ]
       },
       {
+        path: 'cdn',
+        name: 'CdnIntegrations',
+        component: CdnIntegrations
+      },
+      {
+        path: 'cdn/:key',
+        name: 'CdnIntegration',
+        component: CdnIntegration
+      },
+      {
+        path: 'cdn/deploy',
+        name: 'CdnDeploy',
+        component: CdnDeploy
+      },
+      {
         path: 'domain/:key',
         name: 'Domain',
         component: Domain
@@ -89,8 +107,8 @@ const routes = [
       },
       {
         path: 'servers/deploy',
-        name: 'Deploy',
-        component: Deploy
+        name: 'ServerDeploy',
+        component: ServerDeploy
       },
       {
         path: 'server/:id',
@@ -139,9 +157,9 @@ const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 const confirmSessionKey = async () => {
   const sessionKey = localStorage.getItem('session')
   try {
-    const { session } = await utils.sessions.getSession(ACCOUNT_API_URL, sessionKey)
+    const { session } = await api.sessions.getSession(ACCOUNT_API_URL, sessionKey)
     if (session._key) {
-      const { account } = await utils.accounts.getAccount(ACCOUNT_API_URL, session._key)
+      const { account } = await api.accounts.getAccount(ACCOUNT_API_URL, session._key)
       await store.commit('setAccount', account)
       await store.commit('setSession', session)
       await store.commit('setIsAuthed', true)

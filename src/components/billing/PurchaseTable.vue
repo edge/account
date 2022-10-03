@@ -51,7 +51,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as api from '@/account-utils'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import PurchaseTableItem from '@/components/billing/PurchaseTableItem'
@@ -84,7 +84,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updatePurchases() {
-      const purchases = await utils.purchases.getPurchases(
+      const purchases = await api.purchases.getPurchases(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {
@@ -114,13 +114,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-.box h4 {
-  @apply w-full mb-4 font-medium;
-}
-
 .tableHead {
   @apply border-gray-300 border-b rounded-lg w-full bg-gray-50;
 }

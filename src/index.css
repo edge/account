@@ -13,6 +13,12 @@ html {
  font-family: 'Roboto Mono', monospace;
 }
 
+.box {
+  @apply w-full p-4 md:p-6 bg-white rounded-lg;
+}
+.box h4 {
+  @apply w-full mb-4 font-medium;
+}
 
 /*
   FORM STYLES
@@ -60,7 +66,7 @@ html {
   @apply w-full space-x-4 md:space-x-8 border-b border-gray-300 overflow-auto flex flex-nowrap;
 }
 .tab {
-  @apply pb-1 font-medium border-b text-gray-500 border-transparent;
+  @apply pb-1 font-medium border-b text-gray-500 border-transparent flex-shrink-0 w-max;
   @apply hover:text-black;
 }
 .tab:focus,

@@ -1,6 +1,15 @@
 <template>
   <div class="mainContent__inner">
-    <h1>Edge Servers</h1>
+    <div class="flex justify-between">
+      <h1>Edge Servers</h1>
+      <router-link
+        v-if="!loaded || servers.length"
+        :to="{ name: 'ServerDeploy' }"
+        class="button button--success button--small h-full"
+      >
+        Deploy Server
+      </router-link>
+    </div>
 
     <div v-if="!loaded" class="flex items-center">
       <span>Loading servers</span>
@@ -22,12 +31,14 @@
       />
     </ul>
 
-    <div v-else class="">
-      <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
-      <button class="button button--success" @click="$router.push('/servers/deploy')">
-        <ServerIcon class="w-5 h-5 mr-2"/>
-        <span>Deploy your first server</span>
-      </button>
+    <div v-else class="box">
+      <div class="flex flex-col space-y-4 items-center justify-center py-4">
+        <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
+        <a class="button button--success button--small" :to="{ name: 'ServerDeploy' }">
+          <div><ServerIcon class="w-5 h-5 mr-2"/></div>
+          <span>Deploy your first server</span>
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -35,11 +46,11 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
+import * as api from '@/account-utils/index'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import { ServerIcon } from '@heroicons/vue/outline'
-import ServerListItem from '@/components/ServerListItem'
+import ServerListItem from '@/components/server/ServerListItem'
 import { mapState } from 'vuex'
 
 export default {
@@ -75,14 +86,14 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRegions() {
-      const { results } = await utils.region.getRegions(
+      const { results } = await api.region.getRegions(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
       this.regions = results
     },
     async updateServers() {
-      const { results, metadata } = await utils.servers.getServers(
+      const { results, metadata } = await api.servers.getServers(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {

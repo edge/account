@@ -17,17 +17,11 @@
             v-model="v$.accountNumberInput.$model"
             placeholder="1234 5678 9012 3456"
             autocomplete
-            @keypress="signInOnEnter"
+            @keypress.enter=signIn
           />
         </div>
         <!-- error message  -->
-        <div class="flex items-center errorMessage mt-2"
-          v-for="error of v$.accountNumberInput.$errors"
-          :key="error.$uid"
-        >
-          <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{ error.$message }}</span>
-        </div>
+        <ValidationError :errors="v$.accountNumberInput.$errors" />
         <div v-if="errors.accountNumberInput" class="flex items-center errorMessage mt-2">
           <ExclamationIcon class="w-3.5 h-3.5" />
           <span class="errorMessage__text">{{ errors.accountNumberInput }}</span>
@@ -90,7 +84,7 @@
             class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
             v-mask="'NNNNNNNN'"
             placeholder="1a2bc34d"
-            @keypress="signInOnEnter"
+            @keypress.enter=signIn
           />
           <button
             class="order-2 rounded-l-none text-sm py-3 button button--error py-2 w-36"
@@ -112,14 +106,9 @@
           :resetErrors="resetOtpErrors"
         />
         <!-- error message  -->
-        <div v-if="useBackupCode"><div class="flex items-center errorMessage mt-2"
-          v-for="error of v$.backupCode.$errors"
-          :key="error.$uid"
-        >
-          <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{ error.$message }}</span>
-        </div>
-        <div class="mt-2"><HttpError :error=httpError /></div>
+        <div v-if="useBackupCode">
+          <ValidationError :errors="v$.backupCode.$errors" />
+          <div class="mt-2"><HttpError :error=httpError /></div>
         </div>
 
         <button v-if="useBackupCode" @click="toggleUseBackupCode" class="underline mt-2">
@@ -145,13 +134,14 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils/index'
-import * as validation from '../../utils/validation'
+import * as format from '@/utils/format'
+import * as api from '@/account-utils/index'
+import * as validation from '@/utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { ExclamationIcon, ShieldExclamationIcon } from '@heroicons/vue/outline'
 
@@ -166,7 +156,8 @@ export default {
     HttpError,
     LoadingSpinner,
     Logo,
-    ShieldExclamationIcon
+    ShieldExclamationIcon,
+    ValidationError
   },
   data() {
     return {
@@ -232,12 +223,12 @@ export default {
       this.isLoading = true
 
       try {
-        const { session } = await utils.sessions.createSession(
+        const { session } = await api.sessions.createSession(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.signInBody
         )
         if (session._key) {
-          const { account } = await utils.accounts.getAccount(
+          const { account } = await api.accounts.getAccount(
             process.env.VUE_APP_ACCOUNT_API_URL,
             session._key
           )
@@ -269,11 +260,6 @@ export default {
           }
         }
       }
-    },
-    signInOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.signIn()
     },
     async toggleUseBackupCode() {
       this.backupCode = ''

@@ -20,7 +20,7 @@
             autocapitalize="off"
             class="w-full input input--floating"
             placeholder="Add a domain name"
-            @keypress="addOnEnter"
+            @keypress.enter=addDomain
             required
             v-model="v$.newDomainName.$model"
           />
@@ -48,15 +48,7 @@
         <!-- eslint-disable-next-line max-len -->
         <span class="">This domain already exists within Edge DNS. If this is a mistake, please contact support@edge.network</span>
       </div>
-      <div class="errorMessage" v-if=showValidationError>
-        <span
-          v-for="error in v$.newDomainName.$errors"
-          :key="error.$uid"
-          class="mt-2 errorMessage__text"
-        >
-          {{ error.$message }}
-        </span>
-      </div>
+      <ValidationError v-if="showValidationError" :errors="v$.newDomainName.$errors" />
       <!-- estimated costs -->
       <div class="flex flex-col items-baseline mt-2">
         <span class="text-green">Estimated Cost</span>
@@ -89,12 +81,13 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
-import * as validation from '../../utils/validation'
+import * as api from '@/account-utils'
+import * as validation from '@/utils/validation'
 import DomainsList from '@/components/domain/DomainsList'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
+import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 import { ExclamationIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
@@ -110,7 +103,8 @@ export default {
     HttpError,
     InformationCircleIcon,
     LoadingSpinner,
-    Tooltip
+    Tooltip,
+    ValidationError
   },
   data() {
     return {
@@ -143,7 +137,7 @@ export default {
       let domain
       try {
         this.addingDomain = true
-        const { zone } = await utils.dns.addZone(
+        const { zone } = await api.dns.addZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.newDomainName.toLowerCase()
@@ -162,11 +156,6 @@ export default {
         this.addingDomain = false
         if (domain) this.$router.push({ name: 'Domain', params: { key: domain._key } })
       }, 800)
-    },
-    addOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.addDomain()
     }
   },
   setup() {
@@ -189,9 +178,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
 .box.suspend {
   @apply pt-4;
 }

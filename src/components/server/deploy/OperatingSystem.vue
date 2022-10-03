@@ -50,8 +50,8 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils/index'
-import OperatingSystemOptions from '@/components/deploy/OperatingSystemOptions'
+import * as api from '@/account-utils/index'
+import OperatingSystemOptions from '@/components/server/deploy/OperatingSystemOptions'
 import { mapState } from 'vuex'
 import {
   RadioGroup,
@@ -86,7 +86,7 @@ export default {
     },
     async updateOS() {
       try {
-        const { results } = await utils.os.getOS(
+        const { results } = await api.os.getOS(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )

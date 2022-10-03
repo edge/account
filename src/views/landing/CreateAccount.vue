@@ -177,8 +177,8 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils/index'
+import * as format from '@/utils/format'
+import * as api from '@/account-utils/index'
 import Cookies from 'js-cookie'
 import Enable2FA from '@/components/account/Enable2FA'
 import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
@@ -276,7 +276,7 @@ export default {
         try {
           const referralCode = Cookies.get('referralCode')
 
-          const { account, session } = await utils.accounts.createAccount(
+          const { account, session } = await api.accounts.createAccount(
             process.env.VUE_APP_ACCOUNT_API_URL,
             referralCode
           )

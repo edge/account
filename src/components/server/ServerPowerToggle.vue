@@ -21,7 +21,7 @@
       />
     </Switch>
     <!-- stop confirmation modal -->
-    <StopConfirmation
+    <StopServerConfirmation
       v-if=showConfirmationModal
       @modal-confirm=stopServer
       @modal-close=toggleConfirmationModal
@@ -33,9 +33,9 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as api from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import StopConfirmation from '@/components/confirmations/StopConfirmation'
+import StopServerConfirmation from '@/components/confirmations/StopServerConfirmation'
 import { Switch } from '@headlessui/vue'
 import { mapGetters, mapState } from 'vuex'
 
@@ -49,7 +49,7 @@ export default {
   },
   components: {
     LoadingSpinner,
-    StopConfirmation,
+    StopServerConfirmation,
     Switch
   },
   computed: {
@@ -92,20 +92,30 @@ export default {
   },
   methods: {
     async startServer() {
-      const { task } = await utils.servers.startServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.$store.commit('addTask', task)
+      try {
+        const { task } = await api.servers.startServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.$store.commit('addTask', task)
+      }
+      catch (error) {
+        console.error(error)
+      }
     },
     async stopServer() {
-      const { task } = await utils.servers.stopServer(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      this.$store.commit('addTask', task)
+      try {
+        const { task } = await api.servers.stopServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        this.$store.commit('addTask', task)
+      }
+      catch (error) {
+        console.error(error)
+      }
       this.toggleConfirmationModal()
     },
     toggleConfirmationModal() {

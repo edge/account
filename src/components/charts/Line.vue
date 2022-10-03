@@ -58,7 +58,7 @@ export default {
             mode: 'index',
             intersect: false,
             callbacks: {
-              label: tooltipItem => ` ${tooltipItem.raw.toFixed(2)} ${this.unit}`
+              label: tooltipItem => ` ${tooltipItem.raw.toFixed(2)}${this.unit}`
             }
           },
           hover: {
@@ -72,6 +72,9 @@ export default {
           title: {
             display: true,
             text: this.xLabel
+          },
+          grid: {
+            display: false
           }
         },
         y: {
@@ -82,7 +85,10 @@ export default {
             text: this.yLabel
           },
           ticks: {
-            callback: (tickValue) => this.unit === '%' ? tickValue : tickValue.toFixed(1)
+            callback: (tickValue) => `${tickValue}${this.unit}`
+          },
+          grid: {
+            display: false
           }
         }
       }
