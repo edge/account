@@ -15,8 +15,8 @@
             <div v-if="jsonError.lineNumber">
               <button @click="toggleShowErrorDetail" class="flex items-center space-x-2">
                 <span>JSON Syntax Error around line {{ jsonError.lineNumber }}</span>
-                <ChevronUpIcon v-if=showErrorDetail class="w-3.5" />
-                <ChevronDownIcon v-else class="w-3.5" />
+                <ChevronDownIcon v-if=showErrorDetail class="w-3.5" />
+                <ChevronUpIcon v-else class="w-3.5" />
               </button>
             </div>
             <span v-else>{{ jsonError.error }}</span>
@@ -44,14 +44,14 @@
 </template>
 
 <script>
-import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/outline'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'CdnConfigCustomAdvanced',
   props: ['globalConfig', 'initialGlobalConfig', 'initialPaths', 'paths'],
   components: {
-    ChevronUpIcon,
-    ChevronDownIcon
+    ChevronDownIcon,
+    ChevronUpIcon
   },
   data() {
     return {

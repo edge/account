@@ -103,7 +103,6 @@ export default {
       }
       catch (error) {
         this.httpError = error
-        console.error(error)
       }
       setTimeout(() => {
         this.isSaving = false
@@ -112,6 +111,11 @@ export default {
   },
   mounted() {
     this.workingConfig = { ...this.integration.data.config }
+  },
+  watch: {
+    workingConfig() {
+      this.httpError = null
+    }
   }
 }
 </script>
