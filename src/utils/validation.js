@@ -97,7 +97,7 @@ export const serverCommentLength = helpers.withMessage(
 /**
  * CDN origin validator.
 */
-const originRegexp = /^https?:\/\/((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}(\/.+)?/
+const originRegexp = /^https?:\/\/((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}(\/.+)?/i
 export const origin = helpers.withMessage(
   'Must be a valid URL',
   v => originRegexp.test(v)
