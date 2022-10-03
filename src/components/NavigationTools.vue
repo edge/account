@@ -39,7 +39,6 @@ export default {
   components: {
     CashIcon,
     LogoutIcon,
-    // SupportIcon,
     UserIcon
   },
   computed: {
