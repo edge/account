@@ -16,6 +16,7 @@ const paramLookup = {
   'name': 'Hostname',
   'otp': 'TOTP',
   'paymentMethod': 'Payment Method',
+  'path': 'Path',
   'region': 'Region',
   'region.servers': 'Servers',
   'spec.cpus': 'vCPU',

@@ -27,6 +27,7 @@
           <span v-else>Flush Cache</span>
         </button>
       </div>
+      <div class="mt-1"><HttpError :error=httpError /></div>
     </div>
   </div>
 </template>
@@ -36,19 +37,23 @@
 
 import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ValidationError from '@/components/ValidationError.vue'
+import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'IntegrationCache',
   props: ['integration'],
   components: {
+    HttpError,
     LoadingSpinner,
     ValidationError
   },
   data() {
     return {
+      httpError: null,
       isFlushingCache: false,
       path: ''
     }
@@ -61,18 +66,45 @@ export default {
     }
   },
   computed: {
+    ...mapState(['session']),
     canFlushCache() {
       return !this.v$.path.$invalid
     }
   },
   methods: {
     async flushCache() {
-      /** @todo */
+      if (!this.canFlushCache) return
+      this.isFlushingCache = true
+      try {
+        // this.toggleConfirmationModal()
+        await api.integration.flushCache(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.integration._key,
+          this.path
+        )
+        setTimeout(async () => {
+          this.path = ''
+          await this.v$.$reset()
+          this.isFlushingCache = false
+        }, 800)
+      }
+      catch (error) {
+        setTimeout(() => {
+          this.httpError = error
+          this.isFlushingCache = false
+        }, 800)
+      }
     }
   },
   setup() {
     return {
       v$: useVuelidate()
+    }
+  },
+  watch: {
+    path() {
+      this.httpError = null
     }
   }
 }

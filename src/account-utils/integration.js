@@ -22,6 +22,15 @@ export const deleteIntegration = async (host, sessionId, integrationKey) => {
   return response.body
 }
 
+// flush cache for specific path
+export const flushCache = async (host, sessionId, integrationKey, path) => {
+  const url = `${host}/integrations/${integrationKey}/cdn/cache`
+  const response = await superagent.delete(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ path })
+  return response.body
+}
+
 // get integration by key
 export const getIntegration = async (host, sessionId, integrationKey) => {
   const url = `${host}/integrations/${integrationKey}`
