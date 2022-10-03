@@ -101,6 +101,11 @@ export default {
     return {
       v$: useVuelidate()
     }
+  },
+  watch: {
+    path() {
+      this.httpError = null
+    }
   }
 }
 </script>
