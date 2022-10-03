@@ -184,7 +184,8 @@ export default {
         config.cache.paths = {}
       }
       else {
-        config = { cache: { ...this.globalConfig.cache } }
+        config = { cache: { ttl: this.globalConfig.cache.ttl } }
+        if(this.globalConfig.cache.enabled !== undefined) config.cache.enabled = this.globalConfig.cache.enabled
         if(this.globalConfig.maxAssetSize !== undefined) config.maxAssetSize = this.globalConfig.maxAssetSize
         if(this.globalConfig.requestTimeout !== undefined) config.requestTimeout = this.globalConfig.requestTimeout
         if(this.globalConfig.retryTimeout !== undefined) config.retryTimeout = this.globalConfig.retryTimeout
@@ -210,6 +211,10 @@ export default {
     },
     globalConfig() {
       this.updateConfig()
+    },
+    initialConfig() {
+      this.initialGlobalConfig = this.formatGlobalConfig(this.initialConfig)
+      this.initialPaths = this.formatPaths(this.initialConfig)
     },
     paths() {
       this.updateConfig()

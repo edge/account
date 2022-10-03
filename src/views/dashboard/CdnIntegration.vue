@@ -65,7 +65,7 @@
         </TabPanel>
         <!-- settings -->
         <TabPanel>
-          <IntegrationSettings :integration=integration />
+          <IntegrationSettings :integration=integration @refresh-integration=updateIntegration />
         </TabPanel>
         <!-- destroy -->
         <TabPanel>

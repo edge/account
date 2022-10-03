@@ -214,7 +214,10 @@ export default {
     ...mapGetters(['balanceSuspend']),
     ...mapState(['config', 'session']),
     cacheEnabledDisplay() {
-      if (this.path.enabled === undefined) return 'Auto'
+      if (this.path.enabled === undefined) {
+        if (this.isGlobal) return 'True'
+        else return 'Auto'
+      }
       else return this.path.enabled ? 'True' : 'False'
     },
     canConfirmEdit() {
@@ -225,7 +228,10 @@ export default {
       return this.path.path === '(global)'
     },
     newCacheEnabledDisplay() {
-      if (this.newEnabled === undefined) return 'Auto'
+      if (this.newEnabled === undefined) {
+        if (this.isGlobal) return 'True'
+        else return 'Auto'
+      }
       else return this.newEnabled ? 'True' : 'False'
     },
     lg() {

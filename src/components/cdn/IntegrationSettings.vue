@@ -2,7 +2,7 @@
   <div class="flex flex-col space-y-4">
     <IntegrationDetails :integration=integration />
     <IntegrationDomains :integration=integration />
-    <IntegrationConfig :integration=integration />
+    <IntegrationConfig :integration=integration @refresh-integration=onRefreshIntegration />
   </div>
 </template>
 
@@ -43,15 +43,8 @@ export default {
     }
   },
   methods: {
-    onUpdateConfig(newConfig) {
-      this.workingConfig = newConfig
-    },
-    onUpdateDetails(newDisplayName, newOriginUrl) {
-      this.workingDisplayName = newDisplayName
-      this.workingOriginUrl = newOriginUrl
-    },
-    saveChanges() {
-      console.log('saving')
+    onRefreshIntegration() {
+      this.$emit('refresh-integration')
     }
   },
   mounted() {
