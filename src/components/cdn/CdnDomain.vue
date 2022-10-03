@@ -73,7 +73,7 @@
         </Menu>
       </div>
     </div>
-    <ValidationError :errors="v$.newDomainName.$errors" />
+    <ValidationError v-if=newDomainName :errors="v$.newDomainName.$errors" />
   </div>
 </template>
 
