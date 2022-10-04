@@ -3,7 +3,7 @@
     <h1>Edge CDN</h1>
     <div class="flex flex-col space-y-4">
       <!-- details -->
-      <CdnDetails @update-details=onUpdateDetails />
+      <CdnDisplayName @update-details=onUpdateDetails />
       <CdnDomains @update-domains=onUpdateDomains />
       <CdnConfig @update-config=onUpdateConfig />
       <CdnEstimatedCosts />
@@ -29,7 +29,7 @@
 
 import * as api from '@/account-utils/'
 import CdnConfig from '@/components/cdn/CdnConfig.vue'
-import CdnDetails from '@/components/cdn/CdnDetails.vue'
+import CdnDisplayName from '@/components/cdn/CdnDisplayName.vue'
 import CdnDomains from '@/components/cdn/CdnDomains.vue'
 import CdnEstimatedCosts from '@/components/cdn/CdnEstimatedCosts.vue'
 import HttpError from '@/components/HttpError.vue'
@@ -43,7 +43,7 @@ export default {
   },
   components: {
     CdnConfig,
-    CdnDetails,
+    CdnDisplayName,
     CdnDomains,
     CdnEstimatedCosts,
     HttpError,
@@ -109,11 +109,8 @@ export default {
       integration.data.config = { ...integration.data.config, ...config }
       this.integration = integration
     },
-    onUpdateDetails(name, origin) {
-      const integration = { ...this.integration }
-      integration.name = name
-      integration.data.config.origin = origin
-      this.integration = integration
+    onUpdateDetails(name) {
+      this.integration = { ...this.integration, name }
     },
     onUpdateDomains(domains) {
       const integration = { ...this.integration }
