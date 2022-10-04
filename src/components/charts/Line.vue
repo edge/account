@@ -18,6 +18,8 @@ export default {
   components: { LineChart },
   props: {
     data: Object,
+    decimalPlaces: Number,
+    formatYScale: Function,
     labels: Array,
     minScale: Number,
     maxScale: Number,
@@ -29,17 +31,18 @@ export default {
     chartData() {
       return {
         labels: this.labels,
-        datasets: [{
-          data: this.data,
+        datasets: this.data.map(data => ({
+          label: data.label,
+          data: data.series,
           fill: false,
-          backgroundColor: 'rgba(110,224,159)',
-          borderColor: 'rgb(14, 204, 95)',
+          backgroundColor: data.color ? data.color.background : 'rgba(110,224,159)',
+          borderColor: data.color ? data.color.border : 'rgb(14, 204, 95)',
           borderWidth: 2,
           spanGaps: true,
           stepped: false,
           pointRadius: 0,
           tension: 0.2
-        }]
+        }))
       }
     },
     options() {
@@ -47,14 +50,24 @@ export default {
         responsive: true,
         plugins: {
           legend: {
-            display: false
+            display: this.data.length > 1
           },
           tooltip: {
             interaction: {
               mode: 'index',
               intersect: false,
               callbacks: {
-                label: tooltipItem => ` ${tooltipItem.raw.toFixed(2)}${this.unit}`
+                label: tooltipItem => {
+                  let value = tooltipItem.raw
+                  let unit = this.unit
+                  if (this.formatYScale) {
+                    const scales = this.formatYScale(tooltipItem.raw)
+                    value = scales.value
+                    unit = scales.unit
+                  }
+                  // eslint-disable-next-line max-len
+                  return `${tooltipItem.dataset.label ? ` ${tooltipItem.dataset.label}:` : ''} ${value.toFixed(this.decimalPlaces)}${unit || ''}`
+                }
               }
             },
             hover: {
@@ -81,7 +94,16 @@ export default {
               text: this.yLabel
             },
             ticks: {
-              callback: (tickValue) => `${tickValue}${this.unit}`
+              callback: (tickValue) => {
+                let value = tickValue
+                let unit = this.unit
+                if (this.formatYScale) {
+                  const scales = this.formatYScale(tickValue)
+                  value = scales.value
+                  unit = scales.unit
+                }
+                return `${value}${unit || ''}`
+              }
             },
             grid: {
               display: false

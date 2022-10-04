@@ -8,40 +8,42 @@
         <h4>Requests</h4>
         <Line
           :data=requestsData
+          :formatYScale=formatRequestsScale
           :labels=timeSeries
           :minScale="0"
           :maxScale="10"
-          unit="K"
         />
       </div>
       <div class="box">
         <h4>Traffic</h4>
         <Line
           :data=trafficData
+          :decimalPlaces="2"
+          :formatYScale=formatTrafficScale
           :labels=timeSeries
           :minScale="0"
           :maxScale="10"
-          unit=" GB"
         />
       </div>
       <div class="box">
         <h4>Cache</h4>
         <Line
           :data=cacheData
+          :decimalPlaces="1"
           :labels=timeSeries
           :minScale="0"
           :maxScale="100"
-          unit="%"
+          unit=" %"
         />
       </div>
       <div class="box">
         <h4>Bandwidth</h4>
         <Line
           :data=bandwidthData
+          :decimalPlaces="2"
+          :formatYScale=formatBandwidthScale
           :labels=timeSeries
           :minScale="0"
-          :maxScale="100"
-          unit=" Mbps"
         />
       </div>
     </div>
@@ -75,12 +77,27 @@ export default {
   computed: {
     ...mapState(['session']),
     bandwidthData() {
-      // placeholder
-      return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
+      return this.metrics && [{ series: this.metrics.b }]
     },
     cacheData() {
-      // placeholder
-      return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
+      return this.metrics && [
+        {
+          series: this.metrics.cr,
+          label: 'Requests',
+          color: {
+            border: 'rgb(14, 204, 95)',
+            background: 'rgb(110, 224, 159)'
+          }
+        },
+        {
+          series: this.metrics.ct,
+          label: 'Traffic',
+          color: {
+            border: 'rgb(220, 60, 60)',
+            background: 'rgb(255, 138, 138)'
+          }
+        }
+      ]
     },
     metricsOptions() {
       if (this.selectedPeriod === 'day') return { range: 'hourly', count: 24 }
@@ -88,15 +105,46 @@ export default {
       else return { range: 'daily', count: 30 }
     },
     requestsData() {
-      // placeholder
-      return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
+      return this.metrics && [{ series: this.metrics.r }]
     },
     trafficData() {
-      // placeholder
-      return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
+      return this.metrics && [{ series: this.metrics.t }]
     }
   },
   methods: {
+    formatBandwidthScale(y) {
+      let value = y
+      if (y >= 1e3) value = y / 1e3
+      if (y >= 1e6) value = y / 1e6
+      if (y >= 1e9) value = y / 1e9
+      let unit = ''
+      if (y >= 1e3) unit = ' Kbps'
+      if (y >= 1e6) unit = ' Mbps'
+      if (y >= 1e9) unit = ' Gbps'
+      return { value, unit }
+    },
+    formatRequestsScale(y) {
+      let value = y
+      if (y >= 1e3) value = y / 1e3
+      if (y >= 1e6) value = y / 1e6
+      let unit = ''
+      if (y >= 1e3) unit = 'K'
+      if (y >= 1e6) unit = 'M'
+      return { value, unit }
+    },
+    formatTrafficScale(y) {
+      let value = y
+      if (y >= 1e3) value = y / 1e3
+      if (y >= 1e6) value = y / 1e6
+      if (y >= 1e9) value = y / 1e9
+      if (y >= 1e12) value = y / 1e12
+      let unit = ''
+      if (y >= 1e3) unit = ' KB'
+      if (y >= 1e6) unit = ' MB'
+      if (y >= 1e9) unit = ' GB'
+      if (y >= 1e12) unit = ' GB'
+      return { value, unit }
+    },
     onUpdateTimePeriod(period) {
       this.selectedPeriod = period
     },
@@ -107,15 +155,14 @@ export default {
         this.integration._key,
         this.metricsOptions
       )
-      this.updateTimeSeries(results.reverse())
-      this.metrics = results.reverse()
+      this.updateTimeSeries(results)
+      this.metrics = results
     },
     updateTimeSeries(metrics) {
-      this.timeSeries = metrics.map(m => {
-        const date = new Date(m.end)
-        if (this.selectedPeriod === 'day') return moment(date).format('LT')
-        if (this.selectedPeriod === 'week') return moment(date).format('ddd')
-        if (this.selectedPeriod === 'month') return moment(date).format('ll')
+      this.timeSeries = metrics.ts.map(ts => {
+        if (this.selectedPeriod === 'day') return moment(ts * 1000).format('LT')
+        if (this.selectedPeriod === 'week') return moment(ts * 1000).format('DD MMM')
+        if (this.selectedPeriod === 'month') return moment(ts * 1000).format('DD MMM')
       })
     }
   },
