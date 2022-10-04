@@ -40,8 +40,9 @@ export const getIntegration = async (host, sessionId, integrationKey) => {
 }
 
 // get integration by key
-export const getIntegrationMetrics = async (host, sessionId, integrationKey) => {
-  const url = `${host}/integrations/${integrationKey}/usage/day`
+export const getIntegrationMetrics = async (host, sessionId, integrationKey, options) => {
+  const { range, count } = options
+  const url = `${host}/integrations/${integrationKey}/usage?range=${range}&count=${count}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body

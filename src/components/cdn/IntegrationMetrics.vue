@@ -1,5 +1,5 @@
 <template>
-  <div class="metrics__grid">
+  <div v-if=metrics class="metrics__grid">
     <div class="box">
       <h4>Requests (last 24h)</h4>
       <Line
@@ -71,21 +71,17 @@ export default {
       return this.getData(100)
     },
     requestsData() {
-      return this.getData(10)
+      return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
     },
     trafficData() {
       return this.getData(10)
     },
     labels() {
-      const labels = []
-      const now = new Date()
-      const lastHour = now.getHours()
-      for (let i = 0; i < 24; i++) {
-        let hour = lastHour - i
-        if (hour < 0) hour += 24
-        labels.unshift(`${hour}:00`)
-      }
-      return labels
+      return this.metrics && this.metrics.map(m => {
+        const date = new Date(m.end)
+        const hour = date.getHours()
+        return `${hour < 10 ? '0' : ''}${hour}:00`
+      })
     }
   },
   methods: {
@@ -101,20 +97,24 @@ export default {
       const results = await api.integration.getIntegrationMetrics(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
-        this.integration._key
+        this.integration._key,
+        {
+          range: 'hourly',
+          count: 24
+        }
       )
-      this.metrics = results
+      this.metrics = results.reverse()
     }
   },
-  // mounted() {
-  //   this.updateMetrics()
-  //   this.iMetrics = setInterval(() => {
-  //     this.updateMetrics()
-  //   }, 60 * 1000)
-  // },
-  // unmounted() {
-  //   clearInterval(this.iMetrics)
-  // }
+  mounted() {
+    this.updateMetrics()
+    this.iMetrics = setInterval(() => {
+      this.updateMetrics()
+    }, 60 * 1000)
+  },
+  unmounted() {
+    clearInterval(this.iMetrics)
+  }
 }
 </script>
 
