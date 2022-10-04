@@ -170,7 +170,7 @@ import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'CdnConfigPath',
-  props: ['path'],
+  props: ['path', 'paths'],
   components: {
     CheckIcon,
     ChevronDownIcon,
@@ -222,7 +222,8 @@ export default {
     },
     canConfirmEdit() {
       return (this.isGlobal || !this.v$.newPath.$invalid) &&
-        !this.v$.newTtl.$invalid
+        !this.v$.newTtl.$invalid &&
+        !this.paths.some(path => path.path === this.newPath)
     },
     isGlobal() {
       return this.path.path === '(global)'
