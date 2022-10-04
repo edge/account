@@ -6,7 +6,7 @@
     <div class="w-full grid grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2">
       <div class="flex-1 flex flex-col">
         <div class="slider__box">
-          <span class="slider__title">Traffic (GiB per day)</span>
+          <span class="slider__title">Traffic (GB per day)</span>
           <vue-slider
             :disabled="false"
             v-model=trafficValue
@@ -29,7 +29,7 @@
           />
         </div>
         <div class="slider_costs">
-          <span><span class="text-md">${{ config.cdn.dataCost }}</span> per GiB traffic</span>
+          <span><span class="text-md">${{ config.cdn.dataCost }}</span> per GB traffic</span>
           <span><span class="text-md">${{ dailyTrafficCost.toFixed(4) }}</span> per day</span>
         </div>
       </div>
@@ -68,9 +68,9 @@
       <div class="flex flex-col items-baseline">
         <span class="text-green">Estimated Daily Usage</span>
         <div class="usage_and_cost">
-          <span class="text-lg flex-shrink-0">{{ trafficValue }} GiB Traffic</span>
+          <span class="text-lg flex-shrink-0">{{ trafficValueDisplay }} Traffic</span>
           <span class="dot" />
-          <span class="text-lg flex-shrink-0">{{ requestsValue }}K Requests</span>
+          <span class="text-lg flex-shrink-0">{{ requestsValueDisplay }} Requests</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">
@@ -141,6 +141,12 @@ export default {
     },
     monthlyTotalCost() {
       return this.dailyTotalCost * 30
+    },
+    requestsValueDisplay() {
+      return this.requestsValue >= 1000 ? `${this.requestsValue / 1000}M` : `${this.requestsValue}K`
+    },
+    trafficValueDisplay() {
+      return this.trafficValue >= 1000 ? `${this.trafficValue / 1000} TB` : `${this.trafficValue} GB`
     }
   },
   methods: {
@@ -149,8 +155,8 @@ export default {
       else return `${(requests / 1000)}M`
     },
     formatSliderTraffic(traffic) {
-      if (traffic < 1000) return `${traffic} GiB`
-      else return `${(traffic / 1000)} TiB`
+      if (traffic < 1000) return `${traffic} GB`
+      else return `${(traffic / 1000)} TB`
     }
   }
 }
