@@ -5,7 +5,7 @@
         <ArrowLeftIcon class="w-4" /><span>Content Delivery</span>
       </router-link>
     </div>
-    <h1>{{ displayName }}</h1>
+    <IntegrationDisplayName v-if=integration :integration=integration @update-integration=updateIntegration />
     <div v-if=deleted class="box">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="flex items-center mt-4">
@@ -97,6 +97,7 @@ import * as api from '@/account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import IntegrationCache from '@/components/cdn/IntegrationCache'
 import IntegrationDestroy from '@/components/cdn/IntegrationDestroy'
+import IntegrationDisplayName from '@/components/cdn/IntegrationDisplayName'
 import IntegrationOverview from '@/components/cdn/IntegrationOverview'
 import IntegrationSettings from '@/components/cdn/IntegrationSettings'
 import { mapState } from 'vuex'
@@ -111,6 +112,7 @@ export default {
     ArrowLeftIcon,
     IntegrationCache,
     IntegrationDestroy,
+    IntegrationDisplayName,
     IntegrationOverview,
     IntegrationSettings,
     Tab,
