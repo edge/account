@@ -1,44 +1,49 @@
 <template>
-  <div v-if=metrics class="metrics__grid">
-    <div class="box">
-      <h4>Requests (last 24h)</h4>
-      <Line
-        :data=requestsData
-        :labels=labels
-        :minScale="0"
-        :maxScale="10"
-        unit="K"
-      />
-    </div>
-    <div class="box">
-      <h4>Traffic (last 24h)</h4>
-      <Line
-        :data=trafficData
-        :labels=labels
-        :minScale="0"
-        :maxScale="10"
-        unit=" GB"
-      />
-    </div>
-    <div class="box">
-      <h4>Cache (last 24h)</h4>
-      <Line
-        :data=cacheData
-        :labels=labels
-        :minScale="0"
-        :maxScale="100"
-        unit="%"
-      />
-    </div>
-    <div class="box">
-      <h4>Bandwidth (last 24h)</h4>
-      <Line
-        :data=bandwidthData
-        :labels=labels
-        :minScale="0"
-        :maxScale="100"
-        unit=" Mbps"
-      />
+  <div>
+    <!-- range toggle -->
+    <IntegrationMetricsRangeToggle :period=selectedPeriod @update-period=onUpdateTimePeriod />
+    <!-- charts -->
+    <div v-if=metrics class="metrics__grid">
+      <div class="box">
+        <h4>Requests</h4>
+        <Line
+          :data=requestsData
+          :labels=timeSeries
+          :minScale="0"
+          :maxScale="10"
+          unit="K"
+        />
+      </div>
+      <div class="box">
+        <h4>Traffic</h4>
+        <Line
+          :data=trafficData
+          :labels=timeSeries
+          :minScale="0"
+          :maxScale="10"
+          unit=" GB"
+        />
+      </div>
+      <div class="box">
+        <h4>Cache</h4>
+        <Line
+          :data=cacheData
+          :labels=timeSeries
+          :minScale="0"
+          :maxScale="100"
+          unit="%"
+        />
+      </div>
+      <div class="box">
+        <h4>Bandwidth</h4>
+        <Line
+          :data=bandwidthData
+          :labels=timeSeries
+          :minScale="0"
+          :maxScale="100"
+          unit=" Mbps"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -47,63 +52,71 @@
 /* global process */
 
 import * as api from '@/account-utils'
+import IntegrationMetricsRangeToggle from '@/components/cdn/IntegrationMetricsRangeToggle'
 import Line from '@/components/charts/Line'
 import { mapState } from 'vuex'
+import moment from 'moment'
 
 export default {
   name: 'IntegrationMetrics',
   props: ['integration'],
   components: {
+    IntegrationMetricsRangeToggle,
     Line
   },
   data() {
     return {
       iMetrics: null,
-      metrics: null
+      metrics: null,
+      selectedPeriod: 'day',
+      timeSeries: []
     }
   },
   computed: {
     ...mapState(['session']),
     bandwidthData() {
-      return this.getData(100)
+      // placeholder
+      return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
     },
     cacheData() {
-      return this.getData(100)
+      // placeholder
+      return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
+    },
+    metricsOptions() {
+      if (this.selectedPeriod === 'day') return { range: 'hourly', count: 24 }
+      else if (this.selectedPeriod === 'week') return { range: 'daily', count: 7 }
+      else return { range: 'daily', count: 30 }
     },
     requestsData() {
+      // placeholder
       return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
     },
     trafficData() {
-      return this.getData(10)
-    },
-    labels() {
-      return this.metrics && this.metrics.map(m => {
-        const date = new Date(m.end)
-        const hour = date.getHours()
-        return `${hour < 10 ? '0' : ''}${hour}:00`
-      })
+      // placeholder
+      return this.metrics && this.metrics.map(m => m.cdn.requests.cached)
     }
   },
   methods: {
-    getData(max) {
-      const data = []
-      for (let i = 0; i < 24; i++) {
-        const randomData = Math.floor(Math.random() * max * 100)/100
-        data.unshift(randomData)
-      }
-      return data
+    onUpdateTimePeriod(period) {
+      this.selectedPeriod = period
     },
     async updateMetrics() {
       const results = await api.integration.getIntegrationMetrics(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.integration._key,
-        {
-          range: 'hourly',
-          count: 24
-        }
+        this.metricsOptions
       )
+      this.updateTimeSeries(results.reverse())
       this.metrics = results.reverse()
+    },
+    updateTimeSeries(metrics) {
+      this.timeSeries = metrics.map(m => {
+        const date = new Date(m.end)
+        if (this.selectedPeriod === 'day') return moment(date).format('LT')
+        if (this.selectedPeriod === 'week') return moment(date).format('ddd')
+        if (this.selectedPeriod === 'month') return moment(date).format('ll')
+      })
     }
   },
   mounted() {
@@ -114,6 +127,11 @@ export default {
   },
   unmounted() {
     clearInterval(this.iMetrics)
+  },
+  watch: {
+    selectedPeriod() {
+      this.updateMetrics()
+    }
   }
 }
 </script>

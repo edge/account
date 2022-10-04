@@ -25,70 +25,67 @@ export default {
     xLabel: String,
     yLabel: String
   },
-  data() {
-    return {
-      chartData: null,
-      options: null
-    }
-  },
-  mounted() {
-    this.chartData = {
-      labels: this.labels,
-      datasets: [{
-        data: this.data,
-        fill: false,
-        backgroundColor: 'rgba(110,224,159)',
-        borderColor: 'rgb(14, 204, 95)',
-        borderWidth: 2,
-        spanGaps: true,
-        stepped: false,
-        pointRadius: 0,
-        tension: 0.2
-      }]
-    }
-
-    this.options = {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false
+  computed: {
+    chartData() {
+      return {
+        labels: this.labels,
+        datasets: [{
+          data: this.data,
+          fill: false,
+          backgroundColor: 'rgba(110,224,159)',
+          borderColor: 'rgb(14, 204, 95)',
+          borderWidth: 2,
+          spanGaps: true,
+          stepped: false,
+          pointRadius: 0,
+          tension: 0.2
+        }]
+      }
+    },
+    options() {
+      return {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            interaction: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: tooltipItem => ` ${tooltipItem.raw.toFixed(2)}${this.unit}`
+              }
+            },
+            hover: {
+              mode: 'index',
+              intersect: false
+            }
+          }
         },
-        tooltip: {
-          interaction: {
-            mode: 'index',
-            intersect: false,
-            callbacks: {
-              label: tooltipItem => ` ${tooltipItem.raw.toFixed(2)}${this.unit}`
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: this.xLabel
+            },
+            grid: {
+              display: false
             }
           },
-          hover: {
-            mode: 'index',
-            intersect: false
-          }
-        }
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: this.xLabel
-          },
-          grid: {
-            display: false
-          }
-        },
-        y: {
-          suggestedMin: this.minScale,
-          suggestedMax: this.maxScale,
-          title: {
-            display: true,
-            text: this.yLabel
-          },
-          ticks: {
-            callback: (tickValue) => `${tickValue}${this.unit}`
-          },
-          grid: {
-            display: false
+          y: {
+            suggestedMin: this.minScale,
+            suggestedMax: this.maxScale,
+            title: {
+              display: true,
+              text: this.yLabel
+            },
+            ticks: {
+              callback: (tickValue) => `${tickValue}${this.unit}`
+            },
+            grid: {
+              display: false
+            }
           }
         }
       }
