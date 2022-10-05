@@ -58,6 +58,16 @@ export const getIntegrations = async (host, sessionId, params) => {
   return response.body
 }
 
+// get overview usage for all integration managed by the current account
+export const getIntegrationsUsage = async (host, sessionId, params) => {
+  let url = `${host}/integrations/usage/instant`
+  // add query params
+  if (params !== undefined) url += `?${toQueryString(params)}`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // create a new integration
 export const updateIntegration = async (host, sessionId, integrationKey, integration) => {
   const url = `${host}/integrations/${integrationKey}`

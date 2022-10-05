@@ -58,6 +58,13 @@ export default {
     changePage(newPage) {
       this.pageHistory = [...this.pageHistory, newPage]
     },
+    async updateUsage() {
+      const usage = await api.integration.getIntegrationsUsage(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key
+      )
+      return usage
+    },
     async updateIntegrations() {
       const { results, metadata } = await api.integration.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
@@ -67,7 +74,19 @@ export default {
           page: this.currentPage
         }
       )
-      this.integrations = results
+      const usage = await this.updateUsage()
+      // add usage data to each integration
+      this.integrations = results.map(i => {
+        const u = usage[i._key]
+        const int = {
+          ...i,
+          usage: {
+            requests: u.cdn.requests.cached + u.cdn.requests.uncached,
+            traffic: u.cdn.data.out.cached + u.cdn.data.out.uncached
+          }
+        }
+        return int
+      })
       this.metadata = metadata
       this.$emit('update-integration-count', metadata.totalCount)
       this.loaded = true

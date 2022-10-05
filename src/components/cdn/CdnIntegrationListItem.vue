@@ -23,13 +23,13 @@
       <div class="cdnList__field requests">
         <span class="cdnList__header">Requests (24h)</span>
         <!-- @todo -->
-        <span class="text-m">TBD</span>
+        <span class="text-m">{{ usageRequests }}</span>
       </div>
       <!-- traffic -->
       <div class="cdnList__field traffic">
         <!-- @todo -->
         <span class="cdnList__header">Traffic (24h)</span>
-        <span class="text-m">TBD</span>
+        <span class="text-m">{{ usageTraffic }}</span>
       </div>
       <!-- status dot -->
       <div class="domainList__field status">
@@ -54,6 +54,27 @@ export default {
     },
     statusText() {
       return this.isActive ? 'Active' : 'Inactive'
+    },
+    usageRequests() {
+      const units = ['', 'K', 'M']
+      let value = this.integration.usage.requests
+      let count = 0
+      while (value >= 1000) {
+        value = value / 1000
+        count++
+      }
+      if (count > 0) value = value.toFixed(2)
+      return `${value}${units[count]}`
+    },
+    usageTraffic() {
+      const units = ['KB', 'MB', 'GB', 'TB']
+      let value = this.integration.usage.traffic / 1000
+      let count = 0
+      while (value >= 1000) {
+        value = value / 1000
+        count++
+      }
+      return `${value.toFixed(2)} ${units[count]}`
     }
   },
   methods: {
