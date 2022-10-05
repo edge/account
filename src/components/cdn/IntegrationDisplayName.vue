@@ -21,7 +21,7 @@
         <XIcon class="button__icon text-red hover:text-red-600" />
       </button>
     </div>
-    <div v-else class="mt-2">
+    <div v-else class="mt-3">
       <button @click=startEditing class="ml-2">
         <PencilIcon class="button__icon text-gray-400 hover:text-green" />
       </button>
