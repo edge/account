@@ -1,7 +1,53 @@
 <template>
   <div class="mainContent__inner mb-16">
     <h1>Edge CDN</h1>
-    <div class="flex flex-col space-y-4">
+    <div v-if="deployed" class="space-y-4">
+      <div class="box md:text-center">
+        <h4 class="text-green text-2xl">Success</h4>
+        <!-- eslint-disable-next-line max-len -->
+        <div class="max-w-xl m-auto"><span>CDN has been successfully deployed to the network. In order to become operational, DNS records must be created for each domain added.</span></div>
+      </div>
+      <div class="box">
+        <h4>DNS Settings</h4>
+        <div class="flex flex-col space-y-4 overflow-x-visible">
+          <span>Please create the following DNS records to enabled CDN to work:</span>
+          <ul class="my-4 space-y-2 overflow-x-auto">
+            <li class="record">
+              <span class="domain">Hostname</span>
+              <span class="type">Type</span>
+              <span class="ns">Nameserver</span>
+              <span class="ttl">TTL</span>
+            </li>
+            <li class="record">
+              <span class="domain monospace" :title="`cdn.${ deployedIntegration.data.domain }`">
+                cdn.{{ deployedIntegration.data.domain }}
+              </span>
+              <span class="type monospace">CNAME</span>
+              <span class="ns monospace">gateway.edge.network</span>
+              <span class="ttl monospace">3600</span>
+            </li>
+            <li v-for="domain in deployedIntegration.data.additionalDomains" :key=domain class="record">
+              <span class="domain monospace" :title="`cdn.${domain}`">
+                cdn.{{ domain }}
+              </span>
+              <span class="type monospace">CNAME</span>
+              <span class="ns monospace">gateway.edge.network</span>
+              <span class="ttl monospace">3600</span>
+            </li>
+          </ul>
+          <span>You can set these up later, but CDN won't become operational until you do.</span>
+          <!-- eslint-disable-next-line max-len -->
+          <span>Changes can take up to 24 hours. If you require any assistance, please contact support@edge.network</span>
+          <button
+            @click=continueToIntegration
+            class="button button--small button--success w-full md:max-w-xs"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+    <div v-else class="flex flex-col space-y-4">
       <!-- details -->
       <CdnDisplayName @update-details=onUpdateDetails />
       <CdnDomains @update-domains=onUpdateDomains />
@@ -51,7 +97,27 @@ export default {
   },
   data() {
     return {
+      deployed: true,
       deploying: false,
+      deployedIntegration: {
+        name: '',
+        data: {
+          service: 'cdn',
+          domain: 'test.com',
+          additionalDomains: [],
+          config: {
+            origin: '',
+            maxAssetSize: undefined,
+            requestTimeout: undefined,
+            retryTimeout: undefined,
+            cache: {
+              enabled: true,
+              ttl: 86400,
+              paths: {}
+            }
+          }
+        }
+      },
       httpError: null,
       integration: {
         name: '',
@@ -71,7 +137,8 @@ export default {
             }
           }
         }
-      }
+      },
+      integrationKey: null
     }
   },
   computed: {
@@ -84,6 +151,9 @@ export default {
     }
   },
   methods: {
+    continueToIntegration() {
+      this.$router.push({ name: 'CdnIntegration', params: { key: this.deployedIntegration._key } })
+    },
     async deployCdn() {
       try {
         this.deploying = true
@@ -93,8 +163,9 @@ export default {
           this.session._key,
           this.integration
         )
+        this.deployedIntegration = integration
         setTimeout(() => {
-          this.$router.push({ name: 'CdnIntegration', params: { key: integration._key } })
+          this.deployed = true
         }, 800)
       }
       catch (error) {
@@ -129,5 +200,12 @@ export default {
 </script>
 
 <style scoped>
+.record {
+  @apply grid gap-x-4;
+  grid-template-columns: 180px 50px 180px 50px
+}
+.record .domain {
+  @apply truncate;
+}
 
 </style>
