@@ -23,7 +23,7 @@
                 cdn.{{ deployedIntegration.data.domain }}
               </span>
               <span class="type monospace">CNAME</span>
-              <span class="ns monospace">gateway.edge.network</span>
+              <span class="ns monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
               <span class="ttl monospace">3600</span>
             </li>
             <li v-for="domain in deployedIntegration.data.additionalDomains" :key=domain class="record">
@@ -31,7 +31,7 @@
                 cdn.{{ domain }}
               </span>
               <span class="type monospace">CNAME</span>
-              <span class="ns monospace">gateway.edge.network</span>
+              <span class="ns monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
               <span class="ttl monospace">3600</span>
             </li>
           </ul>
@@ -142,7 +142,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['isTestnet', 'session']),
     canDeploy() {
       return !this.deploying &&
         this.integration.name &&

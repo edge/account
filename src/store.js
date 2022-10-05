@@ -15,6 +15,7 @@ const store = createStore({
     backupCodes: null,
     balance: null,
     isAuthed: false,
+    isTestnet: process.env.VUE_APP_ACCOUNT_API_URL.includes('test'),
     session: null,
     tasks: []
   },
