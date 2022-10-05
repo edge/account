@@ -4,48 +4,10 @@
     <IntegrationMetricsRangeToggle :period=selectedPeriod @update-period=onUpdateTimePeriod />
     <!-- charts -->
     <div v-if=metrics class="metrics__grid">
-      <div class="box">
-        <h4>Requests</h4>
-        <Line
-          :data=requestsData
-          :formatYScale=formatRequestsScale
-          :labels=timeSeries
-          :minScale="0"
-          :maxScale="10"
-        />
-      </div>
-      <div class="box">
-        <h4>Traffic</h4>
-        <Line
-          :data=trafficData
-          :decimalPlaces="2"
-          :formatYScale=formatTrafficScale
-          :labels=timeSeries
-          :minScale="0"
-          :maxScale="10"
-        />
-      </div>
-      <div class="box">
-        <h4>Cache</h4>
-        <Line
-          :data=cacheData
-          :decimalPlaces="1"
-          :labels=timeSeries
-          :minScale="0"
-          :maxScale="100"
-          unit=" %"
-        />
-      </div>
-      <div class="box">
-        <h4>Bandwidth</h4>
-        <Line
-          :data=bandwidthData
-          :decimalPlaces="2"
-          :formatYScale=formatBandwidthScale
-          :labels=timeSeries
-          :minScale="0"
-        />
-      </div>
+      <IntegrationMetricsRequests :metrics=metrics :timeSeries=timeSeries />
+      <IntegrationMetricsTraffic :metrics=metrics :timeSeries=timeSeries />
+      <IntegrationMetricsCache :metrics=metrics :timeSeries=timeSeries />
+      <IntegrationMetricsBandwidth :metrics=metrics :timeSeries=timeSeries />
     </div>
   </div>
 </template>
@@ -54,8 +16,11 @@
 /* global process */
 
 import * as api from '@/account-utils'
+import IntegrationMetricsBandwidth from '@/components/cdn/IntegrationMetricsBandwidth'
+import IntegrationMetricsCache from '@/components/cdn/IntegrationMetricsCache'
 import IntegrationMetricsRangeToggle from '@/components/cdn/IntegrationMetricsRangeToggle'
-import Line from '@/components/charts/Line'
+import IntegrationMetricsRequests from '@/components/cdn/IntegrationMetricsRequests'
+import IntegrationMetricsTraffic from '@/components/cdn/IntegrationMetricsTraffic'
 import { mapState } from 'vuex'
 import moment from 'moment'
 
@@ -63,8 +28,11 @@ export default {
   name: 'IntegrationMetrics',
   props: ['integration'],
   components: {
+    IntegrationMetricsBandwidth,
+    IntegrationMetricsCache,
     IntegrationMetricsRangeToggle,
-    Line
+    IntegrationMetricsRequests,
+    IntegrationMetricsTraffic
   },
   data() {
     return {
@@ -112,6 +80,16 @@ export default {
     }
   },
   methods: {
+    formatValueUnits(yValue, units) {
+      let value = yValue
+      let count = 0
+      while (value >= 1000) {
+        value = value / 1000
+        count++
+      }
+      if (count > 0) value = value.toFixed(1)
+      return `${value}${units[count]}`
+    },
     formatBandwidthScale(y) {
       let value = y
       if (y >= 1e3) value = y / 1e3
@@ -125,25 +103,48 @@ export default {
     },
     formatRequestsScale(y) {
       let value = y
-      if (y >= 1e3) value = y / 1e3
-      if (y >= 1e6) value = y / 1e6
-      let unit = ''
-      if (y >= 1e3) unit = 'K'
-      if (y >= 1e6) unit = 'M'
-      return { value, unit }
+      let unit = 'bps'
+      const fixed = 1
+      if (y >= 1e3) {
+        value = y / 1e3
+        unit = ' Kbps'
+      }
+      if (y >= 1e6) {
+        value = y / 1e6
+        unit = ' Mbps'
+      }
+      if (y >= 1e9) {
+        value = y / 1e9
+        unit = ' Gbps'
+      }
+      if (y >= 1e12) {
+        value = y / 1e12
+        unit = ' Tbps'
+      }
+      return { value, unit, fixed }
     },
     formatTrafficScale(y) {
       let value = y
-      if (y >= 1e3) value = y / 1e3
-      if (y >= 1e6) value = y / 1e6
-      if (y >= 1e9) value = y / 1e9
-      if (y >= 1e12) value = y / 1e12
-      let unit = ''
-      if (y >= 1e3) unit = ' KB'
-      if (y >= 1e6) unit = ' MB'
-      if (y >= 1e9) unit = ' GB'
-      if (y >= 1e12) unit = ' GB'
-      return { value, unit }
+      let unit = 'bytes'
+      let fixed = 0
+      if (y >= 1e3) {
+        value = y / 1e3
+        unit = ' KB'
+        fixed = 1
+      }
+      if (y >= 1e6) {
+        value = y / 1e6
+        unit = ' MB'
+      }
+      if (y >= 1e9) {
+        value = y / 1e9
+        unit = ' GB'
+      }
+      if (y >= 1e12) {
+        value = y / 1e12
+        unit = ' TB'
+      }
+      return { value, unit, fixed }
     },
     onUpdateTimePeriod(period) {
       this.selectedPeriod = period
