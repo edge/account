@@ -82,7 +82,7 @@ export default {
             }
           },
           y: {
-            suggestedMin: 0,
+            min: 0,
             suggestedMax: 100,
             ticks: {
               callback: (tickValue) => `${tickValue} %`

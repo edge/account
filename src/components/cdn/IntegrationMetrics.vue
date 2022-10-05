@@ -44,108 +44,13 @@ export default {
   },
   computed: {
     ...mapState(['session']),
-    bandwidthData() {
-      return this.metrics && [{ series: this.metrics.b }]
-    },
-    cacheData() {
-      return this.metrics && [
-        {
-          series: this.metrics.cr,
-          label: 'Requests',
-          color: {
-            border: 'rgb(14, 204, 95)',
-            background: 'rgb(110, 224, 159)'
-          }
-        },
-        {
-          series: this.metrics.ct,
-          label: 'Traffic',
-          color: {
-            border: 'rgb(220, 60, 60)',
-            background: 'rgb(255, 138, 138)'
-          }
-        }
-      ]
-    },
     metricsOptions() {
       if (this.selectedPeriod === 'day') return { range: 'hourly', count: 24 }
       else if (this.selectedPeriod === 'week') return { range: 'daily', count: 7 }
       else return { range: 'daily', count: 30 }
-    },
-    requestsData() {
-      return this.metrics && [{ series: this.metrics.r }]
-    },
-    trafficData() {
-      return this.metrics && [{ series: this.metrics.t }]
     }
   },
   methods: {
-    formatValueUnits(yValue, units) {
-      let value = yValue
-      let count = 0
-      while (value >= 1000) {
-        value = value / 1000
-        count++
-      }
-      if (count > 0) value = value.toFixed(1)
-      return `${value}${units[count]}`
-    },
-    formatBandwidthScale(y) {
-      let value = y
-      if (y >= 1e3) value = y / 1e3
-      if (y >= 1e6) value = y / 1e6
-      if (y >= 1e9) value = y / 1e9
-      let unit = ''
-      if (y >= 1e3) unit = ' Kbps'
-      if (y >= 1e6) unit = ' Mbps'
-      if (y >= 1e9) unit = ' Gbps'
-      return { value, unit }
-    },
-    formatRequestsScale(y) {
-      let value = y
-      let unit = 'bps'
-      const fixed = 1
-      if (y >= 1e3) {
-        value = y / 1e3
-        unit = ' Kbps'
-      }
-      if (y >= 1e6) {
-        value = y / 1e6
-        unit = ' Mbps'
-      }
-      if (y >= 1e9) {
-        value = y / 1e9
-        unit = ' Gbps'
-      }
-      if (y >= 1e12) {
-        value = y / 1e12
-        unit = ' Tbps'
-      }
-      return { value, unit, fixed }
-    },
-    formatTrafficScale(y) {
-      let value = y
-      let unit = 'bytes'
-      let fixed = 0
-      if (y >= 1e3) {
-        value = y / 1e3
-        unit = ' KB'
-        fixed = 1
-      }
-      if (y >= 1e6) {
-        value = y / 1e6
-        unit = ' MB'
-      }
-      if (y >= 1e9) {
-        value = y / 1e9
-        unit = ' GB'
-      }
-      if (y >= 1e12) {
-        value = y / 1e12
-        unit = ' TB'
-      }
-      return { value, unit, fixed }
-    },
     onUpdateTimePeriod(period) {
       this.selectedPeriod = period
     },

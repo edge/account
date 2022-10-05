@@ -70,7 +70,7 @@ export default {
             }
           },
           y: {
-            suggestedMin: 0,
+            min: 0,
             ticks: {
               callback: (tickValue) => {
                 const { value, unit } = this.formatYScale(tickValue)
