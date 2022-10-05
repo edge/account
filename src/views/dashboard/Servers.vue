@@ -34,10 +34,10 @@
     <div v-else class="box">
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
         <p>You haven't deployed any servers yet. Once you deploy your first server it will be available here.</p>
-        <a class="button button--success button--small" :to="{ name: 'ServerDeploy' }">
+        <router-link class="button button--success button--small" :to="{ name: 'ServerDeploy' }">
           <div><ServerIcon class="w-5 h-5 mr-2"/></div>
           <span>Deploy your first server</span>
-        </a>
+        </router-link>
       </div>
     </div>
   </div>
