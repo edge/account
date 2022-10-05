@@ -2,6 +2,18 @@
   <div class="box">
     <h4>Configuration</h4>
     <div>
+      <!-- origin -->
+      <div class="input-group mb-6">
+        <label class="label">Origin URL</label>
+        <input
+          v-model="v$.originUrl.$model"
+          class="input input--floating"
+          placeholder="e.g. https://yoursite.com/photos"
+          type="text"
+        />
+        <ValidationError :errors="v$.originUrl.$errors" />
+      </div>
+      <!-- config settings -->
       <RadioGroup v-model="configMode">
         <!-- default config -->
         <RadioGroupOption v-slot="{ checked }" value="default" class="cursor-pointer">
@@ -46,7 +58,10 @@
 </template>
 
 <script>
+import * as validation from '@/utils/validation'
 import CdnConfigCustom from '@/components/cdn/CdnConfigCustom.vue'
+import ValidationError from '@/components/ValidationError.vue'
+import useVuelidate from '@vuelidate/core'
 import {
   RadioGroup,
   RadioGroupOption
@@ -58,7 +73,8 @@ export default {
   components: {
     CdnConfigCustom,
     RadioGroup,
-    RadioGroupOption
+    RadioGroupOption,
+    ValidationError
   },
   data() {
     return {
@@ -73,8 +89,17 @@ export default {
         }
       },
       initialGlobalConfig: null,
+      initialOriginUrl: null,
       initialPaths: null,
+      originUrl: '',
       paths: []
+    }
+  },
+  validations() {
+    return {
+      originUrl: [
+        validation.origin
+      ]
     }
   },
   methods: {
@@ -152,6 +177,7 @@ export default {
     },
     resetConfig() {
       if (this.initialConfig) {
+        this.originUrl = this.initialConfig.origin
         this.globalConfig = this.formatGlobalConfig(this.initialConfig)
         this.paths = this.formatPaths(this.initialConfig)
         const cache = this.initialConfig.cache
@@ -175,7 +201,13 @@ export default {
       this.$refs.cdnConfigCustom.resetConfig()
     },
     updateConfig() {
-      let config = {
+      // convert origin url to lower case (before the path)
+      // e.g. HTTPS://testTEST.com/PATHpath -> https://testtest.com/PATHpath
+      const regex = /^https?:\/\/((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}/i
+      const match = this.originUrl.match(regex)
+      const lowerCaseOrigin = match ? this.originUrl.replace(regex, match[0].toLowerCase()) : undefined
+      const config = {
+        origin: lowerCaseOrigin,
         cache: {}
       }
       if (this.configMode === 'default') {
@@ -184,7 +216,7 @@ export default {
         config.cache.paths = {}
       }
       else {
-        config = { cache: { ttl: this.globalConfig.cache.ttl } }
+        config.cache = { ttl: this.globalConfig.cache.ttl }
         if(this.globalConfig.cache.enabled !== undefined) config.cache.enabled = this.globalConfig.cache.enabled
         if(this.globalConfig.maxAssetSize !== undefined) config.maxAssetSize = this.globalConfig.maxAssetSize
         if(this.globalConfig.requestTimeout !== undefined) config.requestTimeout = this.globalConfig.requestTimeout
@@ -202,6 +234,11 @@ export default {
       this.$emit('update-config', config)
     }
   },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
+  },
   mounted() {
     this.resetConfig()
   },
@@ -215,6 +252,9 @@ export default {
     initialConfig() {
       this.initialGlobalConfig = this.formatGlobalConfig(this.initialConfig)
       this.initialPaths = this.formatPaths(this.initialConfig)
+    },
+    originUrl() {
+      this.updateConfig()
     },
     paths() {
       this.updateConfig()

@@ -67,7 +67,6 @@ export default {
     hasConfigChanges() {
       if (this.workingConfig) {
         const working = {
-          origin: this.integration.data.config.origin,
           ...this.workingConfig,
           cache: { ...this.workingConfig.cache }
         }

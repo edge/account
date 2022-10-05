@@ -1,11 +1,12 @@
 <template>
   <div class="box">
     <h4>Estimated Costs</h4>
-    <p>Use the calculator below to estimate costs based on expected usage. Actual costs will be dependent on usage.</p>
+    <!-- eslint-disable-next-line max-len -->
+    <p class="pb-4">Use the calculator below to estimate costs based on expected usage. Actual costs will be dependent on usage.</p>
     <div class="w-full grid grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2">
       <div class="flex-1 flex flex-col">
         <div class="slider__box">
-          <span class="slider__title">Traffic (GiB per day)</span>
+          <span class="slider__title">Traffic (GB per day)</span>
           <vue-slider
             :disabled="false"
             v-model=trafficValue
@@ -28,7 +29,7 @@
           />
         </div>
         <div class="slider_costs">
-          <span><span class="text-md">${{ config.cdn.dataCost }}</span> per GiB traffic</span>
+          <span><span class="text-md">${{ config.cdn.dataCost }}</span> per GB traffic</span>
           <span><span class="text-md">${{ dailyTrafficCost.toFixed(4) }}</span> per day</span>
         </div>
       </div>
@@ -67,9 +68,9 @@
       <div class="flex flex-col items-baseline">
         <span class="text-green">Estimated Daily Usage</span>
         <div class="usage_and_cost">
-          <span class="text-lg flex-shrink-0">{{ trafficValue }} GiB Traffic</span>
+          <span class="text-lg flex-shrink-0">{{ trafficValueDisplay }} Traffic</span>
           <span class="dot" />
-          <span class="text-lg flex-shrink-0">{{ requestsValue }}K Requests</span>
+          <span class="text-lg flex-shrink-0">{{ requestsValueDisplay }} Requests</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">
@@ -97,16 +98,16 @@ export default {
   data() {
     return {
       requestsMarks: [
-        { value: '1', label: '1K' },
-        { value: '10', label: '10K' },
-        { value: '20', label: '20K' },
-        { value: '50', label: '50K' },
         { value: '100', label: '100K' },
         { value: '200', label: '200K' },
         { value: '500', label: '500K' },
-        { value: '1000', label: '1M' }
+        { value: '1000', label: '1M' },
+        { value: '2000', label: '2M' },
+        { value: '5000', label: '5M' },
+        { value: '10000', label: '10M' },
+        { value: '20000', label: '20M' }
       ],
-      requestsValue: 1,
+      requestsValue: 100,
       styles: {
         activeStep: { background: '#fff', opacity: '1', border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' },
         dots: { background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' },
@@ -133,15 +134,19 @@ export default {
       return this.requestsValue * 1000 * this.config.cdn.requestCost / this.config.cdn.requestCostBasis
     },
     dailyTotalCost() {
-      const min = this.config.cdn.minimumCost / this.config.cdn.minimumCostBasis * 24
-      const total = this.dailyRequestsCost + this.dailyTrafficCost
-      return total < min ? min : total
+      return this.dailyRequestsCost + this.dailyTrafficCost
     },
     dailyTrafficCost() {
       return this.trafficValue * 1e9 * this.config.cdn.dataCost / this.config.cdn.dataCostBasis
     },
     monthlyTotalCost() {
       return this.dailyTotalCost * 30
+    },
+    requestsValueDisplay() {
+      return this.requestsValue >= 1000 ? `${this.requestsValue / 1000}M` : `${this.requestsValue}K`
+    },
+    trafficValueDisplay() {
+      return this.trafficValue >= 1000 ? `${this.trafficValue / 1000} TB` : `${this.trafficValue} GB`
     }
   },
   methods: {
@@ -150,8 +155,8 @@ export default {
       else return `${(requests / 1000)}M`
     },
     formatSliderTraffic(traffic) {
-      if (traffic < 1000) return `${traffic} GiB`
-      else return `${(traffic / 1000)} TiB`
+      if (traffic < 1000) return `${traffic} GB`
+      else return `${(traffic / 1000)} TB`
     }
   }
 }

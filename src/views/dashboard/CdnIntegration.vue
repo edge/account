@@ -5,7 +5,7 @@
         <ArrowLeftIcon class="w-4" /><span>Content Delivery</span>
       </router-link>
     </div>
-    <h1>{{ displayName }}</h1>
+    <IntegrationDisplayName v-if=integration :integration=integration @update-integration=updateIntegration />
     <div v-if=deleted class="box">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="flex items-center mt-4">
@@ -43,7 +43,13 @@
           class="tab"
           :class="[selected ? 'tab--selected' : '']"
         >
-          <span>Settings</span>
+          <span>Configuration</span>
+        </button></Tab>
+        <Tab v-slot="{selected}"><button
+          class="tab"
+          :class="[selected ? 'tab--selected' : '']"
+        >
+          <span>Domains</span>
         </button></Tab>
         <Tab v-slot="{selected}"><button
           class="tab"
@@ -65,7 +71,11 @@
         </TabPanel>
         <!-- settings -->
         <TabPanel>
-          <IntegrationSettings :integration=integration @refresh-integration=updateIntegration />
+          <IntegrationConfig :integration=integration @refresh-integration=updateIntegration />
+        </TabPanel>
+        <!-- domains -->
+        <TabPanel>
+          <IntegrationDomains :integration=integration @refresh-integration=updateIntegration />
         </TabPanel>
         <!-- destroy -->
         <TabPanel>
@@ -96,9 +106,11 @@
 import * as api from '@/account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import IntegrationCache from '@/components/cdn/IntegrationCache'
+import IntegrationConfig from '@/components/cdn/IntegrationConfig'
 import IntegrationDestroy from '@/components/cdn/IntegrationDestroy'
+import IntegrationDisplayName from '@/components/cdn/IntegrationDisplayName'
+import IntegrationDomains from '@/components/cdn/IntegrationDomains'
 import IntegrationOverview from '@/components/cdn/IntegrationOverview'
-import IntegrationSettings from '@/components/cdn/IntegrationSettings'
 import { mapState } from 'vuex'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 
@@ -110,9 +122,11 @@ export default {
   components: {
     ArrowLeftIcon,
     IntegrationCache,
+    IntegrationConfig,
     IntegrationDestroy,
+    IntegrationDisplayName,
+    IntegrationDomains,
     IntegrationOverview,
-    IntegrationSettings,
     Tab,
     TabGroup,
     TabList,
@@ -150,7 +164,6 @@ export default {
         this.integration = integration
       }
       catch (error) {
-        console.error(error)
         if (error.status === 404) {
           this.notFound = true
           clearInterval(this.iIntegration)

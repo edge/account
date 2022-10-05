@@ -96,6 +96,7 @@
         <CdnConfigPath v-for="path in paths"
           :key=path.path
           :path=path
+          :paths=paths
           @delete-path=onDeletePath
           @edit-path=onEditPath
         />
@@ -165,7 +166,8 @@ export default {
     },
     canAddPath() {
       return !this.v$.newPath.$invalid &&
-        !this.v$.newPathTtl.$invalid
+        !this.v$.newPathTtl.$invalid &&
+        !this.paths.some(path => path.path === this.newPath)
     },
     globalPath() {
       return {
