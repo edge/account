@@ -4,7 +4,8 @@
       <h4>Destroy CDN deployment</h4>
       <div>
         <p class="mt-3 mb-1 text-gray-500">This is irreversible. All deployment data will be irretrievable.</p>
-        <p class="text-gray-500">Upon destruction, you will no longer be billed for this deployment.</p>
+        <!-- eslint-disable-next-line max-len -->
+        <p class="text-gray-500">Content delivery will cease immediately, but you will be billed for all usage up to this point.</p>
         <div class="flex flex-col space-y-2">
           <button
             class="button button--error button--small w-full md:max-w-xs"

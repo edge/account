@@ -9,8 +9,8 @@
     <template v-slot:body>
       <span class="font-semibold">Warning: this cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>All metrics and cached assets will be lost and cannot be recovered</li>
-        <li>Content delivery deployment will stop immediately</li>
+        <li>This is irreversible. All deployment data will be irretrievable.</li>
+        <li>Content delivery will cease immediately, but you will be billed for all usage up to this point.</li>
       </div>
     </template>
     <template v-slot:buttons>
@@ -18,7 +18,7 @@
         class="w-full button button--small button--error"
         @click="confirm"
       >
-        Yes, Destroy Server
+        Yes, Destroy CDN
       </button>
       <button
         class="w-full mt-3 button button--small button--outline sm:mt-0"
@@ -53,5 +53,7 @@ export default {
 </script>
 
 <style scoped>
-
+li {
+  list-style-type: none;
+}
 </style>
