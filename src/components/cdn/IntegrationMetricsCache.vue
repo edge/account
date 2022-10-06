@@ -59,14 +59,14 @@ export default {
         responsive: true,
         plugins: {
           legend: {
-            display: true
+            display: false
           },
           tooltip: {
             interaction: {
               mode: 'index',
               intersect: false,
               callbacks: {
-                label: tooltipItem => `${tooltipItem.raw.toFixed(1)} %`
+                label: tooltipItem => `${tooltipItem.dataset.label}: ${tooltipItem.raw.toFixed(1)} %`
               }
             },
             hover: {
