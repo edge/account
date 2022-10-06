@@ -12,26 +12,28 @@
           type="text"
           @keypress.enter=addDomain
         />
+        <!-- errors -->
+        <div v-if="newDomainName && domainsLimitReached" class="errorMessage mt-1">
+          <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
+          <span class="errorMessage__text">Max domains limit reached</span>
+        </div>
+        <ValidationError v-if="!domainsLimitReached" :errors="v$.newDomainName.$errors" />
+        <div v-if="!domainsLimitReached && domainAlreadyExists" class="errorMessage mt-1">
+          <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
+          <span class="errorMessage__text">Domain already in use</span>
+        </div>
       </div>
       <!-- add button -->
-      <button
-        @click.prevent="addDomain"
-        :disabled="!canAddDomain"
-        class="button button--success button--small w-full"
-      >
-        <span>Add</span>
-      </button>
+      <div class="button__wrapper">
+        <button
+          @click.prevent="addDomain"
+          :disabled="!canAddDomain"
+          class="button button--success button--small w-full"
+        >
+          <span>Add</span>
+        </button>
+      </div>
     </div>
-    <div v-if="newDomainName && domainsLimitReached" class="errorMessage mt-1">
-      <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
-      <span class="errorMessage__text">Max domains limit reached</span>
-    </div>
-    <ValidationError v-if="!domainsLimitReached" :errors="v$.newDomainName.$errors" />
-    <div v-if="!domainsLimitReached && domainAlreadyExists" class="errorMessage mt-1">
-      <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
-      <span class="errorMessage__text">Domain already in use</span>
-    </div>
-
     <!-- domains -->
     <div class="flex flex-col mt-1 divide-y">
       <CdnDomain v-for="domain in domains"
@@ -140,10 +142,13 @@ export default {
 
 @media (min-width: 450px) {
   .domainName__form {
-    @apply space-x-4 space-y-0 items-end flex-row border-b-0 pb-0;
+    @apply space-x-4 space-y-0 items-start flex-row border-b-0 pb-0;
   }
   .domainName__form .button {
     @apply w-20;
+  }
+  .button__wrapper {
+    @apply pt-5;
   }
 }
 </style>

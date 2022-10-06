@@ -1,5 +1,5 @@
 <template>
-  <div class="py-2">
+  <div class="py-4 lg:py-2">
     <div class="path__item">
       <!-- asset path -->
       <div class="input-group flex-1 path" :class="isGlobal ? '' : 'self-end'">
@@ -138,7 +138,7 @@
         </Menu>
       </div>
     </div>
-    <ValidationError :errors="v$.newPath.$errors" />
+    <ValidationError v-if="!isGlobal" :errors="v$.newPath.$errors" />
     <ValidationError :errors="v$.newTtl.$errors" />
   </div>
 </template>

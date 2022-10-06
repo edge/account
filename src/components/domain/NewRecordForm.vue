@@ -337,7 +337,7 @@ export default {
         if (!regex.ipv6.test(this.value)) error = 'Please enter a valid IPv6 address'
       }
       else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
-        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid FQDN'
+        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid domain name'
       }
       else if (!this.value) error = 'Please enter a value'
       this.valueError = error

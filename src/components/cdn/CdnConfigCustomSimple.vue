@@ -87,7 +87,7 @@
       </button>
     </div>
     <!-- path list -->
-    <div class="flex flex-col mt-1 divide-y">
+    <div class="flex flex-col mt-1 divide-y-2">
       <CdnConfigPath
         :path=globalPath
         @edit-global-config=onEditGlobalConfig

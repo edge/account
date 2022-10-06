@@ -258,11 +258,13 @@ export default {
       isEditing: false,
       priority: '',
       priorityError: '',
+      priorityTimeou: null,
       showDeleteConfirmationModal: false,
       syncRecordsCount: null,
       syncRecordsTTL: null,
       ttl: 3600,
       ttlError: '',
+      ttlTimeout: null,
       type: null,
       value: null,
       valueError: '',
@@ -483,7 +485,7 @@ export default {
         if (!regex.ipv6.test(this.value)) error = 'Please enter a valid IPv6 address'
       }
       else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
-        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid FQDN'
+        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid domain name'
       }
       else if (!this.value) error = 'Please enter a value'
       this.valueError = error
@@ -505,11 +507,13 @@ export default {
     },
     priority() {
       this.httpError = null
-      this.validatePriority()
+      if (this.priorityTimeout) clearTimeout(this.priorityTimeout)
+      this.priorityTimeout = setTimeout(this.validatePriority, 400)
     },
     ttl() {
       this.httpError = null
-      this.validateTtl()
+      if (this.ttlTimeout) clearTimeout(this.ttlTimeout)
+      this.ttlTimeout = setTimeout(this.validateTtl, 400)
     },
     type() {
       this.httpError = null

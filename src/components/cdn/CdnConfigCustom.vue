@@ -82,7 +82,7 @@ export default {
   @apply pt-4 pl-7;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 550px) {
   .wrapper {
     @apply pl-0
   }
