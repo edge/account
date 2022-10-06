@@ -39,6 +39,12 @@ export default {
 
       /* eslint-disable max-len */
 
+      if (this.balance.purchases.pending > 0 && (this.balanceWarning || this.balanceSuspend)) {
+        return {
+          class: bannerClass.blue,
+          message: 'You currently have an XE purchase pending. This may take up to 15 minutes to process. Once complete your balance will update.'
+        }
+      }
       if (!this.balance.total.usd) {
         return {
           class: bannerClass.blue,
