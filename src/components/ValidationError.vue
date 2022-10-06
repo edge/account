@@ -1,5 +1,5 @@
 <template>
-  <div v-if="errors.length">
+  <div v-if="showErrors && errors.length">
     <div class="errorMessage mt-1 validationError"
       v-for="error of errors"
       :key="error.$uid"
@@ -18,6 +18,26 @@ export default {
   props: ['errors'],
   components: {
     ExclamationIcon
+  },
+  data() {
+    return {
+      showErrors: false,
+      showErrorsTimeout: null
+    }
+  },
+  watch: {
+    errors() {
+      if (!this.errors.some(error => error.$message)) {
+        clearTimeout(this.showErrorsTimeout)
+        this.showErrors = false
+      }
+      else {
+        if (this.showErrorsTimeout) clearTimeout(this.showErrorsTimeout)
+        this.showErrorsTimeout = setTimeout(() => {
+          this.showErrors = true
+        }, 400)
+      }
+    }
   }
 }
 </script>

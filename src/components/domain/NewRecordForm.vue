@@ -140,8 +140,8 @@
 <script>
 /* global process */
 
-import * as regex from '@/utils/regex'
 import * as api from '@/account-utils'
+import * as regex from '@/utils/regex'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
@@ -175,14 +175,16 @@ export default {
       httpError: null,
       priority: '',
       priorityError: '',
+      priorityTimeout: null,
       ttl: 3600,
       ttlError: '',
+      ttlTimeout: null,
       syncRecordsCount: null,
       syncRecordsTTL: null,
       type: 'A',
       value: '',
       valueError: '',
-      valueTimeout: ''
+      valueTimeout: null
     }
   },
   computed: {
@@ -352,11 +354,13 @@ export default {
     },
     priority() {
       this.httpError = null
-      this.validatePriority()
+      if (this.priorityTimeout) clearTimeout(this.priorityTimeout)
+      this.priorityTimeout = setTimeout(this.validatePriority, 400)
     },
     ttl() {
       this.httpError = null
-      this.validateTtl()
+      if (this.ttlTimeout) clearTimeout(this.ttlTimeout)
+      this.ttlTimeout = setTimeout(this.validateTtl, 400)
     },
     type() {
       this.httpError = null

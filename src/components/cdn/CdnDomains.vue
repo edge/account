@@ -26,7 +26,7 @@
       <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
       <span class="errorMessage__text">Max domains limit reached</span>
     </div>
-    <ValidationError v-if="newDomainName && !domainsLimitReached" :errors="v$.newDomainName.$errors" />
+    <ValidationError v-if="!domainsLimitReached" :errors="v$.newDomainName.$errors" />
     <div v-if="!domainsLimitReached && domainAlreadyExists" class="errorMessage mt-1">
       <div class="float-left"><ExclamationIcon class="w-3.5" /></div>
       <span class="errorMessage__text">Domain already in use</span>

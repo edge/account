@@ -48,7 +48,7 @@
         <!-- eslint-disable-next-line max-len -->
         <span class="">This domain already exists within Edge DNS. If this is a mistake, please contact support@edge.network</span>
       </div>
-      <ValidationError v-if="showValidationError" :errors="v$.newDomainName.$errors" />
+      <ValidationError :errors="v$.newDomainName.$errors" />
       <!-- estimated costs -->
       <div class="flex flex-col items-baseline mt-2">
         <span class="text-green">Estimated Cost</span>
@@ -73,7 +73,6 @@
           <!-- <a class="flex-shrink-0 text-green hover:text-green-600 underline cursor-pointer">Learn more.</a> -->
       </div>
     </div>
-
     <DomainsList ref="domainsList" />
   </div>
 </template>
@@ -111,9 +110,7 @@ export default {
       alreadyExistsError: false,
       addingDomain: false,
       httpError: null,
-      newDomainName: '',
-      showValidationError: false,
-      validationTimeout: null
+      newDomainName: ''
     }
   },
   validations() {
@@ -164,15 +161,9 @@ export default {
     }
   },
   watch: {
-    async newDomainName() {
+    newDomainName() {
       this.alreadyExistsError = false
       this.httpError = null
-      if (this.newDomainName) {
-        if (this.validationTimeout) clearTimeout(this.validationTimeout)
-        this.validationTimeout = setTimeout(() => {
-          this.showValidationError = true
-        }, 400)
-      }
     }
   }
 }
