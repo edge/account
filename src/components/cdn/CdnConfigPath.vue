@@ -117,6 +117,7 @@
           <MenuItems :static="!lg" class="options__dropdown">
             <MenuItem as='button'
               @click=startEdit
+              :disabled=disableControls
               class="pathButton edit w-max lg:hover:underline"
             >
               <div>
@@ -127,6 +128,7 @@
             <MenuItem as='button'
               v-if="!isGlobal"
               @click=deletePath
+              :disabled=disableControls
               class="pathButton delete w-max text-red lg:hover:underline"
             >
               <div>
@@ -170,7 +172,7 @@ import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'CdnConfigPath',
-  props: ['path', 'paths'],
+  props: ['disableControls', 'path', 'paths'],
   components: {
     CheckIcon,
     ChevronDownIcon,

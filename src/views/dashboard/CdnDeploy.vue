@@ -48,10 +48,15 @@
       </div>
     </div>
     <div v-else class="flex flex-col space-y-4">
+      <div v-if="disableControls" class="box suspend">
+        <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
+        <!-- eslint-disable-next-line max-len -->
+        <div class="mt-2 text-red">You are unable to create new CDN deployments while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to re-enable this service.</div>
+      </div>
       <!-- details -->
-      <CdnDisplayName @update-details=onUpdateDetails />
-      <CdnDomains @update-domains=onUpdateDomains />
-      <CdnConfig @update-config=onUpdateConfig />
+      <CdnDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
+      <CdnDomains @update-domains=onUpdateDomains :disableControls=disableControls />
+      <CdnConfig @update-config=onUpdateConfig :disableControls=disableControls />
       <CdnEstimatedCosts />
       <!-- deploy button -->
       <button
@@ -78,9 +83,10 @@ import CdnConfig from '@/components/cdn/CdnConfig.vue'
 import CdnDisplayName from '@/components/cdn/CdnDisplayName.vue'
 import CdnDomains from '@/components/cdn/CdnDomains.vue'
 import CdnEstimatedCosts from '@/components/cdn/CdnEstimatedCosts.vue'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'CdnDeploy',
@@ -92,6 +98,7 @@ export default {
     CdnDisplayName,
     CdnDomains,
     CdnEstimatedCosts,
+    ExclamationIcon,
     HttpError,
     LoadingSpinner
   },
@@ -124,12 +131,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isTestnet', 'session']),
+    ...mapGetters(['balanceSuspend', 'balanceWarning']),
+    ...mapState(['balance', 'isTestnet', 'session']),
     canDeploy() {
       return !this.deploying &&
         this.integration.name &&
         this.integration.data.domain &&
         this.integration.data.config.origin
+    },
+    disableControls() {
+      return this.balanceSuspend || this.balanceWarning
     }
   },
   methods: {

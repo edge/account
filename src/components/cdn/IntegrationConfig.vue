@@ -1,6 +1,7 @@
 <template>
   <CdnConfig
     ref="cdnConfig"
+    :disableControls=disableControls
     :initialConfig=liveConfig
     @update-config=onUpdateConfig
   >
@@ -46,7 +47,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'IntegrationConfig',
-  props: ['integration'],
+  props: ['disableControls', 'integration'],
   components: {
     CdnConfig,
     HttpError,

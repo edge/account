@@ -10,13 +10,15 @@
           class="input input--floating"
           placeholder="e.g. https://yoursite.com/photos"
           type="text"
+          :disabled=disableControls
+          :class="disableControls ? 'disabled' : ''"
         />
         <ValidationError :errors="v$.originUrl.$errors" />
       </div>
       <!-- config settings -->
-      <RadioGroup v-model="configMode">
+      <RadioGroup v-model="configMode" :disabled=disableControls :class="disableControls ? 'radioGroup disabled' : ''">
         <!-- default config -->
-        <RadioGroupOption v-slot="{ checked }" value="default" class="cursor-pointer">
+        <RadioGroupOption v-slot="{ checked }" value="default" class="radioGroup__option cursor-pointer">
           <div class="flex items-center space-x-2">
             <div class="checkmark"
               :class="checked ? 'checked' : ''"
@@ -29,7 +31,7 @@
           </div>
         </RadioGroupOption>
         <!-- custom config -->
-        <RadioGroupOption v-slot="{ checked }" value="custom" class="cursor-pointer mt-2">
+        <RadioGroupOption v-slot="{ checked }" value="custom" class="radioGroup__option cursor-pointer mt-2">
           <div class="flex items-center space-x-2">
             <div class="checkmark"
               :class="checked ? 'checked' : ''"
@@ -41,6 +43,7 @@
       <CdnConfigCustom
         ref="cdnConfigCustom"
         v-show="configMode === 'custom'"
+        :disableControls=disableControls
         :globalConfig=globalConfig
         :paths=paths
         :initialGlobalConfig=initialGlobalConfig
@@ -69,7 +72,7 @@ import {
 
 export default {
   name: 'CdnConfig',
-  props: ['initialConfig'],
+  props: ['disableControls', 'initialConfig'],
   components: {
     CdnConfigCustom,
     RadioGroup,
@@ -279,5 +282,9 @@ export default {
 }
 .checkmark.checked .checkmark__icon {
   @apply opacity-100;
+}
+
+.radioGroup.disabled, .radioGroup.disabled .radioGroup__option {
+  @apply cursor-not-allowed opacity-50;
 }
 </style>

@@ -30,7 +30,7 @@
         <div class="details__item lg:row-start-1 lg:col-start-2">
           <span class="details__label col-2">Status</span>
           <span class="details__info">
-            <StatusDot :isActive=isActive :isInactive="!isActive" :statusText=statusText />
+            <StatusDot :isActive=isActive :isInactive="isInactive" :statusText=statusText />
           </span>
         </div>
         <div class="details__item lg:col-start-2">
@@ -68,8 +68,11 @@ export default {
     isActive() {
       return this.integration.active
     },
+    isInactive() {
+      return this.integration.suspended || !this.isActive
+    },
     statusText() {
-      return this.isActive ? 'Active' : 'Inactive'
+      return this.isActive ? 'Active' : 'Suspended'
     }
   }
 }

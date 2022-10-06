@@ -11,6 +11,8 @@
             placeholder="e.g. /photos/*.jpg"
             type="text"
             @keypress.enter=flushCache
+            :disabled=disableControls
+            :class="disableControls ? 'disabled' : ''"
           />
           <ValidationError :errors="v$.path.$errors" />
         </div>
@@ -45,7 +47,7 @@ import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'IntegrationCache',
-  props: ['integration'],
+  props: ['disableControls', 'integration'],
   components: {
     HttpError,
     LoadingSpinner,
@@ -66,7 +68,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['balance', 'session']),
     canFlushCache() {
       return !this.v$.path.$invalid
     }

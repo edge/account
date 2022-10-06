@@ -11,6 +11,8 @@
           placeholder="e.g. cdn.yoursite.com"
           type="text"
           @keypress.enter=addDomain
+          :disabled=disableControls
+          :class="disableControls ? 'disabled' : ''"
         />
         <!-- errors -->
         <div v-if="newDomainName && domainsLimitReached" class="errorMessage mt-1">
@@ -38,6 +40,7 @@
     <div class="flex flex-col mt-1 divide-y">
       <CdnDomain v-for="domain in domains"
         :key=domain.name
+        :disableControls=disableControls
         :domain=domain
         @delete-domain=onDeleteDomain
         @edit-domain=onEditDomain
@@ -58,7 +61,7 @@ import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'CdnDomains',
-  props: ['liveDomains'],
+  props: ['disableControls', 'liveDomains'],
   components: {
     CdnDomain,
     ExclamationIcon,
@@ -138,6 +141,10 @@ export default {
 <style scoped>
 .domainName__form {
   @apply flex flex-col space-y-2 w-full border-b pb-4;
+}
+
+input.disabled {
+  @apply cursor-not-allowed opacity-50;
 }
 
 @media (min-width: 450px) {

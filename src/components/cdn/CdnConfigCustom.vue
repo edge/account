@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <div class="tabs">
+    <div class="tabs" :class="disableControls ? 'disabled' : ''">
       <button @click="selectTab('simple')"
         class="tab" :class="[isSelected('simple') ? 'tab--selected' : '']"
       >Simple</button>
@@ -10,6 +10,7 @@
     </div>
     <div class="mt-5">
       <CdnConfigCustomSimple v-if="isSelected('simple')"
+        :disableControls=disableControls
         :globalConfig=globalConfig
         :paths=paths
         @add-path=onAddPath
@@ -39,7 +40,13 @@ export default {
     CdnConfigCustomAdvanced,
     CdnConfigCustomSimple
   },
-  props: ['globalConfig', 'initialGlobalConfig', 'initialPaths', 'paths'],
+  props: [
+    'disableControls',
+    'globalConfig',
+    'initialGlobalConfig',
+    'initialPaths',
+    'paths'
+  ],
   data () {
     return {
       selectedTab: 'simple'
@@ -71,6 +78,7 @@ export default {
       if (this.isSelected('advanced')) this.$refs.cdnConfigCustomAdvanced.resetConfig()
     },
     selectTab(tab) {
+      if (this.disableControls) return
       this.selectedTab = tab
     }
   }
@@ -80,6 +88,9 @@ export default {
 <style scoped>
 .wrapper {
   @apply pt-4 pl-7;
+}
+.tabs.disabled, .tabs.disabled .tab {
+  @apply cursor-not-allowed opacity-50;
 }
 
 @media (max-width: 550px) {

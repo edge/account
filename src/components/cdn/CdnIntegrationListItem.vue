@@ -34,7 +34,7 @@
       <!-- status dot -->
       <div class="domainList__field status">
         <span class="domainList__header">Status</span>
-        <StatusDot :isActive="isActive" :isInactive="!isActive" :small="true" :statusText="statusText" />
+        <StatusDot :isActive="isActive" :isInactive="isInactive" :small="true" :statusText="statusText" />
       </div>
     </li>
 </template>
@@ -52,8 +52,11 @@ export default {
     isActive() {
       return this.integration.active
     },
+    isInactive() {
+      return this.integration.suspended || !this.isActive
+    },
     statusText() {
-      return this.isActive ? 'Active' : 'Inactive'
+      return this.isActive ? 'Active' : 'Suspended'
     },
     usageRequests() {
       const units = ['', 'K', 'M']

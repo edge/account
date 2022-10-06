@@ -3,6 +3,7 @@
     <CdnDomains
       ref="cdnDomains"
       :liveDomains=liveDomains
+      :disableControls=disableControls
       @update-domains=onUpdateDomains
     >
       <template v-slot:buttons>
@@ -77,7 +78,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'IntegrationDomains',
-  props: ['integration'],
+  props: ['disableControls', 'integration'],
   components: {
     CdnDomains,
     HttpError,

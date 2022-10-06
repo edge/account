@@ -58,28 +58,49 @@
           <span>Destroy</span>
         </button></Tab>
       </TabList>
+
+      <!-- suspend warning -->
+      <div v-if="disableControls" class="box mt-5">
+        <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
+        <!-- eslint-disable-next-line max-len -->
+        <div class="mt-2 text-red">This CDN deployment has been suspended due to insufficient funds. Please add funds to re-enable this service.</div>
+      </div>
+
+      <!-- tab panels -->
       <TabPanels class="mt-5">
         <!-- overview -->
         <TabPanel>
-          <div class="space-y-4">
-            <IntegrationOverview :integration=integration />
-          </div>
+          <IntegrationOverview :integration=integration />
         </TabPanel>
         <!-- cache flush -->
         <TabPanel>
-          <IntegrationCache :integration=integration />
+          <IntegrationCache
+            :integration=integration
+            :disableControls=disableControls
+          />
         </TabPanel>
         <!-- settings -->
         <TabPanel>
-          <IntegrationConfig :integration=integration @refresh-integration=updateIntegration />
+          <IntegrationConfig
+            :integration=integration
+            :disableControls=disableControls
+            @refresh-integration=updateIntegration
+          />
         </TabPanel>
         <!-- domains -->
         <TabPanel>
-          <IntegrationDomains :integration=integration @refresh-integration=updateIntegration />
+          <IntegrationDomains
+            :integration=integration
+            :disableControls=disableControls
+            @refresh-integration=updateIntegration
+          />
         </TabPanel>
         <!-- destroy -->
         <TabPanel>
-          <IntegrationDestroy :integration=integration @confirm-delete=onConfirmDelete />
+          <IntegrationDestroy
+            :integration=integration
+            @confirm-delete=onConfirmDelete
+          />
         </TabPanel>
       </TabPanels>
     </TabGroup>
@@ -104,15 +125,15 @@
 /* global process */
 
 import * as api from '@/account-utils'
-import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import IntegrationCache from '@/components/cdn/IntegrationCache'
 import IntegrationConfig from '@/components/cdn/IntegrationConfig'
 import IntegrationDestroy from '@/components/cdn/IntegrationDestroy'
 import IntegrationDisplayName from '@/components/cdn/IntegrationDisplayName'
 import IntegrationDomains from '@/components/cdn/IntegrationDomains'
 import IntegrationOverview from '@/components/cdn/IntegrationOverview'
-import { mapState } from 'vuex'
+import { ArrowLeftIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'CdnIntegration',
@@ -121,6 +142,7 @@ export default {
   },
   components: {
     ArrowLeftIcon,
+    ExclamationIcon,
     IntegrationCache,
     IntegrationConfig,
     IntegrationDestroy,
@@ -142,9 +164,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['session']),
-    displayName() {
-      return this.integration && this.integration.name
+    disableControls() {
+      return this.balanceSuspend
     },
     integrationKey() {
       return this.$route.params.key

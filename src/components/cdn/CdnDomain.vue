@@ -44,6 +44,7 @@
             <MenuItem as='button'
               v-if="!isPrimary"
               @click=makePrimary
+              :disabled=disableControls
               class="domainButton primary w-max"
             >
               <div>
@@ -53,6 +54,7 @@
             </MenuItem>
             <MenuItem as='button'
               @click=startEdit
+              :disabled=disableControls
               class="domainButton edit w-max"
             >
               <div>
@@ -62,6 +64,7 @@
             </MenuItem>
             <MenuItem as='button'
               @click=deleteDomain
+              :disabled=disableControls
               class="domainButton delete w-max text-red"
             >
               <div>
@@ -111,7 +114,7 @@ export default {
     ValidationError,
     XIcon
   },
-  props: ['domain'],
+  props: ['disableControls', 'domain'],
   data() {
     return {
       isEditing: false,

@@ -8,6 +8,8 @@
           class="input input--floating"
           placeholder="Enter a display name"
           type="text"
+          :disabled=disableControls
+          :class="disableControls ? 'disabled' : ''"
         />
         <ValidationError :errors="v$.displayName.$errors" />
       </div>
@@ -22,7 +24,7 @@ import useVuelidate from '@vuelidate/core'
 
 export default {
   name: 'CdnDisplayName',
-  props: ['initialDisplayName'],
+  props: ['disableControls', 'initialDisplayName'],
   components: {
     ValidationError
   },
@@ -60,5 +62,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

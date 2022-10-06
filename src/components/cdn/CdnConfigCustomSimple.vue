@@ -11,12 +11,14 @@
           placeholder="e.g. /photos/*.jpg"
           type="text"
           @keypress.enter=addPath
+          :disabled=disableControls
+          :class="disableControls ? 'disabled' : ''"
         />
         <ValidationError :errors="v$.newPath.$errors" />
       </div>
       <!-- cache enabled -->
-      <div class="input-group flex-1 cache flex-shrink-0">
-        <Listbox v-model="newPathEnabled">
+      <div class="input-group flex-1 cache flex-shrink-0" :class="disableControls ? 'disabled' : ''">
+        <Listbox v-model="newPathEnabled" :disabled=disableControls>
           <ListboxLabel class="label">Cache enabled</ListboxLabel>
           <div class="relative w-full mt-1">
             <ListboxButton class="listButton input--floating">
@@ -70,6 +72,8 @@
           placeholder="Auto"
           v-model="v$.newPathTtl.$model"
           @keypress.enter=addPath
+          :disabled=disableControls
+          :class="disableControls ? 'disabled' : ''"
         />
         <ValidationError :errors="v$.newPathTtl.$errors" />
       </div>
@@ -89,11 +93,13 @@
     <!-- path list -->
     <div class="flex flex-col mt-1 divide-y-2">
       <CdnConfigPath
+        :disableControls=disableControls
         :path=globalPath
         @edit-global-config=onEditGlobalConfig
       />
       <div v-if=paths>
         <CdnConfigPath v-for="path in paths"
+          :disableControls=disableControls
           :key=path.path
           :path=path
           :paths=paths
@@ -136,7 +142,7 @@ export default {
     LoadingSpinner,
     ValidationError
   },
-  props: ['globalConfig', 'paths'],
+  props: ['disableControls', 'globalConfig', 'paths'],
   data() {
     return {
       addingPath: false,
@@ -262,6 +268,9 @@ input[type=number] {
   @apply absolute inset-y-0 left-0 flex items-center pl-3 text-green;
 }
 
+.disabled .listButton {
+  @apply cursor-not-allowed opacity-50;
+}
 
 @screen lg {
   .path__form {
