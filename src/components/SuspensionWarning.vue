@@ -42,7 +42,7 @@ export default {
       if (this.balance.purchases.pending > 0 && (this.balanceWarning || this.balanceSuspend)) {
         return {
           class: bannerClass.blue,
-          message: 'You currently have an XE purchase pending. This may take up to 15 minutes to process. Once complete your balance will update.'
+          message: 'Your XE purchase is processing. Please allow up to 10 minutes for your balance to update.'
         }
       }
       if (!this.balance.total.usd) {
