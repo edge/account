@@ -44,6 +44,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { validate as validateConfigCache } from '@edge/cache-config'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/outline'
 
 export default {
@@ -63,6 +65,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['config']),
     hasChanges() {
       return this.json !== this.initialJson
     }
@@ -98,7 +101,27 @@ export default {
           const config = JSON.parse(this.json)
           this.jsonError = null
           this.showErrorDetail = false
-          this.$emit('update-config', config)
+          try {
+            // additional ttl validations
+            if (config.cache.ttl !== undefined && config.cache.ttl < this.config.cdn.minimumTTL) {
+              throw new Error(`ttl must be no less than ${this.config.cdn.minimumTTL}`)
+            }
+            if (config.cache.paths !== undefined) {
+              for (const path in config.cache.paths) {
+                const ttl = config.cache.paths[path]?.ttl
+                if (ttl !== undefined && ttl < this.config.cdn.minimumTTL) {
+                  throw new Error(`ttl must be no less than ${this.config.cdn.minimumTTL} in path "${path}"`)
+                }
+              }
+            }
+            validateConfigCache(config.cache)
+            this.$emit('update-config', config)
+          }
+          catch (error) {
+            this.jsonError = {
+              error: error
+            }
+          }
         }
         catch (error) {
           // get where error occurs
