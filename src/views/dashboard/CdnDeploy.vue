@@ -19,16 +19,16 @@
               <span class="ttl">TTL</span>
             </li>
             <li class="record">
-              <span class="domain monospace" :title="`cdn.${ deployedIntegration.data.domain }`">
-                cdn.{{ deployedIntegration.data.domain }}
+              <span class="domain monospace" :title="`${ deployedIntegration.data.domain }`">
+                {{ deployedIntegration.data.domain }}
               </span>
               <span class="type monospace">CNAME</span>
               <span class="ns monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
               <span class="ttl monospace">3600</span>
             </li>
             <li v-for="domain in deployedIntegration.data.additionalDomains" :key=domain class="record">
-              <span class="domain monospace" :title="`cdn.${domain}`">
-                cdn.{{ domain }}
+              <span class="domain monospace" :title="`${domain}`">
+                {{ domain }}
               </span>
               <span class="type monospace">CNAME</span>
               <span class="ns monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
