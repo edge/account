@@ -5,7 +5,12 @@
         <ArrowLeftIcon class="w-4" /><span>Content Delivery</span>
       </router-link>
     </div>
-    <IntegrationDisplayName v-if=integration :integration=integration @update-integration=updateIntegration />
+    <IntegrationDisplayName
+      v-if=integration
+      :disableControls=disableControls
+      :integration=integration
+      @update-integration=updateIntegration
+    />
     <div v-if=deleted class="box">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="flex items-center mt-4">

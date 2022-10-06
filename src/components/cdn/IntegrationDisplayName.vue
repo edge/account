@@ -22,7 +22,7 @@
       </button>
     </div>
     <div v-else class="mt-3">
-      <button @click=startEditing class="ml-2">
+      <button v-if="!disableControls" @click=startEditing class="ml-2">
         <PencilIcon class="button__icon text-gray-400 hover:text-green" />
       </button>
     </div>
@@ -42,7 +42,7 @@ import { CheckIcon, PencilIcon, XIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'IntegrationDisplayName',
-  props: ['integration'],
+  props: ['disableControls', 'integration'],
   components: {
     CheckIcon,
     LoadingSpinner,
