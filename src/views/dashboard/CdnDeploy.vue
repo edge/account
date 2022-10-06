@@ -97,27 +97,9 @@ export default {
   },
   data() {
     return {
-      deployed: true,
+      deployed: false,
       deploying: false,
-      deployedIntegration: {
-        name: '',
-        data: {
-          service: 'cdn',
-          domain: 'test.com',
-          additionalDomains: [],
-          config: {
-            origin: '',
-            maxAssetSize: undefined,
-            requestTimeout: undefined,
-            retryTimeout: undefined,
-            cache: {
-              enabled: true,
-              ttl: 86400,
-              paths: {}
-            }
-          }
-        }
-      },
+      deployedIntegration: null,
       httpError: null,
       integration: {
         name: '',
