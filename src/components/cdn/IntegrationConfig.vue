@@ -10,7 +10,7 @@
         <div class="save__buttons">
           <button
             @click=resetChanges
-            :disabled=isSaving
+            :disabled="!hasConfigChanges || isSaving"
             class="button button--outline button--small"
           >
             Cancel
