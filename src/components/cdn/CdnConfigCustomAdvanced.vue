@@ -144,7 +144,6 @@ export default {
           this.jsonError = null
           this.showErrorDetail = false
           try {
-            this.checkDuplicatePaths()
             // additional ttl validations
             if (config.cache.ttl !== undefined && config.cache.ttl < this.config.cdn.minimumTTL) {
               throw new Error(`ttl must be no less than ${this.config.cdn.minimumTTL}`)
@@ -158,6 +157,7 @@ export default {
               }
             }
             validateConfigCache(config.cache)
+            this.checkDuplicatePaths()
             this.$emit('update-config', config)
           }
           catch (error) {
