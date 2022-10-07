@@ -3,7 +3,7 @@
     <div class="flex justify-between">
       <h1>Edge CDN</h1>
       <router-link
-        v-if=displayIntegrationList
+        v-if=integrationCount
         :to="{ name: 'CdnDeploy' }"
         class="button button--success button--small h-full"
       >
@@ -11,10 +11,14 @@
       </router-link>
     </div>
     <CdnIntegrationList
-      v-if=displayIntegrationList
+      v-show=integrationCount
       @update-integration-count=onUpdateIntegrationCount
     />
-    <div v-else class="box">
+    <div v-if="!loaded" class="flex items-center">
+      <span>Loading CDN deployments</span>
+      <div class="ml-2"><LoadingSpinner /></div>
+    </div>
+    <div v-else-if="!integrationCount" class="box">
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
         <span>No content delivery deployments yet</span>
         <router-link
@@ -30,6 +34,7 @@
 
 <script>
 import CdnIntegrationList from '@/components/cdn/CdnIntegrationList'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 
 export default {
   name: 'CdnIntegrations',
@@ -37,7 +42,8 @@ export default {
     return 'Edge Account Portal » Content Delivery'
   },
   components: {
-    CdnIntegrationList
+    CdnIntegrationList,
+    LoadingSpinner
   },
   data() {
     return {

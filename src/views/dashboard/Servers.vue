@@ -3,7 +3,7 @@
     <div class="flex justify-between">
       <h1>Edge Servers</h1>
       <router-link
-        v-if="!loaded || servers.length"
+        v-if="servers.length"
         :to="{ name: 'ServerDeploy' }"
         class="button button--success button--small h-full"
       >
