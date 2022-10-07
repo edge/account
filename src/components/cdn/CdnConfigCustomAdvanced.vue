@@ -71,6 +71,47 @@ export default {
     }
   },
   methods: {
+    checkDuplicatePaths() {
+      // extract just the paths part of json
+      let pathsString = this.json.substring(this.json.indexOf('"paths"'))
+      let openingBracketCount = 1
+      let closingBracketCount = 0
+      let openingBracketIndex = pathsString.indexOf('{')
+      let i = openingBracketIndex + 1
+      while (closingBracketCount < openingBracketCount) {
+        if (pathsString[i] === '{') openingBracketCount ++
+        if (pathsString[i] === '}') closingBracketCount ++
+        i++
+      }
+      pathsString = pathsString.substring(openingBracketIndex + 1, i - 1)
+
+      // extract the path name from each path
+      const paths = []
+      // each path will be enclosed in double quotation marks, so get index of first and second quotation mark
+      let initialQuotation = pathsString.indexOf('"')
+      let closingQuotation = pathsString.indexOf('"', initialQuotation + 1)
+      while (initialQuotation > 0) {
+        // add path to paths array (including quotation marks)
+        paths.push(pathsString.substring(initialQuotation, closingQuotation + 1))
+        // find end of the current path object and remove from substring
+        openingBracketCount = 1
+        closingBracketCount = 0
+        openingBracketIndex = pathsString.indexOf('{')
+        i = openingBracketIndex + 1
+        while (closingBracketCount < openingBracketCount) {
+          if (pathsString[i] === '{') openingBracketCount ++
+          if (pathsString[i] === '}') closingBracketCount ++
+          i++
+        }
+        pathsString = pathsString.substring(i)
+        // reset indexs of the first and second quorations marks to find next path
+        initialQuotation = pathsString.indexOf('"')
+        closingQuotation = pathsString.indexOf('"', initialQuotation + 1)
+      }
+      // check for duplicate paths and throw error if any
+      const duplicates = paths.filter((item, index) => paths.indexOf(item) !== index)
+      if (duplicates.length) throw new Error(`duplicate path ${duplicates[0]}`)
+    },
     resetConfig() {
       this.setJson(this.initialPaths, this.initialGlobalConfig)
     },
@@ -99,9 +140,11 @@ export default {
       this.configTimeout = setTimeout(() => {
         try {
           const config = JSON.parse(this.json)
+
           this.jsonError = null
           this.showErrorDetail = false
           try {
+            this.checkDuplicatePaths()
             // additional ttl validations
             if (config.cache.ttl !== undefined && config.cache.ttl < this.config.cdn.minimumTTL) {
               throw new Error(`ttl must be no less than ${this.config.cdn.minimumTTL}`)
