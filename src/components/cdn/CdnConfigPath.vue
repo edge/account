@@ -192,9 +192,13 @@ export default {
   },
   validations() {
     return {
-      newPath: [
-        validation.integrationPath
-      ],
+      newPath: {
+        path: validation.integrationPath,
+        duplicate: helpers.withMessage(
+          'Path already exists',
+          v => !this.isDuplicatePath(v)
+        )
+      },
       newTtl : {
         ttl: helpers.withMessage(
           `Minimum TTL is ${this.config.cdn.minimumTTL}`,
@@ -225,7 +229,7 @@ export default {
     canConfirmEdit() {
       return (this.isGlobal || !this.v$.newPath.$invalid) &&
         !this.v$.newTtl.$invalid &&
-        !this.paths.some(path => path.path === this.newPath)
+        !this.isDuplicatePath(this.newPath)
     },
     isGlobal() {
       return this.path.path === '(global)'
@@ -264,6 +268,9 @@ export default {
     },
     deletePath() {
       this.$emit('delete-path', this.path.path)
+    },
+    isDuplicatePath(newPathName) {
+      return this.paths.some(path => this.path.path !== path.path && path.path === newPathName)
     },
     onWindowResize() {
       this.windowWidth = window.innerWidth

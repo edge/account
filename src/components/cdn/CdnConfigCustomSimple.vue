@@ -153,9 +153,13 @@ export default {
   },
   validations() {
     return {
-      newPath: [
-        validation.integrationPath
-      ],
+      newPath: {
+        path: validation.integrationPath,
+        duplicate: helpers.withMessage(
+          'Path already exists',
+          v => !this.isDuplicatePath(v)
+        )
+      },
       newPathTtl : {
         ttl: helpers.withMessage(
           `Minimum TTL is ${this.config.cdn.minimumTTL}`,
@@ -173,7 +177,7 @@ export default {
     canAddPath() {
       return !this.v$.newPath.$invalid &&
         !this.v$.newPathTtl.$invalid &&
-        !this.paths.some(path => path.path === this.newPath)
+        !this.isDuplicatePath(this.newPath)
     },
     globalPath() {
       return {
@@ -196,6 +200,9 @@ export default {
       this.newPathTtl = null
       this.newPathEnabled = undefined
       await this.v$.$reset()
+    },
+    isDuplicatePath(newPathName) {
+      return this.paths.some(path => path.path === newPathName)
     },
     onDeletePath(path) {
       this.$emit('delete-path', path)
