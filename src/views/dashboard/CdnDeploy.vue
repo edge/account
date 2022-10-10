@@ -5,7 +5,12 @@
       <div class="box md:text-center">
         <h4 class="text-green text-2xl">Success</h4>
         <!-- eslint-disable-next-line max-len -->
-        <div class="max-w-xl m-auto"><span>CDN has been successfully deployed to the network. In order to become operational, DNS records must be created for each domain added.</span></div>
+        <div class="max-w-xl m-auto">
+          <span>CDN has been successfully deployed to the network.</span>
+          <br/>
+          <!-- eslint-disable-next-line max-len -->
+          <span class="block mt-2">In order to become operational, DNS records must be created for each domain added.</span>
+        </div>
       </div>
       <div class="box">
         <h4>DNS Settings</h4>
