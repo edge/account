@@ -88,11 +88,11 @@ export default {
       // extract the path name from each path
       const paths = []
       // each path will be enclosed in double quotation marks, so get index of first and second quotation mark
-      let initialQuotation = pathsString.indexOf('"')
-      let closingQuotation = pathsString.indexOf('"', initialQuotation + 1)
-      while (initialQuotation > 0) {
+      let initialQuotationIndex = pathsString.indexOf('"')
+      let closingQuotationIndex = pathsString.indexOf('"', initialQuotationIndex + 1)
+      while (initialQuotationIndex > -1) {
         // add path to paths array (including quotation marks)
-        paths.push(pathsString.substring(initialQuotation, closingQuotation + 1))
+        paths.push(pathsString.substring(initialQuotationIndex, closingQuotationIndex + 1))
         // find end of the current path object and remove from substring
         openingBracketCount = 1
         closingBracketCount = 0
@@ -105,8 +105,8 @@ export default {
         }
         pathsString = pathsString.substring(i)
         // reset indexs of the first and second quorations marks to find next path
-        initialQuotation = pathsString.indexOf('"')
-        closingQuotation = pathsString.indexOf('"', initialQuotation + 1)
+        initialQuotationIndex = pathsString.indexOf('"')
+        closingQuotationIndex = pathsString.indexOf('"', initialQuotationIndex + 1)
       }
       // check for duplicate paths and throw error if any
       const duplicates = paths.filter((item, index) => paths.indexOf(item) !== index)
