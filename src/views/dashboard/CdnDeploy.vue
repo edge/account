@@ -20,7 +20,7 @@
             <li class="record">
               <span class="domain">Hostname</span>
               <span class="type">Type</span>
-              <span class="ns">Nameserver</span>
+              <span>Value</span>
               <span class="ttl">TTL</span>
             </li>
             <li class="record">
@@ -28,7 +28,7 @@
                 {{ deployedIntegration.data.domain }}
               </span>
               <span class="type monospace">CNAME</span>
-              <span class="ns monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
+              <span class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
               <span class="ttl monospace">3600</span>
             </li>
             <li v-for="domain in deployedIntegration.data.additionalDomains" :key=domain class="record">
@@ -36,7 +36,7 @@
                 {{ domain }}
               </span>
               <span class="type monospace">CNAME</span>
-              <span class="ns monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
+              <span class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
               <span class="ttl monospace">3600</span>
             </li>
           </ul>

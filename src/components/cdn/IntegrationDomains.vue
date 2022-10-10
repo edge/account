@@ -51,7 +51,7 @@
         <li class="record">
           <span class="domain">Hostname</span>
           <span>Type</span>
-          <span>Nameserver</span>
+          <span>Value</span>
           <span>TTL</span>
         </li>
         <li class="record">
