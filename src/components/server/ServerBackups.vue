@@ -12,7 +12,7 @@
             v-model=comment
             placeholder="Add backup name here"
             class="bg-transparent input input--floating"
-            @keypress="createOnEnter"
+            @keypress.enter=createBackup
           />
         </div>
         <div class="sm:flex sm:justify-end">
@@ -84,8 +84,8 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
-import * as validation from '../../utils/validation'
+import * as api from '@/account-utils'
+import * as validation from '@/utils/validation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
@@ -154,7 +154,7 @@ export default {
       this.isCreating = true
       try {
         this.httpError = null
-        const { task } = await utils.servers.createBackup(
+        const { task } = await api.servers.createBackup(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.serverId,
@@ -173,16 +173,11 @@ export default {
         }, 500)
       }
     },
-    createOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.createBackup()
-    },
     updateAttemptingAction(newState) {
       this.attemptingAction = newState
     },
     async updateBackups() {
-      const { results, metadata } = await utils.servers.getBackups(
+      const { results, metadata } = await api.servers.getBackups(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId,
@@ -218,9 +213,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply rounded-lg bg-white w-full overflow-auto p-4 md:p-6;
-}
 .box.backups__table {
   text-overflow: unset;
   overflow: unset;

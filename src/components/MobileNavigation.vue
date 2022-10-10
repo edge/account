@@ -11,11 +11,6 @@
         </div>
         <div class="mobileNavigation__menu">
           <Menu :mainNav="mainNav" :closeNav=closeNav />
-          <router-link
-            to="/servers/deploy"
-          >
-            <button class="w-full mt-5 button button--success">Deploy Server</button>
-          </router-link>
         </div>
         <div class="mobileNavigation__tools">
           <NavigationTools :closeNav=closeNav />
@@ -25,7 +20,7 @@
 </template>
 
 <script>
-import * as format from '../utils/format'
+import * as format from '@/utils/format'
 import Menu from '@/components/Menu'
 import NavigationTools from '@/components/NavigationTools'
 // import Search from '@/components/Search'
@@ -46,13 +41,12 @@ export default {
           text: 'Domains'
         },
         {
-          link: '/storage',
-          text: 'Storage',
-          disabled: true
+          link: '/cdn',
+          text: 'Content Delivery'
         },
         {
-          link: '/content-deliver',
-          text: 'Content Delivery',
+          link: '/storage',
+          text: 'Storage',
           disabled: true
         },
         {

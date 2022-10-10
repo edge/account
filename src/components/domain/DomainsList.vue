@@ -29,7 +29,7 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils/'
+import * as api from '@/account-utils/'
 import DomainsListItem from '@/components/domain/DomainsListItem'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
@@ -63,7 +63,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateDomains() {
-      const { results, metadata } = await utils.dns.getZones(
+      const { results, metadata } = await api.dns.getZones(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {
@@ -93,10 +93,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-
 .domainList {
   @apply mt-5 lg:mt-5 space-y-2;
 }

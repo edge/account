@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'
 
 const actionLookup = {

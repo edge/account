@@ -188,7 +188,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .wrapper {
   @apply flex flex-row w-full justify-between;
 }

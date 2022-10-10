@@ -6,9 +6,13 @@
           <button
             class="w-full md:max-w-xs mt-3 button button--small button--success sm:mt-0 self-end"
             @click="startPurchase"
+            :disabled="!canStartPurchase"
           >
             Purchase XE
           </button>
+          <div v-if="!canStartPurchase" class="errorMessage md:self-end mt-1">
+            <span class="errorMessage__text">Minimum purchase is $1.00</span>
+          </div>
         </template>
       </AddFundsCalculator>
       <AutoTopUp :paymentMethods=paymentMethods />
@@ -42,21 +46,28 @@
               class="mb-5"
               ref="paymentElement"
             />
-            <div class="flex flex-col space-y-2">
+            <div v-if=showAddNewCard class="flex flex-col space-y-2">
               <button
-                v-if=showAddNewCard
                 @click=cancelAddPaymentMethod
                 class="w-full button button--small button--outline"
               >
                 Cancel
               </button>
               <button
-                v-if="showAddNewCard"
                 @click="addPaymentMethod"
+                :disabled=addingCard
                 class="w-full button button--small button--success"
               >
-                Add card
+                <div v-if=addingCard class="flex items-center">
+                  <span>Adding</span>
+                  <span class="ml-2"><LoadingSpinner /></span>
+                </div>
+                <span v-else>Add card</span>
               </button>
+              <div class="errorMessage" v-if=addCardError>
+                <span class="errorMessage__text">{{ addCardError.message }}</span>
+              </div>
+              <StripeLoadingOverlay v-if=addingCard @cancel-stripe=onCancelStripe />
             </div>
           </div>
         </div>
@@ -72,13 +83,15 @@
 <script>
 /* global process*/
 
+import * as api from '@/account-utils'
 import * as format from '@/utils/format'
-import * as utils from '@/account-utils'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
 import AutoTopUp from '@/components/billing/AutoTopUp'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentMethodList from '@/components/billing/PaymentMethodList'
 import { PlusCircleIcon } from '@heroicons/vue/outline'
 import PurchaseTable from '@/components/billing/PurchaseTable'
+import StripeLoadingOverlay from '@/components/billing/StripeLoadingOverlay'
 
 import { mapState } from 'vuex'
 
@@ -86,6 +99,8 @@ export default {
   name: 'Payments',
   data() {
     return {
+      addCardError: null,
+      addingCard: false,
       copied: false,
       iBalance: null,
       rate: null,
@@ -104,12 +119,17 @@ export default {
   components: {
     AddFundsCalculator,
     AutoTopUp,
+    LoadingSpinner,
     PaymentMethodList,
     PlusCircleIcon,
-    PurchaseTable
+    PurchaseTable,
+    StripeLoadingOverlay
   },
   computed: {
     ...mapState(['account', 'balance', 'session']),
+    canStartPurchase() {
+      return this.calculatedUSD >= 1
+    },
     explorerUrlWallet() {
       return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.account.wallet.address}`
     },
@@ -125,22 +145,39 @@ export default {
   },
   methods: {
     async addPaymentMethod() {
+      this.addCardError = null
       // eslint-disable-next-line max-len
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments`
-
-      const { error } = await this.stripe.confirmSetup({
-        elements: this.stripeElements,
-        confirmParams: { return_url }
-      })
-      if (error) throw error
+      const overlayTimeout = setTimeout(() => {
+        this.addingCard = true
+      }, 100)
+      try {
+        const { error } = await this.stripe.confirmSetup({
+          elements: this.stripeElements,
+          confirmParams: { return_url }
+        })
+        if (error) {
+          clearTimeout(overlayTimeout)
+          this.addingCard = false
+          if (error.type !== 'validation_error') this.addCardError = error
+          throw error
+        }
+      }
+      catch (error) {
+        clearTimeout(overlayTimeout)
+        console.error(error)
+        this.addingCard = false
+        if (error.type !== 'validation_error') this.addCardError = error
+      }
     },
     cancelAddPaymentMethod() {
+      this.addCardError = null
       this.showAddNewCard = false
       this.paymentElement = null
     },
     async handleSetupIntentRedirect() {
       if (this.$route.query.redirect_status === 'succeeded') {
-        await utils.billing.addPaymentMethod(
+        await api.billing.addPaymentMethod(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
@@ -155,12 +192,16 @@ export default {
       this.calculatedUSD = usd
       this.calculatedXE = xe
     },
+    onCancelStripe() {
+      this.addCardError = null
+      this.addingCard = false
+    },
     onUpdatePaymentMethods(paymentMethods) {
       this.paymentMethods = paymentMethods
     },
     async startAddPaymentMethod() {
       if (this.showAddNewCard) return
-      const { setup } = await utils.billing.createStripeSetupIntent(
+      const { setup } = await api.billing.createStripeSetupIntent(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key
       )
@@ -184,7 +225,7 @@ export default {
         }
       }
 
-      const { purchase } = await utils.purchases.createPurchase(
+      const { purchase } = await api.purchases.createPurchase(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         data
@@ -206,14 +247,6 @@ export default {
 </script>
 
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-
-.box h4 {
-  @apply w-full mb-4 font-medium;
-}
-
 .currency {
   @apply border border-gray-500 rounded w-full py-2 px-4;
 }

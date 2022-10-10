@@ -49,9 +49,9 @@
             :placeholder="nameLabel.placeholder"
             required
             v-model="hostname"
-            @keypress="createOnEnter"
+            @keypress.enter=createRecord
           />
-          <span class="domainName">.{{ domainName }}</span>
+          <span class="domainName truncate">.{{ domainName }}</span>
         </div>
         <div v-if="hostnameError" class="errorMessage">
           <span class="errorMessage__text">{{ hostnameError }}</span>
@@ -69,7 +69,7 @@
             placeholder="Enter priority"
             required
             v-model="priority"
-            @keypress="createOnEnter"
+            @keypress.enter=createRecord
           />
           <div v-if="priorityError" class="errorMessage">
             <span class="errorMessage__text">{{ priorityError }}</span>
@@ -86,7 +86,7 @@
             :placeholder="valueLabel.placeholder"
             required
             v-model="value"
-            @keypress="createOnEnter"
+            @keypress.enter=createRecord
           />
           <div v-if="valueError" class="errorMessage">
             <span class="errorMessage__text">{{ valueError }}</span>
@@ -103,7 +103,7 @@
           placeholder="Enter TTL"
           required
           v-model="ttl"
-          @keypress="createOnEnter"
+          @keypress.enter=createRecord
         />
         <div v-if="ttlError" class="errorMessage">
           <span class="errorMessage__text">{{ ttlError }}</span>
@@ -140,8 +140,8 @@
 <script>
 /* global process */
 
+import * as api from '@/account-utils'
 import * as regex from '@/utils/regex'
-import * as utils from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
@@ -175,14 +175,16 @@ export default {
       httpError: null,
       priority: '',
       priorityError: '',
+      priorityTimeout: null,
       ttl: 3600,
       ttlError: '',
+      ttlTimeout: null,
       syncRecordsCount: null,
       syncRecordsTTL: null,
       type: 'A',
       value: '',
       valueError: '',
-      valueTimeout: ''
+      valueTimeout: null
     }
   },
   computed: {
@@ -236,11 +238,6 @@ export default {
     }
   },
   methods: {
-    createOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.createRecord()
-    },
     async createRecord() {
       try {
         this.creatingRecord = true
@@ -254,7 +251,7 @@ export default {
         if (this.type === 'TXT') {
           if (this.value[0] !== '"' && this.value.slice(-1) !== '"') value = `"${value}"`
         }
-        await utils.dns.createRecord(
+        await api.dns.createRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.domainName,
@@ -281,7 +278,7 @@ export default {
 
     },
     async getSyncRecords() {
-      const { results, metadata} = await utils.dns.getRecords(
+      const { results, metadata} = await api.dns.getRecords(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.domainName,
@@ -340,7 +337,7 @@ export default {
         if (!regex.ipv6.test(this.value)) error = 'Please enter a valid IPv6 address'
       }
       else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
-        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid FQDN'
+        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid domain name'
       }
       else if (!this.value) error = 'Please enter a value'
       this.valueError = error
@@ -357,11 +354,13 @@ export default {
     },
     priority() {
       this.httpError = null
-      this.validatePriority()
+      if (this.priorityTimeout) clearTimeout(this.priorityTimeout)
+      this.priorityTimeout = setTimeout(this.validatePriority, 400)
     },
     ttl() {
       this.httpError = null
-      this.validateTtl()
+      if (this.ttlTimeout) clearTimeout(this.ttlTimeout)
+      this.ttlTimeout = setTimeout(this.validateTtl, 400)
     },
     type() {
       this.httpError = null

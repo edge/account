@@ -48,7 +48,7 @@
           class="text-center overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
           v-mask="'# # # # # #'"
           placeholder="1 2 3 4 5 6"
-          @keypress="enableOnEnter"
+          @keypress.enter=enable2FA
         />
         <button
           class="rounded-l-none text-sm py-3 button button--success w-32"
@@ -63,10 +63,7 @@
         </button>
       </div>
       <!-- error message  -->
-      <div class="flex items-center errorMessage mt-2" v-for="error of v$.confirmationCode.$errors" :key="error.$uid">
-        <ExclamationIcon class="w-3.5 h-3.5" />
-        <span class="errorMessage__text">{{ error.$message }}</span>
-      </div>
+      <ValidationError :errors="v$.confirmationCode.$errors" />
       <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-2">
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
@@ -99,12 +96,13 @@
 <script>
 /* global process */
 
-import * as format from '../../utils/format'
-import * as utils from '../../account-utils/index'
-import * as validation from '../../utils/validation'
+import * as format from '@/utils/format'
+import * as api from '@/account-utils/index'
+import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import ValidationError from '@/components/ValidationError.vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import speakeasy from 'speakeasy'
 import useVuelidate from '@vuelidate/core'
@@ -116,6 +114,7 @@ export default {
     BadgeCheckIcon,
     ExclamationIcon,
     LoadingSpinner,
+    ValidationError,
     VueQrcode
   },
   data() {
@@ -161,7 +160,7 @@ export default {
 
       this.isLoading = true
       try {
-        const { account } = await utils.accounts.enable2FA(
+        const { account } = await api.accounts.enable2FA(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
@@ -179,11 +178,6 @@ export default {
           this.isLoading = false
         }, 1000)
       }
-    },
-    enableOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.enable2FA()
     }
   },
   unmounted() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="mainContent__inner">
+  <div class="mainContent__inner space-y-4">
     <h1>Account</h1>
     <div class="box">
       <div>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import Disable2FA from '@/components/account/Disable2FA'
 import DisableRecoveryEmail from '@/components/account/DisableRecoveryEmail'
 import Enable2FA from '@/components/account/Enable2FA'
@@ -103,14 +103,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full my-4 p-6 bg-white rounded-lg;
-}
-
-.box h4 {
-  @apply w-full mb-4 font-medium;
-}
-
 .account-number-wrapper {
   @apply flex items-center justify-between relative w-max max-w-full;
 }

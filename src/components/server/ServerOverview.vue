@@ -1,6 +1,6 @@
 <template>
   <div class="grid gap-4 xl:grid-cols-2">
-    <div class="box server__details xl:col-span-2">
+    <div class="box overflow_hidden server__details xl:col-span-2">
       <h4 class="section__title">Server details</h4>
       <div class="overview__grid">
         <!-- name, hostname, ip, region -->
@@ -32,7 +32,13 @@
         <!-- status, os, created, updated -->
         <div class="grid__col col__2">
           <div class="info__section">
-            <span class="label">Status</span><span class="info"><ServerStatus :server="server" /></span>
+            <span class="label">Status</span><span class="info">
+              <StatusDot
+                :isActive=isActive
+                :isInactive=isInactive
+                :statusText=statusText
+              />
+            </span>
           </div>
           <div class="info__section">
             <span class="label">OS</span><span class="info">{{ server.settings.os.version }}</span>
@@ -46,7 +52,7 @@
         </div>
       </div>
     </div>
-    <div class="box server__specs">
+    <div class="box overflow_hidden server__specs">
       <h4 class="section__title">Server specs</h4>
       <!-- vcpus, ram, disk, bandwidth -->
       <div class="overview__grid">
@@ -64,7 +70,7 @@
         </div>
       </div>
     </div>
-    <div class="box server__costs">
+    <div class="box overflow_hidden server__costs">
       <h4 class="section__title">Estimated costs</h4>
       <!-- hourly and daily costs -->
       <div class="overview__grid">
@@ -80,16 +86,16 @@
 </template>
 
 <script>
-import * as format from '../../utils/format'
+import * as format from '@/utils/format'
 import { DuplicateIcon } from '@heroicons/vue/outline'
-import ServerStatus from '@/components/server/ServerStatus'
+import StatusDot from '@/components/StatusDot'
 
 export default {
   name: 'ServerOverview',
-  props: ['region', 'server'],
+  props: ['activeTasks', 'region', 'server'],
   components: {
     DuplicateIcon,
-    ServerStatus
+    StatusDot
   },
   data() {
     return {
@@ -99,6 +105,9 @@ export default {
   computed: {
     created() {
       return this.formatTimestamp(this.server.created)
+    },
+    disablingTaskInProgress() {
+      return this.isStopping || this.isStarting || this.isResizing || this.isRestoring
     },
     formattedDailyCost() {
       return format.usd(this.hourlyCost * 24, 2)
@@ -119,6 +128,43 @@ export default {
         (this.region.cost.disk * this.server.spec.disk) +
         (this.region.cost.cpus * this.server.spec.cpus)
       )
+    },isCreating() {
+      return this.activeTasks.some(task => task.action === 'create')
+    },
+    isActive() {
+      return (!this.disablingTaskInProgress) && this.server.status === 'active'
+    },
+    isDestroyed() {
+      return this.server.status === 'deleted' && !this.activeTasks.some(task => task.action === 'destroy')
+    },
+    isDestroying() {
+      return this.activeTasks.some(task => task.action === 'destroy')
+    },
+    isInactive() {
+      // eslint-disable-next-line max-len
+      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying)
+    },
+    isResizing() {
+      const diskResize = this.activeTasks.some(task => task.action === 'resizeDisk')
+      const resourceResize = this.activeTasks.some(task => task.action === 'resizeResource')
+      return diskResize || resourceResize
+    },
+    isRestoring() {
+      return this.activeTasks.some(task => task.action === 'restoreBackup')
+    },
+    isStarting() {
+      return this.activeTasks.some(task => task.action === 'start')
+    },
+    isStopping() {
+      return this.activeTasks.some(task => task.action === 'stop')
+    },
+    statusText() {
+      if (this.isStopping) return 'Stopping'
+      if (this.isDestroying) return 'Deleting'
+      if (this.isResizing) return 'Resizing'
+      if (this.isRestoring) return 'Restoring'
+      if (this.isStarting) return 'Starting'
+      return this.server.status
     },
     updated() {
       return this.formatTimestamp(this.server.updated)
@@ -134,15 +180,12 @@ export default {
       }, 1000)
     },
     formatTimestamp(ts) {
-      return `${format.time(ts)}, ${format.date(ts)}`
+      return `${format.date(ts)}, ${format.time(ts)}`
     }
   }
 }
 </script>
 <style scoped>
-.box {
-  @apply p-4 md:p-6 bg-white rounded-lg w-full overflow-hidden;
-}
 .section__title {
   @apply mb-4;
 }

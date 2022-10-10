@@ -19,7 +19,7 @@
         class="w-full button button--small button--error"
         @click="confirm"
       >
-        Yes, Destroy Server
+        Yes, Destroy Deployment
       </button>
       <button
         class="w-full mt-3 button button--small button--outline sm:mt-0"
@@ -36,7 +36,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'DestroyConfirmation',
+  name: 'DestroyServerConfirmation',
   props: ['serverName'],
   components: {
     ExclamationIcon,

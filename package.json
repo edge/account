@@ -1,6 +1,6 @@
 {
   "name": "account",
-  "version": "1.9.2",
+  "version": "1.10.1",
   "description": "Edge Account Portal",
   "private": true,
   "license": "GPL",
@@ -23,6 +23,7 @@
   "main": "server/index.js",
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
+    "@edge/cache-config": "^1.1.0",
     "@edge/index-utils": "^0.6.0",
     "@edge/wallet-utils": "0.13.0",
     "@headlessui/vue": "^1.4.2",

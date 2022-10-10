@@ -13,12 +13,6 @@
         <span class="navigation-tools__label">Billing</span>
       </router-link>
     </li>
-    <!-- <li @click="closeNav" class="navigation-tools__item">
-      <a href="/support" class="navigation-tools__link" target="_blank" rel="noreferrer">
-        <span class=""><SupportIcon class="w-5 h-5" /></span>
-        <span class="navigation-tools__label">Support</span>
-      </a>
-    </li> -->
     <li class="navigation-tools__item mobileOnly">
       <button @click="signOut" class="navigation-tools__link">
         <span class=""><LogoutIcon class="w-5 h-5" /></span>
@@ -31,12 +25,11 @@
 <script>
 /* global process */
 
-import * as utils from '../account-utils/index'
+import * as api from '@/account-utils/index'
 import { mapState } from 'vuex'
 import {
   CashIcon,
   LogoutIcon,
-  // SupportIcon,
   UserIcon
 } from '@heroicons/vue/outline'
 
@@ -46,7 +39,6 @@ export default {
   components: {
     CashIcon,
     LogoutIcon,
-    // SupportIcon,
     UserIcon
   },
   computed: {
@@ -55,7 +47,7 @@ export default {
   methods: {
     async signOut() {
       try {
-        await utils.sessions.deleteSession(
+        await api.sessions.deleteSession(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )

@@ -32,9 +32,8 @@
       </div>
     </div>
     <!-- resize confirmation modal -->
-    <ResizeConfirmation
+    <ResizeServerConfirmation
       v-if=showConfirmationModal
-      ref="destroyConfirmation"
       @modal-confirm=resizeServer
       @modal-close=toggleConfirmationModal
       :currentCost=currentHourlyCost
@@ -50,11 +49,11 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as api from '@/account-utils'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import ResizeConfirmation from '@/components/confirmations/ResizeConfirmation'
-import ServerSpecs from '@/components/deploy/ServerSpecs'
+import ResizeServerConfirmation from '@/components/confirmations/ResizeServerConfirmation'
+import ServerSpecs from '@/components/server/deploy/ServerSpecs'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
@@ -63,7 +62,7 @@ export default {
   components: {
     HttpError,
     LoadingSpinner,
-    ResizeConfirmation,
+    ResizeServerConfirmation,
     ServerSpecs
   },
   data: function () {
@@ -129,7 +128,7 @@ export default {
   },
   methods: {
     async getLastResize() {
-      const { tasks } = await utils.servers.getTasks(
+      const tasks = await api.servers.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.server._key,
@@ -143,7 +142,7 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        const { tasks } = await utils.servers.resizeServer(
+        const { tasks } = await api.servers.resizeServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.server._key,
@@ -187,10 +186,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply p-4 md:p-6 bg-white rounded-lg w-full;
-}
-
 .server__error {
   @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
 }

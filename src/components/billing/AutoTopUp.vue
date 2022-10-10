@@ -19,7 +19,7 @@
               type="number"
               v-model="threshold"
               @focusout="formatThreshold"
-              @keypress="enableOnEnter"
+              @keypress.enter=enableAutoTopUp
             />
             USD
           </div>
@@ -31,7 +31,7 @@
               type="number"
               v-model="targetBalance"
               @focusout="formatTargetBalance"
-              @keypress="enableOnEnter"
+              @keypress.enter=enableAutoTopUp
             />
             USD
           </div>
@@ -114,7 +114,7 @@
 <script>
 /* global process*/
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableAutoTopUpConfirmation from '@/components/confirmations/DisableAutoTopUpConfirmation'
 import HttpError from '@/components/HttpError'
@@ -188,7 +188,7 @@ export default {
       this.httpError = ''
       try {
         this.disabling = true
-        await utils.billing.disableAutoTopUp(
+        await api.billing.disableAutoTopUp(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
@@ -204,16 +204,11 @@ export default {
         this.disabling = false
       }
     },
-    enableOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.enableAutoTopUp()
-    },
     async enableAutoTopUp() {
       this.httpError = ''
       try {
         this.enabling = true
-        await utils.billing.enableAutoTopUp(
+        await api.billing.enableAutoTopUp(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
@@ -289,14 +284,6 @@ export default {
 </script>
 
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-
-.box h4 {
-  @apply w-full mb-4 font-medium;
-}
-
 .input-wrapper {
   @apply flex space-x-2;
 }

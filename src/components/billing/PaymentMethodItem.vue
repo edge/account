@@ -51,7 +51,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as api from '@/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import CardBrandIcon from '@/components/icons/CardBrandIcon'
 import DeletePaymentMethodConfirmation from '@/components/confirmations/DeletePaymentMethodConfirmation'
@@ -101,7 +101,7 @@ export default {
     async deletePaymentMethod() {
       try {
         this.isDeleting = true
-        await utils.billing.deletePaymentMethod(
+        await api.billing.deletePaymentMethod(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.paymentMethod._key
@@ -121,7 +121,7 @@ export default {
     async setAsAutoTopUp() {
       try {
         // this.enabling = true
-        await utils.billing.enableAutoTopUp(
+        await api.billing.enableAutoTopUp(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {

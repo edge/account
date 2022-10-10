@@ -40,7 +40,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'ResizeConfirmation',
+  name: 'ResizeServerConfirmation',
   props: [
     'currentCost',
     'currentSpec',

@@ -8,7 +8,7 @@
     <div class="w-full flex flex-wrap justify-between items-center">
       <h1 class="mr-2">{{domainName}}</h1>
       <div class="mb-5" v-if=domain>
-        <DomainStatus :domain=domain :large="true" />
+        <StatusDot :isActive="true" :isInactive="false" :large="true" :statusText="'active'" />
       </div>
     </div>
 
@@ -27,7 +27,7 @@
         </div>
         <p class="mt-3 mb-1 text-gray-500">This domain and all of its associated records have been destroyed.</p>
         <router-link
-          class="mt-4 button button--success"
+          class="mt-4 button button--success button--small"
           :to="{ name: 'Domains'}"
         >
           <span>Return to Domains</span>
@@ -40,8 +40,9 @@
         <div class="flex items-center mt-4">
           <h4>Domain not found</h4>
         </div>
+        <p class="mt-3 mb-1 text-gray-500">This domain either does not exist or has destroyed.</p>
         <router-link
-          class="mt-4 button button--success"
+          class="mt-4 button button--success button--small"
           :to="{ name: 'Domains'}"
         >
           <span>Return to Domains</span>
@@ -103,12 +104,12 @@
 <script>
 /* global process */
 
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import DomainDelete from '@/components/domain/DomainDelete'
 import DomainRecordsList from '@/components/domain/DomainRecordsList'
-import DomainStatus from '@/components/domain/DomainStatus'
 import NameserversConfigure from '@/components/domain/NameserversConfigure'
 import NewRecordForm from '@/components/domain/NewRecordForm'
+import StatusDot from '@/components/StatusDot'
 import { ArrowLeftIcon, ExclamationIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { mapGetters, mapState } from 'vuex'
@@ -122,11 +123,11 @@ export default {
     ArrowLeftIcon,
     DomainDelete,
     DomainRecordsList,
-    DomainStatus,
     ExclamationIcon,
     InformationCircleIcon,
     NameserversConfigure,
     NewRecordForm,
+    StatusDot,
     TabGroup,
     TabList,
     Tab,
@@ -147,6 +148,12 @@ export default {
     ...mapState(['balance', 'config', 'session']),
     domainName() {
       return this.$route.params.key
+    },
+    isActive() {
+      return this.domain.active
+    },
+    statusText() {
+      return this.isActive ? 'Active' : 'Inactive'
     }
   },
   methods: {
@@ -159,7 +166,7 @@ export default {
     },
     async updateDomain() {
       try {
-        const { zone } = await utils.dns.getZone(
+        const { zone } = await api.dns.getZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.domainName
@@ -167,7 +174,11 @@ export default {
         this.domain = zone
       }
       catch (error) {
-        this.notFound = true
+        console.error(error)
+        if (error.status === 404) {
+          this.notFound = true
+          clearInterval(this.iDomain)
+        }
       }
     }
   },
@@ -186,9 +197,6 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
 .box.suspend {
   @apply pt-4;
 }

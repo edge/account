@@ -1,6 +1,6 @@
 <template>
   <div class="pb-20">
-    <div class="box">
+    <div class="box domain_delete">
       <h4>Delete domain and records</h4>
       <!-- server not yet deleted -->
       <div>
@@ -36,7 +36,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as api from '@/account-utils'
 import DeleteDomainConfirmation from '@/components/confirmations/DeleteDomainConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -65,7 +65,7 @@ export default {
       this.isDeleting = true
       try {
         this.toggleConfirmationModal()
-        await utils.dns.deleteZone(
+        await api.dns.deleteZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.domain._key
@@ -89,7 +89,4 @@ export default {
 }
 </script>
 <style scoped>
-  .box {
-    @apply bg-white rounded-lg w-full p-4 md:p-6;
-  }
 </style>

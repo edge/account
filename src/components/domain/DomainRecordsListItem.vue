@@ -51,7 +51,7 @@
             required
             v-model=hostname
             :title=hostname
-            @keypress="editOnEnter"
+            @keypress.enter=confirmEditRecord
           />
           <span v-else class="recordList__value"
             :title="`${record.name}${record.name ? '.' : ''}${domainName}`"
@@ -60,10 +60,10 @@
           </span>
           <span
             v-if=isEditing
-            class="border-b text-gray-400 md:hidden lg:inline-block border-gray-400"
-            :title="`${record.name ? '.' : ''}${domainName}`"
+            class="border-b text-gray-400 md:hidden lg:inline-block border-gray-400 truncate"
+            :title="`.${domainName}`"
           >
-            {{ record.name ? '.' : ''}}{{ domainName }}
+            .{{ domainName }}
           </span>
         </div>
         <div v-if="isEditing && hostnameError" class="errorMessage">
@@ -80,7 +80,7 @@
           placeholder="Enter priority"
           required
           v-model="priority"
-          @keypress="editOnEnter"
+          @keypress.enter=confirmEditRecord
         />
         <span v-else class="recordList__value">{{ mxValue.priority }}</span>
         <div v-if="isEditing && priorityError" class="errorMessage">
@@ -99,7 +99,7 @@
           required
           v-model=value
           :title=value
-          @keypress="editOnEnter"
+          @keypress.enter=confirmEditRecord
         />
         <span v-else class="recordList__value"
           :title="mxValue ? mxValue.value : record.value"
@@ -120,7 +120,7 @@
           placeholder="Enter TTL"
           required
           v-model="ttl"
-          @keypress="editOnEnter"
+          @keypress.enter=confirmEditRecord
         />
         <span v-else class="recordList__value">{{ record.ttl }}</span>
         <div v-if="isEditing && ttlError" class="errorMessage">
@@ -201,7 +201,7 @@
 /* global process */
 
 import * as regex from '@/utils/regex'
-import * as utils from '@/account-utils'
+import * as api from '@/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DeleteRecordConfirmation from '@/components/confirmations/DeleteRecordConfirmation'
 import HttpError from '@/components/HttpError'
@@ -258,11 +258,13 @@ export default {
       isEditing: false,
       priority: '',
       priorityError: '',
+      priorityTimeou: null,
       showDeleteConfirmationModal: false,
       syncRecordsCount: null,
       syncRecordsTTL: null,
       ttl: 3600,
       ttlError: '',
+      ttlTimeout: null,
       type: null,
       value: null,
       valueError: '',
@@ -365,7 +367,7 @@ export default {
         if (this.value.slice(-1) !== '.') value += '.'
       }
       try {
-        await utils.dns.editRecord(
+        await api.dns.editRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.record.zone,
@@ -389,7 +391,7 @@ export default {
       this.isDeleting = true
       this.toggleDeleteConfirmationModal()
       try {
-        await utils.dns.deleteRecord(
+        await api.dns.deleteRecord(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.record.zone,
@@ -402,13 +404,8 @@ export default {
       }
       this.isDeleting = false
     },
-    editOnEnter(event) {
-      if (event.charCode !== 13) return
-      event.preventDefault()
-      this.confirmEditRecord()
-    },
     async getSyncRecords() {
-      const { results, metadata} = await utils.dns.getRecords(
+      const { results, metadata} = await api.dns.getRecords(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.domainName,
@@ -488,7 +485,7 @@ export default {
         if (!regex.ipv6.test(this.value)) error = 'Please enter a valid IPv6 address'
       }
       else if (['ALIAS', 'CNAME', 'MX', 'NS', 'PTR'].includes(this.type)) {
-        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid FQDN'
+        if (!regex.fqdn.test(this.value)) error = 'Please enter a valid domain name'
       }
       else if (!this.value) error = 'Please enter a value'
       this.valueError = error
@@ -510,11 +507,13 @@ export default {
     },
     priority() {
       this.httpError = null
-      this.validatePriority()
+      if (this.priorityTimeout) clearTimeout(this.priorityTimeout)
+      this.priorityTimeout = setTimeout(this.validatePriority, 400)
     },
     ttl() {
       this.httpError = null
-      this.validateTtl()
+      if (this.ttlTimeout) clearTimeout(this.ttlTimeout)
+      this.ttlTimeout = setTimeout(this.validateTtl, 400)
     },
     type() {
       this.httpError = null

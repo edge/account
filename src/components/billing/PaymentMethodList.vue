@@ -13,7 +13,7 @@
 <script>
 /* global process */
 
-import * as utils from '../../account-utils'
+import * as api from '@/account-utils'
 import PaymentMethodItem from '@/components/billing/PaymentMethodItem'
 import { mapState } from 'vuex'
 
@@ -44,7 +44,7 @@ export default {
       this.updatePaymentMethods()
     },
     async updatePaymentMethods() {
-      const { results, metadata } = await utils.billing.getPaymentMethods(
+      const { results, metadata } = await api.billing.getPaymentMethods(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         {
@@ -71,10 +71,4 @@ export default {
 }
 </script>
 <style scoped>
-.box {
-  @apply w-full p-6 bg-white rounded-lg;
-}
-.box h4 {
-  @apply w-full mb-4 font-medium;
-}
 </style>
