@@ -81,24 +81,29 @@
         </div>
 
         <!-- crashed -->
-        <div v-else-if=isCrashed class="space-y-4">
-          <div class="box">
-            <div class="flex flex-col justify-center">
-              <h4>Server Error</h4>
-              <!-- eslint-disable-next-line max-len -->
-              <p class="mb-0 text-gray-500">There was a problem with your server, please try again later or contact support@edge.network for assistance.</p>
-              <router-link
-                class="mt-4 button button--success button--small w-full md:max-w-xs"
-                :to="{ name: 'Servers' }"
-              >
-                <span>Return to Servers</span>
-              </router-link>
-            </div>
+        <div v-else-if=isCrashed  class="box">
+          <div class="flex flex-col items-center justify-center text-center">
+            <h4>Server Crashed</h4>
+            <!-- eslint-disable-next-line max-len -->
+            <p class="mb-0 text-gray-500">There was a problem with your server, please either delete and re-deploy the server or contact support@edge.network for assistance.</p>
+            <button
+              class="mt-4 button button--error button--small w-full md:max-w-xs"
+              :disabled="isDestroying || disableActions"
+              @click.prevent="toggleDestroyConfirmationModal"
+            >
+              <div v-if=isDestroying class="flex">
+                <span>Destroying</span>
+                <span class="ml-2"><LoadingSpinner /></span>
+              </div>
+              <span v-else>Destroy server</span>
+            </button>
           </div>
-          <ServerDestroy
-            :activeTasks=activeTasks
-            :disableActions=disableActions
-            :server=server
+          <!-- destroy confirmation modal -->
+          <DestroyServerConfirmation
+            v-if=showDestroyConfirmationModal
+            @modal-confirm=destroyServer
+            @modal-close=toggleDestroyConfirmationModal
+            :serverName="server.settings.name || server.settings.hostname"
           />
         </div>
 
@@ -290,6 +295,7 @@
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
+import DestroyServerConfirmation from '@/components/confirmations/DestroyServerConfirmation'
 import DistroIcon from '@/components/icons/DistroIcon'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -324,11 +330,13 @@ export default {
       notFound: false,
       region: null,
       selectedIndex: 0,
-      server: null
+      server: null,
+      showDestroyConfirmationModal: false
     }
   },
   components: {
     ArrowLeftIcon,
+    DestroyServerConfirmation,
     DistroIcon,
     InformationCircleIcon,
     LoadingSpinner,
@@ -445,8 +453,30 @@ export default {
         if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
     },
+    async destroyServer() {
+      this.isLoading = true
+      try {
+        this.toggleDestroyConfirmationModal()
+        const response = await api.servers.deleteServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        if (response.task) this.$store.commit('addTask', response.task)
+        this.isLoading = false
+      }
+      catch (error) {
+        setTimeout(() => {
+          this.httpError = error
+          this.isLoading = false
+        }, 500)
+      }
+    },
     returnToServers() {
       this.$router.push({ name: 'Servers' })
+    },
+    toggleDestroyConfirmationModal() {
+      this.showDestroyConfirmationModal = !this.showDestroyConfirmationModal
     },
     async updateRegion() {
       try {
