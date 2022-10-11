@@ -5,36 +5,43 @@
       <div class="box md:text-center">
         <h4 class="text-green text-2xl">Success</h4>
         <!-- eslint-disable-next-line max-len -->
-        <div class="max-w-xl m-auto"><span>CDN has been successfully deployed to the network. In order to become operational, DNS records must be created for each domain added.</span></div>
+        <div class="max-w-xl m-auto">
+          <span>CDN has been successfully deployed to the network.</span>
+          <br/>
+          <!-- eslint-disable-next-line max-len -->
+          <span class="block mt-2">In order to become operational, DNS records must be created for each domain added.</span>
+        </div>
       </div>
       <div class="box">
         <h4>DNS Settings</h4>
         <div class="flex flex-col space-y-4 overflow-x-visible">
           <span>Please create the following DNS records to enabled CDN to work:</span>
-          <ul class="my-4 space-y-2 overflow-x-auto">
-            <li class="record">
-              <span class="domain">Hostname</span>
-              <span class="type">Type</span>
-              <span class="ns">Nameserver</span>
-              <span class="ttl">TTL</span>
-            </li>
-            <li class="record">
-              <span class="domain monospace" :title="`${ deployedIntegration.data.domain }`">
-                {{ deployedIntegration.data.domain }}
-              </span>
-              <span class="type monospace">CNAME</span>
-              <span class="ns monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
-              <span class="ttl monospace">3600</span>
-            </li>
-            <li v-for="domain in deployedIntegration.data.additionalDomains" :key=domain class="record">
-              <span class="domain monospace" :title="`${domain}`">
-                {{ domain }}
-              </span>
-              <span class="type monospace">CNAME</span>
-              <span class="ns monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
-              <span class="ttl monospace">3600</span>
-            </li>
-          </ul>
+          <div class="overflow-x-auto">
+            <table class="my-4 space-y-2">
+              <tr>
+                <th class="domain">Hostname</th>
+                <th class="type">Type</th>
+                <th>Value</th>
+                <th class="ttl">TTL</th>
+              </tr>
+              <tr>
+                <td class="domain monospace" :title="`${ deployedIntegration.data.domain }`">
+                  {{ deployedIntegration.data.domain }}
+                </td>
+                <td class="type monospace">CNAME</td>
+                <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
+                <td class="ttl monospace">3600</td>
+              </tr>
+              <tr v-for="domain in deployedIntegration.data.additionalDomains" :key=domain>
+                <td class="domain monospace" :title="`${domain}`">
+                  {{ domain }}
+                </td>
+                <td class="type monospace">CNAME</td>
+                <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
+                <td class="ttl monospace">3600</td>
+              </tr>
+            </table>
+          </div>
           <span>You can set these up later, but CDN won't become operational until you do.</span>
           <!-- eslint-disable-next-line max-len -->
           <span>Changes can take up to 24 hours. If you require any assistance, please contact support@edge.network</span>
@@ -193,12 +200,13 @@ export default {
 </script>
 
 <style scoped>
-.record {
-  @apply grid gap-x-4;
-  grid-template-columns: 180px 50px 180px 50px
+th {
+  @apply font-normal text-left;
 }
-.record .domain {
+th, td {
+  @apply pr-4
+}
+.domain {
   @apply truncate;
 }
-
 </style>

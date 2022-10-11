@@ -270,7 +270,8 @@ export default {
       this.$emit('delete-path', this.path.path)
     },
     isDuplicatePath(newPathName) {
-      return this.paths.some(path => this.path.path !== path.path && path.path === newPathName)
+      return this.paths && this.paths.length
+        && this.paths.some(path => this.path.path !== path.path && path.path === newPathName)
     },
     onWindowResize() {
       this.windowWidth = window.innerWidth

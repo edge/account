@@ -9,7 +9,7 @@
     <CdnDomains
       ref="cdnDomains"
       :liveDomains=liveDomains
-      :disableControls="true"
+      :disableControls="false"
       @update-domains=onUpdateDomains
     >
       <template v-slot:buttons>
@@ -47,26 +47,28 @@
       <h4 class="mb-4">Configure DNS</h4>
       <!-- eslint-disable-next-line max-len -->
       <span>In order for Edge CDN to work for the specified domains, you will need to configure the DNS records appropriately. Please ensure each domain added correctly points to <span class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>:</span>
-      <ul class="my-4 space-y-2 overflow-x-auto">
-        <li class="record">
-          <span class="domain">Hostname</span>
-          <span>Type</span>
-          <span>Nameserver</span>
-          <span>TTL</span>
-        </li>
-        <li class="record">
-          <span class="domain monospace">{{ integration.data.domain }}</span>
-          <span class="monospace">CNAME</span>
-          <span class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
-          <span class="monospace">3600</span>
-        </li>
-        <li class="record" v-for="domain in integration.data.additionalDomains" :key=domain>
-          <span class="domain monospace">{{ domain }}</span>
-          <span class="monospace">CNAME</span>
-          <span class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>
-          <span class="monospace">3600</span>
-        </li>
-      </ul>
+      <div class="overflow-x-auto">
+        <table class="my-4 space-y-2">
+          <tr>
+            <th class="domain">Hostname</th>
+            <th>Type</th>
+            <th>Value</th>
+            <th>TTL</th>
+          </tr>
+          <tr>
+            <td class="domain monospace">{{ integration.data.domain }}</td>
+            <td class="monospace">CNAME</td>
+            <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
+            <td class="monospace">3600</td>
+          </tr>
+          <tr v-for="domain in integration.data.additionalDomains" :key=domain>
+            <td class="domain monospace">{{ domain }}</td>
+            <td class="monospace">CNAME</td>
+            <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
+            <td class="monospace">3600</td>
+          </tr>
+        </table>
+      </div>
       <span>If you require any assistance, please contact support@edge.network</span>
     </div>
   </div>
@@ -170,19 +172,21 @@ export default {
 </script>
 
 <style scoped>
+th {
+  @apply font-normal text-left;
+}
+th, td {
+  @apply pr-4
+}
+.domain {
+  @apply truncate;
+}
+
 .coming-soon {
   @apply bg-gray-300 rounded-lg p-4;
 }
 .save__buttons {
   @apply flex space-x-2 justify-end mt-4;
-}
-
-.record {
-  @apply grid gap-x-4;
-  grid-template-columns: 180px 50px 180px 50px
-}
-.record .domain {
-  @apply truncate;
 }
 
 @media (max-width: 550px) {
