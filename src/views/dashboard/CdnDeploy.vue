@@ -77,8 +77,8 @@
           </div>
         <span v-else>Deploy</span>
       </button>
-      <HttpError :error=httpError />
     </div>
+    <div class="flex md:justify-end mt-2"><HttpError :error=httpError /></div>
   </div>
 </template>
 
