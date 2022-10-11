@@ -69,6 +69,12 @@ export default {
   @apply mb-0;
 }
 .anc__text a {
-  @apply mb-0 underline text-green hover:text-green-600 cursor-pointer;
+  @apply mb-0;
+  text-decoration: underline !important;
+  color: #0ecc5f !important;
+  cursor: pointer !important;
+}
+.anc__text a:hover {
+  color: #2b7a39 !important;
 }
 </style>
