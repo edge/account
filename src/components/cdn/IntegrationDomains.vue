@@ -9,7 +9,7 @@
     <CdnDomains
       ref="cdnDomains"
       :liveDomains=liveDomains
-      :disableControls="false"
+      :disableControls="true"
       @update-domains=onUpdateDomains
     >
       <template v-slot:buttons>
