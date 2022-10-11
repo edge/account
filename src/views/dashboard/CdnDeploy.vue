@@ -1,6 +1,6 @@
 <template>
   <div class="mainContent__inner mb-16">
-    <h1>Edge CDN</h1>
+    <h1>Edge Content Delivery</h1>
     <div v-if="deployed" class="space-y-4">
       <div class="box md:text-center">
         <h4 class="text-green text-2xl">Success</h4>
