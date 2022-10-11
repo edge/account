@@ -116,7 +116,7 @@ export default {
         tooltip: { background: '#4ecd5f', borderColor: '#4ecd5f' }
       },
       trafficMarks: [
-        { value: '1', label: '1' },
+        { value: '5', label: '5' },
         { value: '10', label: '10' },
         { value: '20', label: '20' },
         { value: '50', label: '50' },
@@ -125,7 +125,7 @@ export default {
         { value: '500', label: '500' },
         { value: '1000', label: '1000' }
       ],
-      trafficValue: 1
+      trafficValue: 5
     }
   },
   computed: {
