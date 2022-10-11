@@ -524,23 +524,6 @@ export default {
   @apply h-4 bg-gray-400 w-px flex-shrink-0;
 }
 
-/* status dot */
-.serverList__statusDot {
-  @apply w-2.5 h-2.5 rounded-full mr-1 bg-gray-400;
-}
-.active .serverList__statusDot {
-  @apply bg-green;
-}
-.inactive .serverList__statusDot {
-  @apply bg-red;
-}
-.active .serverList__statusText {
-  @apply text-green;
-}
-.inactive .serverList__statusText {
-  @apply text-red;
-}
-
 
 @media (max-width: 450px) {
   .collapse.sub-header {

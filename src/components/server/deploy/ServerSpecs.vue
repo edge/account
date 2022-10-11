@@ -7,9 +7,9 @@
           <vue-slider
             :disabled=isRegionDisabled
             v-model=cpusValue
-            dotSize=20
+            :dotSize="20"
             width="100%"
-            contained=true
+            :contained="true"
             :min="cpuOptions.min"
             :max="cpuOptions.max"
             :marks="cpuOptions.marks"
@@ -38,10 +38,10 @@
             :vData="ramOptions.data"
             ref="ramSlider"
             :marks="true"
-            dotSize=20
+            :dotSize="20"
             adsorb
             width="100%"
-            contained=true
+            :contained="true"
             tooltip="always"
             :tooltip-formatter=formatSliderRAM
             tooltipPlacement="top"
@@ -64,9 +64,9 @@
             :disabled=isRegionDisabled
             v-model=diskValue
             ref="ssdSlider"
-            dotSize=20
+            :dotSize="20"
             width="100%"
-            contained=true
+            :contained="true"
             :vData="diskOptions.data"
             :marks="true"
             adsorb
@@ -100,9 +100,9 @@
             :disabled=isRegionDisabled
             v-model=bandwidthValue
             ref="badwidthSlider"
-            dotSize=20
+            :dotSize="20"
             width="100%"
-            contained=true
+            :contained="true"
             :min="bandwidthOptions.min"
             :max="bandwidthOptions.max"
             :marks="bandwidthOptions.marks"
