@@ -5,22 +5,22 @@
       <!-- server has already been deleted -->
       <div v-if="isDestroyed">
         <p class="mt-3 mb-1 text-gray-500">Your server and backups have been successfully deleted.</p>
-        <button
-          class="button button--success w-full md:max-w-xs"
-          @click.prevent="returnToServers"
+        <router-link
+          class="button button--success button--small w-full md:max-w-xs"
+          :to="{ name: 'Servers' }"
         >
           <span>Return to Servers</span>
-        </button>
+        </router-link>
       </div>
 
       <!-- server not yet deleted -->
       <div v-else>
         <!-- eslint-disable-next-line max-len -->
         <p class="mt-3 mb-1 text-gray-500">This is irreversible. All server data and associated backups will be irretrievable.</p>
-        <p class="text-gray-500">Upon destruction, you will no longer be billed for this server.</p>
+        <p class="text-gray-500" v-if="!isCrashed">Upon destruction, you will no longer be billed for this server.</p>
         <div class="flex flex-col space-y-2">
           <button
-            class="button button--error button--small w-full md:max-w-xs"
+            class="mt-4 button button--error button--small w-full md:max-w-xs"
             :disabled="isLoading || disableActions"
             @click.prevent="toggleConfirmationModal"
           >
@@ -71,6 +71,9 @@ export default {
   },
   computed: {
     ...mapState(['session']),
+    isCrashed() {
+      return this.server.status === 'crashed'
+    },
     isDestroyed() {
       return this.server.status === 'deleted'
     },

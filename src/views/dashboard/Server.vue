@@ -54,7 +54,7 @@
           </div>
         </div>
       </div>
-      <div class="flex-shrink-0">
+      <div class="flex-shrink-0" v-if="!isDestroyed && !isCrashed">
         <ServerPowerToggle
           :activeTasks=activeTasks
           :disableActions=disableActions
@@ -66,19 +66,40 @@
 
     <div class="grid items-start grid-cols-12 mt-4 space-x-10">
       <div class="col-span-12">
+        <!-- destroyed -->
         <div v-if=isDestroyed class="box">
           <div class="flex flex-col items-center justify-center text-center">
-            <div class="flex items-center mt-4">
-              <h4>Server Destroyed</h4>
-            </div>
-            <p class="mt-3 mb-1 text-gray-500">This server and all of its associated backups have been destroyed.</p>
-            <button
-              class="mt-4 button button--success"
-              @click.prevent="returnToServers"
+            <h4>Server Destroyed</h4>
+            <p class="mb-0 text-gray-500">This server and all of its associated backups have been destroyed.</p>
+            <router-link
+              class="mt-4 button button--success button--small"
+              :to="{ name: 'Servers' }"
             >
               <span>Return to Servers</span>
-            </button>
+            </router-link>
           </div>
+        </div>
+
+        <!-- crashed -->
+        <div v-else-if=isCrashed class="space-y-4">
+          <div class="box">
+            <div class="flex flex-col justify-center">
+              <h4>Server Error</h4>
+              <!-- eslint-disable-next-line max-len -->
+              <p class="mb-0 text-gray-500">There was a problem with your server, please try again later or contact support@edge.network for assistance.</p>
+              <router-link
+                class="mt-4 button button--success button--small w-full md:max-w-xs"
+                :to="{ name: 'Servers' }"
+              >
+                <span>Return to Servers</span>
+              </router-link>
+            </div>
+          </div>
+          <ServerDestroy
+            :activeTasks=activeTasks
+            :disableActions=disableActions
+            :server=server
+          />
         </div>
 
         <!-- action in progress section -->
@@ -266,8 +287,8 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils'
+import * as format from '@/utils/format'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import DistroIcon from '@/components/icons/DistroIcon'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
@@ -348,6 +369,9 @@ export default {
     formattedRAM() {
       return format.mib(this.server.spec.ram)
     },
+    isCrashed() {
+      return this.server.status === 'crashed'
+    },
     isCreating() {
       return this.activeTasks.some(task => task.action === 'create')
     },
@@ -362,7 +386,7 @@ export default {
     },
     isInactive() {
       // eslint-disable-next-line max-len
-      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying)
+      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying || this.isCrashed)
     },
     isLoadingBackups() {
       if (this.backups.length) return false
