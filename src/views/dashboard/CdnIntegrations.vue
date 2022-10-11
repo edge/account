@@ -1,7 +1,7 @@
 <template>
   <div class="mainContent__inner">
     <div class="flex justify-between">
-      <h1>Edge CDN</h1>
+      <h1>Edge Content Delivery</h1>
       <router-link
         v-if=integrationCount
         :to="{ name: 'CdnDeploy' }"
