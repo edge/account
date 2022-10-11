@@ -3,7 +3,8 @@
     <h1>Billing</h1>
     <div class="flex flex-col space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-6 lg:space-y-0">
       <div class="box"><DetailsBox/></div>
-      <div class="box"><ReferralCode /></div>
+      <!-- <div class="box"><ReferralCode /></div> -->
+      <div class="box"><BillingConsumptionChart /></div>
       <!-- <div class="box">
         <h4>Consumption</h4>
         <span>Some consumption related info will go here. We'll make it look really cool. </span>
@@ -28,6 +29,7 @@
 /* global process */
 
 import * as format from '@/utils/format'
+import BillingConsumptionChart from '@/components/billing/BillingConsumptionChart'
 import DetailsBox from '@/components/account/DetailsBox'
 import ReferralCode from '@/components/ReferralCode'
 import { mapState } from 'vuex'
@@ -38,6 +40,7 @@ export default {
     return 'Edge Account Portal » Billing'
   },
   components: {
+    BillingConsumptionChart,
     DetailsBox,
     ReferralCode
   },
