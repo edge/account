@@ -6,7 +6,7 @@
         <Tooltip
           position="left"
           :wide="true"
-          text="Cache hit rate represents the number of requests served from the cache. Cached data rate shows the share of overall traffic that is served from the cache."
+          text="Cache hit rate represents the number of requests served from the cache. Cached data rate shows the share of traffic that is served from the cache."
         >
           <InformationCircleIcon class="w-4 mt-1 text-gray" />
         </Tooltip>
