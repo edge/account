@@ -3,11 +3,11 @@
     <h1>Edge Domains</h1>
 
     <!-- balance suspend warning -->
-    <div v-if="balanceSuspend || balanceWarning" class="box mb-5 suspend">
-      <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
-      <!-- eslint-disable-next-line max-len -->
-      <div class="mt-2 text-red">You are unable to add new domains while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to re-enable this service.</div>
-    </div>
+    <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2 mb-4">
+        <div><ExclamationIcon class="w-5 text-red" /></div>
+        <!-- eslint-disable-next-line max-len -->
+        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
+      </div>
     <!-- add new domain input -->
     <div class="box">
       <div class="flex flex-col space-y-2 w-full sm:space-x-4 sm:space-y-0 sm:items-end sm:flex-row">

@@ -21,7 +21,7 @@
     </ul>
     <!-- no domains -->
     <div v-else class="box mt-2">
-      <span>No domains</span>
+      <span>You don't have any domains yet. Once you add your first domain it will be available here.</span>
     </div>
   </div>
 </template>

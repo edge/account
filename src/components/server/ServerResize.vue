@@ -10,7 +10,14 @@
         @specs-changed="updateNewSpec"
       />
     </div>
-    <div class="flex flex-col relative my-5 space-y-2">
+    <!-- balance warning -->
+    <div class="box mt-4 flex space-x-2" v-if="haveSpecsIncreased && (balanceSuspend || balanceWarning)">
+        <div><ExclamationIcon class="w-5 text-red" /></div>
+        <!-- eslint-disable-next-line max-len -->
+        <span class="text-red">You are unable to increase this server's specs while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to enable this service.</span>
+    </div>
+    <!-- resize button and errors -->
+    <div class="flex flex-col relative my-4 space-y-2">
       <button
         @click="toggleConfirmationModal"
         :disabled=!canSubmitResize
@@ -23,8 +30,6 @@
         </span>
       </button>
       <HttpError :error=httpError />
-      <!-- eslint-disable-next-line max-len -->
-      <span v-if="haveSpecsIncreased && (balanceSuspend || balanceWarning)" class="text-red">You are unable to increase this server's specs while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to enable this service.</span>
       <div v-if=internalServerError class="server__error">
         <span class="font-bold">Something went wrong</span>
         <!-- eslint-disable-next-line max-len -->
@@ -50,6 +55,7 @@
 /* global process */
 
 import * as api from '@/account-utils'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ResizeServerConfirmation from '@/components/confirmations/ResizeServerConfirmation'
@@ -60,6 +66,7 @@ export default {
   name: 'ServerResize',
   props: ['disableActions', 'region', 'server'],
   components: {
+    ExclamationIcon,
     HttpError,
     LoadingSpinner,
     ResizeServerConfirmation,
