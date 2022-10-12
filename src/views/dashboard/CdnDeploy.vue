@@ -55,15 +55,15 @@
       </div>
     </div>
     <div v-else class="flex flex-col space-y-4">
-      <div v-if="disableControls" class="box suspend">
-        <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
+      <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
+        <div><ExclamationIcon class="w-5 text-red" /></div>
         <!-- eslint-disable-next-line max-len -->
-        <div class="mt-2 text-red">You are unable to create new CDN deployments while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to re-enable this service.</div>
+        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
       </div>
       <!-- details -->
-      <CdnDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
-      <CdnDomains @update-domains=onUpdateDomains :disableControls=disableControls />
-      <CdnConfig @update-config=onUpdateConfig :disableControls=disableControls />
+      <CdnDisplayName @update-details=onUpdateDetails />
+      <CdnDomains @update-domains=onUpdateDomains />
+      <CdnConfig @update-config=onUpdateConfig />
       <CdnEstimatedCosts />
       <!-- deploy button -->
       <button

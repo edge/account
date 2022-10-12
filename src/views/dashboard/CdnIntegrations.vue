@@ -20,7 +20,8 @@
     </div>
     <div v-else-if="!integrationCount" class="box">
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
-        <span>No content delivery deployments yet</span>
+        <!-- eslint-disable-next-line max-len -->
+        <p>You don't have any content delivery deployments yet. Once you create your first deployment it will be available here.</p>
         <router-link
           :to="{ name: 'CdnDeploy' }"
           class="button button--success button--small"

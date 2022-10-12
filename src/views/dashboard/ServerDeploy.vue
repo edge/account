@@ -1,7 +1,14 @@
 <template>
   <div class="mainContent__inner">
     <h1>Deploy a new server</h1>
-    <form class="flex flex-col col-span-12 pb-20 space-y-5">
+    <form class="flex flex-col col-span-12 pb-20 space-y-4">
+      <!-- balance warning -->
+      <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
+        <div><ExclamationIcon class="w-5 text-red" /></div>
+        <!-- eslint-disable-next-line max-len -->
+        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
+      </div>
+
       <!-- network region -->
       <div class="box">
         <h4>Network region</h4>
@@ -86,11 +93,6 @@
         </button>
 
         <HttpError :error=httpError />
-        <!-- eslint-disable-next-line max-len -->
-        <span v-if="balanceSuspend || balanceWarning" class="text-red">
-          You are unable to deploy a new server while your balance is below ${{ balance.threshold.warning.usd }}.
-          Please add funds to enable this service.
-        </span>
         <div v-if=internalServerError class="server__error">
           <span class="font-bold">Something went wrong</span>
           <!-- eslint-disable-next-line max-len -->
@@ -107,6 +109,7 @@
 import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
 import Domain from '@/components/server/deploy/Domain'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import NetworkRegion from '@/components/server/deploy/NetworkRegion'
@@ -126,6 +129,7 @@ export default {
   },
   components: {
     Domain,
+    ExclamationIcon,
     HttpError,
     LoadingSpinner,
     NetworkRegion,
