@@ -1,15 +1,9 @@
 <template>
   <div class="space-y-4">
-    <div class="coming-soon">
-      <div class="float-left">
-        <InformationCircleIcon class="w-5 mr-1"/>
-      </div>
-      <span>Modifying domains will be available soon.</span>
-    </div>
     <CdnDomains
       ref="cdnDomains"
       :liveDomains=liveDomains
-      :disableControls="true"
+      :disableControls=disableControls
       @update-domains=onUpdateDomains
     >
       <template v-slot:buttons>
@@ -80,7 +74,6 @@
 import * as api from '@/account-utils'
 import CdnDomains from '@/components/cdn/CdnDomains'
 import HttpError from '@/components/HttpError.vue'
-import { InformationCircleIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import _ from 'lodash'
 import { mapState } from 'vuex'
@@ -91,7 +84,6 @@ export default {
   components: {
     CdnDomains,
     HttpError,
-    InformationCircleIcon,
     LoadingSpinner
   },
   data() {
@@ -182,9 +174,6 @@ th, td {
   @apply truncate;
 }
 
-.coming-soon {
-  @apply bg-gray-300 rounded-lg p-4;
-}
 .save__buttons {
   @apply flex space-x-2 justify-end mt-4;
 }
