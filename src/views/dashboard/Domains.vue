@@ -15,14 +15,16 @@
         <div class="flex-1 input-group">
           <label class="label">Domain Name</label>
           <input
+            v-model="v$.newDomainName.$model"
             autocomplete="off"
             autocorrect="off"
             autocapitalize="off"
             class="w-full input input--floating"
+            :class="balanceSuspend || balanceWarning ? 'cursor-not-allowed' : ''"
             placeholder="Add a domain name"
             @keypress.enter=addDomain
-            required
-            v-model="v$.newDomainName.$model"
+            :disabled="balanceSuspend || balanceWarning"
+
           />
         </div>
 

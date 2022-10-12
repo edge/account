@@ -61,10 +61,10 @@
         <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
       </div>
       <!-- details -->
-      <CdnDisplayName @update-details=onUpdateDetails />
-      <CdnDomains @update-domains=onUpdateDomains />
-      <CdnConfig @update-config=onUpdateConfig />
-      <CdnEstimatedCosts />
+      <CdnDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
+      <CdnDomains @update-domains=onUpdateDomains :disableControls=disableControls />
+      <CdnConfig @update-config=onUpdateConfig :disableControls=disableControls />
+      <CdnEstimatedCosts :disableControls=disableControls />
       <!-- deploy button -->
       <button
         @click=deployCdn

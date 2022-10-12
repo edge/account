@@ -1,5 +1,5 @@
 <template>
-  <Listbox v-model="selectedVersion">
+  <Listbox v-model="selectedVersion" :class="disableControls ? 'disabled' : ''">
     <div class="relative w-full mt-1">
       <ListboxButton class="listButton">
         <span class="block truncate">{{selectedVersion.version}}</span>
@@ -46,7 +46,7 @@ import {
 
 export default {
   name: 'OperatingSystemOptions',
-  props: ['versions'],
+  props: ['disableControls', 'versions'],
   data() {
     return {
       selectedVersion: this.versions[0]
@@ -68,28 +68,31 @@ export default {
 }
 </script>
 <style scoped>
-  /* button */
-  .listButton {
-    @apply relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md cursor-default;
-    @apply focus:outline-none focus:ring-1 focus:ring-green-200 focus:ring-opacity-25;
-  }
-  .listButton__icon {
-    @apply absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400;
-  }
+.disabled .listButton {
+  @apply cursor-not-allowed
+}
+/* button */
+.listButton {
+  @apply relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md cursor-default;
+  @apply focus:outline-none focus:ring-1 focus:ring-green-200 focus:ring-opacity-25;
+}
+.listButton__icon {
+  @apply absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-gray-400;
+}
 
-  /* options */
-  .listOptions {
-    @apply absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
-  }
-  .listOption {
-    @apply relative cursor-pointer py-2 pl-10 pr-4 text-gray-900 cursor-default select-none;
-  }
-  .listOption.active {
-    @apply text-green bg-green bg-opacity-5;
-  }
+/* options */
+.listOptions {
+  @apply absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-green ring-opacity-5 focus:outline-none sm:text-sm;
+}
+.listOption {
+  @apply relative cursor-pointer py-2 pl-10 pr-4 text-gray-900 cursor-default select-none;
+}
+.listOption.active {
+  @apply text-green bg-green bg-opacity-5;
+}
 
-  /* checkmark */
-  .checkmark {
-    @apply absolute inset-y-0 left-0 flex items-center pl-3 text-green;
-  }
+/* checkmark */
+.checkmark {
+  @apply absolute inset-y-0 left-0 flex items-center pl-3 text-green;
+}
 </style>
