@@ -5,10 +5,10 @@
     <p class="pb-4">Use the calculator below to estimate costs based on expected usage. Actual costs will be dependent on usage.</p>
     <div class="w-full grid grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2">
       <div class="flex-1 flex flex-col">
-        <div class="slider__box">
+        <div class="slider__box" :class="disableControls ? 'disabled' : ''">
           <span class="slider__title">Traffic (GB per day)</span>
           <vue-slider
-            :disabled="false"
+            :disabled=disableControls
             v-model=trafficValue
             :vData="trafficMarks"
             ref="requestsSlider"
@@ -34,10 +34,10 @@
         </div>
       </div>
       <div class="flex-1 flex flex-col">
-        <div class="slider__box">
+        <div class="slider__box" :class="disableControls ? 'disabled' : ''">
           <span class="slider__title">Requests (per day)</span>
           <vue-slider
-            :disabled="false"
+            :disabled=disableControls
             v-model=requestsValue
             :vData="requestsMarks"
             ref="requestsSlider"
@@ -95,6 +95,7 @@ export default {
   components: {
     VueSlider
   },
+  props: ['disableControls'],
   data() {
     return {
       requestsMarks: [

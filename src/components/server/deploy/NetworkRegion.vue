@@ -14,7 +14,7 @@
           as="template"
           :value="region"
           v-slot="{ active, checked, disabled }"
-          :disabled="isRegionDisabled(region)"
+          :disabled="isRegionDisabled(region) || disableControls"
         >
           <div
             :class="[
@@ -68,6 +68,7 @@ import {
 
 export default {
   name: 'NetworkRegion',
+  props: ['disableControls'],
   components: {
     CheckIcon,
     RadioGroup,

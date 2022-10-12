@@ -5,8 +5,8 @@
       <input
         v-model="serverName"
         class="input input--floating"
-        :disabled="isRegionDisabled"
-        :class="isRegionDisabled ? 'disabled' : ''"
+        :disabled=disableControls
+        :class="disableControls ? 'disabled' : ''"
         placeholder="server-name"
         type="text"
         required
@@ -19,7 +19,7 @@
 
 export default {
   name: 'ServerName',
-  props: ['hostname', 'isRegionDisabled'],
+  props: ['disableControls', 'hostname'],
   data () {
     return {
       serverName: ''
