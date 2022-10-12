@@ -2,10 +2,10 @@
   <div>
     <div class="specs__grid">
       <div class="flex flex-col">
-        <div class="slider__box" :class="isRegionDisabled ? 'disabled' : ''">
+        <div class="slider__box" :class="disableControls ? 'disabled' : ''">
           <span class="slider__title">vCPU</span>
           <vue-slider
-            :disabled=isRegionDisabled
+            :disabled=disableControls
             v-model=cpusValue
             dotSize=20
             width="100%"
@@ -24,16 +24,16 @@
             :step-active-style="styles.activeStep"
           />
         </div>
-        <span v-if="hasExceededCapacity('cpus') && !isRegionDisabled" class="spec__warning">
+        <span v-if="hasExceededCapacity('cpus') && !disableControls" class="spec__warning">
           vCPU is limited as the region you have selected is close to capacity.
           <button @click.prevent="resetToMaxSpec('cpus')" class="underline">Set to max available.</button>
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="slider__box" :class="isRegionDisabled ? 'disabled' : ''">
+        <div class="slider__box" :class="disableControls ? 'disabled' : ''">
           <span class="slider__title">RAM (GiB)</span>
           <vue-slider
-            :disabled=isRegionDisabled
+            :disabled=disableControls
             v-model=ramValue
             :vData="ramOptions.data"
             ref="ramSlider"
@@ -52,16 +52,16 @@
             :step-active-style="styles.activeStep"
           />
         </div>
-        <span v-if="hasExceededCapacity('ram') && !isRegionDisabled" class="spec__warning">
+        <span v-if="hasExceededCapacity('ram') && !disableControls" class="spec__warning">
           RAM is limited as the region you have selected is close to capacity.
           <button @click.prevent="resetToMaxSpec('ram')" class="underline">Set to max available.</button>
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="slider__box" :class="isRegionDisabled ? 'disabled' : ''">
+        <div class="slider__box" :class="disableControls ? 'disabled' : ''">
           <span class="slider__title">Disk (GiB)</span>
           <vue-slider
-            :disabled=isRegionDisabled
+            :disabled=disableControls
             v-model=diskValue
             ref="ssdSlider"
             dotSize=20
@@ -80,7 +80,7 @@
             :step-active-style="styles.activeStep"
           />
         </div>
-        <span v-if="hasExceededCapacity('disk') && !isRegionDisabled" class="spec__warning">
+        <span v-if="hasExceededCapacity('disk') && !disableControls" class="spec__warning">
           Disk size is limited as the region you have selected is close to capacity.
           <button @click.prevent="resetToMaxSpec('disk')" class="underline">Set to max available.</button>
         </span>
@@ -94,10 +94,10 @@
         </span>
       </div>
       <div class="flex flex-col">
-        <div class="slider__box" :class="isRegionDisabled ? 'disabled' : ''">
+        <div class="slider__box" :class="disableControls ? 'disabled' : ''">
           <span class="slider__title">Bandwidth (Mbps)</span>
           <vue-slider
-            :disabled=isRegionDisabled
+            :disabled=disableControls
             v-model=bandwidthValue
             ref="badwidthSlider"
             dotSize=20
@@ -206,6 +206,7 @@ import { mapState } from 'vuex'
 export default {
   name: 'ServerSpecs',
   props: [
+    'disableControls',
     'hourlyCost',
     'currentHourlyCost',
     'current',

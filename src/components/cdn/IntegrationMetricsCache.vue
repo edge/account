@@ -1,6 +1,17 @@
 <template>
   <div class="box">
-    <h4>Cache</h4>
+    <div class="flex justify-between">
+      <h4>Cache Hit Rate</h4>
+      <div>
+        <Tooltip
+          position="left"
+          :wide="true"
+          text="Cache hit rate represents the number of requests served from the cache. Cached data rate shows the share of traffic that is served from the cache."
+        >
+          <InformationCircleIcon class="w-4 mt-1 text-gray" />
+        </Tooltip>
+      </div>
+    </div>
     <LineChart
       v-if="chartData"
       :chartData="chartData"
@@ -11,7 +22,9 @@
 </template>
 
 <script>
+import { InformationCircleIcon } from '@heroicons/vue/outline'
 import { LineChart } from 'vue-chart-3'
+import Tooltip from '@/components/Tooltip'
 import { Chart, registerables } from 'chart.js'
 
 Chart.register(...registerables)
@@ -20,7 +33,9 @@ export default {
   name: 'IntegrationMetricsTraffic',
   props: ['metrics', 'timeSeries'],
   components: {
-    LineChart
+    InformationCircleIcon,
+    LineChart,
+    Tooltip
   },
   computed: {
     chartData() {
@@ -29,7 +44,7 @@ export default {
         datasets: [
           {
             data: this.metrics.cr,
-            label: 'Requests',
+            label: 'Cache hit rate',
             fill: false,
             backgroundColor: 'rgba(110,224,159)',
             borderColor: 'rgb(14, 204, 95)',
@@ -41,7 +56,7 @@ export default {
           },
           {
             data: this.metrics.ct,
-            label: 'Traffic',
+            label: 'Cached data rate',
             fill: false,
             backgroundColor: 'rgb(255, 138, 138)',
             borderColor: 'rgb(220, 60, 60)',

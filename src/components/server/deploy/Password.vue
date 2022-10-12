@@ -8,25 +8,42 @@
         <input
           autocomplete="off"
           class="w-full input input--floating"
-          :disabled="isRegionDisabled"
-          :class="isRegionDisabled ? 'disabled' : ''"
+          :disabled="disableControls"
+          :class="disableControls ? 'disabled' : ''"
           placeholder="Create a password"
           required
           :type="showPassword ? 'text' : 'password'"
           v-model="password"
         />
-        <EyeIcon v-if="showPassword" @click="showPassword = false" class="absolute right-0 w-5 h-5 text-gray-400 hover:text-green cursor-pointer" />
-        <EyeOffIcon v-if="!showPassword" @click="showPassword = true" class="absolute right-0 w-5 h-5 text-gray-400 hover:text-green cursor-pointer" />
+        <EyeIcon
+          v-if="showPassword"
+          @click="toggleShowPassword"
+          class="absolute right-0 w-5 h-5 text-gray-400"
+          :class="disableControls ? 'cursor-not-allowed' : 'hover:text-green cursor-pointer'"
+        />
+        <EyeOffIcon
+          v-if="!showPassword"
+          @click="toggleShowPassword"
+          class="absolute right-0 w-5 h-5 text-gray-400"
+          :class="disableControls ? 'cursor-not-allowed' : 'hover:text-green cursor-pointer'"
+        />
       </div>
     </div>
 
     <!-- buttons -->
     <div class="buttons__wrapper flex mt-5 space-x-2 lg:mt-0 justify-end">
-      <button @click.prevent="generate" class="button button--solid button--small">Generate</button>
+      <button
+        @click.prevent="generate"
+        class="button button--solid button--small"
+        :disabled=disableControls
+      >
+        Generate
+      </button>
       <button
         class="button button--solid button--small"
         v-if="canCopy"
         @click.prevent="copyToClipboard"
+        :disabled=disableControls
       >
         {{copying ? 'Copied!' : 'Copy to clipboard'}}
       </button>
@@ -54,7 +71,7 @@ export default {
       showPassword: false
     }
   },
-  props: ['isRegionDisabled'],
+  props: ['disableControls'],
   methods: {
     async copyToClipboard () {
       this.copying = true
@@ -66,6 +83,10 @@ export default {
     },
     generate() {
       this.password = this.idGenerator.id()
+    },
+    toggleShowPassword() {
+      if (this.disableControls) return
+      this.showPassword = !this.showPassword
     }
   },
   mounted() {

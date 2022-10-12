@@ -1,11 +1,19 @@
 <template>
   <div class="mainContent__inner">
     <h1>Deploy a new server</h1>
-    <form class="flex flex-col col-span-12 pb-20 space-y-5">
+    <form class="flex flex-col col-span-12 pb-20 space-y-4">
+      <!-- balance warning -->
+      <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
+        <div><ExclamationIcon class="w-5 text-red" /></div>
+        <!-- eslint-disable-next-line max-len -->
+        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
+      </div>
+
       <!-- network region -->
       <div class="box">
         <h4>Network region</h4>
         <NetworkRegion
+          :disableControls=disableControls
           @region-changed="updateRegion"
           ref="networkRegion"
         />
@@ -15,7 +23,7 @@
       <div class="box">
         <h4>Operating System</h4>
         <OperatingSystem
-          :isRegionDisabled="isRegionDisabled"
+          :disableControls=disableControls
           @os-changed="updateOS"
         />
       </div>
@@ -24,9 +32,9 @@
       <div class="box">
         <h4>Server specs</h4>
         <ServerSpecs
+          :disableControls=disableControls
           v-if="selectedRegion"
           :hourlyCost=hourlyCost
-          :isRegionDisabled="isRegionDisabled"
           :region=selectedRegion
           @specs-changed="updateSpec"
         />
@@ -48,6 +56,7 @@
       <!-- server name -->
       <div class="box">
         <ServerName
+          :disableControls=disableControls
           @name-changed="updateServerName"
           :hostname=hostname
           :isRegionDisabled="isRegionDisabled"
@@ -55,6 +64,7 @@
         <ValidationError v-if="serverNameUpdated" :errors="v$.serverOptions.settings.name.$errors" />
 
         <Domain
+          :disableControls=disableControls
           @domain-changed="updateDomain"
           :hostname="hostname"
           :isRegionDisabled="isRegionDisabled"
@@ -65,6 +75,7 @@
       <!-- password -->
       <div class="box">
         <Password
+          :disableControls=disableControls
           @password-changed="updatePassword"
           :isRegionDisabled="isRegionDisabled"
         />
@@ -86,11 +97,6 @@
         </button>
 
         <HttpError :error=httpError />
-        <!-- eslint-disable-next-line max-len -->
-        <span v-if="balanceSuspend || balanceWarning" class="text-red">
-          You are unable to deploy a new server while your balance is below ${{ balance.threshold.warning.usd }}.
-          Please add funds to enable this service.
-        </span>
         <div v-if=internalServerError class="server__error">
           <span class="font-bold">Something went wrong</span>
           <!-- eslint-disable-next-line max-len -->
@@ -107,6 +113,7 @@
 import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
 import Domain from '@/components/server/deploy/Domain'
+import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import NetworkRegion from '@/components/server/deploy/NetworkRegion'
@@ -126,6 +133,7 @@ export default {
   },
   components: {
     Domain,
+    ExclamationIcon,
     HttpError,
     LoadingSpinner,
     NetworkRegion,
@@ -193,6 +201,9 @@ export default {
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['account', 'balance', 'session', 'tasks']),
+    disableControls() {
+      return this.balanceWarning || this.balanceSuspend || this.isRegionDisabled
+    },
     hourlyCost() {
       if (!this.selectedRegion) return 0
       const { bandwidth, cpus, disk, ram } = this.selectedRegion.cost
