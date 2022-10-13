@@ -46,6 +46,7 @@
         :disableControls=disableControls
         :globalConfig=globalConfig
         :paths=paths
+        :initialConfigMode=initialConfigMode
         :initialGlobalConfig=initialGlobalConfig
         :initialPaths=initialPaths
         @add-path=onAddPath
@@ -53,6 +54,7 @@
         @edit-global-config=onEditGlobalConfig
         @edit-path=onEditPath
         @update-config=onUpdateConfig
+        @update-config-mode=onUpdateConfigMode
       />
     </div>
     <!-- for save/cancel buttons when editing existing integrations -->
@@ -72,7 +74,7 @@ import {
 
 export default {
   name: 'CdnConfig',
-  props: ['disableControls', 'initialConfig'],
+  props: ['disableControls', 'initialConfig', 'initialConfigMode'],
   components: {
     CdnConfigCustom,
     RadioGroup,
@@ -82,6 +84,7 @@ export default {
   data() {
     return {
       configMode: 'default',
+      customConfigMode: 'simple',
       globalConfig: {
         maxAssetSize: undefined,
         requestTimeout: undefined,
@@ -178,14 +181,26 @@ export default {
         this.paths = undefined
       }
     },
+    onUpdateConfigMode(configMode) {
+      this.customConfigMode = configMode
+    },
     resetConfig() {
       if (this.initialConfig) {
         this.originUrl = this.initialConfig.origin
         this.globalConfig = this.formatGlobalConfig(this.initialConfig)
         this.paths = this.formatPaths(this.initialConfig)
         const cache = this.initialConfig.cache
+
+        if (this.initialConfigMode) {
+          if (this.initialConfigMode === 'default') this.configMode = 'default'
+          else {
+            this.configMode = 'custom'
+            this.customConfigMode = this.initialConfigMode
+          }
+        }
         // eslint-disable-next-line max-len
-        if (!cache.enabled || cache.ttl !== 86400 || !cache.paths || Object.keys(cache.paths).length) this.configMode = 'custom'
+        else if (!cache.enabled || cache.ttl !== 86400 || !cache.paths || Object.keys(cache.paths).length) this.configMode = 'custom'
+
         this.initialGlobalConfig = this.globalConfig
         this.initialPaths = this.paths
       }
@@ -234,7 +249,8 @@ export default {
           config.cache.paths = paths
         }
       }
-      this.$emit('update-config', config)
+      const configMode = this.configMode === 'custom' ? this.customConfigMode : 'default'
+      this.$emit('update-config', config, configMode)
     }
   },
   setup() {
@@ -247,6 +263,9 @@ export default {
   },
   watch: {
     configMode() {
+      this.updateConfig()
+    },
+    customConfigMode() {
       this.updateConfig()
     },
     globalConfig() {

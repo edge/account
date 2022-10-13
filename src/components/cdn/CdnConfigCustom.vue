@@ -43,6 +43,7 @@ export default {
   props: [
     'disableControls',
     'globalConfig',
+    'initialConfigMode',
     'initialGlobalConfig',
     'initialPaths',
     'paths'
@@ -79,8 +80,14 @@ export default {
     },
     selectTab(tab) {
       if (this.disableControls) return
+      this.$emit('update-config-mode', tab)
       this.selectedTab = tab
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      if (this.initialConfigMode && this.initialConfigMode !== 'default') this.selectTab(this.initialConfigMode)
+    }, 0)
   }
 }
 </script>

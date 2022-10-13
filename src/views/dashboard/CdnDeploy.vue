@@ -117,6 +117,7 @@ export default {
       httpError: null,
       integration: {
         name: '',
+        configMode: undefined,
         data: {
           service: 'cdn',
           domain: '',
@@ -175,9 +176,10 @@ export default {
         }, 800)
       }
     },
-    onUpdateConfig(config) {
+    onUpdateConfig(config, configMode) {
       const integration = { ...this.integration }
       integration.data.config = { ...integration.data.config, ...config }
+      integration.configMode = configMode
       this.integration = integration
     },
     onUpdateDetails(name) {
