@@ -12,9 +12,9 @@
             v-model=trafficValue
             :vData="trafficMarks"
             ref="requestsSlider"
-            dotSize=20
+            :dotSize="20"
             width="100%"
-            contained=true
+            :contained="true"
             :min="1"
             :max="1000"
             adsorb
@@ -41,9 +41,9 @@
             v-model=requestsValue
             :vData="requestsMarks"
             ref="requestsSlider"
-            dotSize=20
+            :dotSize="20"
             width="100%"
-            contained=true
+            :contained="true"
             :min="1"
             :max="1000"
             adsorb
