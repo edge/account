@@ -6,7 +6,11 @@
       </router-link>
     </div>
     <!-- title -->
-    <h1 class="mb-0 leading-none">{{ server.settings.name || server.settings.hostname }}</h1>
+    <ServerDisplayName
+      v-if=server
+      :server=server
+      @update-server=updateServer
+    />
 
     <!-- ip and domain -->
     <div
@@ -303,6 +307,7 @@ import ProgressBar from '@/components/ProgressBar'
 import ServerBackups from '@/components/server/ServerBackups'
 // import ServerConsole from '@/components/server/ServerConsole'
 import ServerDestroy from '@/components/server/ServerDestroy'
+import ServerDisplayName from '@/components/server/ServerDisplayName'
 import ServerHistory from '@/components/server/ServerHistory'
 // import ServerNetwork from '@/components/server/ServerNetwork'
 import ServerOverview from '@/components/server/ServerOverview'
@@ -344,6 +349,7 @@ export default {
     ServerBackups,
     // ServerConsole,
     ServerDestroy,
+    ServerDisplayName,
     ServerHistory,
     // ServerNetwork,
     // ServerMetrics,
