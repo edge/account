@@ -1,5 +1,5 @@
 <template>
-  <div class="flex mb-5">
+  <div class="flex mb-4">
     <div v-if=isEditing>
       <input
         v-model="v$.newDisplayName.$model"

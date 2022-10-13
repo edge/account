@@ -122,7 +122,7 @@
 
     <!-- selected results shown on resize screen -->
     <!-- uses two rows to show current vs new specs and cost -->
-    <div v-if="current" class="mt-5">
+    <div v-if="current" class="mt-4">
       <!-- eslint-disable-next-line max-len -->
       <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 xl:flex-row">
         <div class="flex flex-col items-baseline">
@@ -172,7 +172,7 @@
 
     <!-- selected results shown on deploy screen -->
     <!-- eslint-disable-next-line max-len -->
-    <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 xl:space-y-0 xl:flex-row pt-7">
+    <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-4 border-t border-gray-300 xl:space-y-0 xl:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Your server</span>
         <div class="specs_and_cost flex">

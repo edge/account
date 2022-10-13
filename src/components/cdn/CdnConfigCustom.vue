@@ -8,7 +8,7 @@
         class="tab" :class="[isSelected('advanced') ? 'tab--selected' : '']"
       >Advanced</button>
     </div>
-    <div class="mt-5">
+    <div class="mt-4">
       <CdnConfigCustomSimple v-if="isSelected('simple')"
         :disableControls=disableControls
         :globalConfig=globalConfig

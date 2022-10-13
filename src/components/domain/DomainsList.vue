@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- loading -->
-    <div v-if="!loaded" class="box mt-2 flex items-center">
+    <div v-if="!loaded" class="box mt-4 flex items-center">
       <span>Loading domains</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
@@ -20,7 +20,7 @@
       />
     </ul>
     <!-- no domains -->
-    <div v-else class="box mt-2">
+    <div v-else class="box mt-4">
       <span>You don't have any domains yet. Once you add your first domain it will be available here.</span>
     </div>
   </div>
@@ -94,6 +94,6 @@ export default {
 </script>
 <style scoped>
 .domainList {
-  @apply mt-5 lg:mt-5 space-y-2;
+  @apply mt-4 lg:mt-4 space-y-2;
 }
 </style>

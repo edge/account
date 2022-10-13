@@ -2,7 +2,7 @@
   <div class="box flex flex-col">
     <h4>Auto Top-Up</h4>
 
-    <div v-if="autoTopUpCard" class="flex items-center mb-5">
+    <div v-if="autoTopUpCard" class="flex items-center mb-4">
       <div><BadgeCheckIcon class="w-4 text-green mr-1" /></div>
       <span>Auto top-up enabled.</span>
     </div>
@@ -10,7 +10,7 @@
     <!-- eslint-disable-next-line max-len -->
     <p>{{ autoTopUpCard ? "If" : "When you enable auto top-ups, if" }} your balance drops below your <strong>threshold</strong> XE will be purchased to bring your account funds back to your <strong>target balance</strong>.</p>
 
-    <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-5">
+    <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-4">
       <div class="input-wrapper">
         <div class="w-full">
           <label class="block mb-1">Threshold</label>

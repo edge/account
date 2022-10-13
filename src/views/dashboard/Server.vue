@@ -190,7 +190,7 @@
             </Tab>
           </TabList>
 
-          <TabPanels class="mt-5">
+          <TabPanels class="mt-4">
             <!-- overview -->
             <TabPanel>
               <ServerOverview

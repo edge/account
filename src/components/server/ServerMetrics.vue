@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-start space-y-5">
+  <div class="flex flex-col items-start space-y-4">
 
     <!-- if metrics exist -->
     <div v-if="displayMetrics" class="buttonGroup">
