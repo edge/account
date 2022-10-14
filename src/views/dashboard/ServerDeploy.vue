@@ -100,7 +100,7 @@
         <div v-if=internalServerError class="server__error">
           <span class="font-bold">Something went wrong</span>
           <!-- eslint-disable-next-line max-len -->
-          <span>There was an issue while depolying this server. Please try again, or contact support@edge.network if the issue persists.</span>
+          <span>There was an issue while deploying this server. Please try again, or contact support@edge.network if the issue persists.</span>
         </div>
       </div>
     </form>
