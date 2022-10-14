@@ -7,61 +7,73 @@
     >
       <ol>
         <li>Install the Google Authenticator app for
-          <a class="underline text-green" target="_blank"
+          <a class="underline text-green hover:text-green-600" target="_blank"
           href="https://itunes.apple.com/au/app/google-authenticator/id388497605?mt=8">iPhone</a>
           or
-          <a class="underline text-green" target="_blank"
+          <a class="underline text-green hover:text-green-600" target="_blank"
           href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2">Android</a>.
         </li>
-        <li>Using the app, scan the QR code.
-          <figure
-            v-show="totpAuthUrl"
-            class="qrcode inflow"
-          >
-            <VueQrcode
-              :value="totpAuthUrl"
-              :options="{
-                margin: 1,
-                width: 150
-              }"
-            />
-          </figure>
+        <li>
+          <span v-if="manualEntry">Using the app, enter the secret below.</span>
+          <span v-else>Using the app, scan the QR code.</span>
+
+          <div class="qrcode inflow">
+            <div v-if="manualEntry" class="manualEntry pt-2">
+              <span>Secret:</span>
+              <div class="relative flex items-center">
+                <span class="monospace">{{ secret.base32 }}</span>
+                <button
+                  @click.prevent="copyToClipboard"
+                  class="text-gray-400 hover:text-green"
+                >
+                  <DuplicateIcon class="ml-1 w-5 h-5" />
+                </button>
+                <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
+              </div>
+              <button class="manualEntry__toggle text-left" @click="toggleManual">Use QR code</button>
+            </div>
+            <div v-else>
+              <figure v-show="totpAuthUrl">
+                <VueQrcode
+                  :value="totpAuthUrl"
+                  :options="{
+                    margin: 1,
+                    width: 150
+                  }"
+                />
+              </figure>
+              <span class="mt-1 block text-left">QR code not working?
+                <button class="manualEntry__toggle" @click="toggleManual">Try manual entry</button>
+              </span>
+            </div>
+          </div>
         </li>
         <li>Enter the verification code provided by Google Authenticator and click 'Enable 2FA'.</li>
         <li>You can disable 2FA at any time by entering your verification code.</li>
+        <!-- confirmation code input and button-->
+        <div class="input-field flex items-center w-full">
+          <input
+            v-model="v$.confirmationCode.$model"
+            label="Confirmation code"
+            autocomplete="off"
+            class="text-center overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+            v-mask="'# # # # # #'"
+            placeholder="1 2 3 4 5 6"
+            @keypress.enter=enable2FA
+          />
+          <button
+            class="rounded-l-none text-sm py-3 button button--success w-32"
+            @click="enable2FA"
+            :disabled="!canEnable"
+          >
+            <div v-if="isLoading" class="flex flex-row items-center">
+              <span>Verifying</span>
+              <span class="ml-2"><LoadingSpinner /></span>
+            </div>
+            <span v-else >Enable 2FA</span>
+          </button>
+        </div>
       </ol>
-      <figure v-show="totpAuthUrl && !createAccount" class="qrcode accountPage">
-        <VueQrcode
-          :value="totpAuthUrl"
-          :options="{
-            margin: 1,
-            width: 150
-          }"
-        />
-      </figure>
-      <!-- confirmation code input and button-->
-      <div class="input-field flex items-center w-full">
-        <input
-          v-model="v$.confirmationCode.$model"
-          label="Confirmation code"
-          autocomplete="off"
-          class="text-center overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
-          v-mask="'# # # # # #'"
-          placeholder="1 2 3 4 5 6"
-          @keypress.enter=enable2FA
-        />
-        <button
-          class="rounded-l-none text-sm py-3 button button--success w-32"
-          @click="enable2FA"
-          :disabled="!canEnable"
-        >
-          <div v-if="isLoading" class="flex flex-row items-center">
-            <span>Verifying</span>
-            <span class="ml-2"><LoadingSpinner /></span>
-          </div>
-          <span v-else >Enable 2FA</span>
-        </button>
-      </div>
       <!-- error message  -->
       <ValidationError :errors="v$.confirmationCode.$errors" />
       <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-2">
@@ -96,22 +108,23 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils/index'
+import * as format from '@/utils/format'
 import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ValidationError from '@/components/ValidationError.vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import speakeasy from 'speakeasy'
 import useVuelidate from '@vuelidate/core'
+import { DuplicateIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { mapActions, mapState } from 'vuex'
 
 export default {
   props: ['confirmEnabled', 'createAccount'],
   components: {
     BadgeCheckIcon,
+    DuplicateIcon,
     ExclamationIcon,
     LoadingSpinner,
     ValidationError,
@@ -120,10 +133,12 @@ export default {
   data() {
     return {
       confirmationCode: null,
+      copied: false,
       errors: {
         confirmationCode: ''
       },
       isLoading: false,
+      manualEntry: false,
       secret: speakeasy.generateSecret()
     }
   },
@@ -155,6 +170,14 @@ export default {
     confirmStoredCodes() {
       this.$store.dispatch('removeBackupCodes')
     },
+    async copyToClipboard () {
+      await navigator.clipboard.writeText(this.secret.base32)
+      this.copied = true
+
+      setTimeout(() => {
+        this.copied = false
+      }, 1000)
+    },
     async enable2FA() {
       if (this.v$.confirmationCode.$invalid) return
 
@@ -178,6 +201,9 @@ export default {
           this.isLoading = false
         }, 1000)
       }
+    },
+    toggleManual() {
+      this.manualEntry = !this.manualEntry
     }
   },
   unmounted() {
@@ -203,7 +229,7 @@ export default {
   height: max-content;
 }
 .qrcode.inflow {
-  @apply mt-2 md:hidden
+  @apply mt-2
 }
 .createAccount .qrcode.inflow {
   @apply flex;
@@ -219,6 +245,29 @@ export default {
 .input-field {
   @apply w-full md:col-span-2;
   max-width: 548px;
+}
+
+.manualEntry {
+  @apply block break-words flex flex-col space-y-2;
+  width: 152px;
+}
+.inflow .manualEntry {
+  @apply w-max max-w-full;
+}
+.manual {
+  @apply block;
+  width: 150px
+}
+.manualEntry__toggle {
+  @apply text-green underline hover:text-green-600;
+}
+
+.copied {
+  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+  @apply transition-opacity duration-200 ease-in;
+}
+.copied.visible {
+  @apply opacity-100;
 }
 
 @media (max-width: 450px) {
