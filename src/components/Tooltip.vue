@@ -66,8 +66,8 @@ export default {
 
   /* tooltip position */
   .tooltip {
-    width: 200px;
-    @apply invisible p-4 text-xs absolute transform transition duration-200 text-white text-left shadow rounded opacity-0 z-10 bg-green;
+    max-width: 200px;
+    @apply w-max invisible p-4 text-xs absolute transform transition duration-200 text-white text-left shadow rounded opacity-0 z-10 bg-green;
   }
 
   .tooltip.wide {

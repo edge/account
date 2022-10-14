@@ -137,3 +137,12 @@ export const stopServer = async (host, sessionId, serverId) => {
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
+
+// update server - currently used only to update server name
+export const updateServer = async (host, sessionId, serverId, data) => {
+  const url = `${host}/servers/${serverId}`
+  const response = await superagent.put(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(data)
+  return response.body
+}

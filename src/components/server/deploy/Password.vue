@@ -31,7 +31,7 @@
     </div>
 
     <!-- buttons -->
-    <div class="buttons__wrapper flex mt-5 space-x-2 lg:mt-0 justify-end">
+    <div class="buttons__wrapper flex mt-4 space-x-2 lg:mt-0 justify-end">
       <button
         @click.prevent="generate"
         class="button button--solid button--small"

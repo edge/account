@@ -3,12 +3,12 @@
     <Switch
       @click="toggleServer"
       :class="enabled ? 'bg-green' : 'bg-gray-300'"
-      class="switch"
+      class="powerToggle__switch"
       :disabled="toggling || disableActions || disablePowerOn"
     >
       <span class="sr-only">Use setting</span>
       <span
-        class="label"
+        class="powerToggle__label"
         :class="enabled ? 'justify-start text-white pl-3 md:pl-4' : 'justify-end text-gray-500 pr-2.5 md:pr-3.5'"
       >
         {{ toggling ? '' : enabled ? 'ON' : 'OFF' }}
@@ -17,7 +17,7 @@
       <span
         aria-hidden="true"
         :class="enabled ? 'translate-x-9 md:translate-x-12' : 'translate-x-0'"
-        class="transform ball"
+        class="transform powerToggle__ball"
       />
     </Switch>
     <!-- stop confirmation modal -->
@@ -133,14 +133,14 @@ export default {
 }
 </script>
 
-<style scoped>
-  .switch {
-    @apply relative inline-flex flex-shrink-0 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-16 md:w-20 h-7 md:h-8 focus:outline-none;
-  }
-  .ball {
-    @apply inline-block w-6 h-6 md:w-7 md:h-7 transition duration-200 ease-in-out bg-white rounded-full shadow-lg pointer-events-none ring-0;
-  }
-  .label {
-    @apply absolute w-full h-full flex items-center text-xs leading-none;
-  }
+<style>
+.powerToggle__switch {
+  @apply relative inline-flex flex-shrink-0 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-16 md:w-20 h-7 md:h-8 focus:outline-none;
+}
+.powerToggle__ball {
+  @apply inline-block w-6 h-6 md:w-7 md:h-7 transition duration-200 ease-in-out bg-white rounded-full shadow-lg pointer-events-none ring-0;
+}
+.powerToggle__label {
+  @apply absolute w-full h-full flex items-center text-xs leading-none;
+}
 </style>

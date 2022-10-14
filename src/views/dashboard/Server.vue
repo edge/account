@@ -6,7 +6,11 @@
       </router-link>
     </div>
     <!-- title -->
-    <h1 class="mb-0 leading-none">{{ server.settings.name || server.settings.hostname }}</h1>
+    <ServerDisplayName
+      v-if=server
+      :server=server
+      @update-server=updateServer
+    />
 
     <!-- ip and domain -->
     <div
@@ -54,7 +58,7 @@
           </div>
         </div>
       </div>
-      <div class="flex-shrink-0">
+      <div class="flex-shrink-0" v-if="!isDestroyed && !isCrashed">
         <ServerPowerToggle
           :activeTasks=activeTasks
           :disableActions=disableActions
@@ -66,19 +70,45 @@
 
     <div class="grid items-start grid-cols-12 mt-4 space-x-10">
       <div class="col-span-12">
+        <!-- destroyed -->
         <div v-if=isDestroyed class="box">
           <div class="flex flex-col items-center justify-center text-center">
-            <div class="flex items-center mt-4">
-              <h4>Server Destroyed</h4>
-            </div>
-            <p class="mt-3 mb-1 text-gray-500">This server and all of its associated backups have been destroyed.</p>
-            <button
-              class="mt-4 button button--success"
-              @click.prevent="returnToServers"
+            <h4>Server Destroyed</h4>
+            <p class="mb-0 text-gray-500">This server and all of its associated backups have been destroyed.</p>
+            <router-link
+              class="mt-4 button button--success button--small"
+              :to="{ name: 'Servers' }"
             >
               <span>Return to Servers</span>
+            </router-link>
+          </div>
+        </div>
+
+        <!-- crashed -->
+        <div v-else-if=isCrashed  class="box">
+          <div class="flex flex-col items-center justify-center text-center">
+            <h4>Server Crashed</h4>
+            <!-- eslint-disable-next-line max-len -->
+            <p class="mb-0 text-gray-500">There was a problem with your server, please either delete and re-deploy the server or contact support@edge.network for assistance.</p>
+            <button
+              class="mt-4 button button--error button--small w-full md:max-w-xs"
+              :disabled="isDestroying || disableActions"
+              @click.prevent="toggleDestroyConfirmationModal"
+            >
+              <div v-if=isDestroying class="flex">
+                <span>Destroying</span>
+                <span class="ml-2"><LoadingSpinner /></span>
+              </div>
+              <span v-else>Destroy server</span>
             </button>
           </div>
+          <!-- destroy confirmation modal -->
+          <DestroyServerConfirmation
+            v-if=showDestroyConfirmationModal
+            @modal-confirm=destroyServer
+            @modal-close=toggleDestroyConfirmationModal
+            :serverName="server.settings.name || server.settings.hostname"
+          />
         </div>
 
         <!-- action in progress section -->
@@ -164,7 +194,7 @@
             </Tab>
           </TabList>
 
-          <TabPanels class="mt-5">
+          <TabPanels class="mt-4">
             <!-- overview -->
             <TabPanel>
               <ServerOverview
@@ -266,9 +296,10 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils'
+import * as format from '@/utils/format'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
+import DestroyServerConfirmation from '@/components/confirmations/DestroyServerConfirmation'
 import DistroIcon from '@/components/icons/DistroIcon'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -276,6 +307,7 @@ import ProgressBar from '@/components/ProgressBar'
 import ServerBackups from '@/components/server/ServerBackups'
 // import ServerConsole from '@/components/server/ServerConsole'
 import ServerDestroy from '@/components/server/ServerDestroy'
+import ServerDisplayName from '@/components/server/ServerDisplayName'
 import ServerHistory from '@/components/server/ServerHistory'
 // import ServerNetwork from '@/components/server/ServerNetwork'
 import ServerOverview from '@/components/server/ServerOverview'
@@ -303,11 +335,13 @@ export default {
       notFound: false,
       region: null,
       selectedIndex: 0,
-      server: null
+      server: null,
+      showDestroyConfirmationModal: false
     }
   },
   components: {
     ArrowLeftIcon,
+    DestroyServerConfirmation,
     DistroIcon,
     InformationCircleIcon,
     LoadingSpinner,
@@ -315,6 +349,7 @@ export default {
     ServerBackups,
     // ServerConsole,
     ServerDestroy,
+    ServerDisplayName,
     ServerHistory,
     // ServerNetwork,
     // ServerMetrics,
@@ -348,6 +383,9 @@ export default {
     formattedRAM() {
       return format.mib(this.server.spec.ram)
     },
+    isCrashed() {
+      return this.server.status === 'crashed'
+    },
     isCreating() {
       return this.activeTasks.some(task => task.action === 'create')
     },
@@ -362,7 +400,7 @@ export default {
     },
     isInactive() {
       // eslint-disable-next-line max-len
-      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying)
+      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying || this.isCrashed)
     },
     isLoadingBackups() {
       if (this.backups.length) return false
@@ -421,8 +459,30 @@ export default {
         if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
     },
+    async destroyServer() {
+      this.isLoading = true
+      try {
+        this.toggleDestroyConfirmationModal()
+        const response = await api.servers.deleteServer(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.serverId
+        )
+        if (response.task) this.$store.commit('addTask', response.task)
+        this.isLoading = false
+      }
+      catch (error) {
+        setTimeout(() => {
+          this.httpError = error
+          this.isLoading = false
+        }, 500)
+      }
+    },
     returnToServers() {
       this.$router.push({ name: 'Servers' })
+    },
+    toggleDestroyConfirmationModal() {
+      this.showDestroyConfirmationModal = !this.showDestroyConfirmationModal
     },
     async updateRegion() {
       try {
@@ -498,23 +558,6 @@ export default {
 
 .divider {
   @apply h-4 bg-gray-400 w-px flex-shrink-0;
-}
-
-/* status dot */
-.serverList__statusDot {
-  @apply w-2.5 h-2.5 rounded-full mr-1 bg-gray-400;
-}
-.active .serverList__statusDot {
-  @apply bg-green;
-}
-.inactive .serverList__statusDot {
-  @apply bg-red;
-}
-.active .serverList__statusText {
-  @apply text-green;
-}
-.inactive .serverList__statusText {
-  @apply text-red;
 }
 
 

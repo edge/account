@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-5">
+  <div class="mt-4">
     <div
       v-if="!backupCodes"
       class="text-gray-500"

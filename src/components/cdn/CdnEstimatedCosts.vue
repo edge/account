@@ -12,9 +12,9 @@
             v-model=trafficValue
             :vData="trafficMarks"
             ref="requestsSlider"
-            dotSize=20
+            :dotSize="20"
             width="100%"
-            contained=true
+            :contained="true"
             :min="1"
             :max="1000"
             adsorb
@@ -41,9 +41,9 @@
             v-model=requestsValue
             :vData="requestsMarks"
             ref="requestsSlider"
-            dotSize=20
+            :dotSize="20"
             width="100%"
-            contained=true
+            :contained="true"
             :min="1"
             :max="1000"
             adsorb
@@ -64,7 +64,7 @@
       </div>
     </div>
     <!-- eslint-disable-next-line max-len -->
-    <div class="flex flex-col items-baseline justify-between w-full mt-8 space-y-5 border-t border-gray-300 xl:space-y-0 xl:flex-row pt-7">
+    <div class="flex flex-col items-baseline justify-between w-full mt-8 space-y-4 border-t border-gray-300 xl:space-y-0 xl:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Estimated Daily Usage</span>
         <div class="usage_and_cost">

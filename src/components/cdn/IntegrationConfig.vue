@@ -3,6 +3,7 @@
     ref="cdnConfig"
     :disableControls=disableControls
     :initialConfig=liveConfig
+    :initialConfigMode=liveConfigMode
     @update-config=onUpdateConfig
   >
     <template v-slot:buttons>
@@ -55,6 +56,7 @@ export default {
   },
   data() {
     return {
+      configMode: null,
       httpError: null,
       isSaving: false,
       workingConfig: null
@@ -77,11 +79,15 @@ export default {
     },
     liveConfig() {
       return this.integration.data.config
+    },
+    liveConfigMode() {
+      return this.integration.configMode
     }
   },
   methods: {
-    onUpdateConfig(newConfig) {
+    onUpdateConfig(newConfig, configMode) {
       this.workingConfig = newConfig
+      this.configMode = configMode
     },
     resetChanges() {
       this.httpError = null
@@ -90,7 +96,11 @@ export default {
     },
     async saveChanges() {
       const updatedIntegration = { ...this.integration }
-      updatedIntegration.data.config = { ...updatedIntegration.data.config, ...this.workingConfig }
+      updatedIntegration.configMode = this.configMode
+      updatedIntegration.data.config = {
+        ...updatedIntegration.data.config,
+        ...this.workingConfig
+      }
       try {
         this.isSaving = true
         await api.integration.updateIntegration(

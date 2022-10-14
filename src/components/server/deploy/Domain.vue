@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col pb-2 space-y-6 mt-5">
+  <div class="flex flex-col pb-2 space-y-6 mt-4">
     <div class="input-group">
       <label class="label">Hostname</label>
       <input

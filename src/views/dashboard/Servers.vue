@@ -51,7 +51,6 @@
 import * as api from '@/account-utils/index'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
-import { ServerIcon } from '@heroicons/vue/outline'
 import ServerListItem from '@/components/server/ServerListItem'
 import { mapState } from 'vuex'
 
@@ -63,7 +62,6 @@ export default {
   components: {
     LoadingSpinner,
     Pagination,
-    ServerIcon,
     ServerListItem
   },
   data() {
@@ -127,6 +125,6 @@ export default {
 </script>
 <style scoped>
   .serverList {
-    @apply mt-5 lg:mt-5 space-y-2;
+    @apply space-y-2;
   }
 </style>

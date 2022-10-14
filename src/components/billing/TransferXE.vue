@@ -4,7 +4,7 @@
     <div class="flex flex-col">
       <!-- eslint-disable-next-line max-len -->
       <p>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to process.</p>
-      <div class="relative mb-5">
+      <div class="relative mb-4">
         <div class="flex items-center w-full">
           <span class="address">{{ account.wallet.address }}</span>
           <button

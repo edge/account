@@ -5,7 +5,7 @@
       <p>Make a one-off  purchase of XE to add funds to your account.</p>
       <p>Use the below converter to calculate how much you wish to purchase.</p>
     </div>
-    <div class="converter flex items-center space-x-2 mb-5">
+    <div class="converter flex items-center space-x-2 mb-4">
       <div class="currency input flex justify-between">
         <input type="number" v-model="inputAmount" @focusout="formatInput" />
         {{ usdToXe ? 'USD' : 'XE' }}
