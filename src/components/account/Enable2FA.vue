@@ -21,7 +21,7 @@
             <div v-if="manualEntry" class="manualEntry pt-2">
               <span>Secret:</span>
               <div class="relative flex items-center">
-                <span class="monospace">{{ secret.base32 }}</span>
+                <span class="secret monospace">{{ secret.base32 }}</span>
                 <button
                   @click.prevent="copyToClipboard"
                   class="text-gray-400 hover:text-green"
@@ -261,10 +261,17 @@ export default {
 .manualEntry__toggle {
   @apply text-green underline hover:text-green-600;
 }
+.secret {
+  @apply break-words;
+  max-width: calc(100% - 30px);
+}
 
 .copied {
   @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
   @apply transition-opacity duration-200 ease-in;
+}
+.createAccount .copied {
+  @apply bg-gray-200;
 }
 .copied.visible {
   @apply opacity-100;
