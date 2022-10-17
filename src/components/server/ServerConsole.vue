@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-col pb-20 space-y-5">
+  <div class="flex flex-col pb-20 space-y-4">
     <div class="box">
       <h4>Server Console</h4>
       <p class="mt-3 text-gray-500">
         Use the server console for native-like terminal access to your server from your browser.
       </p>
-      <a target="_blank" :href="`/server/${server._key}/vnc`" class="h-full mt-5 lg:mt-0 button button--success">
+      <a target="_blank" :href="`/server/${server._key}/vnc`" class="h-full mt-4 lg:mt-0 button button--success">
         <span>Launch console in new window</span>
         <DuplicateIcon class="w-4 h-4 ml-2" />
       </a>

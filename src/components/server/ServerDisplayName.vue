@@ -1,5 +1,5 @@
 <template>
-  <div class="flex mb-4">
+  <div class="flex">
     <div v-if=isEditing>
       <input
         v-model="v$.newDisplayName.$model"
@@ -10,7 +10,7 @@
       />
       <ValidationError :errors="v$.newDisplayName.$errors" />
     </div>
-    <h1 v-else class="w-max mb-0">{{ integration.name }}</h1>
+    <h1 v-else class="w-max mb-0">{{ server.settings.name }}</h1>
 
     <div v-if=isEditing class="mt-3">
       <button @click=confirmEdit :disabled="!canConfirmEdit" class="ml-2">
@@ -22,7 +22,7 @@
       </button>
     </div>
     <div v-else class="mt-3">
-      <button v-if="!disableControls" @click=startEditing class="ml-2">
+      <button v-if="!balanceSuspend" @click=startEditing class="ml-2">
         <PencilIcon class="button__icon text-gray-400 hover:text-green" />
       </button>
     </div>
@@ -36,13 +36,13 @@ import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import ValidationError from '@/components/ValidationError.vue'
-import { mapState } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 import { CheckIcon, PencilIcon, XIcon } from '@heroicons/vue/outline'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
-  name: 'IntegrationDisplayName',
-  props: ['disableControls', 'integration'],
+  name: 'ServerDisplayName',
+  props: ['server'],
   components: {
     CheckIcon,
     LoadingSpinner,
@@ -60,11 +60,14 @@ export default {
   validations() {
     return {
       newDisplayName: [
-        validation.required
+        validation.serverNameLength,
+        validation.serverNameChars,
+        validation.serverNameFirstChar
       ]
     }
   },
   computed: {
+    ...mapGetters(['balanceSuspend']),
     ...mapState(['session']),
     canConfirmEdit() {
       return !this.v$.$invalid
@@ -78,16 +81,17 @@ export default {
       if (!this.canConfirmEdit) return
       try {
         this.isSaving = true
-        await api.integration.updateIntegration(
+        await api.servers.updateServer(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.integration._key,
+          this.server._key,
           {
-            ...this.integration,
-            name: this.newDisplayName
+            settings: {
+              name: this.newDisplayName
+            }
           }
         )
-        this.$emit('update-integration')
+        this.$emit('update-server')
         setTimeout(() => {
           this.isSaving = false
           this.isEditing = false
@@ -101,7 +105,7 @@ export default {
     },
     startEditing() {
       this.isEditing = true
-      this.newDisplayName = this.integration.name
+      this.newDisplayName = this.server.settings.name
     }
   },
   setup() {

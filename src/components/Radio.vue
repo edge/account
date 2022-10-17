@@ -19,7 +19,7 @@ export default {
     @apply text-white border-opacity-100 bg-green-200;
   }
   .fake-radio {
-    @apply mb-5 mr-8;
+    @apply mb-4 mr-8;
   }
   .fake-radio .fake-input {
     @apply block text-gray uppercase text-xs border border-green-200 rounded p-4 min-w-48 text-center tracking py-2 px-5 hover:bg-green-200 border-opacity-100 hover:text-white transition-all;

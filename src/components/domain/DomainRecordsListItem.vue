@@ -188,7 +188,7 @@
       <HttpError :error=httpError />
     </div>
   </li>
-  <!-- eslint-disable-next-line vue/no-multiple-template-root-->
+  <!-- eslint-disable-next-line vue/no-multiple-template-root -->
   <DeleteRecordConfirmation
     v-if=showDeleteConfirmationModal
     :record=record
@@ -200,8 +200,8 @@
 <script>
 /* global process */
 
-import * as regex from '@/utils/regex'
 import * as api from '@/account-utils'
+import * as regex from '@/utils/regex'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DeleteRecordConfirmation from '@/components/confirmations/DeleteRecordConfirmation'
 import HttpError from '@/components/HttpError'
@@ -532,6 +532,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 /* list item */
 .recordList__item {

@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-5 mb-8">
+  <div class="mt-4 mb-8">
     <!-- loading -->
     <div v-if="!loaded" class="box mt-2 flex items-center">
       <span>Loading records</span>

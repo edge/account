@@ -105,12 +105,15 @@ export default {
     isActive() {
       return (!this.disablingTaskInProgress) && this.server.status === 'active'
     },
+    isCrashed() {
+      return this.server.status === 'crashed'
+    },
     isDestroying() {
       return this.activeTasks.some(task => task.action === 'destroy')
     },
     isInactive() {
       // eslint-disable-next-line max-len
-      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying)
+      return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying || this.isCrashed)
     },
     isResizing() {
       const diskResize = this.activeTasks.some(task => task.action === 'resizeDisk')

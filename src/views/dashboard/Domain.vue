@@ -7,7 +7,7 @@
     </div>
     <div class="w-full flex flex-wrap justify-between items-center">
       <h1 class="mr-2">{{domainName}}</h1>
-      <div class="mb-5" v-if=domain>
+      <div class="mb-4" v-if=domain>
         <StatusDot :isActive="true" :isInactive="false" :large="true" :statusText="'active'" />
       </div>
     </div>
@@ -72,11 +72,11 @@
               </button>
             </Tab>
           </TabList>
-          <TabPanels class="mt-5">
+          <TabPanels class="mt-4">
             <!-- records -->
             <TabPanel>
               <!-- balance suspend warning -->
-              <div v-if="balanceSuspend" class="box mb-5 suspend">
+              <div v-if="balanceSuspend" class="box mb-4 suspend">
                 <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
                 <!-- eslint-disable-next-line max-len -->
                 <div class="mt-2 text-red">You are unable to add, edit or delete records as your balance is low. Please add funds to re-enable this service.</div>

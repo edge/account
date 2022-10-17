@@ -43,7 +43,7 @@
           <div class="max-w-5xl">
             <div
               v-show="paymentElement"
-              class="mb-5"
+              class="mb-4"
               ref="paymentElement"
             />
             <div v-if=showAddNewCard class="flex flex-col space-y-2">
