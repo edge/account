@@ -58,4 +58,12 @@ export default {
   @apply break-words text-md;
   width: calc(100% - 30px)
 }
+
+.copied {
+  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+  @apply transition-opacity duration-200 ease-in;
+}
+.copied.visible {
+  @apply opacity-100;
+}
 </style>
