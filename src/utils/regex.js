@@ -2,7 +2,7 @@
 export const fqdn = /((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}/i
 
 // record name alphanumeric (and - or .) regex
-export const recordName = /^[a-z0-9-.]*$/i
+export const recordName = /^[a-z0-9-_.]*$/i
 
 // IPv4 regex
 const IPv4SegmentFormat = '(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])'
