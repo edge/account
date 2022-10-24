@@ -1,0 +1,166 @@
+<template>
+  <div class="box">
+    <h4>Usage</h4>
+    <!-- eslint-disable-next-line max-len -->
+    <p class="mt-3 text-gray-500">Each server has a free quota of backup space equivalent to the server's disk size. You will be billed daily for backup usage above your free quota.</p>
+    <div class="mt-4 sm:border sm:border-gray-300 sm:rounded-lg">
+      <table>
+        <thead>
+          <tr class="hidden sm:table-header-group tableHead">
+            <th class="tableHead__cell" width="25%"><span>Used</span></th>
+            <th class="tableHead__cell" width="25%"><span>Disk</span></th>
+            <th class="tableHead__cell" width="25%"><span>Billable</span></th>
+            <th class="tableHead__cell flex items-center flex-shrink-0" width="">
+              <span>Estimated Charge</span>
+              <Tooltip position="left" :wide="true"
+                text="Estimate is based on current usage over a 24 hour period."
+              >
+                <InformationCircleIcon class="ml-1 w-4 text-gray hover:text-green"/>
+              </Tooltip>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tableBody__cell">
+              <span class="mr-2 sm:hidden">Used:</span>
+              <span>{{ formattedUsage }}</span>
+            </td>
+            <td class="tableBody__cell">
+              <span class="mr-2 sm:hidden">Disk:</span>
+              <span>{{ formattedDisk }}</span>
+            </td>
+            <td class="tableBody__cell">
+              <span class="mr-2 sm:hidden">Billable:</span>
+              <span>{{ formattedBillable }}</span>
+            </td>
+            <td class="tableBody__cell">
+              <span class="mr-2 sm:hidden">Estimated Charge:</span>
+              <span>{{ estimatedCharge }} USD</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+/* global process */
+
+import * as api from '@/account-utils'
+import * as format from '@/utils/format'
+import { InformationCircleIcon } from '@heroicons/vue/outline'
+import Tooltip from '@/components/Tooltip'
+import { mapState } from 'vuex'
+
+export default {
+  name: 'ServerBackups',
+  props: [
+    'server'
+  ],
+  components: {
+    InformationCircleIcon,
+    Tooltip
+  },
+  data: function () {
+    return {
+      totalBackupUsage: 0
+    }
+  },
+  computed: {
+    ...mapState(['session']),
+    estimatedCharge() {
+      return Math.max(this.totalBackupUsage - this.server.spec.disk, 0) * 10
+    },
+    formattedBillable() {
+      return format.mib(Math.max(this.totalBackupUsage - this.server.spec.disk, 0))
+    },
+    formattedDisk() {
+      return format.mib(this.server.spec.disk)
+    },
+    formattedUsage() {
+      return format.mib(this.totalBackupUsage)
+    },
+    serverId() {
+      return this.$route.params.id
+    }
+  },
+  methods: {
+    async updateBackupsUsage() {
+      const { usage } = await api.servers.getBackupsUsage(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId
+      )
+      this.totalBackupUsage = usage
+    }
+  },
+  mounted() {
+    this.updateBackupsUsage()
+    this.iBackups = setInterval(() => {
+      this.updateBackupsUsage()
+    }, 5000)
+  },
+  unmounted() {
+    clearInterval(this.iBackups)
+  }
+}
+</script>
+
+<style scoped>
+tbody tr {
+  @apply grid py-2 gap-x-5 gap-y-1;
+}
+
+.box.backups__table {
+  text-overflow: unset;
+  overflow: unset;
+}
+.tableHead {
+  @apply border-gray-300 border-b rounded-lg w-full bg-gray-50;
+}
+.tableHead__cell {
+  @apply pl-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase;
+}
+.tableBody__cell {
+  @apply flex items-center text-gray-500;
+}
+.tableBody {
+  @apply bg-white divide-y divide-gray-200;
+}
+
+table {
+  @apply table-fixed w-full;
+}
+table, tbody {
+  @apply block;
+}
+
+@screen sm {
+  table {
+    @apply table;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  tbody {
+    @apply table-row-group;
+  }
+
+  tbody tr, thead tr {
+    @apply table-row py-0;
+  }
+
+  .tableBody__cell {
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
+  }
+}
+
+@media (max-width: 300px) {
+  .tableBody__cell {
+    @apply flex-col items-start;
+  }
+}
+
+</style>
