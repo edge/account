@@ -37,6 +37,17 @@
             Settings
           </button>
         </MenuItem>
+        <MenuItem v-slot="{ active }">
+          <button
+            @click.prevent="navigate('/support')"
+            :class="[
+              'menu__item',
+              active ? 'active' : ''
+            ]"
+          >
+            Support
+          </button>
+        </MenuItem>
         <div class="divider"></div>
         <MenuItem v-slot="{ active }">
           <button
