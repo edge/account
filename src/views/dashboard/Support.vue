@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="!loaded" class="flex items-center">
-      <span>Loading servers</span>
+      <span>Loading products</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
 
@@ -41,6 +41,10 @@
             <span>Subscribe</span>
           </button>
         </div>
+
+        <div v-if="hasError(product._key)" class="error">
+          {{getError(product).message}}
+        </div>
       </li>
     </ul>
   </div>
@@ -62,6 +66,7 @@ export default {
   data() {
     return {
       loaded: false,
+      errors: {},
       products: {},
       subscriptions: []
     }
@@ -73,8 +78,14 @@ export default {
     ...mapState(['session'])
   },
   methods: {
+    getError(id) {
+      return this.errors[id]
+    },
     getSubscription(id) {
       return this.subscriptions.find(s => s.product === id)
+    },
+    hasError(id) {
+      return this.errors[id] !== undefined
     },
     isSubscribed(id) {
       if (this.products[id] === undefined) return false
@@ -96,20 +107,24 @@ export default {
       this.loaded = true
     },
     async subscribe(product) {
+      delete this.errors[product._key]
       try {
         await api.products.subscribe(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, product._key)
         await this.refreshSubscriptions()
       }
       catch (err) {
+        this.errors[product._key] = err
         console.error(err)
       }
     },
     async unsubscribe(product) {
+      delete this.errors[product._key]
       try {
         await api.products.unsubscribe(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, product._key)
         await this.refreshSubscriptions()
       }
       catch (err) {
+        this.errors[product._key] = err
         console.error(err)
       }
     }
