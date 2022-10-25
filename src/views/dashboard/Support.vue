@@ -24,10 +24,9 @@
 
         <div v-if="isSubscribed(product._key)">
           <div class="mb-4">You are subscribed.</div>
-
           <button
             @click.prevent="() => unsubscribe(product)"
-            class="button button--success button--small"
+            class="button button--small button--error"
           >
             <span>Unsubscribe</span>
           </button>
@@ -56,7 +55,7 @@ import * as api from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 
-const productIDs = ['priority-support']
+const productIDs = process.env.VUE_APP_PRODUCT_IDS.split(',')
 
 export default {
   name: 'Support',
@@ -136,6 +135,10 @@ export default {
 </script>
 
 <style scoped>
+.productList {
+  @apply space-y-2;
+}
+
 /* list item */
 .productList__item {
   @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-l-8 border-gray-400 rounded-md w-full p-5;
