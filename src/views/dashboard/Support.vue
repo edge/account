@@ -2,52 +2,68 @@
   <div class="mainContent__inner">
 
     <div class="flex justify-between">
-      <h1>Edge Support</h1>
+      <h1>Support</h1>
     </div>
 
-    <div v-if="!loaded" class="flex items-center">
+    <div v-if="loaded && isPriority" class="products priority">
+      <Product title="Current plan" :product="prioritySupport">
+        <template v-slot:icon>
+          <InboxInIcon/>
+        </template>
+        <template v-slot:actions>
+          <button
+            v-if="!prioritySupport.internal"
+            @click.prevent="() => unsubscribe(prioritySupport)"
+            class="button button--small border-gray text-gray"
+          >
+            <span>Downgrade</span>
+          </button>
+        </template>
+      </Product>
+      <Product title="Downgrade" :product="basicSupport">
+        <template v-slot:icon>
+          <InboxIcon/>
+        </template>
+        <template v-slot:actions>
+          <h3>Need more help?</h3>
+          <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
+          <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
+        </template>
+      </Product>
+    </div>
+    <div v-else-if="loaded && !isPriority" class="products basic">
+      <Product title="Current plan" :icon="InboxIcon" :product="basicSupport">
+        <template v-slot:icon>
+          <InboxIcon/>
+        </template>
+        <template v-slot:actions>
+          <h3>Need more help?</h3>
+          <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
+          <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
+        </template>
+      </Product>
+      <Product title="Upgrade" :icon="InboxInIcon" :product="prioritySupport">
+        <template v-slot:icon>
+          <InboxInIcon/>
+        </template>
+        <template v-slot:actions>
+          <button
+            v-if="!prioritySupport.internal && prioritySupport.active"
+            @click.prevent="() => subscribe(prioritySupport)"
+            class="button button--success button--small"
+          >
+            <span>Upgrade</span>
+          </button>
+          <div v-if="priorityError">
+            {{priorityError.message}}
+          </div>
+        </template>
+      </Product>
+    </div>
+    <div v-else class="flex items-center">
       <span>Loading products</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
-
-    <ul v-if="loaded" className="productList">
-      <li
-        v-for="product of products"
-        :key="product._key"
-        :className="`productList__item ${isSubscribed(product._key) ? 'active' : ''}`"
-      >
-        <span class="productList__name">{{product.name}}</span>
-
-        <div class="productList__cost" v-if="product.price.type == 'flatRate'">
-          ${{product.price.cost}}/{{product.price.costBasis/24}} days
-        </div>
-
-        <div v-if="isSubscribed(product._key)">
-          <div class="mb-4">You are subscribed.</div>
-          <button
-            v-if="!product.internal && product.active"
-            @click.prevent="() => unsubscribe(product)"
-            class="button button--small button--error"
-          >
-            <span>Unsubscribe</span>
-          </button>
-        </div>
-        <div v-else>
-          <div class="mb-4">You are not subscribed.</div>
-          <button
-            v-if="!product.internal"
-            @click.prevent="() => subscribe(product)"
-            class="button button--success button--small"
-          >
-            <span>Subscribe</span>
-          </button>
-        </div>
-
-        <div v-if="hasError(product._key)" class="error">
-          {{getError(product).message}}
-        </div>
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -55,9 +71,11 @@
 /* global process */
 import * as api from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import Product from '@/components/support/Product'
 import { mapState } from 'vuex'
+import { InboxIcon, InboxInIcon } from '@heroicons/vue/outline'
 
-const productIDs = process.env.VUE_APP_PRODUCT_IDS.split(',')
+const productIDs = [process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT]
 
 export default {
   name: 'Support',
@@ -72,10 +90,43 @@ export default {
     }
   },
   components: {
-    LoadingSpinner
+    InboxIcon,
+    InboxInIcon,
+    LoadingSpinner,
+    Product
   },
   computed: {
-    ...mapState(['session', 'subscriptions'])
+    ...mapState(['session', 'subscriptions']),
+    basicSupport() {
+      return {
+        name: 'Basic Support',
+        summary: 'Basic support',
+        liveChat: 'Available',
+        hours: '< 24 hours',
+        circleloop: 'Not available on basic plan',
+        accountManager: 'Not available on basic plan',
+        price: {
+          type: 'free'
+        },
+        active: true
+      }
+    },
+    isPriority() {
+      return this.isSubscribed(process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT)
+    },
+    priorityError() {
+      return this.getError(process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT)
+    },
+    prioritySupport() {
+      if (!this.loaded) return null
+      return {
+        ...this.products[process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT],
+        liveChat: 'Available',
+        hours: '< 1 hour 08:00 UTC\n\n< 8 hours 20:00-08:00 UTC',
+        circleloop: this.isPriority ? '020 8064 1444' : 'Available',
+        accountManager: this.isPriority ? 'support@edge.network' : 'Available'
+      }
+    }
   },
   methods: {
     getError(id) {
@@ -142,21 +193,14 @@ export default {
 </script>
 
 <style scoped>
-.productList {
-  @apply space-y-2;
+.products {
+  @apply flex space-x-2;
 }
 
 /* list item */
-.productList__item {
-  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-l-8 border-gray-400 rounded-md w-full p-5;
+.products .product {
+  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-gray-400 rounded-md p-5;
+  @apply flex-col w-1/2;
   @apply cursor-pointer transition-all duration-100;
-}
-
-.productList__item.active {
-  @apply border-green;
-}
-
-.productList__name {
-  @apply text-md truncate;
 }
 </style>
