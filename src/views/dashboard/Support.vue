@@ -25,6 +25,7 @@
         <div v-if="isSubscribed(product._key)">
           <div class="mb-4">You are subscribed.</div>
           <button
+            v-if="!product.internal && product.active"
             @click.prevent="() => unsubscribe(product)"
             class="button button--small button--error"
           >
@@ -34,6 +35,7 @@
         <div v-else>
           <div class="mb-4">You are not subscribed.</div>
           <button
+            v-if="!product.internal"
             @click.prevent="() => subscribe(product)"
             class="button button--success button--small"
           >
@@ -86,15 +88,17 @@ export default {
       return this.errors[id] !== undefined
     },
     isSubscribed(id) {
-      console.log(this.subscriptions)
       if (this.products[id] === undefined) return false
       return this.subscriptions.find(s => s.product === id) !== undefined
     },
     async refreshProducts() {
-      const products = await Promise.all(productIDs.map(async id => {
+      const getResult = await Promise.allSettled(productIDs.map(async id => {
         const { product } = await api.products.get(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, id)
         return product
       }))
+      const products = getResult
+        .filter(r => r.status === 'fulfilled')
+        .map(r => r.value)
       this.products = products.reduce((ps, p) => {
         ps[p._key] = p
         return ps
@@ -128,8 +132,11 @@ export default {
     }
   },
   mounted() {
-    this.refreshProducts()
     this.refreshSubscriptions()
+      .then(() => {
+        this.refreshProducts()
+      })
+      .catch(err => console.error(err))
   }
 }
 </script>
