@@ -3,9 +3,9 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 /* global process */
-/* global $crisp */
 
 import * as api from './account-utils/index'
+import * as libcrisp from './crisp'
 import { createStore } from 'vuex'
 
 const store = createStore({
@@ -29,17 +29,8 @@ const store = createStore({
       state.tasks = state.tasks.filter(task => task._key !== taskToDelete._key)
     },
     setAccount(state, account) {
-      state.account = account;
-      /** @todo fix race conditions; wait for crisp to be ready */
-      (async () => {
-        if (!$crisp) return
-        // https://docs.crisp.chat/guides/chatbox-sdks/web-sdk/dollar-crisp/#change-user-nickname
-        const name = $crisp.get('user:nickname')
-        if (name.slice(0, 2) !== 'XX') {
-          const masked = `XX${account._key.slice(-6)}`
-          $crisp.push(['set', 'user:nickname', [masked]])
-        }
-      })()
+      state.account = account
+      libcrisp.setAccount(account)
     },
     setAnnouncements(state, announcements) {
       state.announcements = announcements
@@ -61,10 +52,7 @@ const store = createStore({
     },
     setSubscriptions(state, subscriptions) {
       state.subscriptions = subscriptions
-      // https://docs.crisp.chat/guides/chatbox-sdks/web-sdk/dollar-crisp/#push-session-segments
-      if ($crisp) $crisp.push(['set', 'session:segments', [
-        ['customer', ...subscriptions.map(sub => sub.product)]
-      ]])
+      libcrisp.setSubscriptions(subscriptions)
     },
     setTasks(state, tasks) {
       state.tasks = tasks
