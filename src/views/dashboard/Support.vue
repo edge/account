@@ -11,13 +11,21 @@
           <InboxInIcon/>
         </template>
         <template v-slot:actions>
+          <div v-if="prioritySupport.minDuration" class="section min-term">
+            <h3>Subscription</h3>
+            <span class="content">Active ({{downgradeAvailableText}})</span>
+          </div>
           <button
             v-if="!prioritySupport.internal"
             @click.prevent="() => unsubscribe(prioritySupport)"
+            :disabled="!downgradeAvailable"
             class="button button--small border-gray text-gray"
           >
             <span>Downgrade</span>
           </button>
+          <div v-if="priorityError">
+            {{priorityError.message}}
+          </div>
         </template>
       </Product>
       <Product title="Downgrade" :product="basicSupport">
@@ -47,6 +55,10 @@
           <InboxInIcon/>
         </template>
         <template v-slot:actions>
+          <div v-if="prioritySupport.minDuration" class="section min-term">
+            <h3>Minimum term</h3>
+            <span class="content">{{prioritySupport.minDuration/24}} days</span>
+          </div>
           <button
             v-if="!prioritySupport.internal && prioritySupport.active"
             @click.prevent="() => subscribe(prioritySupport)"
@@ -117,6 +129,9 @@ export default {
     priorityError() {
       return this.getError(process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT)
     },
+    prioritySubscription() {
+      return this.getSubscription(process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT)
+    },
     prioritySupport() {
       if (!this.loaded) return null
       return {
@@ -126,6 +141,21 @@ export default {
         circleloop: this.isPriority ? '020 8064 1444' : 'Available',
         accountManager: this.isPriority ? 'support@edge.network' : 'Available'
       }
+    },
+    downgradeAvailable() {
+      let t = this.prioritySubscription.created
+      if (this.prioritySupport.minDuration) t += this.prioritySupport.minDuration * 60 * 60 * 1000
+      return t < Date.now()
+    },
+    downgradeAvailableText() {
+      const hour = 60 * 60 * 1000
+      const day = 24 * hour
+      let t = this.prioritySubscription.created
+      if (this.prioritySupport.minDuration) t += this.prioritySupport.minDuration * hour
+      if (t < Date.now()) return 'downgrade available'
+      const diff = t - Date.now()
+      if (diff < day) return `downgrade available in ${Math.ceil(diff/hour)} hours`
+      return `downgrade available in ${Math.ceil(diff/day)} days`
     }
   },
   methods: {
