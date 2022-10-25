@@ -30,6 +30,7 @@
       </div>
       <HttpError :error=httpError class="mt-2" />
     </div>
+    <ServerBackupUsage :server="server" />
     <div class="box backups__table">
       <h4>Existing backups</h4>
       <!-- desktop table view -->
@@ -37,7 +38,7 @@
         <table class="divide-y divide-gray-200">
           <thead class="hidden sm:table-header-group tableHead">
             <tr>
-              <th scope="col" class="tableHead__cell sm:rounded-tl-lg" width="120">
+              <th scope="col" class="tableHead__cell sm:rounded-tl-lg" width="140">
                 Date
               </th>
               <th scope="col" class="tableHead__cell" width="70">
@@ -47,6 +48,9 @@
                 Name
               </th>
               <th scope="col" class="tableHead__cell" width="">
+                Size
+              </th>
+              <th scope="col" class="tableHead__cell status" width="">
                 Status
               </th>
               <th scope="col" class="tableHead__cell actions sm:rounded-tr-lg" width="50"></th>
@@ -91,6 +95,7 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import ServerBackupItem from '@/components/server/ServerBackupItem'
+import ServerBackupUsage from '@/components/server/ServerBackupUsage'
 import useVuelidate from '@vuelidate/core'
 import { mapGetters, mapState } from 'vuex'
 
@@ -101,7 +106,8 @@ export default {
     LoadingSpinner,
     LoadingTableDataRow,
     Pagination,
-    ServerBackupItem
+    ServerBackupItem,
+    ServerBackupUsage
   },
   props: [
     'activeTasks',
@@ -160,7 +166,6 @@ export default {
           this.serverId,
           this.comment
         )
-        this.$emit('update-backups')
         this.$store.commit('addTask', task)
         this.comment = ''
         this.isCreating = false
@@ -212,6 +217,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 .box.backups__table {
   text-overflow: unset;
@@ -251,6 +257,15 @@ table, tbody {
 
   .tableBody__cell {
     @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
+  }
+  .tableHead__cell.status {
+    @apply hidden
+  }
+}
+
+@screen lg {
+  .tableHead__cell.status {
+    @apply table-cell
   }
 }
 </style>

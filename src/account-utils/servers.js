@@ -70,6 +70,14 @@ export const getBackups = async (host, sessionId, serverId, params) => {
   return response.body
 }
 
+// get total backups usage for server by id
+export const getBackupsUsage = async (host, sessionId, serverId) => {
+  const url = `${host}/servers/${serverId}/backups/usage`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 export const getHostname = async (host, sessionId) => {
   const url = `${host}/servers/hostname`
   const response = await superagent.post(url)
