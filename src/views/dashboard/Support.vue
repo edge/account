@@ -67,15 +67,14 @@ export default {
     return {
       loaded: false,
       errors: {},
-      products: {},
-      subscriptions: []
+      products: {}
     }
   },
   components: {
     LoadingSpinner
   },
   computed: {
-    ...mapState(['session'])
+    ...mapState(['session', 'subscriptions'])
   },
   methods: {
     getError(id) {
@@ -88,12 +87,9 @@ export default {
       return this.errors[id] !== undefined
     },
     isSubscribed(id) {
+      console.log(this.subscriptions)
       if (this.products[id] === undefined) return false
       return this.subscriptions.find(s => s.product === id) !== undefined
-    },
-    async refreshSubscriptions() {
-      const { results } = await api.products.subscriptions(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
-      this.subscriptions = results
     },
     async refreshProducts() {
       const products = await Promise.all(productIDs.map(async id => {
@@ -105,6 +101,9 @@ export default {
         return ps
       }, {})
       this.loaded = true
+    },
+    refreshSubscriptions() {
+      return this.$store.dispatch('updateSubscriptions')
     },
     async subscribe(product) {
       delete this.errors[product._key]

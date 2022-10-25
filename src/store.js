@@ -3,6 +3,7 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 /* global process */
+/* global $crisp */
 
 import * as api from './account-utils/index'
 import { createStore } from 'vuex'
@@ -17,6 +18,7 @@ const store = createStore({
     isAuthed: false,
     isTestnet: process.env.VUE_APP_ACCOUNT_API_URL.includes('test'),
     session: null,
+    subscriptions: [],
     tasks: []
   },
   mutations: {
@@ -27,7 +29,17 @@ const store = createStore({
       state.tasks = state.tasks.filter(task => task._key !== taskToDelete._key)
     },
     setAccount(state, account) {
-      state.account = account
+      state.account = account;
+      /** @todo fix race conditions; wait for crisp to be ready */
+      (async () => {
+        if (!$crisp) return
+        // https://docs.crisp.chat/guides/chatbox-sdks/web-sdk/dollar-crisp/#change-user-nickname
+        const name = $crisp.get('user:nickname')
+        if (name.slice(0, 2) !== 'XX') {
+          const masked = `XX${account._key.slice(-6)}`
+          $crisp.push(['set', 'user:nickname', [masked]])
+        }
+      })()
     },
     setAnnouncements(state, announcements) {
       state.announcements = announcements
@@ -46,6 +58,13 @@ const store = createStore({
     },
     setSession(state, session) {
       state.session = session
+    },
+    setSubscriptions(state, subscriptions) {
+      state.subscriptions = subscriptions
+      // https://docs.crisp.chat/guides/chatbox-sdks/web-sdk/dollar-crisp/#push-session-segments
+      if ($crisp) $crisp.push(['set', 'session:segments', [
+        ['customer', ...subscriptions.map(sub => sub.product)]
+      ]])
     },
     setTasks(state, tasks) {
       state.tasks = tasks
@@ -114,6 +133,10 @@ const store = createStore({
       const config = await api.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
       commit('setConfig', config)
 
+    },
+    async updateSubscriptions({ commit, state }) {
+      const { results } = await api.products.subscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
+      commit('setSubscriptions', results)
     },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks
