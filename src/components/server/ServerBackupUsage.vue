@@ -2,25 +2,20 @@
   <div class="box">
     <h4>Usage</h4>
     <!-- eslint-disable-next-line max-len -->
-    <p class="mt-3 text-gray-500">Each server has a free quota of backup space equivalent to the server's disk size. You will be billed daily for backup usage above your free quota.</p>
+    <p class="text-gray-500">Each server has a free quota of backup space equivalent to the server's disk size. You will be billed daily for backup usage above your free quota.</p>
+    <!-- eslint-disable-next-line max-len -->
+    <p class="text-gray-500">The estimated charge is based on current active backups being used over a 24 hour period.</p>
     <div class="mt-4 sm:border sm:border-gray-300 sm:rounded-lg">
       <table>
-        <thead>
+        <thead class="hidden sm:table-header-group tableHead">
           <tr class="hidden sm:table-header-group tableHead">
-            <th class="tableHead__cell" width="25%"><span>Used</span></th>
-            <th class="tableHead__cell" width="25%"><span>Disk</span></th>
-            <th class="tableHead__cell" width="25%"><span>Billable</span></th>
-            <th class="tableHead__cell flex items-center flex-shrink-0" width="">
-              <span>Estimated Charge</span>
-              <Tooltip position="left" :wide="true"
-                text="Estimate is based on current usage over a 24 hour period."
-              >
-                <InformationCircleIcon class="ml-1 w-4 text-gray hover:text-green"/>
-              </Tooltip>
-            </th>
+            <th class="tableHead__cell sm:rounded-tl-lg"><span>Used</span></th>
+            <th class="tableHead__cell"><span>Disk</span></th>
+            <th class="tableHead__cell"><span>Billable</span></th>
+            <th class="tableHead__cell sm:rounded-tr-lg"><span>Estimated Charge</span></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="tableBody">
           <tr>
             <td class="tableBody__cell">
               <span class="mr-2 sm:hidden">Used:</span>
@@ -50,8 +45,6 @@
 
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
-import { InformationCircleIcon } from '@heroicons/vue/outline'
-import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 
 export default {
@@ -59,10 +52,6 @@ export default {
   props: [
     'server'
   ],
-  components: {
-    InformationCircleIcon,
-    Tooltip
-  },
   data: function () {
     return {
       totalBackupUsage: 0
@@ -153,7 +142,13 @@ table, tbody {
   }
 
   .tableBody__cell {
-    @apply text-sm pl-6 py-4 table-cell align-middle w-full overflow-ellipsis overflow-hidden whitespace-nowrap;
+    @apply text-sm pl-6 py-4 table-cell align-middle w-full;
+  }
+  td:first-child {
+    @apply rounded-bl-lg;
+  }
+  td:last-child {
+    @apply rounded-br-lg;
   }
 }
 
