@@ -71,8 +71,8 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils'
+import * as format from '@/utils/format'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import { CalendarIcon, DocumentDownloadIcon, ExclamationIcon } from '@heroicons/vue/outline'
@@ -95,7 +95,7 @@ export default {
   computed: {
     ...mapState(['balance', 'session']),
     canPay() {
-      return this.invoice.amount > this.usdBalance
+      return this.invoice.amount <= this.usdBalance
     },
     description() {
       const date = this.formattedDate
@@ -118,7 +118,7 @@ export default {
     },
     unholdTooltipText() {
       const topUpAmount = (this.invoice.amount - this.usdBalance) / this.balance.token.usdPerXe
-      return `Please add ${topUpAmount.toFixed(6)} XE to your wallet to pay`
+      return `Please add ${(topUpAmount).toFixed(6)} XE to your wallet to pay`
     },
     usdBalance() {
       return this.balance.total.usd
