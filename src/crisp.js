@@ -38,6 +38,6 @@ export const setAccount = (account) => session()
 export const setSubscriptions = (subscriptions) => session()
   // https://docs.crisp.chat/guides/chatbox-sdks/web-sdk/dollar-crisp/#push-session-segments
   .then(crisp => {
-    crisp.push(['set', 'session:segments', [subscriptions.map(s => s.product), true]])
+    crisp.push(['set', 'session:segments', [['account', ...subscriptions.map(s => s.product)], true]])
   })
   .catch(err => console.error(err))
