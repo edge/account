@@ -21,7 +21,7 @@ pipeline {
           withCredentials([
             usernamePassword(credentialsId: STRIPE_KEY, usernameVariable: 'STRIPE_PUBLISHABLE_KEY', passwordVariable: 'STRIPE_SECRET_KEY_UNUSED')
           ]) {
-            buildAndPushImage(REGISTRY_CREDENTIAL, NAME, "--build-arg ACCOUNT_API_URL=$ACCOUNT_API_URL --build-arg EXPLORER_URL=$EXPLORER_URL --build-arg INDEX_URL=$INDEX_URL --build-arg STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY")
+            buildAndPushImage(REGISTRY_CREDENTIAL, NAME, "--build-arg ACCOUNT_API_URL=$ACCOUNT_API_URL --build-arg CRISP_WEBSITE_ID=$CRISP_WEBSITE_ID --build-arg EXPLORER_URL=$EXPLORER_URL --build-arg INDEX_URL=$INDEX_URL --build-arg PRODUCT_ID_PRIORITYSUPPORT=$PRODUCT_ID_PRIORITYSUPPORT --build-arg STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY")
           }
         }
       }
