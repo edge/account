@@ -46,8 +46,8 @@
           <ExclamationIcon class="w-5 text-red" />
         </Tooltip>
       </div>
-  </td>
-    <td class="tableBody__cell col-span-2">
+    </td>
+    <td class="tableBody__cell amount col-span-2">
       <span class="mr-2 lg:hidden">Amount:</span>
       <span class="truncate">{{ formattedAmount }} <span class="lg:hidden">USD</span></span>
     </td>
@@ -186,7 +186,7 @@ tr {
   @apply flex items-center text-gray-500 leading-4 truncate;
 }
 
-.tableBody__cell.status {
+.tableBody__cell.status, .tableBody__cell.amount {
   overflow: visible;
   text-overflow: unset
 }
