@@ -50,6 +50,7 @@ import { mapState } from 'vuex'
 export default {
   name: 'ServerBackups',
   props: [
+    'region',
     'server'
   ],
   data: function () {
@@ -60,7 +61,7 @@ export default {
   computed: {
     ...mapState(['session']),
     estimatedCharge() {
-      return Math.max(this.totalBackupUsage - this.server.spec.disk, 0) * 10
+      return format.usd(Math.max(this.totalBackupUsage - this.server.spec.disk, 0) * this.region.cost.disk * 24, 4)
     },
     formattedBillable() {
       return format.mib(Math.max(this.totalBackupUsage - this.server.spec.disk, 0))

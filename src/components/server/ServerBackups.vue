@@ -30,7 +30,7 @@
       </div>
       <HttpError :error=httpError class="mt-2" />
     </div>
-    <ServerBackupUsage :server="server" />
+    <ServerBackupUsage :region="region" :server="server" />
     <div class="box backups__table">
       <h4>Existing backups</h4>
       <!-- desktop table view -->
@@ -112,6 +112,7 @@ export default {
   props: [
     'activeTasks',
     'disableActions',
+    'region',
     'server'
   ],
   data: function () {

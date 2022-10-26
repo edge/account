@@ -233,6 +233,7 @@
                 :activeTasks=activeTasks
                 :backups=backups
                 :disableActions=disableActions
+                :region=region
                 :server=server
               />
             </TabPanel>
