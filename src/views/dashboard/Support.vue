@@ -39,7 +39,7 @@
         <template v-slot:actions>
           <button
             v-if="!prioritySupport.internal"
-            @click.prevent="() => unsubscribe(prioritySupport)"
+            @click.prevent="() => toggleCancelModal()"
             :disabled="!downgradeAvailable"
             :class="`button button--small ${downgradeAvailable ? 'button--error' : 'border-gray text-gray'}`"
           >
@@ -147,7 +147,7 @@
         <template v-slot:actions>
           <button
             v-if="!prioritySupport.internal && prioritySupport.active"
-            @click.prevent="() => subscribe(prioritySupport)"
+            @click.prevent="() => toggleSubscribeModal()"
             class="button button--success button--small"
           >
             <span>Upgrade</span>
@@ -158,18 +158,35 @@
         </template>
       </Product>
     </div>
+
+    <!-- Loading page data -->
     <div v-else class="flex items-center">
       <span>Loading products</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
+
+    <SubscriptionConfirmation
+      v-if="showSubscribeModal"
+      @modal-confirm="() => subscribe(prioritySupport)"
+      @modal-close="toggleSubscribeModal"
+      :product="prioritySupport"
+    />
+    <CancelSubscriptionConfirmation
+      v-if="showCancelModal"
+      @modal-confirm="() => unsubscribe(prioritySupport)"
+      @modal-close="toggleCancelModal"
+      :product="prioritySupport"
+    />
   </div>
 </template>
 
 <script>
 /* global process */
 import * as api from '@/account-utils'
+import CancelSubscriptionConfirmation from '@/components/confirmations/CancelSubscriptionConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Product from '@/components/support/Product'
+import SubscriptionConfirmation from '@/components/confirmations/SubscriptionConfirmation'
 import { mapState } from 'vuex'
 import { InboxIcon, InboxInIcon } from '@heroicons/vue/outline'
 
@@ -185,16 +202,20 @@ export default {
       loaded: false,
       errors: {},
       products: {},
+      showSubscribeModal: false,
+      showCancelModal: false,
 
       wikiURL: 'https://wiki.edge.network',
       discordURL: 'https://discord.gg/3sEvuYJ'
     }
   },
   components: {
+    CancelSubscriptionConfirmation,
     InboxIcon,
     InboxInIcon,
     LoadingSpinner,
-    Product
+    Product,
+    SubscriptionConfirmation
   },
   computed: {
     ...mapState(['session', 'subscriptions']),
@@ -284,6 +305,15 @@ export default {
         this.errors[product._key] = err
         console.error(err)
       }
+      finally {
+        this.showSubscribeModal = false
+      }
+    },
+    toggleCancelModal() {
+      this.showCancelModal = !this.showCancelModal
+    },
+    toggleSubscribeModal() {
+      this.showSubscribeModal = !this.showSubscribeModal
     },
     async unsubscribe(product) {
       delete this.errors[product._key]
@@ -294,6 +324,9 @@ export default {
       catch (err) {
         this.errors[product._key] = err
         console.error(err)
+      }
+      finally {
+        this.showCancelModal = false
       }
     }
   },
