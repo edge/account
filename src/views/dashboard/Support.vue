@@ -19,7 +19,7 @@
             v-if="!prioritySupport.internal"
             @click.prevent="() => unsubscribe(prioritySupport)"
             :disabled="!downgradeAvailable"
-            class="button button--small border-gray text-gray"
+            :class="`button button--small ${downgradeAvailable ? 'button--error' : 'border-gray text-gray'}`"
           >
             <span>Downgrade</span>
           </button>
@@ -33,9 +33,11 @@
           <InboxIcon/>
         </template>
         <template v-slot:actions>
-          <h4>Need more help?</h4>
-          <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
-          <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
+          <div class="help">
+            <h4>Need more help?</h4>
+            <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
+            <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
+          </div>
         </template>
       </Product>
     </div>
@@ -45,9 +47,11 @@
           <InboxIcon/>
         </template>
         <template v-slot:actions>
-          <h4>Need more help?</h4>
-          <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
-          <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
+          <div class="help">
+            <h4>Need more help?</h4>
+            <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
+            <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
+          </div>
         </template>
       </Product>
       <Product title="Upgrade" :icon="InboxInIcon" :product="prioritySupport">
@@ -113,10 +117,10 @@ export default {
       return {
         name: 'Basic Support',
         summary: 'Basic support',
-        liveChat: 'Available',
-        hours: '< 24 hours',
-        circleloop: 'Not available on basic plan',
-        accountManager: 'Not available on basic plan',
+        liveChat: [true, 'Available'],
+        hours: [true, '&lt; 24 hours'],
+        circleloop: [false, 'Not available on basic plan'],
+        accountManager: [false, 'Not available on basic plan'],
         price: {
           type: 'free'
         },
@@ -136,10 +140,10 @@ export default {
       if (!this.loaded) return null
       return {
         ...this.products[process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT],
-        liveChat: 'Available',
-        hours: '< 1 hour 08:00 UTC\n\n< 8 hours 20:00-08:00 UTC',
-        circleloop: this.isPriority ? '020 8064 1444' : 'Available',
-        accountManager: this.isPriority ? 'support@edge.network' : 'Available'
+        liveChat: [true, 'Available'],
+        hours: [true, '&lt; 1 hour 08:00 UTC\n\n&lt; 8 hours 20:00-08:00 UTC'],
+        circleloop: [true, this.isPriority ? '020 8064 1444' : 'Available'],
+        accountManager: [true, this.isPriority ? 'support@edge.network' : 'Available']
       }
     },
     downgradeAvailable() {
@@ -225,5 +229,21 @@ export default {
 <style scoped>
 .products {
   @apply flex space-x-2;
+}
+
+.help {
+  @apply text-center flex flex-col w-2/3 m-auto border-t-2 space-y-2;
+}
+
+.help h4 {
+  @apply mb-2 mt-4;
+}
+
+.help a {
+  @apply text-green;
+}
+
+.help a:hover {
+  @apply text-green underline;
 }
 </style>
