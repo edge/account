@@ -12,8 +12,8 @@
         </template>
         <template v-slot:actions>
           <div v-if="prioritySupport.minDuration" class="section min-term">
-            <h3>Subscription</h3>
-            <span class="content">Active ({{downgradeAvailableText}})</span>
+            <h4>Subscription</h4>
+            <span class="content">Active ({{ downgradeAvailableText }})</span>
           </div>
           <button
             v-if="!prioritySupport.internal"
@@ -24,7 +24,7 @@
             <span>Downgrade</span>
           </button>
           <div v-if="priorityError">
-            {{priorityError.message}}
+            {{ priorityError.message }}
           </div>
         </template>
       </Product>
@@ -33,7 +33,7 @@
           <InboxIcon/>
         </template>
         <template v-slot:actions>
-          <h3>Need more help?</h3>
+          <h4>Need more help?</h4>
           <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
           <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
         </template>
@@ -45,7 +45,7 @@
           <InboxIcon/>
         </template>
         <template v-slot:actions>
-          <h3>Need more help?</h3>
+          <h4>Need more help?</h4>
           <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
           <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
         </template>
@@ -56,8 +56,8 @@
         </template>
         <template v-slot:actions>
           <div v-if="prioritySupport.minDuration" class="section min-term">
-            <h3>Minimum term</h3>
-            <span class="content">{{prioritySupport.minDuration/24}} days</span>
+            <h4>Minimum term</h4>
+            <span class="content">{{ prioritySupport.minDuration / 24}} days</span>
           </div>
           <button
             v-if="!prioritySupport.internal && prioritySupport.active"
@@ -67,7 +67,7 @@
             <span>Upgrade</span>
           </button>
           <div v-if="priorityError">
-            {{priorityError.message}}
+            {{ priorityError.message }}
           </div>
         </template>
       </Product>
@@ -225,12 +225,5 @@ export default {
 <style scoped>
 .products {
   @apply flex space-x-2;
-}
-
-/* list item */
-.products .product {
-  @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-gray-400 rounded-md p-5;
-  @apply flex-col w-1/2;
-  @apply cursor-pointer transition-all duration-100;
 }
 </style>

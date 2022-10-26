@@ -1,28 +1,28 @@
 <template>
-  <div class="product">
-    <h2>{{title}}</h2>
+  <div class="product box">
+    <h2>{{ title }}</h2>
     <div class="summary">
       <span class="icon">
         <slot name="icon"></slot>
       </span>
-      <span class="name">{{product.name}}</span>
-      <span class="price">{{price}}</span>
+      <span class="name">{{ product.name }}</span>
+      <span class="price">{{ price }}</span>
     </div>
     <div class="section live-chat">
-      <h3>Live chat</h3>
-      <div class="content">{{product.liveChat}}</div>
+      <h4>Live chat</h4>
+      <div class="content">{{ product.liveChat }}</div>
     </div>
     <div class="section hours">
-      <h3>Hours</h3>
+      <h4>Hours</h4>
       <div class="content" v-html="hours"/>
     </div>
     <div class="section circleloop">
-      <h3>Circleloop</h3>
-      <div class="content">{{product.circleloop}}</div>
+      <h4>Circleloop</h4>
+      <div class="content">{{ product.circleloop }}</div>
     </div>
     <div class="section account-manager">
-      <h3>Account manager</h3>
-      <div class="content">{{product.accountManager}}</div>
+      <h4>Account manager</h4>
+      <div class="content">{{ product.accountManager }}</div>
     </div>
     <slot name="actions"></slot>
   </div>
@@ -55,6 +55,12 @@ export default {
 </script>
 
 <style scoped>
+.product {
+  @apply grid gap-y-4;
+  @apply flex-col w-1/2;
+  @apply cursor-pointer transition-all duration-100;
+}
+
 .summary .icon {
   @apply inline-block w-8;
 }
