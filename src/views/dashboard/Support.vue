@@ -5,16 +5,38 @@
       <h1>Support</h1>
     </div>
 
+    <!-- Page loaded and account is subscribed to priority support -->
     <div v-if="loaded && isPriority" class="products priority">
       <Product title="Current plan" :product="prioritySupport">
         <template v-slot:icon>
           <InboxInIcon/>
         </template>
-        <template v-slot:actions>
+        <template v-slot:detail>
+          <div class="section live-chat">
+            <h4>Live chat</h4>
+            <div class="content active">Available</div>
+          </div>
+          <div class="section hours">
+            <h4>Hours</h4>
+            <div class="content active">
+              &lt; 1 hour 08:00 UTC<br/>
+              &lt; 8 hours 20:00-08:00 UTC
+            </div>
+          </div>
+          <div class="section circleloop">
+            <h4>Circleloop</h4>
+            <div class="content active">020 8064 1444</div>
+          </div>
+          <div class="section account-manager">
+            <h4>Account manager</h4>
+            <div class="content active">Available</div>
+          </div>
           <div v-if="prioritySupport.minDuration" class="section min-term">
             <h4>Subscription</h4>
             <span class="content">Active ({{ downgradeAvailableText }})</span>
           </div>
+        </template>
+        <template v-slot:actions>
           <button
             v-if="!prioritySupport.internal"
             @click.prevent="() => unsubscribe(prioritySupport)"
@@ -28,29 +50,68 @@
           </div>
         </template>
       </Product>
+
       <Product title="Downgrade" :product="basicSupport">
         <template v-slot:icon>
           <InboxIcon/>
         </template>
+        <template v-slot:detail>
+          <div class="section live-chat">
+            <h4>Live chat</h4>
+            <div class="content active">Available</div>
+          </div>
+          <div class="section hours">
+            <h4>Hours</h4>
+            <div class="content active">&lt; 24 hours</div>
+          </div>
+          <div class="section circleloop">
+            <h4>Circleloop</h4>
+            <div class="content inactive">Not available on basic plan</div>
+          </div>
+          <div class="section account-manager">
+            <h4>Account manager</h4>
+            <div class="content inactive">Not available on basic plan</div>
+          </div>
+        </template>
         <template v-slot:actions>
           <div class="help">
             <h4>Need more help?</h4>
-            <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
-            <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
+            <a :href="wikiURL" target="_blank">Community Wiki</a>
+            <a :href="discordURL" target="_blank">Discord</a>
           </div>
         </template>
       </Product>
     </div>
+
+    <!-- Page loaded and customer is -not- subscribed to priority support -->
     <div v-else-if="loaded && !isPriority" class="products basic">
       <Product title="Current plan" :icon="InboxIcon" :product="basicSupport">
         <template v-slot:icon>
           <InboxIcon/>
         </template>
+        <template v-slot:detail>
+          <div class="section live-chat">
+            <h4>Live chat</h4>
+            <div class="content active">Available</div>
+          </div>
+          <div class="section hours">
+            <h4>Hours</h4>
+            <div class="content active">&lt; 24 hours</div>
+          </div>
+          <div class="section circleloop">
+            <h4>Circleloop</h4>
+            <div class="content inactive">Not available on basic plan</div>
+          </div>
+          <div class="section account-manager">
+            <h4>Account manager</h4>
+            <div class="content inactive">Not available on basic plan</div>
+          </div>
+        </template>
         <template v-slot:actions>
           <div class="help">
             <h4>Need more help?</h4>
-            <a href="https://wiki.edge.network" target="_blank">Community Wiki</a>
-            <a href="https://discord.gg/3sEvuYJ" target="_blank">Discord</a>
+            <a :href="wikiURL" target="_blank">Community Wiki</a>
+            <a :href="discordURL" target="_blank">Discord</a>
           </div>
         </template>
       </Product>
@@ -58,11 +119,32 @@
         <template v-slot:icon>
           <InboxInIcon/>
         </template>
-        <template v-slot:actions>
+        <template v-slot:detail>
+          <div class="section live-chat">
+            <h4>Live chat</h4>
+            <div class="content active">Available</div>
+          </div>
+          <div class="section hours">
+            <h4>Hours</h4>
+            <div class="content active">
+              &lt; 1 hour 08:00 UTC<br/>
+              &lt; 8 hours 20:00-08:00 UTC
+            </div>
+          </div>
+          <div class="section circleloop">
+            <h4>Circleloop</h4>
+            <div class="content active">Available</div>
+          </div>
+          <div class="section account-manager">
+            <h4>Account manager</h4>
+            <div class="content active">Available</div>
+          </div>
           <div v-if="prioritySupport.minDuration" class="section min-term">
             <h4>Minimum term</h4>
-            <span class="content">{{ prioritySupport.minDuration / 24}} days</span>
+            <span class="content">{{ prioritySupport.minDuration / 24 }} days</span>
           </div>
+        </template>
+        <template v-slot:actions>
           <button
             v-if="!prioritySupport.internal && prioritySupport.active"
             @click.prevent="() => subscribe(prioritySupport)"
@@ -102,7 +184,10 @@ export default {
     return {
       loaded: false,
       errors: {},
-      products: {}
+      products: {},
+
+      wikiURL: 'https://wiki.edge.network',
+      discordURL: 'https://discord.gg/3sEvuYJ'
     }
   },
   components: {
@@ -117,10 +202,6 @@ export default {
       return {
         name: 'Basic Support',
         summary: 'Basic support',
-        liveChat: [true, 'Available'],
-        hours: [true, '&lt; 24 hours'],
-        circleloop: [false, 'Not available on basic plan'],
-        accountManager: [false, 'Not available on basic plan'],
         price: {
           type: 'free'
         },
@@ -147,14 +228,14 @@ export default {
       }
     },
     downgradeAvailable() {
-      let t = this.prioritySubscription.created
+      let t = this.prioritySubscription?.created || 0
       if (this.prioritySupport.minDuration) t += this.prioritySupport.minDuration * 60 * 60 * 1000
       return t < Date.now()
     },
     downgradeAvailableText() {
       const hour = 60 * 60 * 1000
       const day = 24 * hour
-      let t = this.prioritySubscription.created
+      let t = this.prioritySubscription?.created || 0
       if (this.prioritySupport.minDuration) t += this.prioritySupport.minDuration * hour
       if (t < Date.now()) return 'downgrade available'
       const diff = t - Date.now()
@@ -245,5 +326,13 @@ export default {
 
 .help a:hover {
   @apply text-green underline;
+}
+
+.content.inactive {
+  @apply text-gray;
+}
+
+.content.active {
+  @apply text-green;
 }
 </style>
