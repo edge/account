@@ -12,28 +12,28 @@
           <InboxInIcon/>
         </template>
         <template v-slot:detail>
-          <div class="section live-chat">
-            <h4>Live chat</h4>
-            <div class="content active">Available</div>
+          <div class="product__section live-chat">
+            <span class="label">Live chat</span>
+            <span class="info active">Available</span>
           </div>
-          <div class="section hours">
-            <h4>Hours</h4>
-            <div class="content active">
+          <div class="product__section hours">
+            <span class="label">Hours</span>
+            <span class="info active">
               &lt; 1 hour 08:00 UTC<br/>
               &lt; 8 hours 20:00-08:00 UTC
-            </div>
+            </span>
           </div>
-          <div class="section circleloop">
-            <h4>Circleloop</h4>
-            <div class="content active">020 8064 1444</div>
+          <div class="product__section circleloop">
+            <span class="label">Circleloop</span>
+            <span class="info active">020 8064 1444</span>
           </div>
-          <div class="section account-manager">
-            <h4>Account manager</h4>
-            <div class="content active">Available</div>
+          <div class="product__section account-manager">
+            <span class="label">Account manager</span>
+            <span class="info active">Available</span>
           </div>
-          <div v-if="prioritySupport.minDuration" class="section min-term">
-            <h4>Subscription</h4>
-            <span class="content">Active ({{ downgradeAvailableText }})</span>
+          <div v-if="prioritySupport.minDuration" class="product__section min-term">
+            <span class="label">Subscription</span>
+            <span class="info">Active ({{ downgradeAvailableText }})</span>
           </div>
         </template>
         <template v-slot:actions>
@@ -56,26 +56,26 @@
           <InboxIcon/>
         </template>
         <template v-slot:detail>
-          <div class="section live-chat">
-            <h4>Live chat</h4>
-            <div class="content active">Available</div>
+          <div class="product__section live-chat">
+            <span class="label">Live chat</span>
+            <span class="info active">Available</span>
           </div>
-          <div class="section hours">
-            <h4>Hours</h4>
-            <div class="content active">&lt; 24 hours</div>
+          <div class="product__section hours">
+            <span class="label">Hours</span>
+            <span class="info active">&lt; 24 hours</span>
           </div>
-          <div class="section circleloop">
-            <h4>Circleloop</h4>
-            <div class="content inactive">Not available on basic plan</div>
+          <div class="product__section circleloop">
+            <span class="label">Circleloop</span>
+            <span class="info inactive">Not available on basic plan</span>
           </div>
-          <div class="section account-manager">
-            <h4>Account manager</h4>
-            <div class="content inactive">Not available on basic plan</div>
+          <div class="product__section account-manager">
+            <span class="label">Account manager</span>
+            <span class="info inactive">Not available on basic plan</span>
           </div>
         </template>
         <template v-slot:actions>
           <div class="help">
-            <h4>Need more help?</h4>
+            <span class="label">Need more help?</span>
             <a :href="wikiURL" target="_blank">Community Wiki</a>
             <a :href="discordURL" target="_blank">Discord</a>
           </div>
@@ -90,26 +90,26 @@
           <InboxIcon/>
         </template>
         <template v-slot:detail>
-          <div class="section live-chat">
-            <h4>Live chat</h4>
-            <div class="content active">Available</div>
+          <div class="product__section live-chat">
+            <span class="label">Live chat</span>
+            <span class="info active">Available</span>
           </div>
-          <div class="section hours">
-            <h4>Hours</h4>
-            <div class="content active">&lt; 24 hours</div>
+          <div class="product__section hours">
+            <span class="label">Hours</span>
+            <span class="info active">&lt; 24 hours</span>
           </div>
-          <div class="section circleloop">
-            <h4>Circleloop</h4>
-            <div class="content inactive">Not available on basic plan</div>
+          <div class="product__section circleloop">
+            <span class="label">Circleloop</span>
+            <span class="info inactive">Not available on basic plan</span>
           </div>
-          <div class="section account-manager">
-            <h4>Account manager</h4>
-            <div class="content inactive">Not available on basic plan</div>
+          <div class="product__section account-manager">
+            <span class="label">Account manager</span>
+            <span class="info inactive">Not available on basic plan</span>
           </div>
         </template>
         <template v-slot:actions>
           <div class="help">
-            <h4>Need more help?</h4>
+            <span class="label">Need more help?</span>
             <a :href="wikiURL" target="_blank">Community Wiki</a>
             <a :href="discordURL" target="_blank">Discord</a>
           </div>
@@ -120,28 +120,28 @@
           <InboxInIcon/>
         </template>
         <template v-slot:detail>
-          <div class="section live-chat">
-            <h4>Live chat</h4>
-            <div class="content active">Available</div>
+          <div class="product__section live-chat">
+            <span class="label">Live chat</span>
+            <span class="info active">Available</span>
           </div>
-          <div class="section hours">
-            <h4>Hours</h4>
-            <div class="content active">
+          <div class="product__section hours">
+            <span class="label">Hours</span>
+            <span class="info active">
               &lt; 1 hour 08:00 UTC<br/>
               &lt; 8 hours 20:00-08:00 UTC
-            </div>
+            </span>
           </div>
-          <div class="section circleloop">
-            <h4>Circleloop</h4>
-            <div class="content active">Available</div>
+          <div class="product__section circleloop">
+            <span class="label">Circleloop</span>
+            <span class="info active">Available</span>
           </div>
-          <div class="section account-manager">
-            <h4>Account manager</h4>
-            <div class="content active">Available</div>
+          <div class="product__section account-manager">
+            <span class="label">Account manager</span>
+            <span class="info active">Available</span>
           </div>
-          <div v-if="prioritySupport.minDuration" class="section min-term">
-            <h4>Minimum term</h4>
-            <span class="content">{{ prioritySupport.minDuration / 24 }} days</span>
+          <div v-if="prioritySupport.minDuration" class="product__section min-term">
+            <span class="label">Minimum term</span>
+            <span class="info">{{ prioritySupport.minDuration / 24 }} days</span>
           </div>
         </template>
         <template v-slot:actions>
@@ -312,11 +312,27 @@ export default {
   @apply flex space-x-2;
 }
 
+.product__section {
+  @apply flex flex-col overflow-hidden w-full;
+}
+
+.label {
+  @apply font-bold block;
+}
+
+.info.inactive {
+  @apply text-gray;
+}
+
+.info.active {
+  @apply text-green;
+}
+
 .help {
   @apply text-center flex flex-col w-2/3 m-auto border-t-2 space-y-2;
 }
 
-.help h4 {
+.help .label {
   @apply mb-2 mt-4;
 }
 
@@ -326,13 +342,5 @@ export default {
 
 .help a:hover {
   @apply text-green underline;
-}
-
-.content.inactive {
-  @apply text-gray;
-}
-
-.content.active {
-  @apply text-green;
 }
 </style>
