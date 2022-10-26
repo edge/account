@@ -14,7 +14,7 @@
         <template v-slot:detail>
           <div class="product__section live-chat">
             <span class="label">Live chat</span>
-            <span class="info active">Available</span>
+            <span class="info link" @click="openChat">Chat now</span>
           </div>
           <div class="product__section hours">
             <span class="label">Hours</span>
@@ -29,7 +29,9 @@
           </div>
           <div class="product__section account-manager">
             <span class="label">Account manager</span>
-            <span class="info active">Available</span>
+            <span class="info">
+              <a :href="`mailto:${supportEmail}`">{{supportEmail}}</a>
+            </span>
           </div>
           <div v-if="prioritySupport.minDuration" class="product__section min-term">
             <span class="label">Subscription</span>
@@ -183,6 +185,7 @@
 <script>
 /* global process */
 import * as api from '@/account-utils'
+import * as libcrisp from '@/crisp'
 import CancelSubscriptionConfirmation from '@/components/confirmations/CancelSubscriptionConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Product from '@/components/support/Product'
@@ -206,7 +209,8 @@ export default {
       showCancelModal: false,
 
       wikiURL: 'https://wiki.edge.network',
-      discordURL: 'https://discord.gg/3sEvuYJ'
+      discordURL: 'https://discord.gg/3sEvuYJ',
+      supportEmail: 'support@edge.network'
     }
   },
   components: {
@@ -277,6 +281,12 @@ export default {
     isSubscribed(id) {
       if (this.products[id] === undefined) return false
       return this.subscriptions.find(s => s.product === id) !== undefined
+    },
+    openChat() {
+      return libcrisp.session()
+        // https://docs.crisp.chat/guides/chatbox-sdks/web-sdk/dollar-crisp/#open-chatbox
+        .then(crisp => crisp.push(['do', 'chat:open']))
+        .catch(err => console.error(err))
     },
     async refreshProducts() {
       const getResult = await Promise.allSettled(productIDs.map(async id => {
@@ -369,11 +379,11 @@ export default {
   @apply mb-2 mt-4;
 }
 
-.help a {
-  @apply text-green;
+.product a, .link {
+  @apply text-green cursor-pointer;
 }
 
-.help a:hover {
+.product a:hover, .link:hover {
   @apply text-green underline;
 }
 </style>

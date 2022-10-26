@@ -37,7 +37,6 @@ export default {
 .product {
   @apply grid gap-y-4;
   @apply flex-col w-1/2;
-  @apply cursor-pointer transition-all duration-100;
 }
 
 .product .title {
