@@ -8,6 +8,7 @@
     <!-- title -->
     <ServerDisplayName
       v-if=server
+      :disableActions=disableActions
       :server=server
       @update-server=updateServer
     />
@@ -92,7 +93,7 @@
             <p class="mb-0 text-gray-500">There was a problem with your server, please either delete and re-deploy the server or contact support@edge.network for assistance.</p>
             <button
               class="mt-4 button button--error button--small w-full md:max-w-xs"
-              :disabled="isDestroying || disableActions"
+              :disabled="isDestroying"
               @click.prevent="toggleDestroyConfirmationModal"
             >
               <div v-if=isDestroying class="flex">
@@ -370,7 +371,7 @@ export default {
       return this.$store.getters.tasksByServerId(this.serverId)
     },
     disableActions() {
-      return this.activeTasks.length > 0 || this.isDestroyed
+      return this.activeTasks.length > 0 || this.isDestroyed || this.isCrashed
     },
     disablingTaskInProgress() {
       // server status and active tasks aren't always 100% in sync
