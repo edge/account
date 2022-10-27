@@ -17,15 +17,15 @@
             <span class="info link" @click="openChat">Chat now</span>
           </div>
           <div class="product__section hours">
-            <span class="label">Hours</span>
-            <span class="info active">
-              &lt; 1 hour 08:00 UTC<br/>
-              &lt; 8 hours 20:00-08:00 UTC
+            <span class="label">Response time</span>
+            <span class="info">
+              1 hour 08:00-20:00 UTC<br/>
+              8 hours 20:00-08:00 UTC
             </span>
           </div>
           <div class="product__section circleloop">
-            <span class="label">Circleloop</span>
-            <span class="info active">020 8064 1444</span>
+            <span class="label">Phone support</span>
+            <span class="info"><a href="tel:02080641444">020 8064 1444</a></span>
           </div>
           <div class="product__section account-manager">
             <span class="label">Account manager</span>
@@ -60,14 +60,14 @@
         <template v-slot:detail>
           <div class="product__section live-chat">
             <span class="label">Live chat</span>
-            <span class="info active">Available</span>
+            <span class="info">Available</span>
           </div>
           <div class="product__section hours">
-            <span class="label">Hours</span>
-            <span class="info active">&lt; 24 hours</span>
+            <span class="label">Response time</span>
+            <span class="info">24 hours</span>
           </div>
           <div class="product__section circleloop">
-            <span class="label">Circleloop</span>
+            <span class="label">Phone support</span>
             <span class="info inactive">Not available on basic plan</span>
           </div>
           <div class="product__section account-manager">
@@ -94,14 +94,14 @@
         <template v-slot:detail>
           <div class="product__section live-chat">
             <span class="label">Live chat</span>
-            <span class="info active">Available</span>
+            <span class="info">Available</span>
           </div>
           <div class="product__section hours">
-            <span class="label">Hours</span>
-            <span class="info active">&lt; 24 hours</span>
+            <span class="label">Response time</span>
+            <span class="info">24 hours</span>
           </div>
           <div class="product__section circleloop">
-            <span class="label">Circleloop</span>
+            <span class="label">Phone support</span>
             <span class="info inactive">Not available on basic plan</span>
           </div>
           <div class="product__section account-manager">
@@ -124,22 +124,22 @@
         <template v-slot:detail>
           <div class="product__section live-chat">
             <span class="label">Live chat</span>
-            <span class="info active">Available</span>
+            <span class="info">Available</span>
           </div>
           <div class="product__section hours">
-            <span class="label">Hours</span>
-            <span class="info active">
-              &lt; 1 hour 08:00 UTC<br/>
-              &lt; 8 hours 20:00-08:00 UTC
+            <span class="label">Response time</span>
+            <span class="info">
+              1 hour 08:00-20:00 UTC<br/>
+              8 hours 20:00-08:00 UTC
             </span>
           </div>
           <div class="product__section circleloop">
-            <span class="label">Circleloop</span>
-            <span class="info active">Available</span>
+            <span class="label">Phone support</span>
+            <span class="info">Available</span>
           </div>
           <div class="product__section account-manager">
             <span class="label">Account manager</span>
-            <span class="info active">Available</span>
+            <span class="info">Available</span>
           </div>
           <div v-if="prioritySupport.minDuration" class="product__section min-term">
             <span class="label">Minimum term</span>
@@ -244,13 +244,7 @@ export default {
     },
     prioritySupport() {
       if (!this.loaded) return null
-      return {
-        ...this.products[process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT],
-        liveChat: [true, 'Available'],
-        hours: [true, '&lt; 1 hour 08:00 UTC\n\n&lt; 8 hours 20:00-08:00 UTC'],
-        circleloop: [true, this.isPriority ? '020 8064 1444' : 'Available'],
-        accountManager: [true, this.isPriority ? 'support@edge.network' : 'Available']
-      }
+      return this.products[process.env.VUE_APP_PRODUCT_ID_PRIORITYSUPPORT]
     },
     downgradeAvailable() {
       let t = this.prioritySubscription?.created || 0
@@ -352,7 +346,7 @@ export default {
 
 <style scoped>
 .products {
-  @apply flex space-x-2;
+  @apply flex flex-col space-y-2;
 }
 
 .product__section {
@@ -363,16 +357,16 @@ export default {
   @apply font-bold block;
 }
 
+.info {
+  @apply text-gray-500;
+}
+
 .info.inactive {
   @apply text-gray;
 }
 
-.info.active {
-  @apply text-green;
-}
-
 .help {
-  @apply text-center flex flex-col w-2/3 m-auto border-t-2 space-y-2;
+  @apply text-center flex flex-col w-full m-auto border-t-2 space-y-2;
 }
 
 .help .label {
@@ -380,10 +374,17 @@ export default {
 }
 
 .product a, .link {
-  @apply text-green cursor-pointer;
+  @apply text-green cursor-pointer hover:text-green-600 hover:underline;
 }
 
-.product a:hover, .link:hover {
-  @apply text-green underline;
+
+@screen lg {
+  .products {
+    @apply flex-row space-x-2 space-y-0;
+  }
+
+  .product {
+    @apply w-1/2;
+  }
 }
 </style>

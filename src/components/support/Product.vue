@@ -22,7 +22,11 @@ export default {
   computed: {
     price() {
       if (this.product.price.type === 'flatRate') {
-        return `$${this.product.price.cost}/${this.product.price.costBasis/24} days`
+        const days = this.product.price.costBasis / 24
+        if (days === 1) {
+          return `$${this.product.price.cost} per day`
+        }
+        return `$${this.product.price.cost} per ${this.product.price.costBasis/24} days`
       }
       else if (this.product.price.type === 'free') {
         return 'Free'
@@ -36,7 +40,7 @@ export default {
 <style scoped>
 .product {
   @apply grid gap-y-4;
-  @apply flex-col w-1/2;
+  @apply flex-col;
 }
 
 .product .title {
@@ -56,6 +60,6 @@ export default {
 }
 
 .summary .info {
-  @apply flex flex-col space-y-1 ml-2;
+  @apply flex flex-col ml-2;
 }
 </style>
