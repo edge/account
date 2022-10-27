@@ -46,8 +46,8 @@
           <ExclamationIcon class="w-5 text-red" />
         </Tooltip>
       </div>
-  </td>
-    <td class="tableBody__cell col-span-2">
+    </td>
+    <td class="tableBody__cell amount col-span-2">
       <span class="mr-2 lg:hidden">Amount:</span>
       <span class="truncate">{{ formattedAmount }} <span class="lg:hidden">USD</span></span>
     </td>
@@ -71,8 +71,8 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils'
+import * as format from '@/utils/format'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import { CalendarIcon, DocumentDownloadIcon, ExclamationIcon } from '@heroicons/vue/outline'
@@ -95,7 +95,7 @@ export default {
   computed: {
     ...mapState(['balance', 'session']),
     canPay() {
-      return this.invoice.amount > this.usdBalance
+      return this.invoice.amount <= this.usdBalance
     },
     description() {
       const date = this.formattedDate
@@ -118,7 +118,7 @@ export default {
     },
     unholdTooltipText() {
       const topUpAmount = (this.invoice.amount - this.usdBalance) / this.balance.token.usdPerXe
-      return `Please add ${topUpAmount.toFixed(6)} XE to your wallet to pay`
+      return `Please add ${(topUpAmount).toFixed(6)} XE to your wallet to pay`
     },
     usdBalance() {
       return this.balance.total.usd
@@ -186,7 +186,7 @@ tr {
   @apply flex items-center text-gray-500 leading-4 truncate;
 }
 
-.tableBody__cell.status {
+.tableBody__cell.status, .tableBody__cell.amount {
   overflow: visible;
   text-overflow: unset
 }

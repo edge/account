@@ -91,7 +91,7 @@ export default {
     tasks() {
       this.tasks.forEach(task => {
         // remove any tasks that compelte from the store
-        if (['complete', 'gone'].includes(task.status)) this.removeTask(task)
+        if (['complete', 'gone', 'failed'].includes(task.status)) this.removeTask(task)
         /**  @todo - handle failed tasks */
         if (task.status === 'failed') console.error(`failed task: ${task._key}`)
       })
