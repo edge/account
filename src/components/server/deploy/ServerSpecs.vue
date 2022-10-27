@@ -57,12 +57,34 @@
           <button @click.prevent="resetToMaxSpec('ram')" class="underline">Set to max available.</button>
         </span>
       </div>
-      <div class="flex flex-col">
-        <div class="slider__box" :class="disableControls ? 'disabled' : ''">
+      <div class="flex flex-col" :class="useManualDiskInput ? 'manual' : ''">
+        <div class="slider__box"
+          :class="[
+            disableControls ? 'disabled' : '',
+            useManualDiskInput ? 'manual' : ''
+          ]"
+        >
           <span class="slider__title">Disk (GiB)</span>
+          <!-- manual disk size input -->
+          <div v-if=useManualDiskInput class="flex flex-col w-full">
+            <div class="manualInput flex justify-between">
+              <input
+                type="number"
+                v-model="v$.diskValue.$model"
+                @focusout="formatThreshold"
+                @keypress.enter=enableAutoTopUp
+              />
+              GiB
+            </div>
+            <div class="absolute bottom-1">
+              <ValidationError :errors="v$.diskValue.$errors" />
+            </div>
+          </div>
+          <!-- slider input -->
           <vue-slider
+            v-else
             :disabled=disableControls
-            v-model=diskValue
+            v-model=v$.diskValue.$model
             ref="ssdSlider"
             :dotSize="20"
             width="100%"
@@ -79,7 +101,17 @@
             :label-style="styles.labels"
             :step-active-style="styles.activeStep"
           />
+          <button
+            @click.prevent=toggleManualDisk
+            class="toggleManual"
+          >
+            <span>Manual input</span>
+            <span class="checkbox" >
+              <CheckIcon v-if="useManualDiskInput" class="w-3.5 h-3.5" aria-hidden="true" />
+            </span>
+          </button>
         </div>
+
         <span v-if="hasExceededCapacity('disk') && !disableControls" class="spec__warning">
           Disk size is limited as the region you have selected is close to capacity.
           <button @click.prevent="resetToMaxSpec('disk')" class="underline">Set to max available.</button>
@@ -200,8 +232,12 @@
 <script>
 import 'vue-slider-component/theme/antd.css'
 import * as format from '@/utils/format'
+import { CheckIcon } from '@heroicons/vue/solid'
+import ValidationError from '@/components/ValidationError.vue'
 import VueSlider from 'vue-slider-component'
 import { mapState } from 'vuex'
+import useVuelidate from '@vuelidate/core'
+import { helpers, maxValue, minValue } from '@vuelidate/validators'
 
 export default {
   name: 'ServerSpecs',
@@ -215,6 +251,8 @@ export default {
     'selectedSpecs'
   ],
   components: {
+    CheckIcon,
+    ValidationError,
     VueSlider
   },
   data() {
@@ -229,6 +267,15 @@ export default {
         labels: { color: '#999', fontSize: '12px' },
         process: { background: '#4ecd5f' },
         tooltip: { background: '#4ecd5f', borderColor: '#4ecd5f' }
+      },
+      useManualDiskInput: false
+    }
+  },
+  validations() {
+    return {
+      diskValue: {
+        minValue: helpers.withMessage(`Minimum ${this.diskOptions.min} GiB`, minValue(this.diskOptions.min)),
+        maxValue: helpers.withMessage(`Maximum ${this.diskOptions.max} GiB`, maxValue(this.diskOptions.max))
       }
     }
   },
@@ -338,6 +385,19 @@ export default {
         const values = this.ramOptions.data.map(option => option.value).reverse()
         this.ramValue = values.find(value => value <= max)
       }
+    },
+    toggleManualDisk() {
+      if (this.useManualDiskInput) {
+        if (this.diskValue < this.diskOptions.min) this.diskValue = this.diskOptions.min.toString()
+        else if (this.diskValue > this.diskOptions.max) this.diskValue = this.diskOptions.max.toString()
+        else {
+          const marks = this.diskOptions.data.map(mark => Number(mark.value))
+          // eslint-disable-next-line max-len
+          const closestMark = marks.reduce((prev, curr) => Math.abs(curr - Number(this.diskValue)) < Math.abs(prev - Number(this.diskValue)) ? curr : prev)
+          this.diskValue = closestMark.toString()
+        }
+      }
+      this.useManualDiskInput = !this.useManualDiskInput
     }
   },
   mounted() {
@@ -345,6 +405,11 @@ export default {
     this.cpusValue = this.current ? this.current.spec.cpus : 1
     this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : 0.5
     this.diskValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
+  },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
   },
   watch: {
     spec() {
@@ -371,6 +436,10 @@ export default {
 .slider__box {
   @apply relative flex space-x-3 items-start justify-center pr-5 pl-2 pt-14 pb-8 border border-gray-300 rounded-md;
 }
+.slider__box.manual{
+  @apply pt-0 pb-0 flex items-center;
+  height: 114px
+}
 .slider__box.disabled {
   @apply cursor-not-allowed opacity-50;
 }
@@ -381,6 +450,32 @@ export default {
 
 .spec__warning {
   @apply bg-gray-200 mt-2 p-2 rounded text-red;
+}
+
+.manualInput {
+  @apply border border-gray-400 rounded w-full py-2 px-4 mt-6;
+}
+/* remove input defualy focus and arrows */
+input:focus {
+  outline: none;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  @apply w-full;
+}
+.toggleManual {
+  @apply flex items-center text-green underline hover:text-green-600 w-max absolute top-1 right-1;
+  font-size: 0.8rem;
+}
+.checkbox {
+  @apply flex items-center text-green border border-green rounded w-3.5 h-3.5 ml-2;
 }
 
 @media (max-width: 420px) {
