@@ -58,6 +58,11 @@ export default {
           link: '/shield',
           text: 'Shield',
           disabled: true
+        },
+        {
+          link: '/support',
+          text: 'Support',
+          disabled: false
         }
       ]
     }
