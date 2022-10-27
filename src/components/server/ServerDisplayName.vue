@@ -118,7 +118,7 @@ export default {
 
 <style scoped>
 .displayName__input {
-  @apply bg-transparent text-3xl text-gray-600 border-b border-gray-400;
+  @apply bg-transparent text-3xl text-gray-600 border-b border-gray-400 w-full;
   @apply focus:outline-none focus:border-green focus:text-green;
 }
 
