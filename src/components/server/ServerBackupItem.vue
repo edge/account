@@ -26,7 +26,7 @@
         :class="isInactive ? 'text-red' : ''"
       >
         <span>{{ status }}</span>
-        <div><LoadingSpinner v-if=isCreating class="w-3.5 h-3.5 ml-1 text-gray" /></div>
+        <div><LoadingSpinner v-if="isCreating || isDeleting" class="w-3.5 h-3.5 ml-1 text-gray" /></div>
       </span>
     </td>
     <td class="tableBody__cell actions">
@@ -149,6 +149,7 @@ export default {
       return this.$route.params.id
     },
     status() {
+      if (this.isDeleting) return 'Deleting'
       if (this.backup.status === 'active') return 'Complete'
       if (this.backup.status === 'in_use') return 'In Use'
       return this.backup.status

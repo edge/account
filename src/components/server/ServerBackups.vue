@@ -135,10 +135,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['balanceSuspend']),
+    ...mapGetters(['balanceSuspend', 'balanceWarning']),
     ...mapState(['session']),
     canCreate() {
-      return !this.isCreating && !this.disableActions && !this.v$.comment.$invalid && !this.balanceSuspend
+      return !this.isCreating
+        && !this.disableActions
+        && !this.v$.comment.$invalid
+        && !this.balanceSuspend
+        && !this.balanceWarning
     },
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
