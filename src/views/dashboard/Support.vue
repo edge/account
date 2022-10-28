@@ -19,8 +19,8 @@
           <div class="product__section hours">
             <span class="label">Response time</span>
             <span class="info">
-              1 hour 08:00-20:00 UTC<br/>
-              8 hours 20:00-08:00 UTC
+              &lt; 1 hour 08:00-20:00 UTC<br/>
+              &lt; 8 hours 20:00-08:00 UTC
             </span>
           </div>
           <div class="product__section circleloop">
@@ -64,7 +64,7 @@
           </div>
           <div class="product__section hours">
             <span class="label">Response time</span>
-            <span class="info">24 hours</span>
+            <span class="info">&lt; 24 hours</span>
           </div>
           <div class="product__section circleloop">
             <span class="label">Phone support</span>
@@ -98,7 +98,7 @@
           </div>
           <div class="product__section hours">
             <span class="label">Response time</span>
-            <span class="info">24 hours</span>
+            <span class="info">&lt; 24 hours</span>
           </div>
           <div class="product__section circleloop">
             <span class="label">Phone support</span>
@@ -129,8 +129,8 @@
           <div class="product__section hours">
             <span class="label">Response time</span>
             <span class="info">
-              1 hour 08:00-20:00 UTC<br/>
-              8 hours 20:00-08:00 UTC
+              &lt; 1 hour 08:00-20:00 UTC<br/>
+              &lt; 8 hours 20:00-08:00 UTC
             </span>
           </div>
           <div class="product__section circleloop">
