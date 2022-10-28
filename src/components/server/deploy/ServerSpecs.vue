@@ -347,6 +347,14 @@ export default {
   methods: {
     areAllSpecsValid() {
       return !['cpus', 'disk', 'ram'].some(spec => this.hasExceededCapacity(spec))
+        && this.spec.disk <= this.diskOptions.max * 1024
+        && this.spec.disk >= this.diskOptions.min * 1024
+        && this.spec.ram <= this.ramOptions.max * 1024
+        && this.spec.ram >= this.ramOptions.min * 1024
+        && this.spec.cpus <= this.cpuOptions.max
+        && this.spec.cpus >= this.cpuOptions.min
+        && this.spec.bandwidth <= this.bandwidthOptions.max
+        && this.spec.bandwidth >= this.bandwidthOptions.min
     },
     formatCost(cost, decimalPlaces) {
       const mult = 10**decimalPlaces
