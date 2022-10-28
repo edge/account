@@ -346,7 +346,7 @@ export default {
 
 <style scoped>
 .products {
-  @apply flex flex-col space-y-2;
+  @apply flex flex-col space-y-4;
 }
 
 .product__section {
@@ -380,7 +380,7 @@ export default {
 
 @screen lg {
   .products {
-    @apply flex-row space-x-2 space-y-0;
+    @apply flex-row space-x-4 space-y-0;
   }
 
   .product {
