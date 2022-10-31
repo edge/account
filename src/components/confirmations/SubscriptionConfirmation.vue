@@ -4,7 +4,7 @@
       <span class="text-green">Confirm subscription</span>
     </template>
     <template v-slot:body>
-      <div v-if="hasFunds" class="flex flex-col space-y-2">
+      <div v-if="!balanceWarning" class="flex flex-col space-y-2">
         <span>You will be billed daily for this support plan.</span>
         <span v-if="product.minDuration">
           There is a minimum term of {{ product.minDuration / 24 }} days before you can cancel this plan.
