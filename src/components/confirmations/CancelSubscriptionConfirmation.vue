@@ -9,11 +9,11 @@
     <template v-slot:body>
       <span class="font-semibold">Warning: this cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        Your subscription will be cancelled immediately.
+        <span>Your subscription will be cancelled immediately.</span>
         <span v-if="product.minDuration">
           If you wish to resubscribe you will be subject to the minimum term length.
         </span>
-        Are you sure?
+        <span>Are you sure?</span>
       </div>
     </template>
     <template v-slot:buttons>

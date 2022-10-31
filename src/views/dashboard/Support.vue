@@ -30,7 +30,7 @@
           <div class="product__section account-manager">
             <span class="label">Account manager</span>
             <span class="info">
-              <a :href="`mailto:${supportEmail}`">{{supportEmail}}</a>
+              <a :href="`mailto:${supportEmail}`">{{ supportEmail }}</a>
             </span>
           </div>
           <div v-if="prioritySupport.minDuration" class="product__section min-term">
@@ -39,16 +39,16 @@
           </div>
         </template>
         <template v-slot:actions>
-          <button
-            v-if="!prioritySupport.internal"
-            @click.prevent="() => toggleCancelModal()"
-            :disabled="!downgradeAvailable"
-            :class="`button button--small ${downgradeAvailable ? 'button--error' : 'border-gray text-gray'}`"
-          >
-            <span>Downgrade</span>
-          </button>
-          <div v-if="priorityError">
-            {{ priorityError.message }}
+          <div class="flex flex-col">
+            <button
+              v-if="!prioritySupport.internal"
+              @click.prevent="toggleCancelModal"
+              :disabled="!downgradeAvailable"
+              :class="`button button--small ${downgradeAvailable ? 'button--error' : 'border-gray text-gray'}`"
+            >
+              <span>Downgrade</span>
+            </button>
+            <div class="mt-2"><HttpError :error="priorityError" /></div>
           </div>
         </template>
       </Product>
@@ -87,14 +87,14 @@
 
     <!-- Page loaded and customer is -not- subscribed to priority support -->
     <div v-else-if="loaded && !isPriority" class="products basic">
-      <Product title="Current plan" :icon="InboxIcon" :product="basicSupport">
+      <Product title="Current plan" :product="basicSupport">
         <template v-slot:icon>
           <InboxIcon/>
         </template>
         <template v-slot:detail>
           <div class="product__section live-chat">
             <span class="label">Live chat</span>
-            <span class="info">Available</span>
+            <span class="info link" @click="openChat">Chat now</span>
           </div>
           <div class="product__section hours">
             <span class="label">Response time</span>
@@ -117,7 +117,7 @@
           </div>
         </template>
       </Product>
-      <Product title="Upgrade" :icon="InboxInIcon" :product="prioritySupport">
+      <Product title="Upgrade" :product="prioritySupport">
         <template v-slot:icon>
           <InboxInIcon/>
         </template>
@@ -147,15 +147,15 @@
           </div>
         </template>
         <template v-slot:actions>
-          <button
-            v-if="!prioritySupport.internal && prioritySupport.active"
-            @click.prevent="() => toggleSubscribeModal()"
-            class="button button--success button--small"
-          >
-            <span>Upgrade</span>
-          </button>
-          <div v-if="priorityError">
-            {{ priorityError.message }}
+          <div class="flex flex-col">
+            <button
+              v-if="!prioritySupport.internal && prioritySupport.active"
+              @click.prevent="toggleSubscribeModal"
+              class="button button--success button--small"
+            >
+              <span>Upgrade</span>
+            </button>
+            <div class="mt-2"><HttpError :error="priorityError" /></div>
           </div>
         </template>
       </Product>
@@ -187,6 +187,7 @@
 import * as api from '@/account-utils'
 import * as libcrisp from '@/crisp'
 import CancelSubscriptionConfirmation from '@/components/confirmations/CancelSubscriptionConfirmation'
+import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Product from '@/components/support/Product'
 import SubscriptionConfirmation from '@/components/confirmations/SubscriptionConfirmation'
@@ -215,6 +216,7 @@ export default {
   },
   components: {
     CancelSubscriptionConfirmation,
+    HttpError,
     InboxIcon,
     InboxInIcon,
     LoadingSpinner,
@@ -268,9 +270,6 @@ export default {
     },
     getSubscription(id) {
       return this.subscriptions.find(s => s.product === id)
-    },
-    hasError(id) {
-      return this.errors[id] !== undefined
     },
     isSubscribed(id) {
       if (this.products[id] === undefined) return false
