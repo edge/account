@@ -8,7 +8,7 @@
     </div>
 
     <!-- eslint-disable-next-line max-len -->
-    <p>{{ autoTopUpCard ? "If" : "When you enable auto top-ups, if" }} your balance drops below your <strong>threshold</strong> XE will be purchased to bring your account funds back to your <strong>target balance</strong>.</p>
+    <p>{{ autoTopUpCard ? "If" : "When you enable auto top-ups, if" }} your balance drops below your <strong>USD threshold</strong> XE will be purchased to bring your account funds back to your <strong>USD target balance</strong>.</p>
 
     <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-4">
       <div class="input-wrapper">

@@ -22,7 +22,7 @@
       </button>
     </div>
     <div v-else class="mt-3">
-      <button v-if="!balanceSuspend" @click=startEditing class="ml-2">
+      <button v-if="!balanceSuspend && !disableActions" @click=startEditing class="ml-2">
         <PencilIcon class="button__icon text-gray-400 hover:text-green" />
       </button>
     </div>
@@ -42,7 +42,7 @@ import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'ServerDisplayName',
-  props: ['server'],
+  props: ['disableActions', 'server'],
   components: {
     CheckIcon,
     LoadingSpinner,
@@ -118,7 +118,7 @@ export default {
 
 <style scoped>
 .displayName__input {
-  @apply bg-transparent text-3xl text-gray-600 border-b border-gray-400;
+  @apply bg-transparent text-3xl text-gray-600 border-b border-gray-400 w-full;
   @apply focus:outline-none focus:border-green focus:text-green;
 }
 

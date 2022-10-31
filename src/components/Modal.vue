@@ -29,10 +29,12 @@ export default {
   mounted() {
     window.addEventListener('keydown', this.closeOnEscape)
     document.documentElement.style.overflow = 'hidden'
+    document.querySelector('.crisp-client').style.display = 'none'
   },
   unmounted() {
     window.removeEventListener('keydown', this.closeOnEscape)
     document.documentElement.style.overflow = 'auto'
+    document.querySelector('.crisp-client').style.display = 'block'
   }
 }
 </script>

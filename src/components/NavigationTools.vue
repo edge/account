@@ -13,6 +13,12 @@
         <span class="navigation-tools__label">Billing</span>
       </router-link>
     </li>
+    <li @click="closeNav" class="navigation-tools__item mobileOnly">
+      <router-link to="/support" class="navigation-tools__link">
+        <span class=""><InboxInIcon class="w-5 h-5" /></span>
+        <span class="navigation-tools__label">Support</span>
+      </router-link>
+    </li>
     <li class="navigation-tools__item mobileOnly">
       <button @click="signOut" class="navigation-tools__link">
         <span class=""><LogoutIcon class="w-5 h-5" /></span>
@@ -29,6 +35,7 @@ import * as api from '@/account-utils/index'
 import { mapState } from 'vuex'
 import {
   CashIcon,
+  InboxInIcon,
   LogoutIcon,
   UserIcon
 } from '@heroicons/vue/outline'
@@ -38,6 +45,7 @@ export default {
   props: ['closeNav'],
   components: {
     CashIcon,
+    InboxInIcon,
     LogoutIcon,
     UserIcon
   },

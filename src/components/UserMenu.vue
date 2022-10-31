@@ -37,6 +37,17 @@
             Settings
           </button>
         </MenuItem>
+        <MenuItem v-slot="{ active }">
+          <button
+            @click.prevent="navigate('/support')"
+            :class="[
+              'menu__item',
+              active ? 'active' : ''
+            ]"
+          >
+            Support
+          </button>
+        </MenuItem>
         <div class="divider"></div>
         <MenuItem v-slot="{ active }">
           <button
@@ -57,8 +68,8 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils/index'
+import * as format from '@/utils/format'
 import {ChevronDownIcon} from '@heroicons/vue/solid'
 import { mapState } from 'vuex'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'

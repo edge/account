@@ -31,6 +31,7 @@ export const date = (timestamp) => moment(timestamp).format('LL')
  */
 export const mib = (MiB) => {
   if (MiB % 1024 === 0) return `${MiB / 1024} GiB`
+  if (MiB / 1024 > 1) return `${(MiB / 1024).toFixed(2)} GiB`
   return `${MiB} MiB`
 }
 

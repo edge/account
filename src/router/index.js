@@ -25,6 +25,7 @@ import Server from '@/views/dashboard/Server'
 import ServerDeploy from '@/views/dashboard/ServerDeploy'
 import Servers from '@/views/dashboard/Servers'
 import SignIn from '@/views/landing/SignIn'
+import Support from '@/views/dashboard/Support'
 import Vnc from '@/views/Vnc'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
@@ -119,6 +120,11 @@ const routes = [
         path: 'server/:id/vnc',
         name: 'VNC',
         component: Vnc
+      },
+      {
+        path: '/support',
+        name: 'Support',
+        component: Support
       }
     ]
   },

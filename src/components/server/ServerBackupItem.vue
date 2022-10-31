@@ -12,8 +12,12 @@
         <span>{{ formattedTime }}</span>
       </div>
     </td>
-    <td class="tableBody__cell comment" :title="backup.comment">
-      <span class="backup-comment">{{ backup.comment }}</span>
+    <td class="tableBody__cell comment truncate" :title="backup.comment">
+      <span class="backup-comment truncate">{{ backup.comment }}</span>
+    </td>
+    <td class="tableBody__cell size">
+      <span class="mr-2 sm:hidden">Size:</span>
+      <span>{{ formattedSize }}</span>
     </td>
     <td class="tableBody__cell status" :title="backup.status">
       <span class="mr-2 sm:hidden">Status:</span>
@@ -22,7 +26,7 @@
         :class="isInactive ? 'text-red' : ''"
       >
         <span>{{ status }}</span>
-        <div><LoadingSpinner v-if=isCreating class="w-3.5 h-3.5 ml-1 text-gray" /></div>
+        <div><LoadingSpinner v-if="isCreating || isDeleting" class="w-3.5 h-3.5 ml-1 text-gray" /></div>
       </span>
     </td>
     <td class="tableBody__cell actions">
@@ -68,8 +72,8 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils'
+import * as format from '@/utils/format'
 import BackupMenu from '@/components/server/BackupMenu'
 import DestroyBackupConfirmation from '@/components/confirmations/DestroyBackupConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -122,6 +126,9 @@ export default {
     formattedDate() {
       return format.date(this.backup.created)
     },
+    formattedSize() {
+      return format.mib(this.backup.size || 0)
+    },
     formattedTime() {
       return format.time(this.backup.created)
     },
@@ -142,6 +149,7 @@ export default {
       return this.$route.params.id
     },
     status() {
+      if (this.isDeleting) return 'Deleting'
       if (this.backup.status === 'active') return 'Complete'
       if (this.backup.status === 'in_use') return 'In Use'
       return this.backup.status
@@ -215,7 +223,7 @@ export default {
 <style scoped>
 tr {
   @apply grid grid-rows-4 py-2 gap-x-5 gap-y-1;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   grid-template-rows: auto;
 }
 
@@ -225,14 +233,14 @@ tr {
 .tableBody__cell.comment {
   @apply row-start-1 col-span-3;
 }
-.tableBody__cell.status {
-  @apply justify-self-end;
-}
 .tableBody__cell.date {
   @apply col-start-1;
 }
 .tableBody__cell.time {
   @apply col-start-2;
+}
+.tableBody__cell.size {
+  @apply col-start-1;
 }
 .tableBody__cell.actions {
   @apply col-span-3 sm:px-0;
@@ -273,6 +281,9 @@ tr {
   .tableBody__cell {
     @apply text-sm pl-6 py-4 table-cell align-middle w-full;
   }
+  .tableBody__cell.status {
+    @apply hidden
+  }
 
   .backup-comment {
     @apply text-sm text-gray-500;
@@ -283,12 +294,15 @@ tr {
   }
 }
 
+@screen lg {
+  .tableBody__cell.status {
+    @apply table-cell
+  }
+}
+
 @media (max-width: 550px) {
   tr {
     grid-template-rows: repeat(3, 1fr) auto;
-  }
-  .tableBody__cell.status {
-    @apply row-start-3 col-span-3 justify-self-start;
   }
   .tableBody__cell.date {
     @apply col-start-1;
@@ -305,7 +319,7 @@ tr {
     grid-template-columns: 1fr;
   }
   .tableBody__cell.status {
-    @apply row-start-4;
+    @apply row-start-5;
   }
   .tableBody__cell.time {
     @apply row-start-3 col-start-1;

@@ -5,6 +5,7 @@
 /* global process */
 
 import * as api from './account-utils/index'
+import * as libcrisp from './crisp'
 import { createStore } from 'vuex'
 
 const store = createStore({
@@ -17,6 +18,7 @@ const store = createStore({
     isAuthed: false,
     isTestnet: process.env.VUE_APP_ACCOUNT_API_URL.includes('test'),
     session: null,
+    subscriptions: [],
     tasks: []
   },
   mutations: {
@@ -28,6 +30,7 @@ const store = createStore({
     },
     setAccount(state, account) {
       state.account = account
+      libcrisp.setAccount(account)
     },
     setAnnouncements(state, announcements) {
       state.announcements = announcements
@@ -46,6 +49,10 @@ const store = createStore({
     },
     setSession(state, session) {
       state.session = session
+    },
+    setSubscriptions(state, subscriptions) {
+      state.subscriptions = subscriptions
+      libcrisp.setSubscriptions(subscriptions)
     },
     setTasks(state, tasks) {
       state.tasks = tasks
@@ -114,6 +121,10 @@ const store = createStore({
       const config = await api.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
       commit('setConfig', config)
 
+    },
+    async updateSubscriptions({ commit, state }) {
+      const { results } = await api.products.subscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
+      commit('setSubscriptions', results)
     },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks

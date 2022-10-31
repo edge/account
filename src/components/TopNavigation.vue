@@ -104,8 +104,14 @@ export default {
       this.showNav = false
     },
     showNav() {
-      if (this.showNav) document.documentElement.style.overflow = 'hidden'
-      else document.documentElement.style.overflow = 'auto'
+      if (this.showNav) {
+        document.documentElement.style.overflow = 'hidden'
+        document.querySelector('.crisp-client').style.display = 'none'
+      }
+      else {
+        document.documentElement.style.overflow = 'auto'
+        document.querySelector('.crisp-client').style.display = 'block'
+      }
     }
   }
 }

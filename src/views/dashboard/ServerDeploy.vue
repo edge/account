@@ -96,7 +96,7 @@
           <span v-else>Deploy</span>
         </button>
 
-        <HttpError :error=httpError />
+        <div class="flex md:justify-end mt-2"><HttpError :error=httpError /></div>
         <div v-if=internalServerError class="server__error">
           <span class="font-bold">Something went wrong</span>
           <!-- eslint-disable-next-line max-len -->

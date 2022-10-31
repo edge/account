@@ -1,11 +1,11 @@
 <template>
   <div class="mainContent__inner">
-    <div class="flex justify-between">
+    <div class="flex flex-col sm:flex-row justify-between">
       <h1>Edge Servers</h1>
       <router-link
         v-if="servers.length"
         :to="{ name: 'ServerDeploy' }"
-        class="button button--success button--small h-full"
+        class="button button--success button--small h-full mb-5 sm:mb-0"
       >
         Deploy Server
       </router-link>
