@@ -89,13 +89,13 @@ const store = createStore({
       )
       commit('setSession', session)
     },
-    async signIn({ commit }, payload) {
+    signIn({ commit }, payload) {
       commit('setAccount', payload.account)
       commit('setSession', payload.session)
       commit('setIsAuthed', true)
       localStorage.setItem('session', payload.session._key)
     },
-    async signOut({ commit }) {
+    signOut({ commit }) {
       libcrisp.endSession()
       commit('setAccount', null)
       commit('setSession', null)
