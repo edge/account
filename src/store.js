@@ -96,6 +96,7 @@ const store = createStore({
       localStorage.setItem('session', payload.session._key)
     },
     signOut({ commit }) {
+      libcrisp.endSession()
       commit('setAccount', null)
       commit('setSession', null)
       commit('setTasks', [])

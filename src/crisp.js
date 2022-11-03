@@ -1,5 +1,11 @@
 let hasCrisp = false
 
+export const endSession = () => {
+  if (window.$crisp) {
+    window.$crisp.push(['do', 'session:reset'])
+  }
+}
+
 export const session = () => new Promise((resolve, reject) => {
   if (hasCrisp) return resolve(window.$crisp)
 
