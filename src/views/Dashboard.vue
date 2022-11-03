@@ -60,6 +60,7 @@ export default {
     this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
     this.$store.dispatch('updateBalance')
+    this.$store.dispatch('updateSubscriptions')
 
     // poll all active tasks, balance and server count
     this.iAccount = setInterval(() => {
