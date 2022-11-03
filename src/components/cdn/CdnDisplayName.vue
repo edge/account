@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <h4>DisplayName</h4>
+    <h4>Display Name</h4>
     <div class="flex flex-col pb-2 space-y-6">
       <div class="input-group">
         <input
