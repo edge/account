@@ -8,7 +8,11 @@
 </template>
 
 <script>
+/* global process */
+
+import * as api from '@/account-utils/index'
 import RFB from '@novnc/novnc/core/rfb'
+import { mapState } from 'vuex'
 
 export default {
   name: 'VNC',
@@ -23,6 +27,12 @@ export default {
       status: 'Loading...'
     }
   },
+  computed: {
+    ...mapState(['session']),
+    serverId() {
+      return this.$route.params.id
+    }
+  },
   methods: {
     connected() {
       this.status = `Connected to ${this.desktopName}`
@@ -31,22 +41,24 @@ export default {
     disconnected() {
       this.status = `Disconnected from ${this.desktopName}`
     },
+    replaceURL(host) {
+      return host.replace(/^http(s?:)/, 'ws$1')
+    },
     updateDektopName(event) {
       this.desktopName = event.detail.name
     }
   },
   mounted() {
     this.$nextTick(async () => {
-      // const settings = this.vncSettings
-      const terminal = this.$refs.terminal
+      const password = await api.servers.getVncPassword(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.serverId
+      )
 
-      // password will eventually come from API
-      const password = '######'
-
-      const url = 'ws://localhost:8005/ws'
       this.rfb = new RFB(
-        terminal,
-        url,
+        this.$refs.terminal,
+        `${this.replaceURL(process.env.VUE_APP_ACCOUNT_API_URL)}/servers/${this.serverId}/vnc`,
         {
           credentials: { password }
         }

@@ -9,25 +9,32 @@
         <span>Launch console in new window</span>
         <DuplicateIcon class="w-4 h-4 ml-2" />
       </a> -->
-      <button target="_blank" @click="launch" class="h-full mt-4 lg:mt-0 button button--success button--small">
-        <span>Launch console</span>
+      <button @click="launch" class="h-full mt-4 lg:mt-0 button button--success button--small">
+        <span>Launch Console</span>
         <DuplicateIcon class="w-4 h-4 ml-2" />
       </button>
     </div>
-    <div v-else>
-      <button @click="close">Close console</button>
+    <div v-else class="flex flex-col items-end">
+      <button @click="close" class="h-full my-4 lg:mt-0 button button--error button--small max-w-lg">
+        <span>Close Console</span>
+        <XIcon class="w-4 h-4 ml-2" />
+      </button>
       <Vnc />
     </div>
   </div>
 </template>
 
 <script>
-import { DuplicateIcon } from '@heroicons/vue/outline'
 import Vnc from '@/views/Vnc'
+import { DuplicateIcon, XIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'ServerConsole',
-  components: { DuplicateIcon, Vnc },
+  components: {
+    DuplicateIcon,
+    XIcon,
+    Vnc
+  },
   props: ['server'],
   data() {
     return {
