@@ -55,15 +55,16 @@ export default {
       }, 1000)
     },
     async launchConsole() {
-      const password = await api.servers.getVncPassword(
+      const { session, password } = await api.servers.getVncCredentials(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId
       )
-
+      // eslint-disable-next-line max-len
+      const url = `${this.replaceURL(process.env.VUE_APP_ACCOUNT_API_URL)}/servers/${this.serverId}/vnc?session=${session}`
       this.rfb = new RFB(
         this.$refs.terminal,
-        `${this.replaceURL(process.env.VUE_APP_ACCOUNT_API_URL)}/servers/${this.serverId}/vnc`,
+        url,
         {
           credentials: { password }
         }
