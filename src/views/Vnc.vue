@@ -95,7 +95,7 @@ export default {
 #noVNC_status_bar {
   @apply relative w-full flex flex-col justify-center items-center;
   color: #fff;
-  padding: 10px;
+  padding: 10px 70px;
   font: bold 12px Helvetica;
 }
 
