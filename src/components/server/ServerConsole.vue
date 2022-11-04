@@ -56,6 +56,6 @@ export default {
 </script>
 <style scoped>
 .error__message {
-  @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
+  @apply flex flex-col bg-red text-white px-4 md:px-6 py-2 w-full rounded space-y-1;
 }
 </style>

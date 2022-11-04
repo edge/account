@@ -99,9 +99,6 @@ export default {
   font: bold 12px Helvetica;
 }
 
-#noVNC_status {
-  @apply mx-20;
-}
 .close_button {
   @apply absolute right-2 top-2 flex items-center;
 }
