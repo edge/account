@@ -114,7 +114,7 @@ export const getTasks = async (host, sessionId, serverId, params) => {
 }
 
 // get a server's VNC credentials, including a session id and VNC password
-export const getVncCredentials = async (host, sessionId, serverId) => {
+export const getVncSession = async (host, sessionId, serverId) => {
   const url = `${host}/servers/${serverId}/vnc/credentials`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })

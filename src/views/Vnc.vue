@@ -52,10 +52,10 @@ export default {
         this.statusClass = 'noVNC_status_error'
         this.status = `Failed to connect to ${this.server.settings.name}`
         this.close(true)
-      }, 1000)
+      }, 3000)
     },
     async launchConsole() {
-      const { session, password } = await api.servers.getVncCredentials(
+      const { session, password } = await api.servers.getVncSession(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId

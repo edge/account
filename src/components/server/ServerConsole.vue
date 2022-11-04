@@ -5,10 +5,6 @@
       <p class="mt-3 text-gray-500">
         Use the server console for native-like terminal access to your server from your browser.
       </p>
-      <!-- <a target="_blank" :href="`/server/${server._key}/vnc`" class="h-full mt-4 lg:mt-0 button button--success">
-        <span>Launch console in new window</span>
-        <DuplicateIcon class="w-4 h-4 ml-2" />
-      </a> -->
       <button @click="launch" class="h-full lg:mt-0 button button--success button--small">
         <span>Launch Console</span>
         <DuplicateIcon class="w-4 h-4 ml-2" />
