@@ -7,9 +7,7 @@
         <XIcon class="w-4 h-4 ml-1" />
       </button>
     </div>
-    <div id="terminal" ref="terminal" @click="openKeyboard"></div>
-    <!-- hidden text area used by mobile devices to focus on to open keyboard -->
-    <textarea class="hidden" id="hidden" cols="1" rows="1"></textarea>
+    <div id="terminal" ref="terminal"></div>
   </div>
 </template>
 
@@ -48,7 +46,6 @@ export default {
       this.statusClass = 'noVNC_status_normal'
       this.status = `Connected to ${this.server.settings.name}`
       this.rfb.focus()
-      this.openKeyboard()
     },
     disconnected() {
       setTimeout(() => {
@@ -56,9 +53,6 @@ export default {
         this.status = `Failed to connect to ${this.server.settings.name}`
         this.close(true)
       }, 3000)
-    },
-    openKeyboard() {
-      document.getElementById('hidden').focus()
     },
     async launchConsole() {
       const { session, password } = await api.servers.getVncSession(
@@ -119,9 +113,5 @@ export default {
 
 .noVNC_status_warn {
   background: linear-gradient(#ccc896 0%,#b4ac68 49%,#b4af62 51%,#a5a454 100%);
-}
-
-#terminal {
-  max-height: 750px;
 }
 </style>
