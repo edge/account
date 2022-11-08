@@ -59,6 +59,7 @@ export default {
       this.statusClass = 'noVNC_status_normal'
       this.status = `Connected to ${this.server.settings.name}`
       this.rfb.focus()
+      this.showVirtualKeyboard()
     },
     disconnected() {
       setTimeout(() => {
@@ -90,6 +91,14 @@ export default {
       this.touchKeyboard = new Keyboard(document.getElementById('noVNC_keyboardinput'))
       this.touchKeyboard.onkeyevent = this.keyEvent
       this.touchKeyboard.grab()
+      document.getElementById('noVNC_keyboardinput')
+        .addEventListener('input', this.keyInput)
+      document.getElementById('noVNC_keyboardinput')
+        .addEventListener('focus', this.onfocusVirtualKeyboard)
+      document.getElementById('noVNC_keyboardinput')
+        .addEventListener('blur', this.onblurVirtualKeyboard)
+      document.getElementById('noVNC_keyboardinput')
+        .addEventListener('submit', () => false)
     },
     replaceURL(host) {
       return host.replace(/^http(s?:)/, 'ws$1')
@@ -119,6 +128,20 @@ export default {
       }
       catch (err) {
         // setSelectionRange is undefined in Google Chrome
+      }
+    },
+    onfocusVirtualKeyboard(event) {
+      document.getElementById('noVNC_keyboard_button')
+        .classList.add('noVNC_selected')
+      if (this.rfb) {
+        this.rfb.focusOnClick = false
+      }
+    },
+    onblurVirtualKeyboard(event) {
+      document.getElementById('noVNC_keyboard_button')
+        .classList.remove('noVNC_selected')
+      if (this.rfb) {
+        this.rfb.focusOnClick = true
       }
     }
   },
