@@ -213,6 +213,7 @@ export default {
       else this.rfb.focus()
     },
     onDisconnect() {
+      // allow for a 3 second timeout before displaying error messages so user is aware a connection was attempted
       setTimeout(() => {
         this.statusClass = 'noVNC_status_error'
         this.status = `Failed to connect to ${this.server.settings.name}`
@@ -237,9 +238,8 @@ export default {
       this.showMenu = !this.showMenu
     },
 
-
     /**
-     * Virtual keyboard methods.
+     * Virtual keyboard methods. Most of these methods come form https://github.com/novnc/noVNC/blob/master/app/ui.js
      */
     keepVirtualKeyboard(event) {
       const input = document.getElementById('noVNC_keyboardinput')
