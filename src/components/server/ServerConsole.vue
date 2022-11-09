@@ -2,9 +2,14 @@
   <div class="flex flex-col pb-20 space-y-4">
     <div class="box" v-if="!launched">
       <h4>Server Console</h4>
-      <p class="mt-3 text-gray-500">
+      <p class="mt-3 mb-4 text-gray-500">
         Use the server console for native-like terminal access to your server from your browser.
       </p>
+      <div v-if="isTouchDevice" class="mb-4 p-2 border border-green rounded">
+        <div class="float-left mr-1"><DeviceMobileIcon class="text-green w-5" /></div>
+        <!-- eslint-disable-next-line max-len -->
+        <span class="text-gray-500">We noticed that you're using a mobile device with a touch screen. The console is best accessed from a computer with a physical keyboard.</span>
+      </div>
       <button @click="launch" class="h-full lg:mt-0 button button--success button--small">
         <span>Launch Console</span>
         <DuplicateIcon class="w-4 h-4 ml-2" />
@@ -22,12 +27,13 @@
 </template>
 
 <script>
-import { DuplicateIcon } from '@heroicons/vue/outline'
-import Vnc from '@/views/Vnc'
+import Vnc from '@/components/server/Vnc'
+import { DeviceMobileIcon, DuplicateIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'ServerConsole',
   components: {
+    DeviceMobileIcon,
     DuplicateIcon,
     Vnc
   },
@@ -38,10 +44,15 @@ export default {
       launched: false
     }
   },
+  computed: {
+    isTouchDevice() {
+      return 'ontouchstart' in document.documentElement
+    }
+  },
   methods: {
-    close(hasError) {
+    close(withError) {
       this.launched = false
-      this.consoleError = hasError
+      this.consoleError = withError
     },
     launch() {
       this.launched = true
