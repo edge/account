@@ -261,7 +261,7 @@ export default {
   }
   .zone {
     @apply col-start-3 row-start-1 flex-shrink-0;
-    flex-basis: 80px;
+    flex-basis: 100px;
   }
   .created {
     @apply col-start-4 row-start-1 flex-shrink-0;
