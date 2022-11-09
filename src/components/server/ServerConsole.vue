@@ -10,7 +10,10 @@
         <!-- eslint-disable-next-line max-len -->
         <span class="text-gray-500">We noticed that you're using a mobile device with a touch screen. The console is best accessed from a computer with a physical keyboard.</span>
       </div>
-      <button @click="launch" class="h-full lg:mt-0 button button--success button--small">
+      <button @click="launch"
+        :disabled="server.status !== 'active'"
+        class="h-full lg:mt-0 button button--success button--small"
+      >
         <span>Launch Console</span>
         <DuplicateIcon class="w-4 h-4 ml-2" />
       </button>
