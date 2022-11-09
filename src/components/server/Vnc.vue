@@ -454,7 +454,6 @@ export default {
   @apply fixed top-0 left-0 h-screen w-screen;
   z-index: 10000000000;
 }
-
 @screen sm {
   /* on screens above sm breakpoint, default is no longer fullscreen */
   .terminal_wrapper {
@@ -502,8 +501,6 @@ export default {
   @apply text-green;
 }
 
-
-
 /* status bar */
 #noVNC_status_bar {
   @apply relative w-full flex flex-col justify-center items-center py-2 px-10 text-white;
@@ -518,7 +515,6 @@ export default {
 .noVNC_status_warn {
   background: linear-gradient(#ccc896 0%,#b4ac68 49%,#b4af62 51%,#a5a454 100%);
 }
-
 
 /* Main console container */
 #noVNC_container {
