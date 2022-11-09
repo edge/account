@@ -83,7 +83,7 @@
     </div>
 
     <!-- Terminal mounted here -->
-    <div id="noVNC_container" ref="noVNC_container">
+    <div id="noVNC_container" ref="noVNC_container" @click="setFocus">
       <!-- hidden text area for virtual keyboard to focus on -->
       <textarea
         id="noVNC_keyboardinput"
@@ -435,11 +435,6 @@ export default {
   unmounted() {
     this.rfb.disconnect()
     this.rfb = null
-  },
-  watch: {
-    showMenu() {
-      this.setFocus()
-    }
   }
 }
 </script>
