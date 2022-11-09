@@ -1,5 +1,8 @@
 <template>
-  <div class="terminal_wrapper" :class="fullscreen ? 'fullscreen' : ''">
+  <div
+    class="terminal_wrapper"
+    :class="fullscreen && 'fullscreen'"
+  >
     <!-- Status bar -->
     <div id="noVNC_status_bar" :class="statusClass">
       <div id="noVNC_status">{{status}}</div>
@@ -83,7 +86,15 @@
     </div>
 
     <!-- Terminal mounted here -->
-    <div id="noVNC_container" ref="noVNC_container" @click="setFocus">
+    <div
+      id="noVNC_container"
+      ref="noVNC_container"
+      @click="setFocus"
+      :class="[
+        showExtraKeys && !showMoreKeys && 'extraKeys',
+        showExtraKeys && showMoreKeys && 'moreKeys'
+      ]"
+    >
       <!-- hidden text area for virtual keyboard to focus on -->
       <textarea
         id="noVNC_keyboardinput"
@@ -460,10 +471,10 @@ export default {
 
 /* menu */
 .openMenu__button {
-  @apply absolute left-2 top-2 flex items-center;
+  @apply absolute right-2 top-2 flex items-center;
 }
 .menu {
-  @apply absolute left-2 top-8 hidden flex-col mt-2 bg-white rounded;
+  @apply absolute right-2 top-8 hidden flex-col mt-2 bg-white rounded;
 }
 .menu.show {
   @apply flex;
@@ -512,11 +523,20 @@ export default {
 }
 
 /* Main console container */
-#noVNC_container {
+.fullscreen #noVNC_container {
   width: 100%;
   height: 100%;
   min-height: 600px;
   background-color: rgb(40, 40, 40);
+}
+.fullscreen #noVNC_container {
+  height: calc(100% - 30px);
+}
+.fullscreen #noVNC_container.extraKeys {
+  height: calc(100% - 74px);
+}
+.fullscreen #noVNC_container.moreKeys {
+  height: calc(100% - 110px);
 }
 
 /* hidden textarea for virtual keyboard */
