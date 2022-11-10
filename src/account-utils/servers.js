@@ -113,6 +113,14 @@ export const getTasks = async (host, sessionId, serverId, params) => {
   return response.body
 }
 
+// get a server's VNC credentials, including a session id and VNC password
+export const getVncSession = async (host, sessionId, serverId) => {
+  const url = `${host}/servers/${serverId}/vnc/credentials`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // resize server
 export const resizeServer = async (host, sessionId, serverId, newServerSpec) => {
   const url = `${host}/servers/${serverId}/resize`

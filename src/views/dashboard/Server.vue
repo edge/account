@@ -145,14 +145,14 @@
                 Metrics
               </button>
             </Tab> -->
-            <!-- <Tab v-slot="{selected}">
+            <Tab v-slot="{selected}">
               <button
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
                 Console
               </button>
-            </Tab> -->
+            </Tab>
             <Tab v-slot="{selected}">
               <button
                 class="tab"
@@ -213,9 +213,9 @@
             </TabPanel> -->
 
             <!-- console -->
-            <!-- <TabPanel>
+            <TabPanel>
               <ServerConsole :server=server />
-            </TabPanel> -->
+            </TabPanel>
 
             <!-- resize -->
             <TabPanel>
@@ -307,7 +307,7 @@ import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import ProgressBar from '@/components/ProgressBar'
 import ServerBackups from '@/components/server/ServerBackups'
-// import ServerConsole from '@/components/server/ServerConsole'
+import ServerConsole from '@/components/server/ServerConsole'
 import ServerDestroy from '@/components/server/ServerDestroy'
 import ServerDisplayName from '@/components/server/ServerDisplayName'
 import ServerHistory from '@/components/server/ServerHistory'
@@ -349,7 +349,7 @@ export default {
     LoadingSpinner,
     ProgressBar,
     ServerBackups,
-    // ServerConsole,
+    ServerConsole,
     ServerDestroy,
     ServerDisplayName,
     ServerHistory,
