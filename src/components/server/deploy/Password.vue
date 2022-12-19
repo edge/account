@@ -82,7 +82,7 @@ export default {
       }, 2000)
     },
     generate() {
-      this.password = (new Array(32))
+      this.password = (new Array(24))
         .fill(null)
         .map(() => {
           const n = Math.floor(Math.random() * passwordCharset.length)
