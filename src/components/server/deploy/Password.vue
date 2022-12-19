@@ -53,8 +53,9 @@
 </template>
 
 <script>
-import { anyid } from 'anyid'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
+
+const passwordCharset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789*#$!?-_'
 
 export default {
   name: 'Password',
@@ -66,7 +67,6 @@ export default {
     return {
       canCopy: false,
       copying: false,
-      idGenerator: null,
       password: '',
       showPassword: false
     }
@@ -82,7 +82,13 @@ export default {
       }, 2000)
     },
     generate() {
-      this.password = this.idGenerator.id()
+      this.password = (new Array(32))
+        .fill(null)
+        .map(() => {
+          const n = Math.floor(Math.random() * passwordCharset.length)
+          return passwordCharset[n]
+        })
+        .join('')
     },
     toggleShowPassword() {
       if (this.disableControls) return
@@ -91,7 +97,6 @@ export default {
   },
   mounted() {
     this.canCopy = !!navigator.clipboard
-    this.idGenerator = anyid().encode('0Aa-IO').length(21).random()
     this.generate()
   },
   watch: {
