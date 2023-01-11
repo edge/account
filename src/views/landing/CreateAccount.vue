@@ -232,9 +232,7 @@ export default {
   computed: {
     ...mapState(['account', 'backupCodes', 'session']),
     is2FAEnabled() {
-      if (!this.account) return false
-      if(this.account.totp) return this.account.totp.enabled
-      return false
+      return this.account && this.account.totp
     },
     isAccountGenerated() {
       return this.account && !this.isGeneratingAccount

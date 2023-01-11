@@ -248,7 +248,7 @@ export default {
           }, 500)
         }
         if (error.response) {
-          if (error.response && error.response.status === 401) {
+          if (error.response.status === 401) {
             this.requires2FA = true
             this.isLoading = false
           }

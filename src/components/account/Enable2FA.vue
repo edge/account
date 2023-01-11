@@ -76,7 +76,7 @@
       </ol>
       <!-- error message  -->
       <ValidationError :errors="v$.confirmationCode.$errors" />
-      <div v-if="errors.confirmationCode" class="flex items-center errorMessage mt-2">
+      <div v-if="errors.confirmationCode" class="flex items-center errorMessage">
         <ExclamationIcon class="w-3.5 h-3.5" />
         <span class="errorMessage__text">{{ errors.confirmationCode }}</span>
       </div>
@@ -183,7 +183,7 @@ export default {
 
       this.isLoading = true
       try {
-        const { account } = await api.accounts.enable2FA(
+        const { totp } = await api.accounts.addTOTP(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
@@ -191,8 +191,9 @@ export default {
             secret: this.secret.base32
           }
         )
-        this.$store.commit('setBackupCodes', account.totp.backupCodes)
+        this.$store.commit('setBackupCodes', totp.backupCodes)
         await this.updateAccount()
+        this.$emit('enable2FA')
         this.isLoading = false
       }
       catch (error) {
@@ -224,6 +225,10 @@ export default {
 </script>
 
 <style scoped>
+ol:not([class]) {
+  @apply mb-0;
+}
+
 .qrcode {
   @apply justify-start items-start;
   height: max-content;
