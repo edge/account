@@ -4,6 +4,14 @@
 
 import superagent from 'superagent'
 
+export const addTOTP = async (host, sessionId, options) => {
+  const url = `${host}/account/totp`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(options)
+  return response.body
+}
+
 export const createAccount = async (host, referralCode) => {
   const url = `${host}/account`
   let response
@@ -13,24 +21,8 @@ export const createAccount = async (host, referralCode) => {
   return response.body
 }
 
-export const enable2FA = async (host, sessionId, options) => {
-  const url = `${host}/account/2fa`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(options)
-  return response.body
-}
-
-export const enableRecovery = async (host, sessionId, address) => {
-  const url = `${host}/account/recovery`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ address })
-  return response.body
-}
-
-export const disable2FA = async (host, sessionId, body) => {
-  const url = `${host}/account/2fa`
+export const disableTOTP = async (host, sessionId, body) => {
+  const url = `${host}/account/totp`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send(body)
@@ -41,6 +33,14 @@ export const disableRecovery = async (host, sessionId) => {
   const url = `${host}/account/recovery`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+export const enableRecovery = async (host, sessionId, address) => {
+  const url = `${host}/account/recovery`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ address })
   return response.body
 }
 
