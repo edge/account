@@ -2,7 +2,7 @@
   <div class="flex flex-col text-gray-500 space-y-2">
     <div class="flex items-center">
       <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
-      <span>Two-factor authentication is enabled ({{ account.totp }} connected).</span>
+      <span>Two-factor authentication is enabled ({{ account.totps }} connected).</span>
     </div>
     <span>To disable two-factor authentication, please enter
       <!-- eslint-disable-next-line max-len -->

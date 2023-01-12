@@ -83,7 +83,7 @@ export default {
       return format.accountNumberMasked(this.account._key)
     },
     is2FAEnabled() {
-      return this.account.totp
+      return this.account.totps
     },
     isRecoveryEnabled() {
       return this.account.recovery && this.account.recovery.email.verified
