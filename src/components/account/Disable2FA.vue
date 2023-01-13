@@ -2,7 +2,7 @@
   <div class="flex flex-col text-gray-500 space-y-2">
     <div class="flex items-center">
       <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
-      <span>Two-factor authentication is enabled.</span>
+      <span>Two-factor authentication is enabled ({{ account.totps }} connected).</span>
     </div>
     <span>To disable two-factor authentication, please enter
       <!-- eslint-disable-next-line max-len -->
@@ -12,9 +12,9 @@
 
     <!-- backup code/otp toggle button -->
     <!-- eslint-disable-next-line max-len -->
-    <p v-if="useBackupCode" class="text-gray-500">Alternatively, go back to <button @click="toggleUseBackupCode" class="underline">use your 2FA device</button>.</p>
+    <p v-if="useBackupCode" class="text-gray-500">Alternatively, go back to <button @click="toggleUseBackupCode" class="underline hover:text-green">use your 2FA device</button>.</p>
     <!-- eslint-disable-next-line max-len -->
-    <p v-else class="text-gray-500">Lost your authenticator device? You can <button @click="toggleUseBackupCode" class="underline">enter a backup code</button> instead.</p>
+    <p v-else class="text-gray-500">Lost your authenticator device? You can <button @click="toggleUseBackupCode" class="underline hover:text-green">enter a backup code</button> instead.</p>
 
     <!-- confirmation code and button -->
     <div class="input-field flex items-center w-full pt-2">
@@ -52,18 +52,16 @@
     </div>
     <!-- error message  -->
     <div v-if="useBackupCode"><ValidationError :errors="v$.backupCode.$errors"/></div>
-    <div v-else>
-      <ValidationError :errors="v$.confirmationCode.$errors"/>
-    </div>
-    <div class="mt-2"><HttpError :error=httpError /></div>
+    <ValidationError v-else :errors="v$.confirmationCode.$errors"/>
+    <HttpError :error=httpError />
   </div>
 </template>
 
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils/index'
+import * as format from '@/utils/format'
 import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
@@ -99,7 +97,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['account', 'session']),
     canDisable() {
       if (this.isLoading) return false
       if (this.useBackupCode) return !this.v$.backupCode.$invalid
@@ -119,14 +117,18 @@ export default {
       try {
         const body = {}
         this.useBackupCode ? body.backupCode = this.backupCode : body.otp = this.otp
-
-        await api.accounts.disable2FA(
+        await api.accounts.disableTOTP(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           body
         )
-        await this.updateAccount()
-        this.isLoading = false
+        setTimeout(async () => {
+          this.isLoading = false
+          this.confirmationCode = ''
+          this.backupCode = ''
+          this.v$.$reset()
+          await this.updateAccount()
+        }, 500)
       }
       catch (error) {
         setTimeout(async () => {

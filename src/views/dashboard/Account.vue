@@ -28,8 +28,15 @@
     <div class="box">
       <h4>Two-factor Authentication (2FA)</h4>
       <div>
-        <Disable2FA v-if="is2FAEnabled && !backupCodes" />
-        <Enable2FA v-else />
+        <Disable2FA v-if="is2FAEnabled && !showAddExtra2FA && !backupCodes" />
+        <Enable2FA v-else @enable2FA="onEnable2FA" />
+        <button
+          v-if="is2FAEnabled && !backupCodes"
+          @click="toggleAddExtra2FA"
+          class="mt-2 underline text-gray-500 hover:text-green"
+        >
+          {{ showAddExtra2FA ? 'Return to remove existing 2FA code' : 'Add extra 2FA code' }}
+        </button>
       </div>
     </div>
 
@@ -76,7 +83,7 @@ export default {
       return format.accountNumberMasked(this.account._key)
     },
     is2FAEnabled() {
-      return this.account.totp && this.account.totp.enabled
+      return this.account.totps
     },
     isRecoveryEnabled() {
       return this.account.recovery && this.account.recovery.email.verified
@@ -85,7 +92,8 @@ export default {
   data() {
     return {
       copied: false,
-      showAccountNumber: false
+      showAccountNumber: false,
+      showAddExtra2FA: false
     }
   },
   methods: {
@@ -96,8 +104,14 @@ export default {
         this.copied = false
       }, 2000)
     },
+    onEnable2FA() {
+      this.showAddExtra2FA = false
+    },
     toggleShowAccountNumber() {
       this.showAccountNumber = !this.showAccountNumber
+    },
+    toggleAddExtra2FA() {
+      this.showAddExtra2FA = !this.showAddExtra2FA
     }
   }
 }

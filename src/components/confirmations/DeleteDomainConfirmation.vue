@@ -15,16 +15,16 @@
     </template>
     <template v-slot:buttons>
       <button
-        class="w-full button button--small button--error"
-        @click="confirm"
-      >
-        Yes, Delete Domain
-      </button>
-      <button
         class="w-full mt-3 button button--small button--outline sm:mt-0"
         @click="close"
       >
         Cancel
+      </button>
+      <button
+        class="w-full button button--small button--error"
+        @click="confirm"
+      >
+        Yes, Delete Domain
       </button>
     </template>
   </Modal>
