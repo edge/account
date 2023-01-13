@@ -413,6 +413,11 @@ export default {
     this.cpusValue = this.current ? this.current.spec.cpus : 1
     this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : 0.5
     this.diskValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
+
+    // set to use manual disk input if current disk value doesn't match one of the slider values
+    if (this.current && !this.diskOptions.data.some(d => d.value === this.diskValue.toString())) {
+      this.useManualDiskInput = true
+    }
   },
   setup() {
     return {
