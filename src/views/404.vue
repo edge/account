@@ -14,7 +14,7 @@
 <script>
 export default {
   title() {
-    return 'XE Explorer » 404'
+    return 'Edge Account Portal » 404'
   }
 }
 </script>
