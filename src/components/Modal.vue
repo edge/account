@@ -7,7 +7,7 @@
       </div>
       <div class="my-8 px-8 text-sm text-gray-500">
         <slot name="body" />
-        <div class="w-full my-8 sm:flex sm:space-x-4">
+        <div class="w-full my-8 flex flex-col-reverse sm:flex-row sm:space-x-4">
           <slot name="buttons" />
         </div>
       </div>
