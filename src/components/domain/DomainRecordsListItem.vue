@@ -71,6 +71,9 @@
         </div>
       </div>
       <!-- priority (MX only) -->
+      <div v-if="isMx">
+        <!-- blank div used for alignment purposes only -->
+      </div>
       <div class="recordList__field input-group priority" v-if="isMx">
         <span class="recordList__header">Priority</span>
         <input v-if=isEditing
@@ -613,12 +616,12 @@ input[type=number] {
     @apply pr-4;
   }
   .recordList__fields-wrapper {
-    /* @apply flex flex-row space-y-0 justify-between gap-x-4; */
     @apply grid gap-x-4;
     grid-template-columns: 80px 1fr 1fr 70px 25px;
   }
   .recordList__fields-wrapper.mx {
-    grid-template-columns: 80px 13fr 4fr 8fr 70px 25px;
+    /* 0.1fr is width of blank div for alignment purposes */
+    grid-template-columns: 80px 11.9fr 0.1fr 4fr 8fr 70px 25px;
   }
   .name {
     @apply col-span-1;
