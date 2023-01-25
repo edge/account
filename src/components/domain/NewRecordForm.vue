@@ -354,8 +354,10 @@ export default {
     },
     priority() {
       this.httpError = null
-      if (this.priorityTimeout) clearTimeout(this.priorityTimeout)
-      this.priorityTimeout = setTimeout(this.validatePriority, 400)
+      if (!this.creatingRecord) {
+        if (this.priorityTimeout) clearTimeout(this.priorityTimeout)
+        this.priorityTimeout = setTimeout(this.validatePriority, 400)
+      }
     },
     ttl() {
       this.httpError = null

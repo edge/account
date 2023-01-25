@@ -64,7 +64,7 @@
       <CdnDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
       <CdnDomains @update-domains=onUpdateDomains :disableControls=disableControls />
       <CdnConfig @update-config=onUpdateConfig :disableControls=disableControls />
-      <CdnEstimatedCosts :disableControls=disableControls />
+      <CdnEstimatedCosts />
       <!-- deploy button -->
       <button
         @click=deployCdn
