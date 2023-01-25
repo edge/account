@@ -633,13 +633,13 @@ input[type=number] {
     @apply col-start-4 row-start-1;
   }
   .recordList__fields-wrapper.mx .ttl {
-    @apply col-start-5;
+    @apply col-start-6;
   }
   .options {
     @apply row-start-1 col-start-5 col-span-1;
   }
   .recordList__fields-wrapper.mx .options {
-    @apply col-start-6;
+    @apply col-start-7;
   }
 
   .options__dropdown {
