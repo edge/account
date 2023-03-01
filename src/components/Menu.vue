@@ -1,26 +1,41 @@
 <template>
-  <ul class="main-nav">
-    <li
-      v-for="(item, index) in mainNav"
-      :key="index"
-      class="main-nav__item"
-      :class="item.disabled ? 'disabled' : ''"
-      @click="closeNav"
-    >
-      <router-link
-        :to="item.link"
-        class="main-nav__link"
-        :class="location && isActive(item) ? 'router-link-active' : ''"
+  <div>
+    <ul class="main-nav">
+      <li
+        v-for="(item, index) in mainNav"
+        :key="index"
+        class="main-nav__item"
+        :class="item.disabled ? 'disabled' : ''"
+        @click="closeNav"
       >
-        {{item.text}}
-      </router-link>
-    </li>
-  </ul>
+        <router-link
+          :to="item.link"
+          class="main-nav__link"
+          :class="location && isActive(item) ? 'router-link-active' : ''"
+        >
+          {{item.text}}
+        </router-link>
+      </li>
+    </ul>
+    <div class="docs">
+      <div class="docs-border"></div>
+      <a class="docs-link" href="https://docs.edge.network/" target="_blank">
+        <span class="book-icon">📖</span>
+        <span class="label">Documentation</span>
+        <span class="ext-icon"><ArrowTopRightOnSquareIcon/></span>
+      </a>
+    </div>
+  </div>
 </template>
 
 <script>
+import ArrowTopRightOnSquareIcon from './icons/ArrowTopRightOnSquareIcon'
+
 export default {
   name: 'Menu',
+  components: {
+    ArrowTopRightOnSquareIcon
+  },
   props: ['mainNav', 'closeNav'],
   data: function () {
     return {
@@ -57,5 +72,34 @@ export default {
   .main-nav__item.disabled {
     opacity: 0.3;
     pointer-events: none;
+  }
+
+  .docs {
+    @apply pb-6;
+  }
+
+  .docs-border {
+    @apply ml-3 mr-3 mt-4 mb-3 border-t-2;
+  }
+
+  .docs a {
+    @apply flex flex-row block rounded-lg p-3;
+    @apply hover:bg-gray-100 hover:bg-opacity-50;
+  }
+
+  .docs a .label {
+    flex-grow: 2;
+    @apply text-gray-900;
+  }
+
+  .docs a .book-icon {
+    @apply mr-3 md:hidden lg:block;
+    font-size: 16px;
+  }
+
+  .docs a .ext-icon svg {
+    margin-top: -3px;
+    stroke: #888888;
+    width: 24px;
   }
 </style>

@@ -104,13 +104,14 @@ export default {
       this.showNav = false
     },
     showNav() {
+      const crispClient = document.querySelector('.crisp-client')
       if (this.showNav) {
         document.documentElement.style.overflow = 'hidden'
-        document.querySelector('.crisp-client').style.display = 'none'
+        if (crispClient) crispClient.style.display = 'none'
       }
       else {
         document.documentElement.style.overflow = 'auto'
-        document.querySelector('.crisp-client').style.display = 'block'
+        if (crispClient) crispClient.style.display = 'block'
       }
     }
   }
