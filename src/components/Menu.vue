@@ -87,12 +87,11 @@ export default {
   }
 
   .docs a .book-icon {
-    @apply mr-3;
+    @apply mr-3 md:hidden lg:block;
     font-size: 16px;
   }
 
   .docs a .ext-icon svg {
-    /* stroke: rgba(17, 24, 39, var(--tw-text-opacity)); */
     margin-top: -3px;
     stroke: #888888;
     width: 24px;
