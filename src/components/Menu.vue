@@ -19,7 +19,7 @@
     </ul>
     <div class="docs">
       <div class="docs-border"></div>
-      <a href="https://docs.edge.network/" target="_blank">
+      <a class="docs-link" href="https://docs.edge.network/" target="_blank">
         <span class="book-icon">📖</span>
         <span class="label">Documentation</span>
         <span class="ext-icon"><ArrowTopRightOnSquareIcon/></span>
