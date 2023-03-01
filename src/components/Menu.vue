@@ -18,6 +18,7 @@
       </li>
     </ul>
     <div class="docs">
+      <div class="docs-border"></div>
       <a href="https://docs.edge.network/" target="_blank">
         <span class="book-icon">📖</span>
         <span class="label">Documentation</span>
@@ -74,11 +75,16 @@ export default {
   }
 
   .docs {
-    @apply m-3 pt-6 pb-6 border-t-2;
+    @apply pb-6;
+  }
+
+  .docs-border {
+    @apply ml-3 mr-3 mt-4 mb-3 border-t-2;
   }
 
   .docs a {
-    @apply flex flex-row;
+    @apply flex flex-row block rounded-lg p-3;
+    @apply hover:bg-gray-100 hover:bg-opacity-50;
   }
 
   .docs a .label {
