@@ -12,7 +12,7 @@
       </div>
       <button @click="launch"
         :disabled="server.status !== 'active'"
-        class="h-full lg:mt-0 button button--success button--small"
+        class="lg:mt-0 button button--success button--small"
       >
         <span>Launch Console</span>
         <DuplicateIcon class="w-4 h-4 ml-2" />
