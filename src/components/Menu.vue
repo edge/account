@@ -93,13 +93,13 @@ export default {
   }
 
   .docs a .book-icon {
-    @apply mr-3 md:hidden lg:block;
-    font-size: 14px;
+    @apply relative mr-2 md:hidden lg:block;
+    font-size: 14.5px;
   }
 
   .docs a .ext-icon svg {
     margin-top: -3px;
     stroke: #888888;
-    width: 20px;
+    width: 18px;
   }
 </style>
