@@ -145,10 +145,13 @@ const store = createStore({
     }
   },
   getters: {
-    balanceSuspend: (state) => state.balance && state.balance.available.usd <= state.balance.threshold.suspend.usd,
-    // eslint-disable-next-line max-len
-    balanceWarning: (state, getters) => state.balance && !getters.balanceSuspend && state.balance.available.usd < state.balance.threshold.warning.usd,
-    // eslint-disable-next-line max-len
+    balanceSuspend: (state) => !state.account.managed
+      && state.balance
+      && state.balance.available.usd <= state.balance.threshold.suspend.usd,
+    balanceWarning: (state, getters) => !state.account.managed
+      && state.balance
+      && !getters.balanceSuspend
+      && state.balance.available.usd < state.balance.threshold.warning.usd,
     tasksByServerId: (state) => (serverId) => state.tasks.filter(task => task.entity === `servers/${serverId}`)
   }
 })
