@@ -43,7 +43,7 @@ export default {
     return {
       records: [],
       iRecords: null,
-      limit: 10,
+      limit: 100,
       loaded: false,
       metadata: { totalCount: 0 },
       pageHistory: [1]
