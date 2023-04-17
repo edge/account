@@ -12,7 +12,7 @@
       </div>
     </div>
 
-    <div class="box mb-4" v-if="domain && !deleted">
+    <div class="box mb-4" v-if="showNameserversNotice">
       <!-- eslint-disable-next-line max-len -->
       <div class="float-left"><InformationCircleIcon class="w-5 mr-1"/></div>
       <span>You will need to update your nameservers with your domain registrar in order for these records to work.
@@ -151,6 +151,12 @@ export default {
     },
     isActive() {
       return this.domain.active
+    },
+    showNameserversNotice() {
+      if (!this.domain) return false
+      if (this.deleted) return false
+      if (this.domain.ns) return !this.domain.ns.confirmed
+      return true
     },
     statusText() {
       return this.isActive ? 'Active' : 'Inactive'
