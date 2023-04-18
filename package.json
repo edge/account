@@ -60,7 +60,7 @@
     "vuex-persist": "^3.1.3"
   },
   "devDependencies": {
-    "@edge/eslint-config-javascript": "^0.1.1",
+    "@edge/eslint-config-javascript": "^0.1.5",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-router": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
