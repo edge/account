@@ -89,9 +89,7 @@
         <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
         <span>Two-factor authentication enabled.</span>
       </div>
-      <!-- eslint-disable-next-line max-len -->
       <span>If you lose your authenticator device, you can use these backup codes to access your account. Each code can only be used once.</span>
-      <!-- eslint-disable-next-line max-len -->
       <span>Store your codes in a safe place. <strong>They will no longer be visible after you close the page or confirm you have stored them</strong>.</span>
       <div class="backupCodes__grid text-center grid grid-cols-2 sm:grid-cols-5 gap-y-2 gap-x-2 py-4">
         <span v-for="code in backupCodes" :key="code"

@@ -1,9 +1,7 @@
 <template>
   <div class="box">
     <h4>Usage</h4>
-    <!-- eslint-disable-next-line max-len -->
     <p class="text-gray-500">Each server has a free quota of backup space equivalent to the server's disk size. You will be billed daily for backup usage above your free quota.</p>
-    <!-- eslint-disable-next-line max-len -->
     <p class="text-gray-500">The estimated charge is based on current active backups being used over a 24 hour period.</p>
     <div class="mt-4 sm:border sm:border-gray-300 sm:rounded-lg">
       <table>

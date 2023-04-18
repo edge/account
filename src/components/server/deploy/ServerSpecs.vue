@@ -118,7 +118,6 @@
         </span>
         <!-- disk size change warning -->
         <span v-show="diskValueIncreased || diskValueDecreased" class="spec__warning">
-          <!-- eslint-disable-next-line max-len -->
           <span v-if=diskValueIncreased>Your server's filesystem will be expanded. This disk resize is not reversible.</span>
           <span v-else>Disk size cannot be decreased.
             <button class="underline" @click="resetToMinimumDisk">Reset</button>
@@ -155,7 +154,6 @@
     <!-- selected results shown on resize screen -->
     <!-- uses two rows to show current vs new specs and cost -->
     <div v-if="current" class="mt-4">
-      <!-- eslint-disable-next-line max-len -->
       <div class="flex flex-col space-y-4 items-baseline justify-between w-full p-5 mt-8 border-t border-gray-300 xl:flex-row">
         <div class="flex flex-col items-baseline">
           <span class="text-green">Current Server</span>
@@ -203,7 +201,6 @@
     </div>
 
     <!-- selected results shown on deploy screen -->
-    <!-- eslint-disable-next-line max-len -->
     <div v-else class="flex flex-col items-baseline justify-between w-full mt-8 space-y-4 border-t border-gray-300 xl:space-y-0 xl:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Your server</span>
@@ -400,7 +397,6 @@ export default {
         else if (this.diskValue > this.diskOptions.max) this.diskValue = this.diskOptions.max.toString()
         else {
           const marks = this.diskOptions.data.map(mark => Number(mark.value))
-          // eslint-disable-next-line max-len
           const closestMark = marks.reduce((prev, curr) => Math.abs(curr - Number(this.diskValue)) < Math.abs(prev - Number(this.diskValue)) ? curr : prev)
           this.diskValue = closestMark.toString()
         }

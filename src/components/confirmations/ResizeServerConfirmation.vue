@@ -11,9 +11,7 @@
        <span class="font-semibold">Warning: server will be powered off while resizing.</span>
      </div>
       <div class="flex flex-col space-y-2 pt-4">
-        <!-- eslint-disable-next-line max-len -->
         <li v-if="resizedInLastHour">Your server was resized less than one hour ago. If you continue to resize again, you'll be charged a full hour for the previous size</li>
-        <!-- eslint-disable-next-line max-len -->
         <li>Cost will {{ costIncreased ? 'increase' : 'decrease' }} from {{ currentCostFormatted }} to {{ newCostFormatted }}</li>
         <li v-if="diskIncreased">Disk space cannot be reduced after resize</li>
       </div>

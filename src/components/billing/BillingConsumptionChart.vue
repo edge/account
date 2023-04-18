@@ -1,25 +1,21 @@
 <template>
   <div>
     <h4>Consumption</h4>
-    <!-- eslint-disable-next-line max-len -->
     <div v-if=consumingServices >
       <p class="mb-0">This chart shows the accrued costs since your last payment and is updated each hour. </p>
       <div id="usage__chart" v-if=consumingServices>
         <!-- <Tooltip :text="`Servers $${balance.consumption.servers.currentCost.toFixed(2)}`"> -->
           <div id="usage__servers" class="usage__area">
-            <!-- eslint-disable-next-line max-len -->
             <span v-if="balance.consumption.servers.currentCost">Servers ${{ balance.consumption.servers.currentCost.toFixed(2) }}</span>
           </div>
         <!-- </Tooltip> -->
         <!-- <Tooltip :text="`Domains $${balance.consumption.dns.currentCost.toFixed(2)}`"> -->
           <div id="usage__dns" class="usage__area">
-            <!-- eslint-disable-next-line max-len -->
             <span v-if="balance.consumption.dns.currentCost">Domains ${{ balance.consumption.dns.currentCost.toFixed(2) }}</span>
           </div>
         <!-- </Tooltip> -->
         <!-- <Tooltip :text="`Content Delivery $${balance.consumption.cdn.currentCost.toFixed(2)}`"> -->
           <div id="usage__cdn" class="usage__area">
-            <!-- eslint-disable-next-line max-len -->
             <span v-if="balance.consumption.cdn.currentCost">CDN ${{ balance.consumption.cdn.currentCost.toFixed(2) }}</span>
           </div>
         <!-- </Tooltip> -->

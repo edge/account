@@ -67,7 +67,6 @@
       <!-- suspend warning -->
       <div v-if="disableControls" class="box mt-4">
         <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
-        <!-- eslint-disable-next-line max-len -->
         <div class="mt-2 text-red">This CDN deployment has been suspended due to insufficient funds. Please add funds to re-enable this service.</div>
       </div>
 

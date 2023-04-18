@@ -70,7 +70,6 @@
         <div><ShieldExclamationIcon class="h-20 text-green mb-4" /></div>
         <span class="text-lg mb-2">Authenticate your account.</span>
         <span class="text-gray mb-2">Please enter the
-          <!-- eslint-disable-next-line max-len -->
           <span v-if="useBackupCode">one of your 8-digit alphanumeric backup codes. The code can only be used once.</span>
           <span v-else>the 6-digit code from your two-factor authentication app.</span>
         </span>

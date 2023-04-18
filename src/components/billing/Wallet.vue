@@ -5,7 +5,6 @@
       <div class="box">
         <div class="flex flex-col">
           <h4>Add Funds with FIAT</h4>
-          <!-- eslint-disable-next-line max-len -->
           <p>You can also purchase XE with your credit or debit card. This is possible through one-off payments or enabling auto top-ups which will ensure you always have the correct funds in your account.</p>
           <span></span>
           <p>The current exchange rate is 1.00 USD = {{ formattedXE }} XE</p>

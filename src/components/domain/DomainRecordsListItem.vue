@@ -183,7 +183,6 @@
     <!-- synced records warning -->
     <div v-if="displaySyncRecordsWarning" class="mt-2 bg-gray-300 rounded text-black p-2">
       <div class="float-left"><InformationCircleIcon class="w-4 mr-1 mt-0.5" /></div>
-      <!-- eslint-disable-next-line max-len -->
       <span>The current TTL for {{ type }} {{ hostname }} is {{ syncRecordsTTL }} and changing it will update {{ syncRecordsCount }} other record{{ syncRecordsCount > 1 ? 's' : '' }}.</span>
     </div>
     <!-- http error -->
@@ -280,7 +279,6 @@ export default {
     ...mapState(['config','session']),
     canConfirmEdit() {
       if (this.type === 'MX' && this.priorityError) return false
-      // eslint-disable-next-line max-len
       return !this.balanceSuspend && this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
     },
     created() {
@@ -418,7 +416,6 @@ export default {
           type: this.type
         }
       )
-      // eslint-disable-next-line max-len
       if (this.record.name === this.hostname && this.record.type === this.type) this.syncRecordsCount = metadata.totalCount - 1
       else this.syncRecordsCount = metadata.totalCount
 
@@ -457,7 +454,6 @@ export default {
       let error = ''
       if (this.type === 'PTR' && !regex.ipv4.test(this.hostname)) error = 'Please enter a valid IPv4 address'
       else if (this.hostname === '@') error = ''
-      // eslint-disable-next-line max-len
       else if (this.hostname && !regex.recordName.test(this.hostname) && !this.hostname !== '@') error = 'Please enter a valid hostname'
       else if (!this.hostname) error = 'Please enter a hostname'
       else error = ''

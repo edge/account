@@ -39,7 +39,6 @@
     </CdnDomains>
     <div class="box">
       <h4 class="mb-4">Configure DNS</h4>
-      <!-- eslint-disable-next-line max-len -->
       <span>In order for Edge CDN to work for the specified domains, you will need to configure the DNS records appropriately. Please ensure each domain added correctly points to <span class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</span>:</span>
       <div class="overflow-x-auto">
         <table class="my-4 space-y-2">
@@ -129,7 +128,6 @@ export default {
       const updatedIntegration = { ...this.integration }
       const domain = this.workingDomains.find(domain => domain.primary)
       updatedIntegration.data.domain = domain && domain.name
-      // eslint-disable-next-line max-len
       updatedIntegration.data.additionalDomains = this.workingDomains.filter(domain =>  !domain.primary).map(domain => domain.name)
       try {
         this.isSaving = true

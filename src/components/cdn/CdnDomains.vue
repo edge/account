@@ -106,7 +106,6 @@ export default {
       this.domains = newDomains
     },
     onEditDomain(oldDomainName, newDomainName) {
-      // eslint-disable-next-line max-len
       this.domains = [...this.domains.map(domain => domain.name === oldDomainName ? { ...domain, name: newDomainName } : domain)]
     },
     onMakeDomainPrimary(newPrimaryDomainName) {

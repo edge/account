@@ -198,7 +198,6 @@ export default {
             this.customConfigMode = this.initialConfigMode
           }
         }
-        // eslint-disable-next-line max-len
         else if (!cache.enabled || cache.ttl !== 86400 || !cache.paths || Object.keys(cache.paths).length) this.configMode = 'custom'
 
         this.initialGlobalConfig = this.globalConfig

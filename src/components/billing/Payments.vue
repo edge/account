@@ -146,7 +146,6 @@ export default {
   methods: {
     async addPaymentMethod() {
       this.addCardError = null
-      // eslint-disable-next-line max-len
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments`
       const overlayTimeout = setTimeout(() => {
         this.addingCard = true
