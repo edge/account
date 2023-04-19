@@ -18,6 +18,7 @@ import Index from '@/views/dashboard/Index'
 import Invoices from '@/components/billing/Invoices'
 import Landing from '@/views/Landing'
 import NotFound from '@/views/404'
+import Notifications from '@/views/dashboard/Notifications'
 import Payments from '@/components/billing/Payments'
 import Purchase from '@/components/billing/Purchase'
 import RecoverAccount from '@/views/landing/RecoverAccount'
@@ -99,6 +100,11 @@ const routes = [
         path: 'domains',
         name: 'Domains',
         component: Domains
+      },
+      {
+        path: 'notifications',
+        name: 'Notifications',
+        component: Notifications
       },
       {
         path: 'servers',

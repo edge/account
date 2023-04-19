@@ -32,6 +32,7 @@
         </div>
       </div>
       <span class="topNavigation__right">
+        <NotificationsLink />
         <UserMenu />
       </span>
     </div>
@@ -45,6 +46,7 @@ import BurgerButton from '@/components/BurgerButton'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
 import Logo from '@/components/Logo'
 import MobileNavigation from '@/components/MobileNavigation'
+import NotificationsLink from '@/components/NotificationsLink'
 // import Search from '@/components/Search'
 import Tooltip from '@/components/Tooltip'
 import UserMenu from '@/components/UserMenu'
@@ -68,6 +70,7 @@ export default {
     InformationCircleIcon,
     Logo,
     MobileNavigation,
+    NotificationsLink,
     // Search,
     Tooltip,
     UserMenu
