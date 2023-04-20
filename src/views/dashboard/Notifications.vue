@@ -20,25 +20,31 @@
           hasAction(notification) ? 'actionable' : ''
         ]"
       >
-        <span class="timestamp" v-if="isToday(notification)">{{ timestamp(notification) }}</span>
-        <span class="timestamp" v-else>{{ timestamp(notification, true) }}</span>
-        <span class="text">{{ notification.text }}</span>
+        <div class="details">
+          <span class="timestamp" v-if="isToday(notification)">{{ timestamp(notification) }}</span>
+          <span class="timestamp" v-else>{{ timestamp(notification, true) }}</span>
+          <span class="text">{{ notification.text }}</span>
+        </div>
         <div class="actions">
           <button class="action" type="button" v-if="hasAction(notification)" @click="action(notification)">
-            <ArrowCircleRightIcon />
-            <span class="label">Action</span>
+            <Tooltip text="Action" position="left">
+              <ArrowCircleRightIcon class="w-6"/>
+            </Tooltip>
           </button>
           <button class="mark-unread" type="button" v-if="notification.read" @click="markUnread(notification)">
-            <DocumentIcon />
-            <span class="label">Mark unread</span>
+            <Tooltip text="Mark unread" position="left">
+              <DocumentIcon class="w-6"/>
+            </Tooltip>
           </button>
           <button class="mark-read" type="button" v-else @click="markRead(notification)">
-            <DocumentIcon />
-            <span class="label">Mark read</span>
+            <Tooltip text="Mark read" position="left">
+              <DocumentIcon class="w-6"/>
+            </Tooltip>
           </button>
           <button class="remove" type="button" @click="remove(notification)">
-            <DocumentRemoveIcon />
-            <span class="label">Delete</span>
+            <Tooltip text="Delete" position="left">
+              <DocumentRemoveIcon class="w-6"/>
+            </Tooltip>
           </button>
         </div>
       </li>
@@ -50,6 +56,7 @@
 /* global process */
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import { ArrowCircleRightIcon, DocumentIcon, DocumentRemoveIcon } from '@heroicons/vue/outline'
 
@@ -63,7 +70,8 @@ export default {
   components: {
     ArrowCircleRightIcon,
     DocumentIcon,
-    DocumentRemoveIcon
+    DocumentRemoveIcon,
+    Tooltip
   },
   data() {
     return {
@@ -149,7 +157,7 @@ export default {
 }
 
 .notificationList__item {
-  @apply flex flex-col bg-white text-gray-500 rounded-md w-full px-5 pr-4 py-3;
+  @apply flex bg-white text-gray-500 rounded-md w-full px-5 pr-4 py-3;
 }
 
 .notificationList__item.actionable {
@@ -169,5 +177,14 @@ export default {
 
 .notificationList__item.read {
   opacity: 80%;
+}
+
+
+.notificationList__item .details {
+  @apply flex flex-col w-full;
+}
+
+.notificationList__item .actions {
+  @apply flex flex-col w-max sm:flex-row;
 }
 </style>
