@@ -50,7 +50,7 @@
             </button>
             <button class="remove" type="button" @click="remove(notification)">
               <Tooltip text="Delete">
-                <DocumentRemoveIcon class="w-6 hover:text-red"/>
+                <MinusCircleIcon class="w-6 hover:text-red"/>
               </Tooltip>
             </button>
           </div>
@@ -74,7 +74,7 @@ import * as format from '@/utils/format'
 import Pagination from '@/components/Pagination'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
-import { ArrowCircleRightIcon, CheckCircleIcon, DocumentRemoveIcon } from '@heroicons/vue/outline'
+import { ArrowCircleRightIcon, CheckCircleIcon, MinusCircleIcon } from '@heroicons/vue/outline'
 
 const actionTypes = ['account-suspended']
 
@@ -87,7 +87,7 @@ export default {
     ArrowCircleRightIcon,
     CheckCircleIcon,
     Pagination,
-    DocumentRemoveIcon,
+    MinusCircleIcon,
     Tooltip
   },
   data() {
