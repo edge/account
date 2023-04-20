@@ -93,7 +93,7 @@ export default {
   data() {
     return {
       includeRead: false,
-      limit: 2,
+      limit: 20,
       loaded: false,
       metadata: {
         totalCount: 0
