@@ -149,10 +149,12 @@ export default {
     async markRead(notification) {
       await api.notifications.markRead(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
       await this.refresh()
+      this.$store.dispatch('updateUnreadNotifications')
     },
     async markUnread(notification) {
       await api.notifications.markUnread(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
       await this.refresh()
+      this.$store.dispatch('updateUnreadNotifications')
     },
     async refresh() {
       this.loaded = false
@@ -172,6 +174,7 @@ export default {
     async remove(notification) {
       await api.notifications.deleteNotifications(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
       await this.refresh()
+      this.$store.dispatch('updateUnreadNotifications')
     },
     setIncludeRead(e) {
       if (e.target.checked) this.includeRead = true

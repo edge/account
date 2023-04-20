@@ -19,7 +19,8 @@ const store = createStore({
     isTestnet: process.env.VUE_APP_ACCOUNT_API_URL.includes('test'),
     session: null,
     subscriptions: [],
-    tasks: []
+    tasks: [],
+    unreadNotifications: 0
   },
   mutations: {
     addTask(state, newTask) {
@@ -46,6 +47,9 @@ const store = createStore({
     },
     setIsAuthed(state, isAuthed) {
       state.isAuthed = isAuthed
+    },
+    setUnreadNotifications(state, unread) {
+      state.unreadNotifications = unread
     },
     setSession(state, session) {
       state.session = session
@@ -142,6 +146,14 @@ const store = createStore({
       const tasks = results
       const updatedTasks = state.tasks.map(task => tasks.find(updatedTask => updatedTask._key === task._key))
       commit('setTasks', updatedTasks)
+    },
+    async updateUnreadNotifications({ commit, state }) {
+      const { metadata } = await api.notifications.getNotifications(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        state.session._key,
+        { limit: 1, read: false }
+      )
+      commit('setUnreadNotifications', metadata.totalCount)
     }
   },
   getters: {
