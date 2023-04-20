@@ -18,6 +18,9 @@
       <span>Loading records</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
+    <div v-else-if="notifications.length === 0" class="box mt-2 flex items-center">
+      <span>You have no new notifications.</span>
+    </div>
     <div v-else>
       <div v-for="notification in notifications" v-bind:key="notification._key" class="notificationList">
         <li
