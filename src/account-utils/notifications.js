@@ -1,6 +1,14 @@
 import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
+export const deleteNotifications = async (host, sessionId, notifications) => {
+  const url = `${host}/notifications`
+  const response = await superagent.delete(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send(notifications)
+  return response.body
+}
+
 // get all notifications belonging to an account
 export const getNotifications = async (host, sessionId, params) => {
   let url = `${host}/notifications`
