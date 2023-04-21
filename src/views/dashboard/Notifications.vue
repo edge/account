@@ -84,7 +84,52 @@ import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
 import { ArrowCircleRightIcon, CheckCircleIcon, TrashIcon } from '@heroicons/vue/outline'
 
-const actionTypes = ['account-suspended']
+const actionMap = {
+  'account-2fa-added': ['Manage account', function () {
+    this.$router.push('/account')
+  }],
+  'account-2fa-disabled': ['Manage account', function () {
+    this.$router.push('/account')
+  }],
+  'account-2fa-enabled': ['Manage account', function () {
+    this.$router.push('/account')
+  }],
+  'account-2fa-removed': ['Manage account', function () {
+    this.$router.push('/account')
+  }],
+  // 'account-advice-unsuspend':
+  'account-dns-confirmed': ['Go to DNS zone', function (notification) {
+    this.$router.push(`/domain/${notification.data.key}`)
+  }],
+  'account-dns-unconfirmed': ['Go to DNS zone', function (notification) {
+    this.$router.push(`/domain/${notification.data.key}`)
+  }],
+  'account-email-verified': ['Manage account', function () {
+    this.$router.push('/account')
+  }],
+  'account-funded': ['Go to purchase', function (notification) {
+    this.$router.push(`/billing/payments/purchase/${notification.data.key}`)
+  }],
+  'account-funding-failed': ['Manage payment methods', function () {
+    this.$router.push('/billing/payments')
+  }],
+  'account-payment-method-added': ['Manage payment methods', function () {
+    this.$router.push('/billing/payments')
+  }],
+  'account-payment-method-removed': ['Manage payment methods', function () {
+    this.$router.push('/billing/payments')
+  }],
+  'account-server-added': ['Go to server', function (notification) {
+    this.$router.push(`/server/${notification.data.key}`)
+  }],
+  // 'account-server-removed':
+  'account-warn-low-balance': ['Go to billing', function () {
+    this.$router.push('/billing/wallet')
+  }],
+  'account-warn-suspend': ['Go to billing', function () {
+    this.$router.push('/billing/wallet')
+  }]
+}
 
 export default {
   name: 'Notifications',
@@ -119,27 +164,17 @@ export default {
   },
   methods: {
     action(notification) {
-      switch (notification.type) {
-      case 'account-suspended':
-        this.$router.push('/billing/wallet')
-        break
-      default:
-        break
-      }
+      if (actionMap[notification.type] !== undefined) actionMap[notification.type][1].apply(this, [notification])
     },
     actionLabel(notification) {
-      switch (notification.type) {
-      case 'account-suspended':
-        return 'Go to billing'
-      default:
-        return 'Action'
-      }
+      if (actionMap[notification.type] !== undefined) return actionMap[notification.type][0]
+      return 'Action'
     },
     changePage(newPage) {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     hasAction(notification) {
-      return actionTypes.includes(notification.type)
+      return actionMap[notification.type] !== undefined
     },
     isToday(notification) {
       const now = new Date()
