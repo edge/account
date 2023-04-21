@@ -51,7 +51,6 @@
               :isInactive=isInactive
               :statusText=statusText
             />
-            <!-- eslint-disable-next-line max-len -->
             <Tooltip v-if="server.suspended" position="right" theme="error" text="Your server has been suspended due to unpaid invoices. When you add funds to your account it will automatically restart."
             >
               <InformationCircleIcon class="w-4" />
@@ -89,7 +88,6 @@
         <div v-else-if=isCrashed  class="box">
           <div class="flex flex-col items-center justify-center text-center">
             <h4>Server Crashed</h4>
-            <!-- eslint-disable-next-line max-len -->
             <p class="mb-0 text-gray-500">There was a problem with your server, please either delete and re-deploy the server or contact support@edge.network for assistance.</p>
             <button
               class="mt-4 button button--error button--small w-full md:max-w-xs"
@@ -401,7 +399,6 @@ export default {
       return this.activeTasks.some(task => task.action === 'destroy')
     },
     isInactive() {
-      // eslint-disable-next-line max-len
       return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying || this.isCrashed)
     },
     isLoadingBackups() {
@@ -457,7 +454,6 @@ export default {
       // whilst server is in process of starting/stopping, check status every 0.5s
       this.iCheckServerStatus = setInterval(async () => {
         await this.updateServer()
-        // eslint-disable-next-line max-len
         if (!pendingStatusList.includes(this.server.status)) clearInterval(this.iCheckServerStatus)
       }, 500)
     },

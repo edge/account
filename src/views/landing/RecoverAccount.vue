@@ -60,7 +60,6 @@
       <!-- resend email button and feedback -->
       <p class="text-gray-500 mb-1">
         Haven't received the email?
-        <!-- eslint-disable-next-line max-len -->
         <span v-if="emailCooldown === 0"><span @click="reRequestEmail" class="underline cursor-pointer hover:text-green">Click here</span> to resend it.</span>
         <span v-else>Please wait {{ emailCooldown }} seconds.</span>
       </p>

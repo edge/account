@@ -136,7 +136,6 @@ export default {
       return this.backupTasks.some(task => task.action === 'createBackup') || this.backup.status === 'creating'
     },
     isDeleting() {
-      // eslint-disable-next-line max-len
       return this.attemptingDestroy || this.backupTasks.some(task => task.action === 'deleteBackup') || this.backup.status === 'deleting'
     },
     isInactive() {

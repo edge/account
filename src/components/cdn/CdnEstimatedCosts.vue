@@ -1,7 +1,6 @@
 <template>
   <div class="box">
     <h4>Estimated Costs</h4>
-    <!-- eslint-disable-next-line max-len -->
     <p class="pb-4">Use the calculator below to estimate costs based on expected usage. Actual costs will be dependent on usage.</p>
     <div class="w-full grid grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2">
       <div class="flex-1 flex flex-col">
@@ -63,7 +62,6 @@
         </div>
       </div>
     </div>
-    <!-- eslint-disable-next-line max-len -->
     <div class="flex flex-col items-baseline justify-between w-full mt-8 space-y-4 border-t border-gray-300 xl:space-y-0 xl:flex-row pt-7">
       <div class="flex flex-col items-baseline">
         <span class="text-green">Estimated Daily Usage</span>

@@ -14,7 +14,6 @@ export const required = helpers.withMessage('A value is required.', _required)
  * Account number validator.
  */
 const accountNumberRegexp = /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/
-// eslint-disable-next-line max-len
 export const accountNumberInput = helpers.withMessage('Your account number is 16 digits', v => accountNumberRegexp.test(v))
 
 
@@ -22,7 +21,6 @@ export const accountNumberInput = helpers.withMessage('Your account number is 16
  * 8-digit alphanumeric backup code validator.
  */
 const backupCodeRegexp = /^[A-Za-z0-9]{8}$/
-// eslint-disable-next-line max-len
 export const backupCode = helpers.withMessage('The backup code is an 8-digit alphanumeric code', v => backupCodeRegexp.test(v))
 
 /**

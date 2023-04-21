@@ -4,11 +4,9 @@
     <div v-if="deployed" class="space-y-4">
       <div class="box md:text-center">
         <h4 class="text-green text-2xl">Success</h4>
-        <!-- eslint-disable-next-line max-len -->
         <div class="max-w-xl m-auto">
           <span>CDN has been successfully deployed to the network.</span>
           <br/>
-          <!-- eslint-disable-next-line max-len -->
           <span class="block mt-2">In order to become operational, DNS records must be created for each domain added.</span>
         </div>
       </div>
@@ -43,7 +41,6 @@
             </table>
           </div>
           <span>You can set these up later, but CDN won't become operational until you do.</span>
-          <!-- eslint-disable-next-line max-len -->
           <span>Changes can take up to 24 hours. If you require any assistance, please contact support@edge.network</span>
           <button
             @click=continueToIntegration
@@ -57,7 +54,6 @@
     <div v-else class="flex flex-col space-y-4">
       <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
         <div><ExclamationIcon class="w-5 text-red" /></div>
-        <!-- eslint-disable-next-line max-len -->
         <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
       </div>
       <!-- details -->

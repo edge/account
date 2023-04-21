@@ -2,7 +2,6 @@
   <div class="box flex flex-col justify-start">
     <h4>Transfer XE</h4>
     <div class="flex flex-col">
-      <!-- eslint-disable-next-line max-len -->
       <p>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to process.</p>
       <div class="relative mb-4">
         <div class="flex items-center w-full">
@@ -16,7 +15,6 @@
         </div>
         <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
       </div>
-      <!-- eslint-disable-next-line max-len -->
       <span>The minimum required balance is ${{ balance.threshold.warning.usd.toFixed(2)}}. Please ensure your account remains above this level to avoid restrictions.</span>
     </div>
   </div>

@@ -7,7 +7,6 @@
       </p>
       <div v-if="isTouchDevice" class="mb-4 p-2 border border-green rounded">
         <div class="float-left mr-1"><DeviceMobileIcon class="text-green w-5" /></div>
-        <!-- eslint-disable-next-line max-len -->
         <span class="text-gray-500">We noticed that you're using a mobile device with a touch screen. The console is best accessed from a computer with a physical keyboard.</span>
       </div>
       <button @click="launch"
@@ -23,7 +22,6 @@
     </div>
     <div v-if="consoleError" class="error__message">
       <span class="font-bold">Something went wrong</span>
-      <!-- eslint-disable-next-line max-len -->
       <span>There was an issue launching the server console. Please try again, or contact support@edge.network if the issue persists.</span>
     </div>
   </div>

@@ -185,7 +185,6 @@ export default {
         this.session._key,
         this.serverId
       )
-      // eslint-disable-next-line max-len
       const url = `${this.replaceURL(process.env.VUE_APP_ACCOUNT_API_URL)}/servers/${this.serverId}/vnc?session=${session}`
       // initiate RFB
       this.rfb = new RFB(

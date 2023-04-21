@@ -4,7 +4,6 @@
       <h4>Delete domain and records</h4>
       <!-- server not yet deleted -->
       <div>
-        <!-- eslint-disable-next-line max-len -->
         <p class="mt-3 mb-1 text-gray-500">This is irreversible. The domain and associated records will be deleted.</p>
         <p class="text-gray-500">Upon deletion, you will no longer be billed for this domain.</p>
         <div class="flex flex-col space-y-2">

@@ -37,7 +37,6 @@ export default {
     warning() {
       const warningThreshold = this.balance.threshold.warning.usd
 
-      /* eslint-disable max-len */
       if (this.balance.purchases.pending > 0 && (this.balanceWarning || this.balanceSuspend)) {
         return {
           class: bannerClass.blue,

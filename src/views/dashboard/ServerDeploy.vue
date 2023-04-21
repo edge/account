@@ -5,7 +5,6 @@
       <!-- balance warning -->
       <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
         <div><ExclamationIcon class="w-5 text-red" /></div>
-        <!-- eslint-disable-next-line max-len -->
         <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
       </div>
 
@@ -99,7 +98,6 @@
         <div class="flex md:justify-end mt-2"><HttpError :error=httpError /></div>
         <div v-if=internalServerError class="server__error">
           <span class="font-bold">Something went wrong</span>
-          <!-- eslint-disable-next-line max-len -->
           <span>There was an issue while deploying this server. Please try again, or contact support@edge.network if the issue persists.</span>
         </div>
       </div>

@@ -13,7 +13,6 @@
     <!-- balance warning -->
     <div class="box mt-4 flex space-x-2" v-if="haveSpecsIncreased && (balanceSuspend || balanceWarning)">
         <div><ExclamationIcon class="w-5 text-red" /></div>
-        <!-- eslint-disable-next-line max-len -->
         <span class="text-red">You are unable to increase this server's specs while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to enable this service.</span>
     </div>
     <!-- resize button and errors -->
@@ -32,7 +31,6 @@
       <div class="flex md:justify-end mt-2"><HttpError :error=httpError /></div>
       <div v-if=internalServerError class="server__error">
         <span class="font-bold">Something went wrong</span>
-        <!-- eslint-disable-next-line max-len -->
         <span>There was an issue while deploying this server. Please try again, or contact support@edge.network if the issue persists.</span>
       </div>
     </div>
@@ -93,7 +91,6 @@ export default {
     ...mapState(['account', 'balance', 'session']),
     canSubmitResize() {
       if (this.balanceWarning || this.balanceSuspend) if (this.haveSpecsIncreased) return false
-      // eslint-disable-next-line max-len
       if (
         this.isLoading
         || !this.haveSpecsChanged
