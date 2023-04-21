@@ -24,6 +24,15 @@ export const getNotifications = async (host, sessionId, params) => {
   return response.body
 }
 
+// mark all notifications read on account
+export const markAllRead = async (host, sessionId) => {
+  const url = `${host}/notifications/all`
+  const response = await superagent.put(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ read: true })
+  return response.body
+}
+
 // mark notifications as read
 export const markRead = async (host, sessionId, notifications) =>
   updateNotifications(host, sessionId, notifications.map(n => ({ _key: n._key, read: true })))

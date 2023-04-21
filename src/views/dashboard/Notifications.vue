@@ -2,20 +2,24 @@
   <div class="mainContent__inner">
     <h1>Notifications</h1>
 
-    <div class="box">
-      <span>
-        <input type="checkbox" :checked="includeRead" @change="setIncludeRead" />
-        Show read notifications
-      </span>
-      <!--
+    <div class="controls">
+      <div class="page-controls">
         <span>
-          <button type="button" @click="markAllVisibleAsRead">Mark all as read</button>
+          <input id="include-read" type="checkbox" :checked="includeRead" @change="setIncludeRead" />
+          <label for="include-read" class="ml-2">Show read notifications</label>
         </span>
-      -->
+      </div>
+      <div class="page-actions" v-if="unreadNotifications > 0">
+        <button class="mark-read" type="button" @click="markAllRead()">
+          <Tooltip text="Mark all read">
+            <CheckCircleIcon class="w-6 hover:text-green"/>
+          </Tooltip>
+        </button>
+      </div>
     </div>
 
     <div v-if="!loaded" class="box mt-2 flex items-center">
-      <span>Loading records</span>
+      <span>Loading notifications</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
     <div v-else-if="notifications.length === 0" class="box mt-2 flex items-center">
@@ -53,7 +57,7 @@
             </button>
             <button class="remove" type="button" @click="remove(notification)">
               <Tooltip text="Delete">
-                <MinusCircleIcon class="w-6 hover:text-red"/>
+                <TrashIcon class="w-6 hover:text-red"/>
               </Tooltip>
             </button>
           </div>
@@ -74,10 +78,11 @@
 /* global process */
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
-import { ArrowCircleRightIcon, CheckCircleIcon, MinusCircleIcon } from '@heroicons/vue/outline'
+import { ArrowCircleRightIcon, CheckCircleIcon, TrashIcon } from '@heroicons/vue/outline'
 
 const actionTypes = ['account-suspended']
 
@@ -89,8 +94,9 @@ export default {
   components: {
     ArrowCircleRightIcon,
     CheckCircleIcon,
+    LoadingSpinner,
     Pagination,
-    MinusCircleIcon,
+    TrashIcon,
     Tooltip
   },
   data() {
@@ -106,7 +112,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['session', 'unreadNotifications']),
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
     }
@@ -140,27 +146,20 @@ export default {
       const then = new Date(notification.created)
       return now.getDate() === then.getDate() && now.getMonth() === then.getMonth() && now.getFullYear() === then.getFullYear()
     },
-    async markAllVisibleAsRead() {
+    async markAllRead() {
       if (this.notifications.length === 0) return
-      await api.notifications.markRead(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.notifications.filter(n => n.read !== true)
-      )
+      await api.notifications.markAllRead(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
       await this.refresh()
     },
     async markRead(notification) {
       await api.notifications.markRead(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
       await this.refresh()
-      this.$store.dispatch('updateUnreadNotifications')
     },
     async markUnread(notification) {
       await api.notifications.markUnread(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
       await this.refresh()
-      this.$store.dispatch('updateUnreadNotifications')
     },
     async refresh() {
-      this.loaded = false
       const res = await api.notifications.getNotifications(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
@@ -173,6 +172,7 @@ export default {
       this.notifications = res.results
       this.metadata = res.metadata
       this.loaded = true
+      this.$store.dispatch('updateUnreadNotifications')
     },
     async remove(notification) {
       await api.notifications.deleteNotifications(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
@@ -205,6 +205,18 @@ export default {
 </script>
 
 <style scoped>
+.controls {
+  @apply flex pb-3 pl-1 pr-6;
+}
+
+.controls .page-controls {
+  @apply flex flex-col w-full;
+}
+
+.controls .page-actions {
+  @apply flex flex-col w-max sm:flex-row;
+}
+
 .notificationList {
   @apply mt-2 space-y-2;
 }
@@ -227,5 +239,10 @@ export default {
 
 .notificationList__item .actions button {
   @apply sm:mr-2;
+}
+
+.page-actions button,
+.actions button {
+  line-height: 0;
 }
 </style>
