@@ -5,7 +5,10 @@
     <div class="md:hidden"><Logo size="small" /></div>
 
     <!-- burger - hidden on larger screens -->
-    <div class="md:hidden"><BurgerButton @click="toggleNav" /></div>
+    <div class="mobile-burger">
+      <NotificationsLink />
+      <BurgerButton @click="toggleNav" />
+    </div>
     <!-- search - hidden on small screens -->
     <!-- <div class="topNavigation__left">
       <Search size="large"/>
@@ -121,6 +124,14 @@ export default {
 }
 </script>
 <style scoped>
+.mobile-burger {
+  @apply flex flex-row items-center md:hidden;
+}
+
+.mobile-burger .notifications-link {
+  @apply mr-4;
+}
+
 .topNavigation {
   @apply top-0 z-40 flex items-center justify-between w-full px-3 h-16 bg-white border-b border-gray-300;
   @apply md:px-5 lg:px-8 md:h-20 md:bg-gray-200 md:justify-end;

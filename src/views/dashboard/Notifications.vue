@@ -206,7 +206,7 @@ export default {
 
 <style scoped>
 .controls {
-  @apply flex pb-3 pl-1 pr-6;
+  @apply flex pb-3 pl-1 pr-1 sm:pr-6;
 }
 
 .controls .page-controls {

@@ -24,7 +24,7 @@ export default {
 
 <style scoped>
 .notifications-link {
-  @apply flex flex-row mr-2;
+  @apply flex flex-row mr-2 items-center;
 }
 
 .notifications-link svg {
