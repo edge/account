@@ -4,13 +4,11 @@
     <div class="box">
       <div>
         <h4>Your Account Number</h4>
-        <!-- eslint-disable-next-line max-len -->
         <p class="text-gray-500">Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
       </div>
       <!-- account number display -->
       <div class="account-number-wrapper">
         <span v-if="showAccountNumber" class="account-number monospace">{{ formattedAccountNumber }}</span>
-        <!-- eslint-disable-next-line max-len -->
         <span v-else class="account-number masked monospace">{{ formattedAccountNumberMasked }}</span>
         <!-- hide/show account number button button -->
         <button

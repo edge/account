@@ -67,7 +67,6 @@ export default {
       const type = splitMessage[splitMessage.indexOf('IN') + 1]
       let a = 'A'
       if (['A', 'AAAA', 'ALIAS'].includes(type)) a += 'n'
-      // eslint-disable-next-line max-len
       if (message.includes('Duplicate record')) return `${a} ${type} record with that hostname and value already exists.`
       if (message.includes('has more than one record')) return `${a} ${type} record with that hostname already exists.`
       if (message.includes('Conflicts with pre-existing RRset')) return 'This record conflicts with an existing record.'

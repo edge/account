@@ -5,7 +5,6 @@
     <!-- balance suspend warning -->
     <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2 mb-4">
         <div><ExclamationIcon class="w-5 text-red" /></div>
-        <!-- eslint-disable-next-line max-len -->
         <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
       </div>
     <!-- add new domain input -->
@@ -47,7 +46,6 @@
         <HttpError :error=httpError />
       </div>
       <div v-if="alreadyExistsError" class="mt-2 bg-gray-300 rounded-md p-2">
-        <!-- eslint-disable-next-line max-len -->
         <span class="">This domain already exists within Edge DNS. If this is a mistake, please contact support@edge.network</span>
       </div>
       <ValidationError :errors="v$.newDomainName.$errors" />

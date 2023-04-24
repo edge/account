@@ -5,7 +5,6 @@
       <!-- balance warning -->
       <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
         <div><ExclamationIcon class="w-5 text-red" /></div>
-        <!-- eslint-disable-next-line max-len -->
         <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
       </div>
 

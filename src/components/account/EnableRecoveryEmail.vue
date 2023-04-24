@@ -53,7 +53,6 @@
       <!-- resend email button and feedback -->
       <p class="text-gray-500 my-2">
         Haven't received the email?
-        <!-- eslint-disable-next-line max-len -->
         <span v-if="emailCooldown === 0"><span @click="returnToEnable" class="underline cursor-pointer hover:text-green">Click here</span> to change your recovery email address.</span>
         <span v-else>Please wait {{ emailCooldown }} seconds.</span>
       </p>

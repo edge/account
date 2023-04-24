@@ -13,7 +13,6 @@
     </div>
 
     <div class="box mb-4" v-if="showNameserversNotice">
-      <!-- eslint-disable-next-line max-len -->
       <div class="float-left"><InformationCircleIcon class="w-5 mr-1"/></div>
       <span>You will need to update your nameservers with your domain registrar in order for these records to work.
         <!-- <a class="underline hover:text-green cursor-pointer">Learn more</a>. -->
@@ -78,7 +77,6 @@
               <!-- balance suspend warning -->
               <div v-if="balanceSuspend" class="box mb-4 suspend">
                 <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
-                <!-- eslint-disable-next-line max-len -->
                 <div class="mt-2 text-red">You are unable to add, edit or delete records as your balance is low. Please add funds to re-enable this service.</div>
               </div>
               <div class="box">

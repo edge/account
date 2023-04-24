@@ -19,6 +19,7 @@ import { mapState } from 'vuex'
 
 const STORE_REFRESH_INTERVAL = 5 * 1000
 const CHECK_SESSION_INTERVAL = 15 * 1000
+const NOTIFICATION_INTERVAL = 60 * 1000
 const HEARTBEAT_INTERVAL = 10 * 60 * 1000
 
 export default {
@@ -30,6 +31,7 @@ export default {
     return {
       iAccount: null,
       iHeartbeat: null,
+      iNotification: null,
       lastHeartbeat: null
     }
   },
@@ -61,6 +63,7 @@ export default {
     this.$store.dispatch('updateAccount')
     this.$store.dispatch('updateBalance')
     this.$store.dispatch('updateSubscriptions')
+    this.$store.dispatch('updateUnreadNotifications')
 
     // poll all active tasks, balance and server count
     this.iAccount = setInterval(() => {
@@ -83,10 +86,16 @@ export default {
         this.$router.push('/sign-in')
       }
     }, CHECK_SESSION_INTERVAL)
+
+    // check for notifications
+    this.iNotification = setInterval(() => {
+      this.$store.dispatch('updateUnreadNotifications')
+    }, NOTIFICATION_INTERVAL)
   },
   unmounted() {
     clearInterval(this.iAccount)
     clearInterval(this.iHeartbeat)
+    clearInterval(this.iNotification)
   },
   watch: {
     tasks() {

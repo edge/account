@@ -5,7 +5,6 @@
     </template>
     <template v-slot:body>
       <div v-if="balanceWarning">
-        <!-- eslint-disable-next-line max-len -->
         <span>You need at least ${{ balance.threshold.warning.usd }} to upgrade to Priority Support. Please add funds to your account and try again.</span>
       </div>
       <div v-else class="flex flex-col space-y-2">

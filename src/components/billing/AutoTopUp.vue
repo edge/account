@@ -7,7 +7,6 @@
       <span>Auto top-up enabled.</span>
     </div>
 
-    <!-- eslint-disable-next-line max-len -->
     <p>{{ autoTopUpCard ? "If" : "When you enable auto top-ups, if" }} your balance drops below your <strong>USD threshold</strong> XE will be purchased to bring your account funds back to your <strong>USD target balance</strong>.</p>
 
     <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-4">
@@ -239,11 +238,9 @@ export default {
       const targetBalance = Number(this.targetBalance)
       const threshold = Number(this.threshold)
       const thresholdBuffer = this.config.topup.thresholdBuffer
-      /* eslint-disable max-len */
       if (targetBalance < this.minTargetBalance) this.targetBalanceError = `Minimum target balance is $${this.minTargetBalance}.`
       else if (threshold < this.minThreshold) this.targetBalanceError = `Minimum threshold is $${this.minThreshold}.`
       else if (targetBalance < threshold + thresholdBuffer) this.targetBalanceError = `Target balance must be $${thresholdBuffer} greater than the threshold.`
-      /* eslint-enable max-len */
       else this.targetBalanceError = null
     },
     toggleDisableConfirmationModal() {

@@ -15,7 +15,6 @@
 
       <!-- server not yet deleted -->
       <div v-else>
-        <!-- eslint-disable-next-line max-len -->
         <p class="mt-3 mb-1 text-gray-500">This is irreversible. All server data and associated backups will be irretrievable.</p>
         <p class="text-gray-500">Upon destruction, you will no longer be billed for this server.</p>
         <div class="flex flex-col space-y-2">

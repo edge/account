@@ -112,7 +112,6 @@ export default {
       return this.activeTasks.some(task => task.action === 'destroy')
     },
     isInactive() {
-      // eslint-disable-next-line max-len
       return (!this.disablingTaskInProgress) && (['deleted', 'deleting', 'stopped'].includes(this.server.status) || this.isDestroying || this.isCrashed)
     },
     isResizing() {

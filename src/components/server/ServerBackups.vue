@@ -2,7 +2,6 @@
   <div class="flex flex-col pb-20 space-y-4">
     <div class="box">
       <h4>Create a backup</h4>
-      <!-- eslint-disable-next-line max-len -->
       <p class="mt-3 text-gray-500">A backup is a disk image of your server, which can be used for recovery in case of data loss.</p>
       <div class="flex flex-col w-full mt-4 sm:space-x-4 sm:items-end sm:flex-row">
         <div class="flex-1 w-full sm:w-auto input-group">

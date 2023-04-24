@@ -43,7 +43,6 @@
             <div><LoadingSpinner /></div>
             <span>Processing Payment</span>
           </div>
-          <!-- eslint-disable-next-line max-len -->
           <span>This could take a few minutes. Please do not refresh or navigate away from this page until the purchase is complete.</span>
         </div>
         <!-- purchase unpaid - payment form -->
@@ -128,7 +127,6 @@
         <!-- complete, processing (xe side) or cancelled -->
         <div v-else class="purchase__grid md:grid-cols-2 gap-y-4">
           <div v-if=isProcessing class="col-span-2">
-            <!-- eslint-disable-next-line max-len -->
             <span>Thank you for your purchase. We have received your payment and are now processing your XE. Please note that this can take up to 15 minutes.</span>
           </div>
           <div><span class="label">Date</span>{{ createdDate }}</div>
@@ -276,7 +274,6 @@ export default {
       const overlayTimeout = setTimeout(() => {
         this.completing = true
       }, 100)
-      // eslint-disable-next-line max-len
       const return_url = `${document.location.protocol}//${document.location.host}/billing/payments/purchase/${this.purchase._key}`
 
       try {

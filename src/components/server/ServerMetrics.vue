@@ -105,7 +105,6 @@
     <!-- if metrics don't exist -->
     <div v-else class="box box--tall">
       <div class="flex flex-col items-center justify-center text-center">
-        <!-- eslint-disable-next-line max-len-->
         <div class="flex items-center justify-center w-16 h-16 p-4 border-2 border-green-100 rounded-full border-opacity-10 animate-pulse bg-green-50">
           <RocketIcon />
         </div>

@@ -5,15 +5,12 @@
       <span>Two-factor authentication is enabled ({{ account.totps }} connected).</span>
     </div>
     <span>To disable two-factor authentication, please enter
-      <!-- eslint-disable-next-line max-len -->
       <span v-if="useBackupCode">one of your backup codes to disable 2FA. This backup code will become invalid after use.</span>
       <span v-else>the TOTP code in your authenticator app to disable 2FA.</span>
     </span>
 
     <!-- backup code/otp toggle button -->
-    <!-- eslint-disable-next-line max-len -->
     <p v-if="useBackupCode" class="text-gray-500">Alternatively, go back to <button @click="toggleUseBackupCode" class="underline hover:text-green">use your 2FA device</button>.</p>
-    <!-- eslint-disable-next-line max-len -->
     <p v-else class="text-gray-500">Lost your authenticator device? You can <button @click="toggleUseBackupCode" class="underline hover:text-green">enter a backup code</button> instead.</p>
 
     <!-- confirmation code and button -->
