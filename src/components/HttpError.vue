@@ -1,9 +1,9 @@
 <template>
   <div v-if="error" class="error_wrapper errorMessage">
     <div class="float-left">
-      <ExclamationIcon class="w-3.5 text-red" />
+      <ExclamationIcon class="w-3.5" :class="overCapacityError ? 'text-gray' : 'text-red'" />
     </div>
-    <span class="errorMessage__text text-red">{{ formattedError }}</span>
+    <span class="errorMessage__text" :class="overCapacityError ? 'text-gray' : 'text-red'">{{ formattedError }}</span>
   </div>
 </template>
 
@@ -41,6 +41,8 @@ export default {
     formattedError() {
       const body = this.error.response.body
 
+      if (this.overCapacityError) return 'We\'re currently at capacity in this region. Please check back soon.'
+
       const field = body.param && paramLookup[body.param]
       let message = ''
       if (['spec.disk', 'spec.ram'].includes(body.param)) message = this.formatMiBInError(body.reason)
@@ -49,6 +51,9 @@ export default {
       if (message.includes('RRset')) message = this.formatPowerDnsError(message)
 
       return field ? [field, message].join(': ') : message
+    },
+    overCapacityError() {
+      return this.error.response && this.error.response.body.detail === 'there is no suitable node in cluster'
     }
   },
   methods: {

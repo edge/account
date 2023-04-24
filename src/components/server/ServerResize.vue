@@ -29,9 +29,19 @@
         </span>
       </button>
       <div class="flex md:justify-end mt-2"><HttpError :error=httpError /></div>
-      <div v-if=internalServerError class="server__error">
-        <span class="font-bold">Something went wrong</span>
-        <span>There was an issue while deploying this server. Please try again, or contact support@edge.network if the issue persists.</span>
+      <div v-if=internalServerError class="server__error" :class="overCapacityError && 'over-capacity'">
+        <span class="font-bold">{{
+          overCapacityError
+          ? "We're over capacity"
+          : "Something went wrong"
+        }}</span>
+        <span>
+          {{
+            overCapacityError
+            ? "It appears that we are at capacity in this region. We're working hard to increase this. Please check back soon."
+            : "There was an issue while deploying this server. Please try again, or contact support@edge.network if the issue persists."
+          }}
+        </span>
       </div>
     </div>
     <!-- resize confirmation modal -->
@@ -74,7 +84,7 @@ export default {
     return {
       areSpecsValid: true,
       httpError: '',
-      internalServerError: false,
+      internalServerError: null,
       isLoading: false,
       lastResizeTask: null,
       newSpec: {
@@ -128,6 +138,9 @@ export default {
         (this.region.cost.disk * this.newSpec.disk) +
         (this.region.cost.cpus * this.newSpec.cpus)
       )
+    },
+    overCapacityError() {
+      return this.internalServerError && this.internalServerError.response.body.detail === 'there is no suitable node in cluster'
     }
   },
   methods: {
@@ -159,7 +172,7 @@ export default {
       }
       catch (error) {
         setTimeout(() => {
-          if (error.status === 500) this.internalServerError = true
+          if (error.status === 500) this.internalServerError = error
           else this.httpError = error
           this.isLoading = false
         }, 500)
@@ -181,7 +194,7 @@ export default {
       this.$emit('update-region')
     },
     newSpec() {
-      this.internalServerError = false
+      this.internalServerError = null
     },
     internalServerError() {
       this.$emit('update-region')
@@ -191,6 +204,10 @@ export default {
 </script>
 <style scoped>
 .server__error {
-  @apply flex flex-col bg-red text-white px-4 py-2 w-full rounded space-y-1;
+  @apply flex flex-col bg-red text-white p-4 w-full rounded space-y-1;
+}
+
+.server__error.over-capacity {
+  @apply bg-blue-100 text-black;
 }
 </style>
