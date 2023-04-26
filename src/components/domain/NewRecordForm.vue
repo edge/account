@@ -257,7 +257,7 @@ export default {
             name: this.hostname.toLowerCase(),
             ttl: this.ttl,
             type: this.type,
-            value: value.toLowerCase()
+            value
           }
         )
         this.$emit('createRecord')
