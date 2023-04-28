@@ -1,11 +1,9 @@
 <template>
   <div class="flex flex-col items-start space-y-4">
     <div v-if="hasMetrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
-      <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load ? 'mb-8' : ''">CPU Load</h4>
-        <ServerCPUMetrics v-if="metrics.cpu" :metrics="metrics.cpu"/>
-        <p v-else class="mt-3 mb-0 text-gray-500">CPU load statistics will appear here as they become available.</p>
-      </div>
+      <ServerMetricsCPU v-if="metrics.cpu" :data="metrics.cpu"/>
+      <ServerMetricsMemory v-if="metrics.mem" :data="metrics.mem" :server="server"/>
+      <ServerMetricsDisk v-if="metrics.disk" :data="metrics.disk" :server="server"/>
 
       <!-- <div class="box">
         <h4 :class="this.graphMetrics && this.graphMetrics.mem_usage ? 'mb-8' : ''">Memory Usage</h4>
@@ -84,7 +82,9 @@
 
 import * as api from '@/account-utils'
 import RocketIcon from '@/components/icons/RocketIcon'
-import ServerCPUMetrics from './ServerCPUMetrics.vue'
+import ServerMetricsCPU from './ServerMetricsCPU.vue'
+import ServerMetricsDisk from './ServerMetricsDisk.vue'
+import ServerMetricsMemory from './ServerMetricsMemory.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -97,7 +97,9 @@ export default {
   },
   components: {
     RocketIcon,
-    ServerCPUMetrics
+    ServerMetricsCPU,
+    ServerMetricsDisk,
+    ServerMetricsMemory
   },
   computed: {
     ...mapState(['session']),
@@ -110,6 +112,7 @@ export default {
   methods: {
     async reload() {
       const res = await api.servers.getMetrics(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key)
+      console.log(res)
       this.metrics = res
     }
   },

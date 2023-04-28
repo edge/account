@@ -1,8 +1,7 @@
 <template>
   <div class="box">
-    <h4>CPU</h4>
+    <h4>Memory Usage</h4>
     <LineChart
-      v-if="chartData"
       :chartData="chartData"
       :options="options"
       :height="300"
@@ -17,21 +16,24 @@ import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
 
 export default {
-  name: 'ServerCPUMetrics',
-  props: ['data'],
+  name: 'ServerMetricsMemory',
+  props: ['data', 'server'],
   components: {
     LineChart
   },
   computed: {
+    dataAsPercent() {
+      return this.data.map(([t, v]) => [t, 100 * (1 - v / (this.server.spec.ram * 1e6))])
+    },
     timeSeries() {
       const dates = this.data.map(([t]) => new Date(t * 1000))
-      return dates.map(d => `${d.getUTCHours()}:${d.getUTCMinutes()}`)
+      return dates.map(d => `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`)
     },
     chartData() {
       return {
         labels: this.timeSeries,
         datasets: [{
-          data: this.data.map(([, v]) => v),
+          data: this.dataAsPercent.map(([, v]) => v),
           fill: false,
           backgroundColor: 'rgba(110,224,159)',
           borderColor: 'rgb(14, 204, 95)',
