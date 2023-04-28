@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <h4>Network</h4>
+    <h4 class="text-sm">Network <span class="ml-1 text-gray">last 24 hrs</span></h4>
     <LineChart
       :chartData="chartData"
       :options="options"
@@ -30,9 +30,21 @@ export default {
       return {
         labels: this.timeSeries,
         datasets: [
+          this.bwout && {
+            data: this.bwout.map(([, v]) => v),
+            fill: true,
+            backgroundColor: 'rgb(255,138,138)',
+            borderColor: 'rgb(220, 60, 60)',
+            borderWidth: 2,
+            label: 'Data Out',
+            spanGaps: true,
+            stepped: false,
+            pointRadius: 0,
+            tension: 0.2
+          },
           this.bwin && {
             data: this.bwin.map(([, v]) => v),
-            fill: false,
+            fill: true,
             backgroundColor: 'rgba(110,224,159)',
             borderColor: 'rgb(14, 204, 95)',
             borderWidth: 2,
@@ -42,23 +54,12 @@ export default {
             pointRadius: 0,
             tension: 0.2
           },
-          this.bwout && {
-            data: this.bwout.map(([, v]) => v),
-            fill: false,
-            backgroundColor: 'rgba(159,110,224)',
-            borderColor: 'rgb(95, 14, 204)',
-            borderWidth: 2,
-            label: 'Data Out',
-            spanGaps: true,
-            stepped: false,
-            pointRadius: 0,
-            tension: 0.2
-          },
           this.bwin && this.bwout && {
-            data: this.bwin.map(([, v], i) => v + this.bwout[i]),
+            data: this.bwin.map(([, v], i) => v + this.bwout[i][1]),
             fill: false,
             backgroundColor: 'rgba(128,128,128)',
-            borderColor: 'rgb(64, 64, 64)',
+            borderColor: 'rgb(96, 96, 96)',
+            borderDash: [6, 14],
             borderWidth: 2,
             label: 'Total',
             spanGaps: true,
@@ -83,7 +84,7 @@ export default {
               callbacks: {
                 label: tooltipItem =>  {
                   const { value, unit } = this.formatYScale(tooltipItem.raw)
-                  return `${value.toFixed(1)} ${unit}`
+                  return `${tooltipItem.dataset.label} ${value.toFixed(1)} ${unit}`
                 }
               }
             },

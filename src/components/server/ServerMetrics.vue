@@ -1,18 +1,7 @@
 <template>
   <div class="flex flex-col items-start space-y-4">
-    <div v-if="hasMetrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
-      <ServerMetricsCPU v-if="metrics.cpu" :data="metrics.cpu"/>
-      <ServerMetricsMemory v-if="metrics.mem" :data="metrics.mem" :server="server"/>
-      <ServerMetricsDisk v-if="metrics.disk" :data="metrics.disk" :server="server"/>
-      <ServerMetricsNet
-        v-if="metrics.bwin || metrics.bwout"
-        :bwin="metrics.bwin"
-        :bwout="metrics.bwout"
-      />
-    </div>
-
     <!-- if metrics don't exist -->
-    <div v-else class="box box--tall">
+    <div v-if="server.status === 'pending'" class="box box--tall">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="flex items-center justify-center w-16 h-16 p-4 border-2 border-green-100 rounded-full border-opacity-10 animate-pulse bg-green-50">
           <RocketIcon />
@@ -23,6 +12,30 @@
         </p>
       </div>
     </div>
+
+    <div v-else-if="loading" class="box box--tall">
+      <div class="flex flex-col items-center justify-center text-center">
+        <div class="flex items-center justify-center p-4">
+          <LoadingSpinner />
+        </div>
+        <h4 class="mt-4">Loading metrics</h4>
+      </div>
+    </div>
+
+    <div v-if="metrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
+      <ServerMetricsCPU v-if="metrics.cpu" :data="metrics.cpu"/>
+      <ServerMetricsMemory v-if="metrics.mem" :data="metrics.mem" :server="server"/>
+      <ServerMetricsDisk v-if="metrics.disk" :data="metrics.disk" :server="server"/>
+      <ServerMetricsNet
+        v-if="metrics.bwin || metrics.bwout"
+        :bwin="metrics.bwin"
+        :bwout="metrics.bwout"
+      />
+    </div>
+
+    <div v-else class="box box--tall">
+
+    </div>
 </div>
 </template>
 
@@ -30,7 +43,8 @@
 /* global process */
 
 import * as api from '@/account-utils'
-import RocketIcon from '@/components/icons/RocketIcon'
+import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
+import RocketIcon from '@/components/icons/RocketIcon.vue'
 import ServerMetricsCPU from './ServerMetricsCPU.vue'
 import ServerMetricsDisk from './ServerMetricsDisk.vue'
 import ServerMetricsMemory from './ServerMetricsMemory.vue'
@@ -42,10 +56,12 @@ export default {
   props: ['server'],
   data() {
     return {
+      loading: true,
       metrics: null
     }
   },
   components: {
+    LoadingSpinner,
     RocketIcon,
     ServerMetricsCPU,
     ServerMetricsDisk,
@@ -63,8 +79,8 @@ export default {
   methods: {
     async reload() {
       const res = await api.servers.getMetrics(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key)
-      console.log(res)
       this.metrics = res
+      this.loading = false
     }
   },
   mounted() {

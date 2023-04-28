@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <h4>Disk Usage</h4>
+    <h4 class="text-sm">Disk Usage <span class="ml-1 text-gray">last 24 hrs</span></h4>
     <LineChart
       :chartData="chartData"
       :options="options"
@@ -34,7 +34,7 @@ export default {
         labels: this.timeSeries,
         datasets: [{
           data: this.dataAsPercent.map(([, v]) => v),
-          fill: false,
+          fill: true,
           backgroundColor: 'rgba(110,224,159)',
           borderColor: 'rgb(14, 204, 95)',
           borderWidth: 2,

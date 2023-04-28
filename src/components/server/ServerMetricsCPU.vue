@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <h4>CPU Load</h4>
+    <h4 class="text-sm">CPU Load <span class="ml-1 text-gray">last 24 hrs</span></h4>
     <LineChart
       :chartData="chartData"
       :options="options"
@@ -31,7 +31,7 @@ export default {
         labels: this.timeSeries,
         datasets: [{
           data: this.data.map(([, v]) => v),
-          fill: false,
+          fill: true,
           backgroundColor: 'rgba(110,224,159)',
           borderColor: 'rgb(14, 204, 95)',
           borderWidth: 2,
@@ -73,6 +73,7 @@ export default {
             }
           },
           y: {
+            max: 100,
             min: 0,
             ticks: {
               callback: (tickValue) => {
