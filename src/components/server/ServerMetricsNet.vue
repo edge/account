@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <h4>Disk Usage</h4>
+    <h4>Network</h4>
     <LineChart
       :chartData="chartData"
       :options="options"
@@ -16,33 +16,57 @@ import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
 
 export default {
-  name: 'ServerMetricsDisk',
-  props: ['data', 'server'],
+  name: 'ServerMetricsNet',
+  props: ['bwin', 'bwout'],
   components: {
     LineChart
   },
   computed: {
-    dataAsPercent() {
-      return this.data.map(([t, v]) => [t, 100 * (1 - v / (this.server.spec.disk * 1e6))])
-    },
     timeSeries() {
-      const dates = this.data.map(([t]) => new Date(t * 1000))
+      const dates = this.bwin.map(([t]) => new Date(t * 1000))
       return dates.map(d => `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`)
     },
     chartData() {
       return {
         labels: this.timeSeries,
-        datasets: [{
-          data: this.dataAsPercent.map(([, v]) => v),
-          fill: false,
-          backgroundColor: 'rgba(110,224,159)',
-          borderColor: 'rgb(14, 204, 95)',
-          borderWidth: 2,
-          spanGaps: true,
-          stepped: false,
-          pointRadius: 0,
-          tension: 0.2
-        }]
+        datasets: [
+          this.bwin && {
+            data: this.bwin.map(([, v]) => v),
+            fill: false,
+            backgroundColor: 'rgba(110,224,159)',
+            borderColor: 'rgb(14, 204, 95)',
+            borderWidth: 2,
+            label: 'Data In',
+            spanGaps: true,
+            stepped: false,
+            pointRadius: 0,
+            tension: 0.2
+          },
+          this.bwout && {
+            data: this.bwout.map(([, v]) => v),
+            fill: false,
+            backgroundColor: 'rgba(159,110,224)',
+            borderColor: 'rgb(95, 14, 204)',
+            borderWidth: 2,
+            label: 'Data Out',
+            spanGaps: true,
+            stepped: false,
+            pointRadius: 0,
+            tension: 0.2
+          },
+          this.bwin && this.bwout && {
+            data: this.bwin.map(([, v], i) => v + this.bwout[i]),
+            fill: false,
+            backgroundColor: 'rgba(128,128,128)',
+            borderColor: 'rgb(64, 64, 64)',
+            borderWidth: 2,
+            label: 'Total',
+            spanGaps: true,
+            stepped: false,
+            pointRadius: 0,
+            tension: 0.2
+          }
+        ].filter(Boolean)
       }
     },
     options() {
@@ -93,7 +117,17 @@ export default {
   },
   methods: {
     formatYScale(yValue) {
-      return { value: yValue, unit: '%' }
+      const units = ['KB', 'MB', 'GB', 'TB']
+      let value = yValue
+      let count = 0
+      while (value >= 1000) {
+        value = value / 1000
+        count++
+      }
+      return {
+        value,
+        unit: units[count]
+      }
     }
   }
 }

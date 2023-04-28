@@ -4,62 +4,11 @@
       <ServerMetricsCPU v-if="metrics.cpu" :data="metrics.cpu"/>
       <ServerMetricsMemory v-if="metrics.mem" :data="metrics.mem" :server="server"/>
       <ServerMetricsDisk v-if="metrics.disk" :data="metrics.disk" :server="server"/>
-
-      <!-- <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics.mem_usage ? 'mb-8' : ''">Memory Usage</h4>
-        <Line
-          v-if="this.graphMetrics"
-          :key="componentKey"
-          :labels="labels"
-          :xLabel="this.xLabel"
-          yLabel="Memory Usage (GB)"
-          :data="graphMetrics.mem_usage"
-          :minScale="0"
-          :maxScale="this.server.spec.ram  / 1024"
-          unit="GB"
-        />
-        <p v-else class="mt-3 mb-0 text-gray-500">Memory usage statistics will appear here as they become available.</p>
-      </div>
-
-      <div class="box xl:col-span-2">
-        <h4 :class="this.graphMetrics && this.graphMetrics.disk_usage ? 'mb-8' : ''">Disk Usage</h4>
-        <Line
-          v-if="this.graphMetrics && this.graphMetrics.disk_usage"
-          :key="componentKey"
-          :labels="labels"
-          :xLabel="this.xLabel"
-          yLabel="Disk Usage (GB)"
-          :data="this.graphMetrics.disk_usage"
-          :minScale="0"
-          :maxScale="this.server.spec.disk / 1024"
-          unit="GB"
-        />
-        <p v-else class="mt-3 mb-0 text-gray-500">Disk usage statistics will appear here as they become available.</p>
-      </div> -->
-
-      <!-- <div class="box">
-        <h4 class="mb-8">Disk I/O</h4>
-        <Line
-          v-if="this.graphMetrics && this.graphMetrics['iops']"
-          :key="componentKey"
-          :period="currentPeriod"
-          :data="this.graphMetrics.dataIn"
-        />
-      </div> -->
-
-      <!-- <div class="box">
-        <h4 class="mb-8">Net RX/TX</h4>
-        <MultiLine
-          v-if="this.graphMetrics && this.graphMetrics['net_rx'][0]"
-          :key="componentKey"
-          :period="currentPeriod"
-          :data='[
-            removeEmptyPoints(this.graphMetrics["net_rx"][0].datapoints),
-            removeEmptyPoints(this.graphMetrics["net_tx"][0].datapoints)
-          ]'
-          :labels="['RX', 'TX']"
-        />
-      </div> -->
+      <ServerMetricsNet
+        v-if="metrics.bwin || metrics.bwout"
+        :bwin="metrics.bwin"
+        :bwout="metrics.bwout"
+      />
     </div>
 
     <!-- if metrics don't exist -->
@@ -85,6 +34,7 @@ import RocketIcon from '@/components/icons/RocketIcon'
 import ServerMetricsCPU from './ServerMetricsCPU.vue'
 import ServerMetricsDisk from './ServerMetricsDisk.vue'
 import ServerMetricsMemory from './ServerMetricsMemory.vue'
+import ServerMetricsNet from './ServerMetricsNet.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -99,7 +49,8 @@ export default {
     RocketIcon,
     ServerMetricsCPU,
     ServerMetricsDisk,
-    ServerMetricsMemory
+    ServerMetricsMemory,
+    ServerMetricsNet
   },
   computed: {
     ...mapState(['session']),
