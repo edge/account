@@ -22,9 +22,6 @@ export default {
     LineChart
   },
   computed: {
-    dataAsPercent() {
-      return this.data.map(([t, v]) => [t, 100 * (1 - v / (this.server.spec.disk * 1e6))])
-    },
     timeSeries() {
       const dates = this.data.map(([t]) => new Date(t * 1000))
       return dates.map(d => `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`)
@@ -33,7 +30,7 @@ export default {
       return {
         labels: this.timeSeries,
         datasets: [{
-          data: this.dataAsPercent.map(([, v]) => v),
+          data: this.data.map(([, v]) => v),
           fill: true,
           backgroundColor: 'rgba(110,224,159)',
           borderColor: 'rgb(14, 204, 95)',
@@ -93,7 +90,17 @@ export default {
   },
   methods: {
     formatYScale(yValue) {
-      return { value: yValue, unit: '%' }
+      const units = ['B', 'KB', 'MB', 'GB', 'TB']
+      let value = yValue
+      let count = 0
+      while (value >= 1000) {
+        value = value / 1000
+        count++
+      }
+      return {
+        value,
+        unit: units[count]
+      }
     }
   }
 }

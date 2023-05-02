@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <h4 class="text-sm">Network <span class="ml-1 text-gray">last 24 hrs</span></h4>
+    <h4 class="text-sm">Network Traffic <span class="ml-1 text-gray">last 24 hrs</span></h4>
     <LineChart
       :chartData="chartData"
       :options="options"
@@ -36,7 +36,7 @@ export default {
             backgroundColor: 'rgb(255,138,138)',
             borderColor: 'rgb(220, 60, 60)',
             borderWidth: 2,
-            label: 'Data Out',
+            label: 'Out',
             spanGaps: true,
             stepped: false,
             pointRadius: 0,
@@ -48,7 +48,7 @@ export default {
             backgroundColor: 'rgba(110,224,159)',
             borderColor: 'rgb(14, 204, 95)',
             borderWidth: 2,
-            label: 'Data In',
+            label: 'In',
             spanGaps: true,
             stepped: false,
             pointRadius: 0,
@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     formatYScale(yValue) {
-      const units = ['KB', 'MB', 'GB', 'TB']
+      const units = ['B/sec', 'KB/sec', 'MB/sec', 'GB/sec', 'TB/sec']
       let value = yValue
       let count = 0
       while (value >= 1000) {
