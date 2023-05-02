@@ -30,6 +30,7 @@
         v-if="metrics.bwin || metrics.bwout"
         :bwin="metrics.bwin"
         :bwout="metrics.bwout"
+        :server="server"
       />
     </div>
 

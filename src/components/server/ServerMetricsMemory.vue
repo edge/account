@@ -1,6 +1,12 @@
 <template>
   <div class="box">
-    <h4 class="text-sm">Memory Usage <span class="ml-1 text-gray">last 24 hrs</span></h4>
+    <div class="flex flex-row">
+      <h4 class="text-sm flex-grow">Memory Usage <span class="ml-1 text-gray">last 24 hrs</span></h4>
+      <p class="flex flex-row">
+        <label class="mr-1 text-gray" for="zoom-memory">Zoom</label>
+        <input id="zoom-memory" type="checkbox" :checked="zoomed" @change="toggleZoom"/>
+      </p>
+    </div>
     <LineChart
       :chartData="chartData"
       :options="options"
@@ -20,6 +26,11 @@ export default {
   props: ['data', 'server'],
   components: {
     LineChart
+  },
+  data() {
+    return {
+      zoomed: false
+    }
   },
   computed: {
     timeSeries() {
@@ -73,6 +84,7 @@ export default {
             }
           },
           y: {
+            max: this.zoomed ? undefined : this.server.spec.ram * 1e6,
             min: 0,
             ticks: {
               callback: (tickValue) => {
@@ -101,6 +113,9 @@ export default {
         value,
         unit: units[count]
       }
+    },
+    toggleZoom() {
+      this.zoomed = !this.zoomed
     }
   }
 }
