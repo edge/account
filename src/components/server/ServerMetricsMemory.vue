@@ -84,12 +84,12 @@ export default {
             }
           },
           y: {
-            max: this.zoomed ? undefined : this.server.spec.ram * 1e6,
+            max: this.zoomed ? undefined : this.server.spec.ram * (1024 * 1024),
             min: 0,
             ticks: {
               callback: (tickValue) => {
                 const { value, unit } = this.formatYScale(tickValue)
-                return `${value} ${unit}`
+                return `${value.toFixed(1)} ${unit}`
               }
             },
             grid: {
@@ -102,11 +102,11 @@ export default {
   },
   methods: {
     formatYScale(yValue) {
-      const units = ['B', 'KB', 'MB', 'GB', 'TB']
+      const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB']
       let value = yValue
       let count = 0
-      while (value >= 1000) {
-        value = value / 1000
+      while (value >= 1024) {
+        value = value / 1024
         count++
       }
       return {

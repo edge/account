@@ -130,7 +130,7 @@ export default {
   },
   methods: {
     formatYScale(yValue) {
-      const units = ['B/sec', 'KB/sec', 'MB/sec', 'GB/sec', 'TB/sec']
+      const units = ['bps', 'Kbps', 'Mbps', 'Gbps', 'Tbps']
       let value = yValue
       let count = 0
       while (value >= 1000) {
