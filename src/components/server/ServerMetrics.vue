@@ -1,109 +1,7 @@
 <template>
   <div class="flex flex-col items-start space-y-4">
-
-    <!-- if metrics exist -->
-    <div v-if="displayMetrics" class="buttonGroup">
-      <button @click.prevent="updateMetrics('day')"
-        class="buttonGroup__button"
-        :class="currentPeriod == 'day' ? 'active' : ''"
-      >
-        24 Hours
-      </button>
-      <button @click.prevent="updateMetrics('week')"
-        class="buttonGroup__button"
-        :class="currentPeriod == 'week' ? 'active' : ''"
-      >
-        7 Days
-      </button>
-      <button @click.prevent="updateMetrics('month')"
-        class="buttonGroup__button"
-        :class="currentPeriod == 'month' ? 'active' : ''"
-      >
-        30 Days
-      </button>
-      <button @click.prevent="updateMetrics('year')"
-        class="border-none buttonGroup__button"
-        :class="currentPeriod == 'year' ? 'active' : ''"
-      >
-        12 Months
-      </button>
-    </div>
-    <div v-if="displayMetrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
-      <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics.cpu_load ? 'mb-8' : ''">CPU Load</h4>
-        <Line
-          v-if="this.graphMetrics"
-          :key="componentKey"
-          :labels="labels"
-          :xLabel="this.xLabel"
-          yLabel="CPU Load (%)"
-          :data="graphMetrics.cpu_load"
-          :minScale="0"
-          :maxScale="100"
-          unit="%"
-        />
-        <p v-else class="mt-3 mb-0 text-gray-500">CPU load statistics will appear here as they become available.</p>
-      </div>
-
-      <div class="box">
-        <h4 :class="this.graphMetrics && this.graphMetrics.mem_usage ? 'mb-8' : ''">Memory Usage</h4>
-        <Line
-          v-if="this.graphMetrics"
-          :key="componentKey"
-          :labels="labels"
-          :xLabel="this.xLabel"
-          yLabel="Memory Usage (GB)"
-          :data="graphMetrics.mem_usage"
-          :minScale="0"
-          :maxScale="this.server.spec.ram  / 1024"
-          unit="GB"
-        />
-        <p v-else class="mt-3 mb-0 text-gray-500">Memory usage statistics will appear here as they become available.</p>
-      </div>
-
-      <div class="box xl:col-span-2">
-        <h4 :class="this.graphMetrics && this.graphMetrics.disk_usage ? 'mb-8' : ''">Disk Usage</h4>
-        <Line
-          v-if="this.graphMetrics && this.graphMetrics.disk_usage"
-          :key="componentKey"
-          :labels="labels"
-          :xLabel="this.xLabel"
-          yLabel="Disk Usage (GB)"
-          :data="this.graphMetrics.disk_usage"
-          :minScale="0"
-          :maxScale="this.server.spec.disk / 1024"
-          unit="GB"
-        />
-        <p v-else class="mt-3 mb-0 text-gray-500">Disk usage statistics will appear here as they become available.</p>
-      </div>
-
-      <!-- <div class="box">
-        <h4 class="mb-8">Disk I/O</h4>
-        <Line
-          v-if="this.graphMetrics && this.graphMetrics['iops']"
-          :key="componentKey"
-          :period="currentPeriod"
-          :data="this.graphMetrics.dataIn"
-        />
-      </div> -->
-
-      <!-- <div class="box">
-        <h4 class="mb-8">Net RX/TX</h4>
-        <MultiLine
-          v-if="this.graphMetrics && this.graphMetrics['net_rx'][0]"
-          :key="componentKey"
-          :period="currentPeriod"
-          :data='[
-            removeEmptyPoints(this.graphMetrics["net_rx"][0].datapoints),
-            removeEmptyPoints(this.graphMetrics["net_tx"][0].datapoints)
-          ]'
-          :labels="['RX', 'TX']"
-        />
-      </div> -->
-    </div>
-
     <!-- if metrics don't exist -->
-    <div v-else class="box box--tall">
+    <div v-if="server.status === 'pending'" class="box box--tall">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="flex items-center justify-center w-16 h-16 p-4 border-2 border-green-100 rounded-full border-opacity-10 animate-pulse bg-green-50">
           <RocketIcon />
@@ -114,123 +12,80 @@
         </p>
       </div>
     </div>
+
+    <div v-else-if="loading" class="box box--tall">
+      <div class="flex flex-col items-center justify-center text-center">
+        <div class="flex items-center justify-center p-4">
+          <LoadingSpinner />
+        </div>
+        <h4 class="mt-4">Loading metrics</h4>
+      </div>
+    </div>
+
+    <div v-if="metrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
+      <ServerMetricsCPU v-if="metrics.cpu" :data="metrics.cpu"/>
+      <ServerMetricsMemory v-if="metrics.mem" :data="metrics.mem" :server="server"/>
+      <ServerMetricsDisk v-if="metrics.disk" :data="metrics.disk" :server="server"/>
+      <ServerMetricsNet
+        v-if="metrics.bwin || metrics.bwout"
+        :bwin="metrics.bwin"
+        :bwout="metrics.bwout"
+        :server="server"
+      />
+    </div>
+
+    <div v-else class="box box--tall">
+
+    </div>
 </div>
 </template>
 
 <script>
-import Line from '@/components/charts/Line'
-// import MultiLine from '@/components/charts/MultiLine'
-import RocketIcon from '@/components/icons/RocketIcon'
-import moment from 'moment'
+/* global process */
 
-const intervalLookup = {
-  'day': {
-    format: 'LT',
-    interval: 'hour',
-    intervalMs: 3.6e6,
-    steps: 24,
-    xLabel: 'Time'
-  },
-  'week': {
-    format: 'ddd',
-    interval: 'day',
-    intervalMs: 8.64e7,
-    steps: 7,
-    xLabel: 'Day'
-  },
-  'month': {
-    format: 'D MMM',
-    interval: 'day',
-    intervalMs: 8.64e7,
-    steps: 30,
-    xLabel: 'Date'
-  },
-  'year': {
-    format: 'MMM',
-    interval: 'month',
-    intervalMs: 26.29746e8,
-    steps: 12,
-    xLabel: 'Month'
-  }
-}
+import * as api from '@/account-utils'
+import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
+import RocketIcon from '@/components/icons/RocketIcon.vue'
+import ServerMetricsCPU from './ServerMetricsCPU.vue'
+import ServerMetricsDisk from './ServerMetricsDisk.vue'
+import ServerMetricsMemory from './ServerMetricsMemory.vue'
+import ServerMetricsNet from './ServerMetricsNet.vue'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ServerMetrics',
   props: ['server'],
   data() {
     return {
-      componentKey: 0,
-      currentPeriod: 'day',
-      graphMetrics: null,
-      timeLabels: [],
-      xLabel: 'Time'
+      loading: true,
+      metrics: null
     }
   },
   components: {
-    Line,
-    // MultiLine,
-    RocketIcon
+    LoadingSpinner,
+    RocketIcon,
+    ServerMetricsCPU,
+    ServerMetricsDisk,
+    ServerMetricsMemory,
+    ServerMetricsNet
   },
   computed: {
-    displayMetrics() {
-      const status = this.server.status
-      return status !== 'pending' && status !== 'creating' && status !== 'createFailed'
+    ...mapState(['session']),
+    hasMetrics() {
+      // if (this.server.status...)
+      if (this.metrics === null) return false
+      return true
+    }
+  },
+  methods: {
+    async reload() {
+      const res = await api.servers.getMetrics(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key)
+      this.metrics = res
+      this.loading = false
     }
   },
   mounted() {
-    this.updateMetrics('day')
-  },
-  methods: {
-    // formatDatapoints(data, sizeType = 'MB') {
-    //   const divisor = sizeType === 'MB' ? 1048576 : 1073741824
-
-    //   data.forEach(datapoint => {
-    //     if (datapoint[0]) {
-    //       datapoint[0] = datapoint[0]/divisor
-    //     }
-    //   })
-
-    //   return data
-    // },
-    updateLabels(intervalObj) {
-      const now = Date.now()
-      const labels = []
-
-      const { format, intervalMs, steps, xLabel } = intervalObj
-
-      for (let i = 0; i < steps; i++) {
-        const label = moment(now - (i * intervalMs)).format(format)
-        labels.unshift(label)
-      }
-      this.labels = labels
-      this.xLabel = xLabel
-    },
-    async updateMetrics(period) {
-      this.currentPeriod = period
-      const intervalObj = intervalLookup[period]
-      const { steps } = intervalObj
-
-      this.updateLabels(intervalObj)
-
-      // generate random dummy data
-      const getRanAmount = (max) => Math.random() * max
-      const cpu_load = []
-      const mem_usage = []
-      const disk_usage = []
-      for (let i = 0; i < steps; i++) {
-        cpu_load.push(getRanAmount(100))
-        mem_usage.push(getRanAmount(this.server.spec.ram / 1024))
-        disk_usage.push(getRanAmount(this.server.spec.disk / 1024))
-      }
-      this.graphMetrics = {
-        cpu_load,
-        mem_usage,
-        disk_usage
-      }
-
-      // charts re-render when key changes
-      this.componentKey += 1
-    }
+    this.reload()
   }
 }
 </script>

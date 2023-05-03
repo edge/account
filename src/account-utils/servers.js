@@ -85,6 +85,13 @@ export const getHostname = async (host, sessionId) => {
   return response.body
 }
 
+export const getMetrics = async (host, sessionId, serverId) => {
+  const url = `${host}/servers/${serverId}/metrics`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // get server by id
 export const getServer = async (host, sessionId, serverId) => {
   const url = `${host}/servers/${serverId}`

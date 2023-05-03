@@ -135,14 +135,14 @@
                 Overview
               </button>
             </Tab>
-            <!-- <Tab v-slot="{selected}">
+            <Tab v-slot="{selected}">
               <button
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
                 Metrics
               </button>
-            </Tab> -->
+            </Tab>
             <Tab v-slot="{selected}">
               <button
                 class="tab"
@@ -204,11 +204,11 @@
             </TabPanel>
 
             <!-- server metrics -->
-            <!-- <TabPanel>
+            <TabPanel>
               <ServerMetrics
                 :server=server
               />
-            </TabPanel> -->
+            </TabPanel>
 
             <!-- console -->
             <TabPanel>
@@ -309,9 +309,9 @@ import ServerConsole from '@/components/server/ServerConsole'
 import ServerDestroy from '@/components/server/ServerDestroy'
 import ServerDisplayName from '@/components/server/ServerDisplayName'
 import ServerHistory from '@/components/server/ServerHistory'
+import ServerMetrics from '@/components/server/ServerMetrics'
 // import ServerNetwork from '@/components/server/ServerNetwork'
 import ServerOverview from '@/components/server/ServerOverview'
-// import ServerMetrics from '@/components/server/ServerMetrics'
 import ServerPowerToggle from '@/components/server/ServerPowerToggle'
 import ServerResize from '@/components/server/ServerResize'
 import StatusDot from '@/components/StatusDot'
@@ -351,8 +351,8 @@ export default {
     ServerDestroy,
     ServerDisplayName,
     ServerHistory,
+    ServerMetrics,
     // ServerNetwork,
-    // ServerMetrics,
     ServerOverview,
     ServerPowerToggle,
     ServerResize,
