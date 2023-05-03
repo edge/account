@@ -90,7 +90,8 @@ export default {
               callback: (tickValue) => {
                 const { value, unit } = this.formatYScale(tickValue)
                 return `${value.toFixed(1)} ${unit}`
-              }
+              },
+              stepSize: this.zoomed ? undefined : (this.server.spec.disk * (1024 * 1024)) / 5
             },
             grid: {
               display: false
