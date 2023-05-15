@@ -37,6 +37,16 @@ export default {
       const dates = this.bwin.map(([t]) => new Date(t * 1000))
       return dates.map(d => `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`)
     },
+    bwtotal() {
+      return this.bwin.map(([t, v], i) => [t, v + this.bwout[i][1]])
+    },
+    maxValue() {
+      return this.bwtotal.reduce((a, [, b]) => Math.max(a, b), 0)
+    },
+    defaultMax() {
+      if (this.server.spec.bandwidth === 0) return 100 * 1e6
+      return this.server.spec.bandwidth * 1e6
+    },
     chartData() {
       return {
         labels: this.timeSeries,
@@ -66,7 +76,7 @@ export default {
             tension: 0.2
           },
           this.bwin && this.bwout && {
-            data: this.bwin.map(([, v], i) => v + this.bwout[i][1]),
+            data: this.bwtotal.map(([, v]) => v),
             fill: false,
             backgroundColor: 'rgba(128,128,128)',
             borderColor: 'rgb(96, 96, 96)',
@@ -112,7 +122,7 @@ export default {
             }
           },
           y: {
-            max: this.zoomed ? undefined : this.server.spec.bandwidth * 1e6,
+            max: this.zoomed ? this.maxValue : Math.max(this.maxValue, this.defaultMax),
             min: 0,
             ticks: {
               callback: (tickValue) => {
