@@ -13,16 +13,14 @@
       </div>
     </div>
 
-    <div v-else-if="loading" class="box box--tall">
-      <div class="flex flex-col items-center justify-center text-center">
-        <div class="flex items-center justify-center p-4">
-          <LoadingSpinner />
-        </div>
-        <h4 class="mt-4">Loading metrics</h4>
+    <div v-else-if="loading" class="flex flex-col items-center justify-center text-center w-full">
+      <div class="flex items-center justify-center p-4">
+        <LoadingSpinner />
       </div>
+      <h4 class="mt-4">Loading metrics</h4>
     </div>
 
-    <div v-if="metrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
+    <div v-else-if="metrics" class="grid w-full grid-cols-1 xl:grid-cols-2 gap-5">
       <ServerMetricsCPU v-if="metrics.cpu" :data="metrics.cpu"/>
       <ServerMetricsMemory v-if="metrics.mem" :data="metrics.mem" :server="server"/>
       <ServerMetricsDisk v-if="metrics.disk" :data="metrics.disk" :server="server"/>
@@ -35,7 +33,9 @@
     </div>
 
     <div v-else class="box box--tall">
-
+      <div class="flex flex-col items-center justify-center text-center">
+        <h4 class="mt-4">Failed to load metrics</h4>
+      </div>
     </div>
 </div>
 </template>

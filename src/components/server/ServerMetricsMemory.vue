@@ -37,6 +37,9 @@ export default {
       const dates = this.data.map(([t]) => new Date(t * 1000))
       return dates.map(d => `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`)
     },
+    maxValue() {
+      return this.data.reduce((a, [, b]) => Math.max(a, b), 0)
+    },
     chartData() {
       return {
         labels: this.timeSeries,
@@ -84,7 +87,7 @@ export default {
             }
           },
           y: {
-            max: this.zoomed ? undefined : this.server.spec.ram * (1024 * 1024),
+            max: this.zoomed ? this.maxValue : this.server.spec.ram * (1024 * 1024),
             min: 0,
             ticks: {
               callback: (tickValue) => {

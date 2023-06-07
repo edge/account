@@ -295,7 +295,7 @@ export default {
       return this.hostname.toLowerCase() !== this.record.name ||
         this.ttl !== this.record.ttl ||
         this.type !== this.record.type ||
-        this.value.toLowerCase() !== this.record.value
+        this.value !== this.record.value
     },
     isMx() {
       return (!this.isEditing && this.record.type === 'MX') || this.type === 'MX'
@@ -377,7 +377,7 @@ export default {
             name: this.hostname.toLowerCase(),
             ttl: this.ttl,
             type: this.type,
-            value: value.toLowerCase()
+            value
           }
         )
         this.$emit('updateRecords')
