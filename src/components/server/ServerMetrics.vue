@@ -32,6 +32,13 @@
       />
     </div>
 
+    <div v-else-if="error" class="box box--tall">
+      <div class="flex flex-col items-center justify-center text-center">
+        <h4 class="mt-4">{{ error.status === 503 ? 'Service unavailable' : 'Error' }}</h4>
+        Please try again later or contact support for assistance if this issue persists.
+      </div>
+    </div>
+
     <div v-else class="box box--tall">
       <div class="flex flex-col items-center justify-center text-center">
         <h4 class="mt-4">Failed to load metrics</h4>
@@ -57,6 +64,7 @@ export default {
   props: ['server'],
   data() {
     return {
+      error: null,
       loading: true,
       metrics: null
     }
@@ -79,9 +87,16 @@ export default {
   },
   methods: {
     async reload() {
-      const res = await api.servers.getMetrics(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key)
-      this.metrics = res
-      this.loading = false
+      try {
+        const res = await api.servers.getMetrics(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key)
+        this.metrics = res
+      }
+      catch (err) {
+        this.error = err
+      }
+      finally {
+        this.loading = false
+      }
     }
   },
   mounted() {
