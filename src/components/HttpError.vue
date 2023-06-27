@@ -31,6 +31,10 @@ const paramLookup = {
   'zone': 'Domain'
 }
 
+const messageLookup = {
+  'incorrect': field => `Invalid ${/[a-z]/.test(field) ? field.toLowerCase() : field}. Please try again`
+}
+
 export default {
   name: 'HttpError',
   props: ['error'],
@@ -42,8 +46,13 @@ export default {
       const body = this.error.response.body
 
       if (this.overCapacityError) return 'We\'re currently at capacity in this region. Please check back soon.'
+      if (this.serviceUnavailableError) return 'Service unavailable. Please try again later or contact support for assistance if this issue persists.'
 
       const field = body.param && paramLookup[body.param]
+      if (field && messageLookup[body.reason] !== undefined) {
+        return messageLookup[body.reason](field)
+      }
+
       let message = ''
       if (['spec.disk', 'spec.ram'].includes(body.param)) message = this.formatMiBInError(body.reason)
       else message = body.reason || body.message
@@ -54,6 +63,9 @@ export default {
     },
     overCapacityError() {
       return this.error.response && this.error.response.body.detail === 'there is no suitable node in cluster'
+    },
+    serviceUnavailableError() {
+      return this.error.status === 503
     }
   },
   methods: {

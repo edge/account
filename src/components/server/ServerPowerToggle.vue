@@ -1,5 +1,18 @@
 <template>
   <div>
+    <Modal v-if="error">
+      <template v-slot:header>
+        {{ error.status === 503 ? 'Service unavailable' : 'Error' }}
+      </template>
+      <template v-slot:body>
+        There was a problem {{ this.enabled ? 'stopping' : 'starting' }} your server. Please try again later or contact support for assistance if this issue persists.
+      </template>
+      <template v-slot:buttons>
+        <button class="w-full mt-3 button button--small button--outline sm:mt-0" @click="resetError">
+          OK
+        </button>
+      </template>
+    </Modal>
     <Switch
       @click="toggleServer"
       :class="enabled ? 'bg-green' : 'bg-gray-300'"
@@ -35,6 +48,7 @@
 
 import * as api from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import Modal from '../Modal.vue'
 import StopServerConfirmation from '@/components/confirmations/StopServerConfirmation'
 import { Switch } from '@headlessui/vue'
 import { mapGetters, mapState } from 'vuex'
@@ -44,13 +58,15 @@ export default {
   props: ['activeTasks', 'disableActions', 'server'],
   data() {
     return {
-      showConfirmationModal: false
+      showConfirmationModal: false,
+      error: null
     }
   },
   components: {
     LoadingSpinner,
     StopServerConfirmation,
-    Switch
+    Switch,
+    Modal
   },
   computed: {
     ...mapGetters(['balanceSuspend']),
@@ -91,6 +107,9 @@ export default {
     }
   },
   methods: {
+    resetError() {
+      this.error = null
+    },
     async startServer() {
       try {
         const { task } = await api.servers.startServer(
@@ -101,6 +120,7 @@ export default {
         this.$store.commit('addTask', task)
       }
       catch (error) {
+        this.error = error
         console.error(error)
       }
     },
@@ -114,6 +134,7 @@ export default {
         this.$store.commit('addTask', task)
       }
       catch (error) {
+        this.error = error
         console.error(error)
       }
       this.toggleConfirmationModal()
