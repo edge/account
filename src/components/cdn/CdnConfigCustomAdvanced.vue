@@ -73,7 +73,9 @@ export default {
   methods: {
     checkDuplicatePaths() {
       // extract just the paths part of json
-      let pathsString = this.json.substring(this.json.indexOf('"paths"'))
+      const pathsIndex = this.json.indexOf('"paths"')
+      if (pathsIndex < 1) return
+      let pathsString = this.json.substring(pathsIndex)
       let openingBracketCount = 1
       let closingBracketCount = 0
       let openingBracketIndex = pathsString.indexOf('{')
