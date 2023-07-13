@@ -166,7 +166,7 @@ export default {
       return this.server.status
     },
     updated() {
-      return this.formatTimestamp(this.server.updated)
+      return this.formatTimestamp(this.server.updatedByUser || this.server.created)
     }
   },
   methods: {
