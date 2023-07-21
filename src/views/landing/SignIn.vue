@@ -133,8 +133,8 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils/index'
+import * as format from '@/utils/format'
 import * as validation from '@/utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import HttpError from '@/components/HttpError'

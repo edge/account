@@ -12,12 +12,10 @@ export const addTOTP = async (host, sessionId, options) => {
   return response.body
 }
 
-export const createAccount = async (host, referralCode) => {
+export const createAccount = async (host, body) => {
   const url = `${host}/account`
-  let response
-  if (referralCode) response = await superagent.post(url)
-    .send({ referralCode })
-  else response = await superagent.post(url)
+  const response = await superagent.post(url)
+    .send(body)
   return response.body
 }
 
@@ -30,14 +28,14 @@ export const disableTOTP = async (host, sessionId, body) => {
 }
 
 export const disableRecovery = async (host, sessionId) => {
-  const url = `${host}/account/recovery`
+  const url = `${host}/account/email`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
 export const enableRecovery = async (host, sessionId, address) => {
-  const url = `${host}/account/recovery`
+  const url = `${host}/account/email`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send({ address })
@@ -65,6 +63,13 @@ export const getWallet = async (host, sessionId) => {
   return response.body
 }
 
+export const resendVerificationEmail = async (host, sessionId) => {
+  const url = `${host}/account/email/verify/resend`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 export const recoverAccount = async (host, address) => {
   const url = `${host}/account/recover`
   const response = await superagent.post(url)
@@ -80,8 +85,8 @@ export const verifyRecoverAccount = async (host, address, secret) => {
 }
 
 export const verifyRecovery = async (host, sessionId, secret) => {
-  const url = `${host}/account/recovery`
-  const response = await superagent.put(url)
+  const url = `${host}/account/email/verify`
+  const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send({ secret })
   return response.body
