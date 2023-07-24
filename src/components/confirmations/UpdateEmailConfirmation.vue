@@ -4,14 +4,13 @@
       <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
     </template>
     <template v-slot:header>
-      <span>Remove Account Email</span>
+      <span>Update Account Email</span>
     </template>
     <template v-slot:body>
-      <span class="font-semibold">Warning: you are removing the email address associated with your account.</span>
+      <span class="font-semibold">Warning: you are updating the email address associated with your account.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>You will only be able to access with your account number. Make sure you have written this down</li>
-        <li>If you lose your account number, you will have no way to recover your account</li>
-        <li>You will no longer receive any email notifications</li>
+        <li>You will no longer be able to access your account with the current email</li>
+        <li>You will need either your account number or access to the new email to access your account</li>
       </div>
     </template>
     <template v-slot:buttons>
@@ -25,7 +24,7 @@
         class="w-full button button--small button--error"
         @click="confirm"
       >
-        Yes, Remove
+        Yes, Update
       </button>
     </template>
   </Modal>
@@ -36,7 +35,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'RemoveEmailConfirmation',
+  name: 'UpdateEmailConfirmation',
   components: {
     ExclamationIcon,
     Modal

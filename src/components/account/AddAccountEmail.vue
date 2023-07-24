@@ -120,7 +120,7 @@ export default {
         confirmationCode: '',
         email: ''
       },
-      httpError: {response: {body: {message: 'test'}}},
+      httpError: '',
       isLoading: false,
       step: 1
     }

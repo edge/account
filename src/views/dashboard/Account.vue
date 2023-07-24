@@ -21,7 +21,11 @@
       </div>
     </div>
     <div class="box">
-      <ManageAccountEmail />
+      <h4>Account Email</h4>
+      <div>
+        <ManageAccountEmail v-if="isRecoveryEnabled" />
+        <AddAccountEmail v-else />
+      </div>
     </div>
     <div class="box">
       <ReferralCode />
@@ -45,6 +49,7 @@
 
 <script>
 import * as format from '@/utils/format'
+import AddAccountEmail from '@/components/account/AddAccountEmail'
 import Disable2FA from '@/components/account/Disable2FA'
 import Enable2FA from '@/components/account/Enable2FA'
 import ManageAccountEmail from '@/components/account/ManageAccountEmail'
@@ -58,6 +63,7 @@ export default {
     return 'Edge Account Portal » Account'
   },
   components: {
+    AddAccountEmail,
     Disable2FA,
     EyeIcon,
     EyeOffIcon,

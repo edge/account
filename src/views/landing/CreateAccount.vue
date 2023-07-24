@@ -255,7 +255,7 @@
               </button>
               <div v-show="showRecovery && !isRecoveryEnabled">
                 <div class="px-2 mt-2">
-                  <EnableRecoveryEmail :createAccount="true" />
+                  <AddAccountEmail :createAccount="true" />
                 </div>
               </div>
             </div>
@@ -312,9 +312,9 @@
 import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
 import * as validation from '@/utils/validation'
+import AddAccountEmail from '@/components/account/AddAccountEmail'
 import Cookies from 'js-cookie'
 import Enable2FA from '@/components/account/Enable2FA'
-import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
 import ValidationError from '@/components/ValidationError.vue'
@@ -341,12 +341,12 @@ export default {
     return 'Edge Account Portal » Create Account'
   },
   components: {
+    AddAccountEmail,
     ChevronDownIcon,
     ChevronRightIcon,
     BadgeCheckIcon,
     DuplicateIcon,
     Enable2FA,
-    EnableRecoveryEmail,
     ExclamationIcon,
     FingerPrintIcon,
     KeyIcon,
@@ -421,26 +421,13 @@ export default {
       // if (!this.isAccountGenerated) return
       this.step = newStep
     },
+    async copyToClipboard () {
+      await navigator.clipboard.writeText(this.accountNumber)
+      this.copied = true
 
-
-
-    resetEmailCooldown() {
-      // set 15s email cooldown timer
-      this.emailCooldown = 15
-      this.iEmailCooldown = setInterval(() => {
-        this.emailCooldown = this.emailCooldown - 1
-        if (this.emailCooldown === 0) clearInterval(this.iEmailCooldown)
+      setTimeout(() => {
+        this.copied = false
       }, 1000)
-    },
-    async resendEmail() {
-      await api.accounts.resendVerificationEmail(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.generatedSession._key
-      )
-      this.resetEmailCooldown()
-    },
-    setAccountType(type) {
-      this.accountType = type
     },
     async createAccount() {
       this.isCreating = true
@@ -453,9 +440,6 @@ export default {
       this.generatedAccount = account
       this.generatedSession = session
       this.isCreating = false
-    },
-    signIn() {
-      this.$store.dispatch('signIn', { account: this.generatedAccount, session: this.generatedSession })
     },
     async createAnonymousAccount() {
       this.setAccountType('anonymous')
@@ -499,40 +483,6 @@ export default {
         this.isCreating = false
       }
     },
-    async verifyEmail() {
-      if (this.v$.verificationCode.$invalid) return
-      this.isVerifying = true
-      try {
-        await api.accounts.verifyRecovery(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.generatedSession._key,
-          this.verificationSecret
-        )
-        setTimeout(async () => {
-          this.signIn()
-          this.changeStep(3)
-          this.isVerifying = false
-        }, 800)
-      }
-      catch (error) {
-        setTimeout(() => {
-          this.errors.verificationCode = 'Verification code invalid'
-          this.isVerifying = false
-        }, 1000)
-      }
-    },
-
-
-
-
-    async copyToClipboard () {
-      await navigator.clipboard.writeText(this.accountNumber)
-      this.copied = true
-
-      setTimeout(() => {
-        this.copied = false
-      }, 1000)
-    },
     async generateAccount() {
       this.isGeneratingAccount = true
       this.errors.accountNumber = ''
@@ -573,6 +523,49 @@ export default {
     },
     async goToAccount() {
       this.$router.push('/')
+    },
+    async resendEmail() {
+      await api.accounts.resendVerificationEmail(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.generatedSession._key
+      )
+      this.resetEmailCooldown()
+    },
+    resetEmailCooldown() {
+      // set 15s email cooldown timer
+      this.emailCooldown = 15
+      this.iEmailCooldown = setInterval(() => {
+        this.emailCooldown = this.emailCooldown - 1
+        if (this.emailCooldown === 0) clearInterval(this.iEmailCooldown)
+      }, 1000)
+    },
+    setAccountType(type) {
+      this.accountType = type
+    },
+    signIn() {
+      this.$store.dispatch('signIn', { account: this.generatedAccount, session: this.generatedSession })
+    },
+    async verifyEmail() {
+      if (this.v$.verificationCode.$invalid) return
+      this.isVerifying = true
+      try {
+        await api.accounts.verifyRecovery(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.generatedSession._key,
+          this.verificationSecret
+        )
+        setTimeout(async () => {
+          this.signIn()
+          this.changeStep(3)
+          this.isVerifying = false
+        }, 800)
+      }
+      catch (error) {
+        setTimeout(() => {
+          this.errors.verificationCode = 'Verification code invalid'
+          this.isVerifying = false
+        }, 1000)
+      }
     },
     toggleShow2FA() {
       if (this.is2FAEnabled && !this.backupCodes) return

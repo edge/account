@@ -84,6 +84,14 @@ export const sendMagicLink = async (host, address) => {
   return response.body
 }
 
+export const updateEmail = async (host, sessionId, address) => {
+  const url = `${host}/account/email`
+  const response = await superagent.put(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ address })
+  return response.body
+}
+
 export const verifyEmail = async (host, sessionId, secret) => {
   const url = `${host}/account/email/verify`
   const response = await superagent.post(url)
