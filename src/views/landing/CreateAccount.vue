@@ -127,7 +127,6 @@
           </div>
         </div>
 
-
         <!-- Verify email step (email-first accounts only) -->
         <div v-if="accountType === 'email'" class="step" :class="step < 2 ? 'inactive' : ''">
           <div class="step-title">
@@ -549,7 +548,7 @@ export default {
       if (this.v$.verificationCode.$invalid) return
       this.isVerifying = true
       try {
-        await api.accounts.verifyRecovery(
+        await api.accounts.verifyEmail(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.generatedSession._key,
           this.verificationSecret

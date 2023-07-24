@@ -13,14 +13,14 @@
       <div class="flex flex-col sm:flex-row sm:space-x-2">
         <!-- update -->
         <button
-          class="button button--success sm:w-52 mb-1"
+          class="button button--outline-success sm:w-52"
           @click="isEditing = true"
         >
           <span>Update Email</span>
         </button>
         <!-- remove -->
         <button
-          class="button button--error sm:w-52 mb-1"
+          class="button button--error sm:w-52"
           @click=toggleRemoveConfirmationModal
         >
           <div v-if="isLoading" class="flex items-center">
