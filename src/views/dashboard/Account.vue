@@ -21,6 +21,9 @@
       </div>
     </div>
     <div class="box">
+      <ManageAccountEmail />
+    </div>
+    <div class="box">
       <ReferralCode />
     </div>
     <div class="box">
@@ -37,23 +40,14 @@
         </button>
       </div>
     </div>
-
-    <div class="box">
-      <h4>Recovery Email</h4>
-      <div>
-        <DisableRecoveryEmail v-if="isRecoveryEnabled" />
-        <EnableRecoveryEmail v-else />
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import * as format from '@/utils/format'
 import Disable2FA from '@/components/account/Disable2FA'
-import DisableRecoveryEmail from '@/components/account/DisableRecoveryEmail'
 import Enable2FA from '@/components/account/Enable2FA'
-import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
+import ManageAccountEmail from '@/components/account/ManageAccountEmail'
 import ReferralCode from '@/components/ReferralCode'
 import { mapState } from 'vuex'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
@@ -65,11 +59,10 @@ export default {
   },
   components: {
     Disable2FA,
-    DisableRecoveryEmail,
     EyeIcon,
     EyeOffIcon,
     Enable2FA,
-    EnableRecoveryEmail,
+    ManageAccountEmail,
     ReferralCode
   },
   computed: {
@@ -84,7 +77,7 @@ export default {
       return this.account.totps
     },
     isRecoveryEnabled() {
-      return this.account.recovery && this.account.recovery.email.verified
+      return this.account.email && this.account.email.address
     }
   },
   data() {

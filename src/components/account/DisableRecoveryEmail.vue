@@ -1,20 +1,28 @@
 <template>
   <div class="my-2 flex flex-col text-gray-500">
-    <div class="flex items-center mb-2">
-      <div><BadgeCheckIcon class="h-5 mr-1 text-green" /></div>
-      <span>Recovery email is enabled.</span>
+    <p class="text-2xl text-green">{{ account.email.address }}</p>
+    <div class="flex space-x-2">
+      <button
+        class="button button--outline-success w-52 mb-1"
+        @click=toggleConfirmationModal
+      >
+        <div v-if="isLoading" class="flex items-center">
+          <span>Changing</span>
+          <span class="ml-2"><LoadingSpinner /></span>
+        </div>
+        <span v-else>Change Email</span>
+      </button>
+      <button
+        class="button button--error w-52 mb-1"
+        @click=toggleConfirmationModal
+      >
+        <div v-if="isLoading" class="flex items-center">
+          <span>Removing</span>
+          <span class="ml-2"><LoadingSpinner /></span>
+        </div>
+        <span v-else>Remove Email</span>
+      </button>
     </div>
-    <span class="mb-4">To remove your recovery email, please click the button below:</span>
-    <button
-      class="button button--error w-52 mb-1"
-      @click=toggleConfirmationModal
-    >
-      <div v-if="isLoading" class="flex items-center">
-        <span>Disabling</span>
-        <span class="ml-2"><LoadingSpinner /></span>
-      </div>
-      <span v-else>Disable Recovery Email</span>
-    </button>
     <HttpError :error=httpError />
     <!-- disable recovery email confirmation modal -->
     <DisableRecoveryConfirmation
@@ -29,7 +37,6 @@
 /* global process */
 
 import * as api from '@/account-utils/index'
-import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableRecoveryConfirmation from '@/components/confirmations/DisableRecoveryConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -37,7 +44,6 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
-    BadgeCheckIcon,
     DisableRecoveryConfirmation,
     HttpError,
     LoadingSpinner
@@ -50,7 +56,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session'])
+    ...mapState(['account', 'session'])
   },
   methods: {
     ...mapActions(['updateAccount']),

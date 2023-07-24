@@ -1,9 +1,9 @@
 <template>
   <div>
-    <!-- add recovery email address step -->
+    <!-- add email address step -->
     <div v-show="step === 1" class="my-2">
       <p class="text-gray-500">
-        Add an email address to your account so that it may be recovered in the event that you lose your account number.
+        Add an email address to your account. You will be able to use it to sign in, receive notifications and recover your account in case you lose your account number.
       </p>
       <!-- email input and button -->
       <div class="input-field flex items-center w-full">
@@ -15,11 +15,11 @@
           class="overflow-hidden flex-1 px-3 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
           :class="createAccount ? 'smaller-font' : 'text-lg py-2'"
           placeholder="Enter email address"
-          @keypress.enter=enableRecovery
+          @keypress.enter=addEmail
         />
         <button
           class="rounded-l-none text-sm py-3 button button--success w-32"
-          @click.prevent="enableRecovery"
+          @click.prevent="addEmail"
           :disabled="!canEnable"
         >
           <div v-if="isLoading" class="flex flex-row items-center">
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <!-- verify recovery email step -->
+    <!-- verify email step -->
     <div v-show="step === 2" class="my-2">
       <!-- email sent message -->
       <div class="flex mb-2 items-center">
@@ -48,12 +48,12 @@
       <!-- instructions -->
       <span class="text-gray-500">
         Not quite there yet.
-        Check your emails and enter the confirmation code below to verify your recovery email address.
+        Check your emails and enter the confirmation code below to verify your email address.
       </span>
       <!-- resend email button and feedback -->
       <p class="text-gray-500 my-2">
         Haven't received the email?
-        <span v-if="emailCooldown === 0"><span @click="returnToEnable" class="underline cursor-pointer hover:text-green">Click here</span> to change your recovery email address.</span>
+        <span v-if="emailCooldown === 0"><span @click="returnToEnable" class="underline cursor-pointer hover:text-green">Click here</span> to change your email address.</span>
         <span v-else>Please wait {{ emailCooldown }} seconds.</span>
       </p>
       <!-- confirmation code and button -->
@@ -65,11 +65,11 @@
           class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
           v-mask="'# # # # # #'"
           placeholder="1 2 3 4 5 6"
-          @keypress.enter=verifyRecovery
+          @keypress.enter=verifyEmail
         />
         <button
           class="order-2 rounded-l-none text-sm py-3 button button--success py-2 w-32"
-          @click.prevent="verifyRecovery"
+          @click.prevent="verifyEmail"
           :disabled="!canVerify"
         >
           <div v-if="isLoading" class="flex flex-row items-center">
@@ -145,23 +145,23 @@ export default {
     canVerify() {
       return !this.v$.confirmationCode.$invalid && !this.errors.confirmationCode && !this.isLoading
     },
-    recoverySecret() {
+    secret() {
       return format.removeSpaces(this.confirmationCode)
     }
   },
   mounted() {
     if (this.account && this.account.email) {
-      this.email = this.account.email
+      this.email = this.account.email.address
     }
   },
   methods: {
     ...mapActions(['updateAccount']),
-    async enableRecovery() {
+    async addEmail() {
       if (this.v$.email.$invalid) return
       this.isLoading = true
 
       try {
-        await api.accounts.enableRecovery(
+        await api.accounts.addEmail(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.email
@@ -191,14 +191,14 @@ export default {
       this.email = ''
       this.step = 1
     },
-    async verifyRecovery() {
+    async verifyEmail() {
       if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
       try {
-        await api.accounts.verifyRecovery(
+        await api.accounts.verifyEmail(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.recoverySecret
+          this.secret
         )
         setTimeout(async () => {
           await this.updateAccount()

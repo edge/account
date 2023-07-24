@@ -4,6 +4,14 @@
 
 import superagent from 'superagent'
 
+export const addEmail = async (host, sessionId, address) => {
+  const url = `${host}/account/email`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ address })
+  return response.body
+}
+
 export const addTOTP = async (host, sessionId, options) => {
   const url = `${host}/account/totp`
   const response = await superagent.post(url)
@@ -27,21 +35,6 @@ export const disableTOTP = async (host, sessionId, body) => {
   return response.body
 }
 
-export const disableRecovery = async (host, sessionId) => {
-  const url = `${host}/account/email`
-  const response = await superagent.delete(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-export const enableRecovery = async (host, sessionId, address) => {
-  const url = `${host}/account/email`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ address })
-  return response.body
-}
-
 export const getAccount = async (host, sessionId) => {
   const url = `${host}/account`
   const response = await superagent.get(url)
@@ -59,6 +52,13 @@ export const getReferrals = async (host, sessionId) => {
 export const getWallet = async (host, sessionId) => {
   const url = `${host}/account/wallet`
   const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+export const removeEmail = async (host, sessionId) => {
+  const url = `${host}/account/email`
+  const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
@@ -84,6 +84,14 @@ export const sendMagicLink = async (host, address) => {
   return response.body
 }
 
+export const verifyEmail = async (host, sessionId, secret) => {
+  const url = `${host}/account/email/verify`
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ secret })
+  return response.body
+}
+
 export const verifyMagicLinkToken = async (host, token) => {
   const url = `${host}/account/magicLink/verify`
   const response = await superagent.post(url)
@@ -95,13 +103,5 @@ export const verifyRecoverAccount = async (host, address, secret) => {
   const url = `${host}/account/recover`
   const response = await superagent.put(url)
     .send({ address, secret })
-  return response.body
-}
-
-export const verifyRecovery = async (host, sessionId, secret) => {
-  const url = `${host}/account/email/verify`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ secret })
   return response.body
 }
