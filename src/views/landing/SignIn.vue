@@ -1,7 +1,57 @@
 <template>
   <div class="landingPage__content">
+    <div v-if="!requires2FA && magicLinkToken">
+      <Logo class="mb-6" />
+      <p v-if="!errors.magicLink" class="pr-5 text-lg mb-6">
+        <span>Please wait whilst we verify your details and sign you into the Edge Network.</span>
+      </p>
+      <div class="landingPage__form">
+        <!-- error message -->
+        <div v-if="errors.magicLink" class="flex items-center text-red text-lg mt-2">
+          <span class="">{{ errors.magicLink }}</span>
+        </div>
+        <!-- account sign in input -->
+        <div v-else class="input-group">
+          <label for="accountNumber" class="label">Account details</label>
+          <div
+            v-if="magicLinkResponse"
+            class="account-number bg-white border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg cursor-default"
+          >
+            <span>{{ magicLinkResponse.address }}</span>
+          </div>
+        </div>
+        <!-- buttons -->
+        <div class="flex flex-col mt-6">
+          <!-- sign in -->
+          <button
+            v-if="!errors.magicLink"
+            class="mb-2 button button--success"
+            disabled
+          >
+            <div v-if="isLoading" class="flex flex-row">
+              <span>Signing in</span>
+              <span class="ml-2"><LoadingSpinner /></span>
+            </div>
+            <span v-else>Sign in</span>
+          </button>
+
+          <!-- divider -->
+          <div class="flex items-center w-full my-6 space-x-2">
+            <div class="flex-1 h-px bg-gray-400" />
+          </div>
+          <!-- create account -->
+          <router-link
+            :to="{ name: 'Sign In' }"
+            class="button button--solid"
+          >
+            <span>Return to sign in</span>
+          </router-link>
+        </div>
+      </div>
+    </div>
+
     <!-- sign in with account number -->
-    <div v-if="!requires2FA" >
+    <div v-else-if="!requires2FA" >
       <Logo class="mb-6" />
       <p class="pr-5 text-lg mb-6">
         <span>Welcome back. Enter your account number or email to sign into the Edge Network.</span>
@@ -194,12 +244,14 @@ export default {
       emailCooldown: 0,
       errors: {
         backupCode: '',
+        magicLink: '',
         otpSecret: '',
         signInInput: ''
       },
       httpError: null,
       is2FACodeValid: false,
       isLoading: false,
+      magicLinkResponse: null,
       magicLinkSent: false,
       otpSecret: '',
       requires2FA: false,
@@ -219,20 +271,24 @@ export default {
   },
   computed: {
     accountNumber() {
-      return this.numericalInput && format.removeSpaces(this.signInInput)
+      if (this.magicLinkResponse) return this.magicLinkResponse.account
+      else return this.numericalInput && format.removeSpaces(this.signInInput)
     },
     canSignIn() {
       return this.signInInput && !this.v$.signInInput.$invalid && !this.errors.signInInput && !this.isLoading
     },
     numericalInput() {
       // check if input is entirely numerical to determine if account number input (with spaces optional to allow for masking)
-      return /^\d+(\s\d+)*\s*$/.test(this.signInInput)
+      return this.magicLinkResponse || /^\d+(\s\d+)*\s*$/.test(this.signInInput)
     },
     signInBody() {
       const body = { account: this.accountNumber }
       if (this.useBackupCode) body.backupCode = this.backupCode
       if (this.otpSecret) body.otp = this.otpSecret
       return body
+    },
+    magicLinkToken() {
+      return this.$route.query.t
     }
   },
   methods: {
@@ -255,8 +311,15 @@ export default {
       this.errors.otpSecret = ''
     },
     returnToSignIn() {
-      this.errors.signInInput = ''
+      this.signInInput = ''
       this.otpSecret = ''
+      this.magicLinkResponse = null
+      this.errors = {
+        backupCode: '',
+        magicLink: '',
+        otpSecret: '',
+        signInInput: ''
+      },
       this.requires2FA = false
     },
     async sendMagicLink() {
@@ -328,7 +391,22 @@ export default {
       this.httpError = ''
       await this.v$.$reset()
       this.useBackupCode = !this.useBackupCode
+    },
+    async verifyMagicLinkToken() {
+      try {
+        this.magicLinkResponse = await api.accounts.verifyMagicLinkToken(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.magicLinkToken
+        )
+        await this.signIn()
+      }
+      catch (error) {
+        this.errors.magicLink = 'Your link appears to be invalid. Please return to sign in and try again.'
+      }
     }
+  },
+  async mounted() {
+    if (this.magicLinkToken) await this.verifyMagicLinkToken()
   },
   setup() {
     return {

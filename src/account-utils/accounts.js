@@ -84,6 +84,13 @@ export const sendMagicLink = async (host, address) => {
   return response.body
 }
 
+export const verifyMagicLinkToken = async (host, token) => {
+  const url = `${host}/account/magicLink/verify`
+  const response = await superagent.post(url)
+    .send({ token })
+  return response.body
+}
+
 export const verifyRecoverAccount = async (host, address, secret) => {
   const url = `${host}/account/recover`
   const response = await superagent.put(url)
