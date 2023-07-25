@@ -93,7 +93,7 @@
                 </div>
               </div>
               <div v-else>
-                <span class="text-xl text-green">{{ emailInput }}</span>
+                <span class="text-xl text-green break-words">{{ emailInput }}</span>
               </div>
             </div>
 
@@ -136,10 +136,10 @@
           <div class="step-content" v-if="step === 2">
             <!-- email sent message -->
             <div class="flex mb-2 items-center">
-              <div>
+              <div class="self-start">
                 <BadgeCheckIcon class="h-5 text-green" />
               </div>
-              <span class="ml-1 text-green">Confirmation email sent to {{ emailInput }}</span>
+              <span class="email-conf ml-1 text-green">Confirmation email sent to {{ emailInput }}</span>
             </div>
             <!-- instructions -->
             <span class="text-gray-500">
@@ -634,6 +634,11 @@ export default {
 }
 .copied.visible {
   @apply opacity-100;
+}
+
+.email-conf {
+  width: calc(100% - 20px);
+  word-break: break-word;
 }
 
 .step {

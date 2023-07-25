@@ -40,10 +40,10 @@
     <div v-show="step === 2" class="my-2">
       <!-- email sent message -->
       <div class="flex mb-2 items-center">
-        <div>
+        <div class="self-start">
           <BadgeCheckIcon class="h-5 text-green" />
         </div>
-        <span class="ml-1 text-green">Confirmation email sent to {{ email }}</span>
+        <span class="email-conf ml-1 text-green">Confirmation email sent to {{ email }}</span>
       </div>
       <!-- instructions -->
       <span class="text-gray-500">
@@ -232,6 +232,11 @@ export default {
 <style scoped>
 .input-field {
   max-width: 548px;
+}
+
+.email-conf {
+  width: calc(100% - 20px);
+  word-break: break-word;
 }
 
 @media (max-width: 450px) {
