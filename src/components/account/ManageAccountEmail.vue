@@ -255,6 +255,7 @@ export default {
     },
     toggleEditing() {
       this.newEmail = ''
+      this.confirmationCode = ''
       this.step = 1
       this.isEditing = !this.isEditing
     },
@@ -308,6 +309,9 @@ export default {
           await this.updateAccount()
           this.isVerifying = false
           this.isEditing = false
+          this.confirmationCode = ''
+          this.newEmail = ''
+          this.step = 1
         }, 800)
       }
       catch (error) {

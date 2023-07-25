@@ -1,5 +1,6 @@
 <template>
   <div class="landingPage__content">
+    <!-- sign in with magic link -->
     <div v-if="!requires2FA && magicLinkToken">
       <Logo class="mb-6" />
       <p v-if="!errors.magicLink" class="pr-5 text-lg mb-6">
@@ -398,6 +399,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.magicLinkToken
         )
+        console.log(this.magicLinkResponse)
         await this.signIn()
       }
       catch (error) {

@@ -21,7 +21,7 @@
         Cancel
       </button>
       <button
-        class="w-full button button--small button--error"
+        class="w-full button button--small button--success"
         @click="confirm"
       >
         Yes, Update
