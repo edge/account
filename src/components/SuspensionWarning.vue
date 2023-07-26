@@ -43,11 +43,11 @@ export default {
           message: 'Your XE purchase is processing. Please allow up to 10 minutes for your balance to update.'
         }
       }
-      if (this.account.managed) return null
+      if (this.account.managed || this.account.topup) return null
       if (!this.balance.total.usd) {
         return {
           class: bannerClass.blue,
-          message: `Please transfer at least $${warningThreshold} of funds to your account to enable services.`
+          message: `Please transfer at least $${warningThreshold} of funds to your account or add a payment card to enable services.`
         }
       }
       else if (this.account.suspended) {
