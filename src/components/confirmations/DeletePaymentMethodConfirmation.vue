@@ -9,7 +9,7 @@
     <template v-slot:body>
       <div class="flex flex-col space-y-2">
         <li>This payment card will be permanently deleted.</li>
-        <li v-if=isAutoTopUpCard class="font-bold">
+        <li v-if=isAutoPaymentCard class="font-bold">
           This card is used for auto payments. Auto payments will be disabled if you continue.
         </li>
       </div>
@@ -45,7 +45,7 @@ export default {
   },
   computed: {
     ...mapState(['account']),
-    isAutoTopUpCard() {
+    isAutoPaymentCard() {
       return this.account.topup && this.paymentMethod._key === this.account.topup.paymentMethod
     }
   },

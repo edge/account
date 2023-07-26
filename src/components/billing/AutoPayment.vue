@@ -2,12 +2,12 @@
   <div class="box flex flex-col">
     <h4>Pay by Credit Card</h4>
 
-    <div v-if="autoTopUpCard" class="flex items-center mb-4">
+    <div v-if="autoPaymentCard" class="flex items-center mb-4">
       <div><BadgeCheckIcon class="w-4 text-green mr-1" /></div>
       <span>Auto payments enabled.</span>
     </div>
 
-    <p v-if="autoTopUpCard">Your selected credit card will be used to pay your monthly invoices automatically.</p>
+    <p v-if="autoPaymentCard">Your selected credit card will be used to pay your monthly invoices automatically.</p>
     <p v-else>Select a saved credit card to pay your monthly invoices automatically.</p>
 
     <p>Your card will be charged on the 1st of each month. If you disable automatic payments, your services may be suspended if you have account doesn't have sufficient funds.</p>
@@ -55,7 +55,7 @@
 
     <div class="buttons flex space-x-2 justify-end">
       <button
-        v-if="autoTopUpCard"
+        v-if="autoPaymentCard"
         @click=toggleDisableConfirmationModal
         class="button button--small button--outline-error w-full"
         :disabled="enabling || disabling"
@@ -64,21 +64,21 @@
         <div class="ml-1" v-if="disabling"><LoadingSpinner /></div>
       </button>
       <button
-        @click=enableAutoPayments
+        @click=enableAutoPayment
         class="button button--small button--success w-full"
-        :class="autoTopUpCard ? '' : 'md:max-w-xs'"
+        :class="autoPaymentCard ? '' : 'md:max-w-xs'"
         :disabled="!canEnable || enabling || disabling"
       >
-        {{ autoTopUpCard ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
+        {{ autoPaymentCard ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
         <div class="ml-1" v-if="enabling"><LoadingSpinner /></div>
       </button>
     </div>
     <div v-if=httpError class="mt-2">
       <HttpError :error=httpError />
     </div>
-    <DisableAutoTopUpConfirmation
+    <DisableAutoPaymentsConfirmation
       v-if=showDisableConfirmation
-      @modal-confirm=disableAutoTopUp
+      @modal-confirm=disableAutoPayment
       @modal-close=toggleDisableConfirmationModal
     />
   </div>
@@ -89,7 +89,7 @@
 
 import * as api from '@/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import DisableAutoTopUpConfirmation from '@/components/confirmations/DisableAutoTopUpConfirmation'
+import DisableAutoPaymentsConfirmation from '@/components/confirmations/DisableAutoPaymentsConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -105,12 +105,12 @@ import {
 } from '@headlessui/vue'
 
 export default {
-  name: 'AutoTopUp',
+  name: 'AutoPayment',
   components: {
     BadgeCheckIcon,
     CheckIcon,
     ChevronDownIcon,
-    DisableAutoTopUpConfirmation,
+    DisableAutoPaymentsConfirmation,
     HttpError,
     Listbox,
     ListboxButton,
@@ -130,19 +130,19 @@ export default {
   props: ['paymentMethods'],
   computed: {
     ...mapState(['account', 'config', 'session']),
-    autoTopUpCard() {
+    autoPaymentCard() {
       return this.account && this.account.topup && this.account.topup.paymentMethod
     },
     canEnable() {
-      return this.paymentCard
+      return this.paymentCard && this.paymentCard._key !== this.account.topup.paymentMethod
     }
   },
   methods: {
-    async disableAutoTopUp() {
+    async disableAutoPayment() {
       this.httpError = ''
       try {
         this.disabling = true
-        await api.billing.disableAutoTopUp(
+        await api.billing.disableAutoPayment(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
@@ -158,11 +158,11 @@ export default {
         this.disabling = false
       }
     },
-    async enableAutoPayments() {
+    async enableAutoPayment() {
       this.httpError = ''
       try {
         this.enabling = true
-        await api.billing.enableAutoTopUp(
+        await api.billing.enableAutoPayment(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           { paymentMethod: this.paymentCard._key }
@@ -182,13 +182,13 @@ export default {
     }
   },
   watch: {
-    autoTopUpCard(newCard) {
+    autoPaymentCard(newCard) {
       if (newCard) this.paymentCard = this.paymentMethods.find(p => p._key === newCard)
       else this.paymentCard = this.paymentMethods[0]
     },
     paymentMethods() {
-      if (this.autoTopUpCard) {
-        this.paymentCard = this.paymentMethods.find(p => p._key === this.autoTopUpCard)
+      if (this.autoPaymentCard) {
+        this.paymentCard = this.paymentMethods.find(p => p._key === this.autoPaymentCard)
       }
       else this.paymentCard = this.paymentMethods[0]
     }

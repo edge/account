@@ -6,7 +6,7 @@
         <button @click=goToPurchase class="underline hover:text-green">#{{ purchase._key }}</button>
         <Tooltip
           v-if="purchase.auto"
-          text="Purchase made by auto top-up"
+          text="Purchase made by auto payment"
           position="right"
         >
           <InformationCircleIcon class="w-4 text-gray-400" />

@@ -34,7 +34,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'DisableAutoTopUpConfirmation',
+  name: 'DisableAutoPaymentsConfirmation',
   components: {
     ExclamationIcon,
     Modal
