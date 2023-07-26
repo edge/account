@@ -1,7 +1,7 @@
 <template>
   <div class="my-2 flex flex-col text-gray-500">
     <p class="text-gray-500 mb-0">
-      Your email address can be used it to sign in, receive notifications and recover your account in case you lose your account number.
+      Your email address can be used to sign in and receive notifications.
     </p>
 
     <!-- not editing -->
@@ -134,7 +134,7 @@
     </div>
 
     <!-- confirmation modals -->
-    <DisableRecoveryConfirmation
+    <DisableEmailConfirmation
       v-if="showRemoveConfirmationModal"
       @modal-confirm="removeEmail"
       @modal-close="toggleRemoveConfirmationModal"
@@ -154,7 +154,7 @@ import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
 import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import DisableRecoveryConfirmation from '@/components/confirmations/DisableRecoveryConfirmation'
+import DisableEmailConfirmation from '@/components/confirmations/DisableEmailConfirmation'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -166,7 +166,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   components: {
     BadgeCheckIcon,
-    DisableRecoveryConfirmation,
+    DisableEmailConfirmation,
     ExclamationIcon,
     HttpError,
     LoadingSpinner,

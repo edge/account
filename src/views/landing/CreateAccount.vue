@@ -229,16 +229,16 @@
                 </div>
               </div>
             </div>
-            <!-- recovery email section -->
+            <!-- add email section -->
             <div v-if="accountType === 'anonymous'" class="mb-4 bg-gray-200 rounded-lg">
               <button
-                @click.prevent="toggleShowRecovery"
+                @click.prevent="toggleShowAddEmail"
                 class="w-full button"
-                :class="isRecoveryEnabled ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
+                :class="isEmailEnabled ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
               >
-                <span>Add Recovery Email</span>
-                <div v-if="!isRecoveryEnabled" class="absolute right-3">
-                  <ChevronDownIcon v-if="showRecovery"
+                <span>Add Email</span>
+                <div v-if="!isEmailEnabled" class="absolute right-3">
+                  <ChevronDownIcon v-if="showAddEmail"
                     class="chevron-icon"
                   />
                   <ChevronRightIcon v-else
@@ -248,18 +248,18 @@
                 <div v-else class="absolute right-3">
                   <ShieldCheckIcon
                     class="chevron-icon text-green"
-                    :class="isRecoveryEnabled ? 'enabled' : ''"
+                    :class="isEmailEnabled ? 'enabled' : ''"
                   />
                 </div>
               </button>
-              <div v-show="showRecovery && !isRecoveryEnabled">
+              <div v-show="showAddEmail && !isEmailEnabled">
                 <div class="px-2 mt-2">
                   <AddAccountEmail :createAccount="true" />
                 </div>
               </div>
             </div>
           </div>
-          <!-- when moving past secure account section, still display whether recovery/2fa has been enabled -->
+          <!-- when moving past secure account section, still display whether email/2fa has been enabled -->
           <div class="step-content" v-else-if="step > 3">
             <div class="my-4">
               <div @click="toggleShow2FA" class="cursor-pointer flex items-center mb-4">
@@ -271,13 +271,13 @@
                   Two-factor authentication {{ is2FAEnabled ? 'successfully' : 'not' }} enabled
                 </span>
               </div>
-              <div @click="toggleShowRecovery" class="cursor-pointer flex items-center">
+              <div @click="toggleShowAddEmail" class="cursor-pointer flex items-center">
                 <div>
-                  <ShieldCheckIcon v-if="isRecoveryEnabled" class="w-5 text-green" />
+                  <ShieldCheckIcon v-if="isEmailEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
                 <span class="ml-2 hover:text-green">
-                  Recovery email {{ isRecoveryEnabled ? 'successfully' : 'not' }} added
+                  Account email {{ isEmailEnabled ? 'successfully' : 'not' }} added
                 </span>
               </div>
             </div>
@@ -374,7 +374,7 @@ export default {
       isGeneratingAccount: false,
       isVerifying: false,
       show2FA: false,
-      showRecovery: false,
+      showAddEmail: false,
       step: 1,
       verificationCode: ''
     }
@@ -401,12 +401,10 @@ export default {
       return this.account && !this.isGeneratingAccount
     },
     isAccountSecured() {
-      return this.is2FAEnabled && this.isRecoveryEnabled
+      return this.is2FAEnabled && this.isEmailEnabled
     },
-    isRecoveryEnabled() {
-      if (!this.account) return false
-      if (this.account.recovery) return this.account.recovery.email.verified
-      return false
+    isEmailEnabled() {
+      return this.account && this.account.email && this.account.email.address
     },
     formattedAccountNumber() {
       return format.accountNumber(this.accountNumber)
@@ -571,23 +569,23 @@ export default {
       if (this.step !== 3) {
         this.step = 3
         this.show2FA = true
-        this.showRecovery = false
+        this.showAddEmail = false
       }
       else {
         this.show2FA = !this.show2FA
-        if (this.show2FA) this.showRecovery = false
+        if (this.show2FA) this.showAddEmail = false
       }
     },
-    toggleShowRecovery() {
-      if (this.isRecoveryEnabled) return
+    toggleShowAddEmail() {
+      if (this.isEmailEnabled) return
       if (this.step !== 3) {
         this.step = 3
-        this.showRecovery = true
+        this.showAddEmail = true
         this.show2FA = false
       }
       else {
-        this.showRecovery = !this.showRecovery
-        if(this.showRecovery) this.show2FA = false
+        this.showAddEmail = !this.showAddEmail
+        if(this.showAddEmail) this.show2FA = false
       }
     }
   },
@@ -609,10 +607,10 @@ export default {
       this.errors.emailInput = ''
     },
     is2FAEnabled(new2FAEnabled) {
-      if (new2FAEnabled && this.isRecoveryEnabled) this.step = 3
+      if (new2FAEnabled && this.isEmailEnabled) this.step = 3
     },
-    isRecoveryEnabled(newRecoveryEnabled) {
-      if (newRecoveryEnabled && this.is2FAEnabled) this.step = 3
+    isEmailEnabled(newEmail) {
+      if (newEmail && this.is2FAEnabled) this.step = 3
     },
     verificationCode() {
       this.errors.verificationCode = ''

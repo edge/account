@@ -23,7 +23,7 @@
     <div class="box">
       <h4>Account Email</h4>
       <div>
-        <ManageAccountEmail v-if="isRecoveryEnabled" />
+        <ManageAccountEmail v-if="isEmailEnabled" />
         <AddAccountEmail v-else />
       </div>
     </div>
@@ -82,7 +82,7 @@ export default {
     is2FAEnabled() {
       return this.account.totps
     },
-    isRecoveryEnabled() {
+    isEmailEnabled() {
       return this.account.email && this.account.email.address
     }
   },

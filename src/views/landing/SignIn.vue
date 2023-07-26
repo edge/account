@@ -94,13 +94,6 @@
             <span v-else>Sign in</span>
           </button>
 
-          <!-- lost account - TBD, this can be removed as signing in with email is same as recovering account -->
-          <!-- <router-link :to="{ name: 'Recover Account' }"
-            class="w-full text-sm text-center text-gray-500 underline hover:text-green"
-          >
-            I lost my account number
-          </router-link> -->
-
           <!-- magic link sent confirmation -->
           <div v-if="magicLinkSent">
             <div class="flex mb-2 items-center">

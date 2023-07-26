@@ -3,7 +3,7 @@
     <!-- add email address step -->
     <div v-show="step === 1" class="my-2">
       <p class="text-gray-500">
-        Add an email address to your account. You will be able to use it to sign in, receive notifications and recover your account in case you lose your account number.
+        Add an email address to your account. You can use it to sign in and receive notifications.
       </p>
       <!-- email input and button -->
       <div class="input-field flex items-center w-full">

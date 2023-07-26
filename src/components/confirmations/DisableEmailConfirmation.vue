@@ -9,8 +9,8 @@
     <template v-slot:body>
       <span class="font-semibold">Warning: you are removing the email address associated with your account.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>You will only be able to access with your account number. Make sure you have written this down</li>
-        <li>If you lose your account number, you will have no way to recover your account</li>
+        <li>You will only be able to access this account with your account number. Make sure you have written this down</li>
+        <li>If you lose your account number, you may not be able to recover your account</li>
         <li>You will no longer receive any email notifications</li>
       </div>
     </template>

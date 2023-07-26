@@ -9,7 +9,7 @@
     <template v-slot:body>
       <span class="font-semibold">Warning: you are updating the email address associated with your account.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>You will no longer be able to access your account with the current email</li>
+        <li>You will no longer be able to sign in to your account using the previous email address</li>
         <li>You will need either your account number or access to the new email to access your account</li>
       </div>
     </template>
@@ -24,7 +24,7 @@
         class="w-full button button--small button--success"
         @click="confirm"
       >
-        Yes, Update
+        Update
       </button>
     </template>
   </Modal>
