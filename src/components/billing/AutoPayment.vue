@@ -7,10 +7,13 @@
       <span>Auto payments enabled.</span>
     </div>
 
-    <p v-if="autoPaymentCard">Your selected credit card will be used to pay your monthly invoices automatically.</p>
-    <p v-else>Select a saved credit card to pay your monthly invoices automatically.</p>
+    <p>
+      <span v-if="autoPaymentCard">Your selected credit card will be used to pay your monthly invoices automatically.</span>
+      <span v-else>Select a saved credit card to pay your monthly invoices automatically.</span>
+      <span> Your card will be charged on the 1st of each month.</span>
+    </p>
 
-    <p>Your card will be charged on the 1st of each month. If you disable automatic payments, your services may be suspended if you have account doesn't have sufficient funds.</p>
+    <p>If you disable automatic payments, your services may be suspended if you have account doesn't have sufficient funds.</p>
 
     <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-4">
       <div class="w-full pt-1" v-if="paymentMethods">
