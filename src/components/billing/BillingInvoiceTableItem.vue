@@ -98,14 +98,19 @@ export default {
       return this.invoice.amount <= this.usdBalance
     },
     description() {
-      const date = this.formattedDate
-      return `Daily Invoice ${date}`
+      const date = this.formatDate(this.invoice.start, this.isDailyInvoice)
+      return this.isDailyInvoice
+        ? `Daily Invoice ${date}`
+        : `Invoice ${date}`
     },
     formattedDate() {
-      return format.date(this.invoice.start)
+      return this.formatDate(this.invoice.created)
     },
     formattedAmount() {
       return `$${format.usd(this.invoice.amount, 4)}`
+    },
+    isDailyInvoice() {
+      return this.invoice.end - this.invoice.start <= 1000 * 60 * 60 * 24
     },
     isPaid() {
       return this.invoice.status === 'paid'
@@ -158,6 +163,10 @@ export default {
       catch (error) {
         this.downloadError = true
       }
+    },
+    formatDate(ts, inclDay = true) {
+      const date = format.date(ts)
+      return inclDay ? date : date.split(' ').slice(1).join(' ')
     },
     async unholdInvoice() {
       if (!this.onHold || !this.canPay) return
