@@ -19,56 +19,187 @@
           </div>
 
           <div class="step-content">
-            <!-- generate account button -->
-            <div v-if="!isAccountGenerated && !isGeneratingAccount" class="my-4">
-              <button
-                @click.prevent="generateAccount"
-                class="w-full button button--solid button--success"
-                :disabled="isGeneratingAccount"
-              >
-                <span>Generate Account</span>
-              </button>
-              <!-- error message  -->
-              <div v-if="errors.accountNumber" class="flex items-center errorMessage mt-2">
-                <ExclamationIcon class="w-3.5 h-3.5" />
-                <span class="errorMessage__text">{{ errors.accountNumber }}</span>
+            <!-- create account options -->
+            <div v-if="!accountType && !isAccountGenerated && !isGeneratingAccount" class="flex flex-col space-y-2 my-4">
+              <div>
+                <button
+                  @click.prevent="setAccountType('email')"
+                  class="w-full button button--solid button--success"
+                >
+                  <span>Sign Up With Email</span>
+                </button>
+                <!-- error message  -->
+                <div v-if="errors.accountNumber" class="flex items-center errorMessage mt-2">
+                  <ExclamationIcon class="w-3.5 h-3.5" />
+                  <span class="errorMessage__text">{{ errors.accountNumber }}</span>
+                </div>
+              </div>
+              <div>
+                <button
+                  @click.prevent="createAnonymousAccount"
+                  class="w-full button button--solid button--success"
+                >
+                  <span>Create Anonymous Account</span>
+                </button>
+                <!-- error message  -->
+                <div v-if="errors.accountNumber" class="flex items-center errorMessage mt-2">
+                  <ExclamationIcon class="w-3.5 h-3.5" />
+                  <span class="errorMessage__text">{{ errors.accountNumber }}</span>
+                </div>
               </div>
             </div>
-            <!-- account number display -->
-            <div v-else class="account-number-wrapper">
-              <span class="account-number monospace">{{ formattedAccountNumber }}</span>
-              <!-- copy to clipboard button -->
+
+            <!-- Email-first accounts -->
+            <div v-if="accountType === 'email'">
+              <div v-if="!generatedAccount">
+                <!-- email address input -->
+                <div class="input-group">
+                  <input
+                    id="email"
+                    class="border border-gray rounded-md flex-1 text-lg px-3 py-2 focus:outline-none"
+                    v-model="v$.emailInput.$model"
+                    placeholder="Enter email address"
+                    autocomplete
+                    @keypress.enter="createEmailAccount"
+                  />
+                </div>
+                <!-- error message  -->
+                <ValidationError :errors="v$.emailInput.$errors" />
+                <div v-if="errors.emailInput" class="flex items-center errorMessage mt-2">
+                  <ExclamationIcon class="w-3.5 h-3.5" />
+                  <span class="errorMessage__text">{{ errors.emailInput }}</span>
+                </div>
+                <!-- buttons -->
+                <div class="flex flex-col mt-2">
+                  <!-- sign up -->
+                  <button
+                    @click.prevent="createEmailAccount"
+                    class="mb-2 button button--success"
+                    :disabled="isCreating || !emailInput || v$.emailInput.$invalid"
+                  >
+                    <div v-if="isCreating" class="flex flex-row">
+                      <span>Creating account</span>
+                      <span class="ml-2"><LoadingSpinner /></span>
+                    </div>
+                    <span v-else>Sign up</span>
+                  </button>
+
+                  <!-- return to create account options -->
+                  <button @click="setAccountType(null)"
+                    class="w-full text-sm text-center text-gray-500 underline hover:text-green"
+                  >
+                    Create anonymous account
+                  </button>
+                </div>
+              </div>
+              <div v-else>
+                <span class="text-xl text-green break-words">{{ emailInput }}</span>
+              </div>
+            </div>
+
+            <!-- Anonymous account -->
+            <div v-if="accountType === 'anonymous'">
+              <!-- account number display -->
+              <div class="account-number-wrapper">
+                <span class="account-number monospace">{{ formattedAccountNumber }}</span>
+                <!-- copy to clipboard button -->
+                <button
+                  v-show="isAccountGenerated"
+                  @click.prevent="copyToClipboard"
+                  class="text-gray-400 hover:text-green"
+                >
+                  <DuplicateIcon class="w-6 h-6" />
+                </button>
+                <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
+              </div>
+              <!-- generating account message -->
+              <div class="mt-3" v-show="isGeneratingAccount">
+                <span class="text-gray-500">Generating your account number.</span>
+              </div>
+              <!-- remember account number warning -->
+              <div class="mt-3 flex flex-col" v-show="isAccountGenerated">
+                <span class="font-medium text-black">Write down your account number!</span>
+                <span class="mt-1 text-gray-500">
+                  It’s all you need to access the Edge Network. No email, no username. Just anonymity.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verify email step (email-first accounts only) -->
+        <div v-if="accountType === 'email'" class="step" :class="step < 2 ? 'inactive' : ''">
+          <div class="step-title">
+            <MailIcon class="step-icon"/>
+            <span>Verify your email</span>
+          </div>
+          <div class="step-content" v-if="step === 2">
+            <!-- email sent message -->
+            <div class="flex mb-2 items-center">
+              <div class="self-start">
+                <BadgeCheckIcon class="h-5 text-green" />
+              </div>
+              <span class="email-conf ml-1 text-green">Confirmation email sent to {{ emailInput }}</span>
+            </div>
+            <!-- instructions -->
+            <span class="text-gray-500">
+              Not quite there yet.
+              Check your emails and enter the confirmation code below to verify your email address.
+            </span>
+            <!-- resend email button and feedback -->
+            <p class="text-gray-500 my-2">
+              Haven't received the email?
+              <span v-if="emailCooldown === 0"><span @click="resendEmail" class="underline cursor-pointer hover:text-green">Click here</span> to request another email.</span>
+              <span v-else>Please wait {{ emailCooldown }} seconds.</span>
+            </p>
+            <!-- confirmation code and button -->
+            <div class="input-field flex items-center w-full">
+              <input
+                v-model="v$.verificationCode.$model"
+                label="Confirmation code"
+                autocomplete="off"
+                class="text-center text-lg overflow-hidden flex-1 px-3 py-2 rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
+                v-mask="'# # # # # #'"
+                placeholder="1 2 3 4 5 6"
+                @keypress.enter=verifyEmail
+              />
               <button
-                v-show="isAccountGenerated"
-                @click.prevent="copyToClipboard"
-                class="text-gray-400 hover:text-green"
+                class="order-2 rounded-l-none text-sm py-3 button button--success py-2 w-32"
+                @click.prevent="verifyEmail"
+                :disabled="!canVerify"
               >
-                <DuplicateIcon class="w-6 h-6" />
+                <div v-if="isVerifying" class="flex flex-row items-center">
+                  <span>Verifying</span>
+                  <span class="ml-2"><LoadingSpinner /></span>
+                </div>
+                <span v-else>Verify</span>
               </button>
-              <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
             </div>
-            <!-- generating account message -->
-            <div class="mt-3" v-show="isGeneratingAccount">
-              <span class="text-gray-500">Generating your account number.</span>
+            <!-- error message  -->
+            <ValidationError :errors="v$.verificationCode.$errors" />
+            <div v-if="errors.verificationCode" class="flex items-center errorMessage mt-1">
+              <ExclamationIcon class="w-3.5 h-3.5" />
+              <span class="errorMessage__text">{{ errors.verificationCode }}</span>
             </div>
-            <!-- remember account number warning -->
-            <div class="mt-3 flex flex-col" v-show="isAccountGenerated">
-              <span class="font-medium text-black">Write down your account number!</span>
-              <span class="mt-1 text-gray-500">
-                It’s all you need to access the Edge Network. No email, no username. Just anonymity.
-              </span>
+          </div>
+          <div v-else-if="step > 2" class="step-content">
+            <div class="flex mb-2 items-center">
+              <div>
+                <BadgeCheckIcon class="h-5 text-green" />
+              </div>
+              <span class="ml-1 text-green">Email verified</span>
             </div>
           </div>
         </div>
 
         <!-- Secure account step -->
-        <div class="step" :class="step < 2 ? 'inactive' : ''" >
-          <div class="step-title" @click="changeStep(2)">
+        <div class="step" :class="step < 3 ? 'inactive' : ''">
+          <div class="step-title">
             <FingerPrintIcon class="step-icon"/>
             <span>Secure your account</span>
           </div>
 
-          <div class="step-content" v-if="step === 2">
+          <div class="step-content" v-if="step === 3">
             <!-- 2fa section -->
             <div class="my-4 bg-gray-200 rounded-lg">
               <button
@@ -98,16 +229,16 @@
                 </div>
               </div>
             </div>
-            <!-- recovery email section -->
-            <div class="mb-4 bg-gray-200 rounded-lg">
+            <!-- add email section -->
+            <div v-if="accountType === 'anonymous'" class="mb-4 bg-gray-200 rounded-lg">
               <button
-                @click.prevent="toggleShowRecovery"
+                @click.prevent="toggleShowAddEmail"
                 class="w-full button"
-                :class="isRecoveryEnabled ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
+                :class="isEmailEnabled ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
               >
-                <span>Add Recovery Email</span>
-                <div v-if="!isRecoveryEnabled" class="absolute right-3">
-                  <ChevronDownIcon v-if="showRecovery"
+                <span>Add Email</span>
+                <div v-if="!isEmailEnabled" class="absolute right-3">
+                  <ChevronDownIcon v-if="showAddEmail"
                     class="chevron-icon"
                   />
                   <ChevronRightIcon v-else
@@ -117,19 +248,19 @@
                 <div v-else class="absolute right-3">
                   <ShieldCheckIcon
                     class="chevron-icon text-green"
-                    :class="isRecoveryEnabled ? 'enabled' : ''"
+                    :class="isEmailEnabled ? 'enabled' : ''"
                   />
                 </div>
               </button>
-              <div v-show="showRecovery && !isRecoveryEnabled">
+              <div v-show="showAddEmail && !isEmailEnabled">
                 <div class="px-2 mt-2">
-                  <EnableRecoveryEmail :createAccount="true" />
+                  <AddAccountEmail :createAccount="true" />
                 </div>
               </div>
             </div>
           </div>
-          <!-- when moving past secure account section, still display whether recovery/2fa has been enabled -->
-          <div class="step-content" v-else-if="step > 2">
+          <!-- when moving past secure account section, still display whether email/2fa has been enabled -->
+          <div class="step-content" v-else-if="step > 3">
             <div class="my-4">
               <div @click="toggleShow2FA" class="cursor-pointer flex items-center mb-4">
                 <div>
@@ -140,13 +271,13 @@
                   Two-factor authentication {{ is2FAEnabled ? 'successfully' : 'not' }} enabled
                 </span>
               </div>
-              <div @click="toggleShowRecovery" class="cursor-pointer flex items-center">
+              <div @click="toggleShowAddEmail" class="cursor-pointer flex items-center">
                 <div>
-                  <ShieldCheckIcon v-if="isRecoveryEnabled" class="w-5 text-green" />
+                  <ShieldCheckIcon v-if="isEmailEnabled" class="w-5 text-green" />
                   <ShieldExclamationIcon v-else class="w-5 text-gray" />
                 </div>
                 <span class="ml-2 hover:text-green">
-                  Recovery email {{ isRecoveryEnabled ? 'successfully' : 'not' }} added
+                  Account email {{ isEmailEnabled ? 'successfully' : 'not' }} added
                 </span>
               </div>
             </div>
@@ -154,10 +285,10 @@
         </div>
 
         <!-- go direct to account / back to sign in buttons -->
-        <div >
+        <div>
           <div class="mt-6">
             <button
-              v-if="step > 1"
+              v-if="step > 2"
               @click.prevent="goToAccount"
               class="w-full button button--solid button--success"
             >
@@ -177,14 +308,19 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils/index'
+import * as format from '@/utils/format'
+import * as validation from '@/utils/validation'
+import AddAccountEmail from '@/components/account/AddAccountEmail'
 import Cookies from 'js-cookie'
 import Enable2FA from '@/components/account/Enable2FA'
-import EnableRecoveryEmail from '@/components/account/EnableRecoveryEmail'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
+import ValidationError from '@/components/ValidationError.vue'
 import { mapState } from 'vuex'
+import useVuelidate from '@vuelidate/core'
 import {
+  BadgeCheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
   ShieldCheckIcon
@@ -194,6 +330,7 @@ import {
   ExclamationIcon,
   FingerPrintIcon,
   KeyIcon,
+  MailIcon,
   ShieldExclamationIcon
 } from '@heroicons/vue/outline'
 
@@ -203,34 +340,60 @@ export default {
     return 'Edge Account Portal » Create Account'
   },
   components: {
+    AddAccountEmail,
     ChevronDownIcon,
     ChevronRightIcon,
+    BadgeCheckIcon,
     DuplicateIcon,
     Enable2FA,
-    EnableRecoveryEmail,
     ExclamationIcon,
     FingerPrintIcon,
     KeyIcon,
+    LoadingSpinner,
     Logo,
+    MailIcon,
     ShieldCheckIcon,
-    ShieldExclamationIcon
+    ShieldExclamationIcon,
+    ValidationError
   },
   data() {
     return {
       accountNumber: '',
+      accountType: null,
       copied: false,
+      emailCooldown: 0,
+      emailInput: '',
       errors: {
-        accountNumber: ''
+        accountNumber: '',
+        emailInput: '',
+        verificationCode: ''
       },
+      generatedAccount: null,
+      generatedSession: null,
+      isCreating: false,
       isGeneratingAccount: false,
       isVerifying: false,
       show2FA: false,
-      showRecovery: false,
-      step: 1
+      showAddEmail: false,
+      step: 1,
+      verificationCode: ''
+    }
+  },
+  validations() {
+    return {
+      emailInput: [
+        validation.email
+      ],
+      verificationCode: [
+        validation.confirmationCode
+      ]
     }
   },
   computed: {
     ...mapState(['account', 'backupCodes', 'session']),
+    canVerify() {
+      return !this.v$.verificationCode.$invalid && !this.errors.verificationCode && !this.isVerifying
+    },
     is2FAEnabled() {
       return this.account && this.account.totps
     },
@@ -238,20 +401,21 @@ export default {
       return this.account && !this.isGeneratingAccount
     },
     isAccountSecured() {
-      return this.is2FAEnabled && this.isRecoveryEnabled
+      return this.is2FAEnabled && this.isEmailEnabled
     },
-    isRecoveryEnabled() {
-      if (!this.account) return false
-      if (this.account.recovery) return this.account.recovery.email.verified
-      return false
+    isEmailEnabled() {
+      return this.account && this.account.email && this.account.email.address
     },
     formattedAccountNumber() {
       return format.accountNumber(this.accountNumber)
+    },
+    verificationSecret() {
+      return format.removeSpaces(this.verificationCode)
     }
   },
   methods: {
     changeStep (newStep) {
-      if (!this.isAccountGenerated) return
+      // if (!this.isAccountGenerated) return
       this.step = newStep
     },
     async copyToClipboard () {
@@ -261,6 +425,60 @@ export default {
       setTimeout(() => {
         this.copied = false
       }, 1000)
+    },
+    async createAccount() {
+      this.isCreating = true
+      const body = { referralCode: Cookies.get('referralCode') }
+      if (this.emailInput) body.address = this.emailInput
+      const { account, session } = await api.accounts.createAccount(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        body
+      )
+      this.generatedAccount = account
+      this.generatedSession = session
+      this.isCreating = false
+    },
+    async createAnonymousAccount() {
+      this.setAccountType('anonymous')
+      this.isGeneratingAccount = true
+      this.errors.accountNumber = ''
+      this.accountNumber = this.generateRandomAccountNumber()
+      const numGeneratorId = setInterval(() => {
+        this.accountNumber = this.generateRandomAccountNumber()
+      }, 100)
+
+      setTimeout(async () => {
+        try {
+          await this.createAccount()
+          // finish number generator on newly generated account number and dispatch to store
+          clearInterval(numGeneratorId)
+          this.accountNumber = this.generatedAccount._key
+          this.signIn()
+          this.isGeneratingAccount = false
+          this.changeStep(3)
+        }
+        catch (error) {
+          this.isCreating = false
+          clearInterval(numGeneratorId)
+          this.isGeneratingAccount = false
+          this.accountNumber = ''
+          if (error.response.body.param === 'referralCode') Cookies.remove('referralCode')
+          this.errors.accountNumber = 'Oops, something went wrong. Please try again.'
+        }
+      }, 1000)
+    },
+    async createEmailAccount() {
+      try {
+        this.isCreating = true
+        setTimeout(async () => {
+          await this.createAccount()
+          this.resetEmailCooldown()
+          this.changeStep(2)
+        }, 600)
+      }
+      catch (error) {
+        this.isCreating = false
+      }
     },
     async generateAccount() {
       this.isGeneratingAccount = true
@@ -303,28 +521,71 @@ export default {
     async goToAccount() {
       this.$router.push('/')
     },
+    async resendEmail() {
+      await api.accounts.resendVerificationEmail(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.generatedSession._key
+      )
+      this.resetEmailCooldown()
+    },
+    resetEmailCooldown() {
+      // set 15s email cooldown timer
+      this.emailCooldown = 15
+      this.iEmailCooldown = setInterval(() => {
+        this.emailCooldown = this.emailCooldown - 1
+        if (this.emailCooldown === 0) clearInterval(this.iEmailCooldown)
+      }, 1000)
+    },
+    setAccountType(type) {
+      this.accountType = type
+    },
+    signIn() {
+      this.$store.dispatch('signIn', { account: this.generatedAccount, session: this.generatedSession })
+    },
+    async verifyEmail() {
+      if (this.v$.verificationCode.$invalid) return
+      this.isVerifying = true
+      try {
+        await api.accounts.verifyEmail(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.generatedSession._key,
+          this.verificationSecret
+        )
+        setTimeout(async () => {
+          this.signIn()
+          this.changeStep(3)
+          this.isVerifying = false
+        }, 800)
+      }
+      catch (error) {
+        setTimeout(() => {
+          this.errors.verificationCode = 'Verification code invalid'
+          this.isVerifying = false
+        }, 1000)
+      }
+    },
     toggleShow2FA() {
       if (this.is2FAEnabled && !this.backupCodes) return
-      if (this.step !== 2) {
-        this.step = 2
+      if (this.step !== 3) {
+        this.step = 3
         this.show2FA = true
-        this.showRecovery = false
+        this.showAddEmail = false
       }
       else {
         this.show2FA = !this.show2FA
-        if (this.show2FA) this.showRecovery = false
+        if (this.show2FA) this.showAddEmail = false
       }
     },
-    toggleShowRecovery() {
-      if (this.isRecoveryEnabled) return
-      if (this.step !== 2) {
-        this.step = 2
-        this.showRecovery = true
+    toggleShowAddEmail() {
+      if (this.isEmailEnabled) return
+      if (this.step !== 3) {
+        this.step = 3
+        this.showAddEmail = true
         this.show2FA = false
       }
       else {
-        this.showRecovery = !this.showRecovery
-        if(this.showRecovery) this.show2FA = false
+        this.showAddEmail = !this.showAddEmail
+        if(this.showAddEmail) this.show2FA = false
       }
     }
   },
@@ -333,12 +594,26 @@ export default {
     const referralCode = this.$route.query.r
     if(referralCodeRegExp.test(referralCode)) Cookies.set('referralCode', referralCode, { expires: 1 })
   },
+  setup() {
+    return {
+      v$: useVuelidate()
+    }
+  },
   watch: {
-    is2FAEnabled(new2FAEnabled) {
-      if (new2FAEnabled && this.isRecoveryEnabled) this.step = 3
+    accountType() {
+      this.emailInput = ''
     },
-    isRecoveryEnabled(newRecoveryEnabled) {
-      if (newRecoveryEnabled && this.is2FAEnabled) this.step = 3
+    emailInput() {
+      this.errors.emailInput = ''
+    },
+    is2FAEnabled(new2FAEnabled) {
+      if (new2FAEnabled && this.isEmailEnabled) this.step = 3
+    },
+    isEmailEnabled(newEmail) {
+      if (newEmail && this.is2FAEnabled) this.step = 3
+    },
+    verificationCode() {
+      this.errors.verificationCode = ''
     }
   }
 }
@@ -359,11 +634,16 @@ export default {
   @apply opacity-100;
 }
 
+.email-conf {
+  width: calc(100% - 20px);
+  word-break: break-word;
+}
+
 .step {
   @apply flex flex-col mb-6;
 }
 .step-title {
-  @apply relative flex flex-row items-center text-lg cursor-pointer;
+  @apply relative flex flex-row items-center text-lg;
   z-index: 1;
 }
 .step-title::before {

@@ -21,7 +21,6 @@ import NotFound from '@/views/404'
 import Notifications from '@/views/dashboard/Notifications'
 import Payments from '@/components/billing/Payments'
 import Purchase from '@/components/billing/Purchase'
-import RecoverAccount from '@/views/landing/RecoverAccount'
 import Server from '@/views/dashboard/Server'
 import ServerDeploy from '@/views/dashboard/ServerDeploy'
 import Servers from '@/views/dashboard/Servers'
@@ -143,11 +142,6 @@ const routes = [
         path: 'create-account',
         name: 'Create Account',
         component: CreateAccount
-      },
-      {
-        path: 'recover-account',
-        name: 'Recover Account',
-        component: RecoverAccount
       }
     ]
   },
