@@ -3,8 +3,8 @@
     <h1>Account</h1>
     <div class="box">
       <div>
-        <h4>Your Account Number</h4>
-        <p class="text-gray-500">Write down your account number! It’s all you need to access the Edge Network. No email, no username. Just anonymity.</p>
+        <h4>Account Number</h4>
+        <p class="text-gray-500">Write down your account number and keep it secret. You can use your account number to sign into the account.</p>
       </div>
       <!-- account number display -->
       <div class="account-number-wrapper">
