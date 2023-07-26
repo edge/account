@@ -10,7 +10,7 @@
     <p v-if="autoTopUpCard">Your selected credit card will be used to pay your monthly invoices automatically.</p>
     <p v-else>Select a saved credit card to pay your monthly invoices automatically.</p>
 
-    <p>Your card will be charged on the 1st of each month.</p>
+    <p>Your card will be charged on the 1st of each month. If you disable automatic payments, your services may be suspended if you have account doesn't have sufficient funds.</p>
 
     <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-4">
       <div class="w-full pt-1" v-if="paymentMethods">
@@ -64,7 +64,7 @@
         <div class="ml-1" v-if="disabling"><LoadingSpinner /></div>
       </button>
       <button
-        @click=enableAutoTopUp
+        @click=enableAutoPayments
         class="button button--small button--success w-full"
         :class="autoTopUpCard ? '' : 'md:max-w-xs'"
         :disabled="!canEnable || enabling || disabling"
@@ -158,18 +158,14 @@ export default {
         this.disabling = false
       }
     },
-    async enableAutoTopUp() {
+    async enableAutoPayments() {
       this.httpError = ''
       try {
         this.enabling = true
         await api.billing.enableAutoTopUp(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          {
-            paymentMethod: this.paymentCard._key,
-            targetBalance: Number(this.targetBalance),
-            threshold: Number(this.threshold)
-          }
+          { paymentMethod: this.paymentCard._key }
         )
         setTimeout(() => {
           this.enabling = false

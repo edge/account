@@ -54,7 +54,7 @@
     <div v-else class="flex flex-col space-y-4">
       <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
         <div><ExclamationIcon class="w-5 text-red" /></div>
-        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds to deploy new services.</span>
+        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds or set up automatic card payments to deploy new services.</span>
       </div>
       <!-- details -->
       <CdnDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
