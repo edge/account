@@ -30,7 +30,7 @@
             disabled
           >
             <div v-if="isLoading" class="flex flex-row">
-              <span>Signing in</span>
+              <span>Signing In</span>
               <span class="ml-2"><LoadingSpinner /></span>
             </div>
             <span v-else>Sign In</span>
@@ -88,7 +88,7 @@
             v-show="!requires2FA"
           >
             <div v-if="isLoading" class="flex flex-row">
-              <span>Signing in</span>
+              <span>Signing In</span>
               <span class="ml-2"><LoadingSpinner /></span>
             </div>
             <span v-else>Sign In</span>
