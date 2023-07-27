@@ -72,7 +72,6 @@
                 type="number"
                 v-model="v$.diskValue.$model"
                 @focusout="formatThreshold"
-                @keypress.enter=enableAutoTopUp
               />
               GiB
             </div>

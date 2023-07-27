@@ -4,12 +4,13 @@
       <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
     </template>
     <template v-slot:header>
-      <span>Disable auto payments</span>
+      <span>Update Account Email</span>
     </template>
     <template v-slot:body>
-      <div class="flex flex-col space-y-2">
-        <li>Funds will no longer be automatically added to your account.</li>
-        <li>Services may be disabled if your balance drops too low.</li>
+      <span class="font-semibold">Warning: you are updating the email address associated with your account.</span>
+      <div class="flex flex-col space-y-2 pt-4">
+        <li>You will no longer be able to sign in to your account using the previous email address</li>
+        <li>You will need either your account number or access to the new email to access your account</li>
       </div>
     </template>
     <template v-slot:buttons>
@@ -20,10 +21,10 @@
         Cancel
       </button>
       <button
-        class="w-full button button--small button--error"
+        class="w-full button button--small button--success"
         @click="confirm"
       >
-        Yes, Disable
+        Update
       </button>
     </template>
   </Modal>
@@ -34,7 +35,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'DisableAutoTopUpConfirmation',
+  name: 'UpdateEmailConfirmation',
   components: {
     ExclamationIcon,
     Modal

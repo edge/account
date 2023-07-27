@@ -4,13 +4,12 @@
       <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
     </template>
     <template v-slot:header>
-      <span>Remove Recovery Email</span>
+      <span>Disable auto payments</span>
     </template>
     <template v-slot:body>
-      <span class="font-semibold">Warning: you are removing your recovery email.</span>
-      <div class="flex flex-col space-y-2 pt-4">
-        <li>If you lose your account number, you will have no way to recover your account</li>
-        <li>You can re-enable a recovery email at any point</li>
+      <div class="flex flex-col space-y-2">
+        <li>Invoices will no longer be automatically settled.</li>
+        <li>Services may be disabled if your balance drops too low.</li>
       </div>
     </template>
     <template v-slot:buttons>
@@ -35,7 +34,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'Disable2FAConfirmation',
+  name: 'DisableAutoPaymentsConfirmation',
   components: {
     ExclamationIcon,
     Modal

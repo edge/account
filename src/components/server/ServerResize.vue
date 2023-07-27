@@ -13,7 +13,7 @@
     <!-- balance warning -->
     <div class="box mt-4 flex space-x-2" v-if="haveSpecsIncreased && (balanceSuspend || balanceWarning)">
         <div><ExclamationIcon class="w-5 text-red" /></div>
-        <span class="text-red">You are unable to increase this server's specs while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds to enable this service.</span>
+        <span class="text-red">You are unable to increase this server's specs while your available balance is below ${{ balance.threshold.warning.usd }}. Please add funds or set up automatic card payments to enable this service.</span>
     </div>
     <!-- resize button and errors -->
     <div class="flex flex-col relative my-4 space-y-2">

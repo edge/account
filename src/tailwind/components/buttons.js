@@ -86,11 +86,13 @@ const themes = {
 
     '&:hover, &.hover': {
       borderColor: colors.green.DEFAULT,
-      backgroundColor: colors.green.DEFAULT
+      backgroundColor: colors.green.DEFAULT,
+      color: colors.white
     },
 
     '&:disabled, &.disabled': {
-      borderColor: colors.gray.DEFAULT
+      borderColor: colors.gray.DEFAULT,
+      color: colors.white
     }
   },
   small: {

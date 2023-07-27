@@ -2,12 +2,12 @@
   <div class="payment__item">
     <!-- <span class="uppercase text-xs pb-4">{{ paymentMethod.name }}</span> -->
     <div v-if="account.topup" class="">
-      <div v-if=isAutoTopUpCard class="flex items-center">
+      <div v-if=isAutoPaymentCard class="flex items-center">
         <div><BadgeCheckIcon class="text-green w-4 mr-1" /></div>
-        Auto top-up card
+        Auto payment card
       </div>
-      <button v-else @click="setAsAutoTopUp" class="flex-shrink-0 underline hover:text-green">
-        Use for auto top-up
+      <button v-else @click="setAsAutoPayment" class="flex-shrink-0 underline hover:text-green">
+        Use for auto payments
       </button>
     </div>
     <div class="col-start-3 flex items-center justify-end">
@@ -80,7 +80,7 @@ export default {
     Tooltip,
     TrashIcon
   },
-  props: ['autoTopUpCard', 'paymentMethod'],
+  props: ['autoPaymentCard', 'paymentMethod'],
   computed: {
     ...mapState(['account', 'session']),
     cardType() {
@@ -93,8 +93,8 @@ export default {
       const card = this.paymentMethod.stripe.card
       return `${('0' + card.exp_month).slice(-2)}/${card.exp_year.toString().slice(2)}`
     },
-    isAutoTopUpCard() {
-      return this.paymentMethod._key === this.autoTopUpCard
+    isAutoPaymentCard() {
+      return this.paymentMethod._key === this.autoPaymentCard
     }
   },
   methods: {
@@ -118,10 +118,10 @@ export default {
         this.isDeleting = false
       }
     },
-    async setAsAutoTopUp() {
+    async setAsAutoPayment() {
       try {
         // this.enabling = true
-        await api.billing.enableAutoTopUp(
+        await api.billing.enableAutoPayment(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {

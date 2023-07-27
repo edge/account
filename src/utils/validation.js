@@ -3,7 +3,7 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 import { validatePath } from '@edge/cache-config'
-import { email as _email, required as _required, helpers } from '@vuelidate/validators'
+import { email as _email, required as _required, helpers, or } from '@vuelidate/validators'
 
 /**
  * Required value validator with a more attractive error message than default.
@@ -13,9 +13,13 @@ export const required = helpers.withMessage('A value is required.', _required)
 /**
  * Account number validator.
  */
-const accountNumberRegexp = /^\d{4}\s\d{4}\s\d{4}\s\d{4}$/
+const accountNumberRegexp = /^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/
 export const accountNumberInput = helpers.withMessage('Your account number is 16 digits', v => accountNumberRegexp.test(v))
 
+/**
+ * Sign in input validator (can sign in with email or account number)
+ */
+export const signInInput = helpers.withMessage('Please enter a valid account number or email', or(v => accountNumberRegexp.test(v), _email))
 
 /**
  * 8-digit alphanumeric backup code validator.

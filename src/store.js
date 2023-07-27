@@ -158,9 +158,11 @@ const store = createStore({
   },
   getters: {
     balanceSuspend: (state) => !state.account.managed
+      && !state.account.topup
       && state.balance
       && state.balance.available.usd <= state.balance.threshold.suspend.usd,
     balanceWarning: (state, getters) => !state.account.managed
+      && !state.account.topup
       && state.balance
       && !getters.balanceSuspend
       && state.balance.available.usd < state.balance.threshold.warning.usd,

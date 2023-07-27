@@ -2,7 +2,7 @@
   <div v-if="paymentMethods && paymentMethods.length" class="flex flex-col space-y-2">
     <PaymentMethodItem
       v-for="paymentMethod in paymentMethods"
-      :autoTopUpCard=autoTopUpCard
+      :autoPaymentCard=autoPaymentCard
       :paymentMethod="paymentMethod"
       :key="paymentMethod._key"
       @refreshPaymentMethods="updatePaymentMethods"
@@ -31,11 +31,11 @@ export default {
   },
   computed: {
     ...mapState(['account', 'session']),
-    autoTopUpEnabled() {
+    autoPaymentEnabled() {
       return this.account && this.account.topup
     },
-    autoTopUpCard() {
-      if (this.autoTopUpEnabled) return this.account.topup.paymentMethod
+    autoPaymentCard() {
+      if (this.autoPaymentEnabled) return this.account.topup.paymentMethod
       return null
     }
   },

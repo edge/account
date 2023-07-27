@@ -1,52 +1,124 @@
 <template>
   <div class="landingPage__content">
-    <!-- sign in with account number -->
-    <div v-if="!requires2FA" >
+    <!-- sign in with magic link -->
+    <div v-if="!requires2FA && magicLinkToken">
       <Logo class="mb-6" />
-      <p class="pr-5 text-lg mb-6">
-        <span>Welcome back. Enter your account number to sign into the Edge Network.</span>
+      <p v-if="!errors.magicLink" class="pr-5 text-lg mb-6">
+        <span>Please wait whilst we verify your details and sign you into the Edge Network.</span>
       </p>
       <div class="landingPage__form">
-        <!-- account number input -->
-        <div class="input-group">
-          <label for="accountNumber" class="label">Account number</label>
-          <input
-            id="accountNumber"
-            class="account-number border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg focus:outline-none"
-            v-mask="'#### #### #### ####'"
-            v-model="v$.accountNumberInput.$model"
-            placeholder="1234 5678 9012 3456"
-            autocomplete
-            @keypress.enter=signIn
-          />
+        <!-- error message -->
+        <div v-if="errors.magicLink" class="flex items-center text-red text-lg mt-2">
+          <span class="">{{ errors.magicLink }}</span>
         </div>
-        <!-- error message  -->
-        <ValidationError :errors="v$.accountNumberInput.$errors" />
-        <div v-if="errors.accountNumberInput" class="flex items-center errorMessage mt-2">
-          <ExclamationIcon class="w-3.5 h-3.5" />
-          <span class="errorMessage__text">{{ errors.accountNumberInput }}</span>
+        <!-- account sign in input -->
+        <div v-else class="input-group">
+          <!-- <label for="accountNumber" class="label">Account details</label> -->
+          <div
+            v-if="magicLinkResponse"
+            class="account-number bg-white border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg cursor-default"
+          >
+            <span>{{ magicLinkResponse.address }}</span>
+          </div>
         </div>
         <!-- buttons -->
         <div class="flex flex-col mt-6">
           <!-- sign in -->
           <button
+            v-if="!errors.magicLink"
+            class="mb-2 button button--success"
+            disabled
+          >
+            <div v-if="isLoading" class="flex flex-row">
+              <span>Signing In</span>
+              <span class="ml-2"><LoadingSpinner /></span>
+            </div>
+            <span v-else>Sign In</span>
+          </button>
+
+          <!-- divider -->
+          <div class="flex items-center w-full my-6 space-x-2">
+            <div class="flex-1 h-px bg-gray-400" />
+          </div>
+          <!-- create account -->
+          <router-link
+            :to="{ name: 'Sign In' }"
+            class="button button--solid"
+          >
+            <span>Return to Sign In</span>
+          </router-link>
+        </div>
+      </div>
+    </div>
+
+    <!-- sign in with account number -->
+    <div v-else-if="!requires2FA" >
+      <Logo class="mb-6" />
+      <p class="pr-5 text-lg mb-12">
+        <span>Welcome back. Enter your account number or email to sign into the Edge Network.</span>
+      </p>
+      <div class="landingPage__form">
+        <!-- account sign in input -->
+        <div v-if="!magicLinkSent" class="input-group">
+          <!-- <label for="accountNumber" class="label">Account details</label> -->
+          <input
+            id="accountNumber"
+            class="account-number border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg focus:outline-none"
+            v-mask="numericalInput && '#### #### #### ####'"
+            v-model="v$.signInInput.$model"
+            placeholder="Enter email or account number"
+            autocomplete
+            @keypress.enter=signIn
+          />
+        </div>
+        <!-- error message  -->
+        <ValidationError :errors="v$.signInInput.$errors" />
+        <div v-if="errors.signInInput" class="flex items-center errorMessage mt-2">
+          <ExclamationIcon class="w-3.5 h-3.5" />
+          <span class="errorMessage__text">{{ errors.signInInput }}</span>
+        </div>
+        <!-- buttons -->
+        <div class="flex flex-col" :class="!magicLinkSent && 'mt-6'">
+          <!-- sign in -->
+          <button
+            v-if="!magicLinkSent"
             @click.prevent="signIn"
             class="mb-2 button button--success"
             :disabled="!canSignIn"
             v-show="!requires2FA"
           >
             <div v-if="isLoading" class="flex flex-row">
-              <span>Signing in</span>
+              <span>Signing In</span>
               <span class="ml-2"><LoadingSpinner /></span>
             </div>
-            <span v-else>Sign in</span>
+            <span v-else>Sign In</span>
           </button>
-          <!-- lost account -->
-          <router-link :to="{ name: 'Recover Account' }"
-            class="w-full text-sm text-center text-gray-500 underline hover:text-green"
-          >
-            I lost my account number
-          </router-link>
+
+          <!-- magic link sent confirmation -->
+          <div v-if="magicLinkSent">
+            <div class="flex mb-2 items-center">
+              <div>
+                <BadgeCheckIcon class="h-5 text-green" />
+              </div>
+              <span class="ml-1 text-green">Email sent to {{ signInInput }}</span>
+            </div>
+            <!-- instructions -->
+            <span class="text-gray-500">
+              Check your emails and simply follow the link to continue to your account.
+            </span>
+            <!-- resend email button and feedback -->
+            <p class="text-gray-500 my-2">
+              Haven't received the email?
+              <span v-if="emailCooldown === 0"><span @click="resendEmail" class="underline cursor-pointer hover:text-green">Click here</span> to request another email.</span>
+              <span v-else>Please wait {{ emailCooldown }} seconds.</span>
+            </p>
+            <button @click.prevent="magicLinkSent = false"
+              class="w-full text-sm text-center text-gray-500 underline hover:text-green"
+            >
+              Re-enter my account details
+            </button>
+          </div>
+
           <!-- divider -->
           <div class="flex items-center w-full my-6 space-x-2">
             <div class="flex-1 h-px bg-gray-400" />
@@ -58,7 +130,7 @@
             @click.prevent="goToCreateAccount"
             class="button button--solid"
           >
-            <span>Create new account</span>
+            <span>Create Account</span>
           </button>
         </div>
       </div>
@@ -133,10 +205,11 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils/index'
+import * as format from '@/utils/format'
 import * as validation from '@/utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
+import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Logo from '@/components/Logo'
@@ -151,6 +224,7 @@ export default {
   },
   components: {
     AuthCodeInput,
+    BadgeCheckIcon,
     ExclamationIcon,
     HttpError,
     LoadingSpinner,
@@ -160,43 +234,55 @@ export default {
   },
   data() {
     return {
-      accountNumberInput: '',
       backupCode: '',
+      emailCooldown: 0,
       errors: {
-        accountNumberInput: '',
         backupCode: '',
-        otpSecret: ''
+        magicLink: '',
+        otpSecret: '',
+        signInInput: ''
       },
       httpError: null,
       is2FACodeValid: false,
       isLoading: false,
+      magicLinkResponse: null,
+      magicLinkSent: false,
       otpSecret: '',
       requires2FA: false,
+      signInInput: '',
       useBackupCode: false
     }
   },
   validations() {
     return {
-      accountNumberInput: [
-        validation.accountNumberInput
-      ],
       backupCode: [
         validation.backupCode
+      ],
+      signInInput: [
+        validation.signInInput
       ]
     }
   },
   computed: {
     accountNumber() {
-      return format.removeSpaces(this.accountNumberInput)
+      if (this.magicLinkResponse) return this.magicLinkResponse.account
+      else return this.numericalInput && format.removeSpaces(this.signInInput)
     },
     canSignIn() {
-      return !this.v$.accountNumberInput.$invalid && !this.errors.accountNumberInput && !this.isLoading
+      return this.signInInput && !this.v$.signInInput.$invalid && !this.errors.signInInput && !this.isLoading
+    },
+    numericalInput() {
+      // check if input is entirely numerical to determine if account number input (with spaces optional to allow for masking)
+      return this.magicLinkResponse || /^\d+(\s\d+)*\s*$/.test(this.signInInput)
     },
     signInBody() {
       const body = { account: this.accountNumber }
       if (this.useBackupCode) body.backupCode = this.backupCode
       if (this.otpSecret) body.otp = this.otpSecret
       return body
+    },
+    magicLinkToken() {
+      return this.$route.query.t
     }
   },
   methods: {
@@ -207,35 +293,68 @@ export default {
       this.otpSecret = newCode
       this.signIn()
     },
+    resetEmailCooldown() {
+      // set 15s email cooldown timer
+      this.emailCooldown = 15
+      this.iEmailCooldown = setInterval(() => {
+        this.emailCooldown = this.emailCooldown - 1
+        if (this.emailCooldown === 0) clearInterval(this.iEmailCooldown)
+      }, 1000)
+    },
     resetOtpErrors() {
       this.errors.otpSecret = ''
     },
     returnToSignIn() {
-      this.errors.accountNumberInput = ''
+      this.signInInput = ''
       this.otpSecret = ''
+      this.magicLinkResponse = null
+      this.errors = {
+        backupCode: '',
+        magicLink: '',
+        otpSecret: '',
+        signInInput: ''
+      },
       this.requires2FA = false
     },
+    async sendMagicLink() {
+      await api.accounts.sendMagicLink(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.signInInput
+      )
+      this.resetEmailCooldown()
+    },
     async signIn() {
-      if (this.v$.accountNumberInput.$invalid) return
+      if (this.v$.signInInput.$invalid) return
       if (this.requires2FA && this.useBackupCode && this.v$.backupCode.$invalid) return
 
       this.isLoading = true
 
       try {
-        const { session } = await api.sessions.createSession(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.signInBody
-        )
-        if (session._key) {
-          const { account } = await api.accounts.getAccount(
+        // sign in if using account number
+        if (this.numericalInput) {
+          const { session } = await api.sessions.createSession(
             process.env.VUE_APP_ACCOUNT_API_URL,
-            session._key
+            this.signInBody
           )
-          this.is2FACodeValid = true
-          const payload = { account, session }
-          this.$store.dispatch('signIn', payload)
+          if (session._key) {
+            const { account } = await api.accounts.getAccount(
+              process.env.VUE_APP_ACCOUNT_API_URL,
+              session._key
+            )
+            this.is2FACodeValid = true
+            const payload = { account, session }
+            this.$store.dispatch('signIn', payload)
+            setTimeout(() => {
+              this.$router.push('/servers')
+            }, 800)
+          }
+        }
+        // request magic link email if using email address
+        else {
+          await this.sendMagicLink()
           setTimeout(() => {
-            this.$router.push('/servers')
+            this.isLoading = false
+            this.magicLinkSent = true
           }, 800)
         }
       }
@@ -254,7 +373,7 @@ export default {
           else {
             setTimeout(() => {
               this.isLoading = false
-              this.errors.accountNumberInput = 'We couldn\'t find that account'
+              this.errors.signInInput = 'We couldn\'t find that account'
             }, 800)
           }
         }
@@ -266,7 +385,23 @@ export default {
       this.httpError = ''
       await this.v$.$reset()
       this.useBackupCode = !this.useBackupCode
+    },
+    async verifyMagicLinkToken() {
+      try {
+        this.magicLinkResponse = await api.accounts.verifyMagicLinkToken(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.magicLinkToken
+        )
+        console.log(this.magicLinkResponse)
+        await this.signIn()
+      }
+      catch (error) {
+        this.errors.magicLink = 'Your link appears to be invalid. Please return to sign in and try again.'
+      }
     }
+  },
+  async mounted() {
+    if (this.magicLinkToken) await this.verifyMagicLinkToken()
   },
   setup() {
     return {
@@ -274,15 +409,20 @@ export default {
     }
   },
   watch: {
-    accountNumberInput() {
-      // reset account number error (i.e. invalid account) when input is changed
-      this.errors.accountNumberInput = ''
-    },
     backupCode() {
       this.httpError = ''
     },
     otpSecret() {
       this.httpError = ''
+    },
+    signInInput() {
+      // reset sign in input number error (i.e. invalid account) when input is changed
+      this.errors.signInInput = ''
+
+      // sign in input uses v-mask to add spaces if entering account number
+      // on the rare occurrence that an email begins with 4 or more numbers, this will remove any masking once
+      // a non-numerical character is entered
+      if (!this.numericalInput) this.signInInput = format.removeSpaces(this.signInInput)
     }
   }
 }

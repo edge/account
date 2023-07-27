@@ -1,44 +1,21 @@
 <template>
   <div class="box flex flex-col">
-    <h4>Auto Top-Up</h4>
+    <h4>Pay by Credit Card</h4>
 
-    <div v-if="autoTopUpCard" class="flex items-center mb-4">
+    <div v-if="autoPaymentCard" class="flex items-center mb-4">
       <div><BadgeCheckIcon class="w-4 text-green mr-1" /></div>
-      <span>Auto top-up enabled.</span>
+      <span>Auto payments enabled.</span>
     </div>
 
-    <p>{{ autoTopUpCard ? "If" : "When you enable auto top-ups, if" }} your balance drops below your <strong>USD threshold</strong> XE will be purchased to bring your account funds back to your <strong>USD target balance</strong>.</p>
+    <p>
+      <span v-if="autoPaymentCard">Your selected credit card will be used to pay your monthly invoices automatically.</span>
+      <span v-else>Select a saved credit card to pay your monthly invoices automatically.</span>
+      <span> Your card will be charged on the 1st of each month.</span>
+    </p>
+
+    <p>If you disable automatic payments, your services may be suspended if you have account doesn't have sufficient funds.</p>
 
     <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-4">
-      <div class="input-wrapper">
-        <div class="w-full">
-          <label class="block mb-1">Threshold</label>
-          <div class="currency flex justify-between">
-            <input
-              type="number"
-              v-model="threshold"
-              @focusout="formatThreshold"
-              @keypress.enter=enableAutoTopUp
-            />
-            USD
-          </div>
-        </div>
-        <div class="w-full">
-          <label class="block mb-1">Target balance</label>
-          <div class="currency flex justify-between">
-            <input
-              type="number"
-              v-model="targetBalance"
-              @focusout="formatTargetBalance"
-              @keypress.enter=enableAutoTopUp
-            />
-            USD
-          </div>
-        </div>
-      </div>
-      <div class="errorMessage" v-if="targetBalanceError">
-        <span class="errorMessage__text">{{ targetBalanceError }}</span>
-      </div>
       <div class="w-full pt-1" v-if="paymentMethods">
         <label class="block mb-1">Select Payment Card</label>
         <Listbox v-model="paymentCard">
@@ -76,12 +53,12 @@
       </div>
     </div>
     <div v-else>
-      <p class="text-red">Please add a saved payment card below to enable auto top-ups.</p>
+      <p class="text-red">Please add a saved payment card below to be able to enable auto payments.</p>
     </div>
 
     <div class="buttons flex space-x-2 justify-end">
       <button
-        v-if="autoTopUpCard"
+        v-if="autoPaymentCard"
         @click=toggleDisableConfirmationModal
         class="button button--small button--outline-error w-full"
         :disabled="enabling || disabling"
@@ -90,21 +67,21 @@
         <div class="ml-1" v-if="disabling"><LoadingSpinner /></div>
       </button>
       <button
-        @click=enableAutoTopUp
+        @click=enableAutoPayment
         class="button button--small button--success w-full"
-        :class="autoTopUpCard ? '' : 'md:max-w-xs'"
+        :class="autoPaymentCard ? '' : 'md:max-w-xs'"
         :disabled="!canEnable || enabling || disabling"
       >
-        {{ autoTopUpCard ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
+        {{ autoPaymentCard ? 'Updat' : 'Enabl' }}{{ enabling ? 'ing' : 'e'}}
         <div class="ml-1" v-if="enabling"><LoadingSpinner /></div>
       </button>
     </div>
     <div v-if=httpError class="mt-2">
       <HttpError :error=httpError />
     </div>
-    <DisableAutoTopUpConfirmation
+    <DisableAutoPaymentsConfirmation
       v-if=showDisableConfirmation
-      @modal-confirm=disableAutoTopUp
+      @modal-confirm=disableAutoPayment
       @modal-close=toggleDisableConfirmationModal
     />
   </div>
@@ -115,7 +92,7 @@
 
 import * as api from '@/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import DisableAutoTopUpConfirmation from '@/components/confirmations/DisableAutoTopUpConfirmation'
+import DisableAutoPaymentsConfirmation from '@/components/confirmations/DisableAutoPaymentsConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -131,12 +108,12 @@ import {
 } from '@headlessui/vue'
 
 export default {
-  name: 'AutoTopUp',
+  name: 'AutoPayment',
   components: {
     BadgeCheckIcon,
     CheckIcon,
     ChevronDownIcon,
-    DisableAutoTopUpConfirmation,
+    DisableAutoPaymentsConfirmation,
     HttpError,
     Listbox,
     ListboxButton,
@@ -150,44 +127,25 @@ export default {
       enabling: false,
       httpError: '',
       paymentCard: null,
-      showDisableConfirmation: false,
-      targetBalance: '10.00',
-      targetBalanceError: null,
-      threshold: '5.00'
+      showDisableConfirmation: false
     }
   },
   props: ['paymentMethods'],
   computed: {
     ...mapState(['account', 'config', 'session']),
-    autoTopUpCard() {
+    autoPaymentCard() {
       return this.account && this.account.topup && this.account.topup.paymentMethod
     },
     canEnable() {
-      return this.paymentCard && this.isTargetBalanceAboveMin && this.isThresholdAboveMin
-    },
-    isTargetBalanceAboveMin() {
-      return Number(this.targetBalance) >= this.minTargetBalance
-        && Number(this.targetBalance) >= Number(this.threshold) + this.thresholdBuffer
-    },
-    isThresholdAboveMin() {
-      return Number(this.threshold) >= this.minThreshold
-    },
-    minTargetBalance() {
-      return this.config.topup.minTargetBalance
-    },
-    minThreshold() {
-      return this.config.topup.minThreshold
-    },
-    thresholdBuffer() {
-      return this.config.topup.thresholdBuffer
+      return this.paymentCard && this.paymentCard._key !== this.account.topup.paymentMethod
     }
   },
   methods: {
-    async disableAutoTopUp() {
+    async disableAutoPayment() {
       this.httpError = ''
       try {
         this.disabling = true
-        await api.billing.disableAutoTopUp(
+        await api.billing.disableAutoPayment(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key
         )
@@ -203,18 +161,14 @@ export default {
         this.disabling = false
       }
     },
-    async enableAutoTopUp() {
+    async enableAutoPayment() {
       this.httpError = ''
       try {
         this.enabling = true
-        await api.billing.enableAutoTopUp(
+        await api.billing.enableAutoPayment(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          {
-            paymentMethod: this.paymentCard._key,
-            targetBalance: Number(this.targetBalance),
-            threshold: Number(this.threshold)
-          }
+          { paymentMethod: this.paymentCard._key }
         )
         setTimeout(() => {
           this.enabling = false
@@ -226,55 +180,20 @@ export default {
         this.enabling = false
       }
     },
-    formatTargetBalance() {
-      if (!this.targetBalance) this.targetBalance = 0
-      this.targetBalance = Number(this.targetBalance).toFixed(2)
-    },
-    formatThreshold() {
-      if (!this.threshold) this.threshold = 0
-      this.threshold = Number(this.threshold).toFixed(2)
-    },
-    setTargetBalanceError() {
-      const targetBalance = Number(this.targetBalance)
-      const threshold = Number(this.threshold)
-      const thresholdBuffer = this.config.topup.thresholdBuffer
-      if (targetBalance < this.minTargetBalance) this.targetBalanceError = `Minimum target balance is $${this.minTargetBalance}.`
-      else if (threshold < this.minThreshold) this.targetBalanceError = `Minimum threshold is $${this.minThreshold}.`
-      else if (targetBalance < threshold + thresholdBuffer) this.targetBalanceError = `Target balance must be $${thresholdBuffer} greater than the threshold.`
-      else this.targetBalanceError = null
-    },
     toggleDisableConfirmationModal() {
       this.showDisableConfirmation = !this.showDisableConfirmation
     }
   },
-  mounted() {
-    if (this.account.topup) {
-      this.targetBalance = this.account.topup.targetBalance.toFixed(2)
-      this.threshold = this.account.topup.threshold.toFixed(2)
-    }
-    else {
-      this.targetBalance = this.config.topup.minTargetBalance.toFixed(2)
-      this.threshold = this.config.topup.minThreshold.toFixed(2)
-    }
-  },
   watch: {
-    autoTopUpCard(newCard) {
-      if (newCard) {
-        this.paymentCard = this.paymentMethods.find(p => p._key === newCard)
-      }
+    autoPaymentCard(newCard) {
+      if (newCard) this.paymentCard = this.paymentMethods.find(p => p._key === newCard)
       else this.paymentCard = this.paymentMethods[0]
     },
     paymentMethods() {
-      if (this.autoTopUpCard) {
-        this.paymentCard = this.paymentMethods.find(p => p._key === this.autoTopUpCard)
+      if (this.autoPaymentCard) {
+        this.paymentCard = this.paymentMethods.find(p => p._key === this.autoPaymentCard)
       }
       else this.paymentCard = this.paymentMethods[0]
-    },
-    targetBalance() {
-      this.setTargetBalanceError()
-    },
-    threshold() {
-      this.setTargetBalanceError()
     }
   }
 }
