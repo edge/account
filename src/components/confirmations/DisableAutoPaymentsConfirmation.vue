@@ -8,7 +8,7 @@
     </template>
     <template v-slot:body>
       <div class="flex flex-col space-y-2">
-        <li>Funds will no longer be automatically added to your account.</li>
+        <li>Invoices will no longer be automatically settled.</li>
         <li>Services may be disabled if your balance drops too low.</li>
       </div>
     </template>
@@ -34,7 +34,7 @@ import { ExclamationIcon } from '@heroicons/vue/outline'
 import Modal from '@/components/Modal'
 
 export default {
-  name: 'DisableAutoTopUpConfirmation',
+  name: 'DisableAutoPaymentsConfirmation',
   components: {
     ExclamationIcon,
     Modal

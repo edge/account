@@ -22,7 +22,7 @@
         <span v-else class="ml-1">XE</span>
         <Tooltip
           v-if="purchase && purchase.auto"
-          text="Purchase made by auto top-up"
+          text="Purchase made by auto payment"
           position="right"
         >
           <InformationCircleIcon class="ml-1 w-4 text-gray-400" />

@@ -15,11 +15,11 @@
           </div>
         </template>
       </AddFundsCalculator>
-      <AutoTopUp :paymentMethods=paymentMethods />
+      <AutoPayment :paymentMethods=paymentMethods />
     </div>
     <div class="box flex flex-col">
       <h4>Payment Cards</h4>
-      <p>Adding a card makes it simple to top up your account in future and allows you to use auto top-up.</p>
+      <p>Adding a card makes it simple to top up your account in future and allows you to set up automatic invoice payments.</p>
       <div class="flex flex-col">
         <!-- current saved cards list -->
         <div class="flex flex-col">
@@ -86,7 +86,7 @@
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
 import AddFundsCalculator from '@/components/billing/AddFundsCalculator'
-import AutoTopUp from '@/components/billing/AutoTopUp'
+import AutoPayment from '@/components/billing/AutoPayment'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentMethodList from '@/components/billing/PaymentMethodList'
 import { PlusCircleIcon } from '@heroicons/vue/outline'
@@ -118,7 +118,7 @@ export default {
   },
   components: {
     AddFundsCalculator,
-    AutoTopUp,
+    AutoPayment,
     LoadingSpinner,
     PaymentMethodList,
     PlusCircleIcon,
