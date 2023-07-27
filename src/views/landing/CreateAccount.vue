@@ -6,7 +6,7 @@
     <Logo/>
 
     <div>
-      <p class="pr-5 text-lg">
+      <p class="pr-5 text-lg mb-12">
         <span>All you need to sign in to Edge is a secret account number, known only to you.</span>
       </p>
 
@@ -78,17 +78,17 @@
                     :disabled="isCreating || !emailInput || v$.emailInput.$invalid"
                   >
                     <div v-if="isCreating" class="flex flex-row">
-                      <span>Creating account</span>
+                      <span>Creating Account</span>
                       <span class="ml-2"><LoadingSpinner /></span>
                     </div>
-                    <span v-else>Sign up</span>
+                    <span v-else>Sign Up</span>
                   </button>
 
                   <!-- return to create account options -->
                   <button @click="setAccountType(null)"
                     class="w-full text-sm text-center text-gray-500 underline hover:text-green"
                   >
-                    Create anonymous account
+                    Create anonymous account instead
                   </button>
                 </div>
               </div>
@@ -128,7 +128,7 @@
         </div>
 
         <!-- Verify email step (email-first accounts only) -->
-        <div v-if="accountType === 'email'" class="step" :class="step < 2 ? 'inactive' : ''">
+        <div v-if="accountType === 'email' && step >= 2" class="step" :class="step < 2 ? 'inactive' : ''">
           <div class="step-title">
             <MailIcon class="step-icon"/>
             <span>Verify your email</span>
@@ -193,7 +193,7 @@
         </div>
 
         <!-- Secure account step -->
-        <div class="step" :class="step < 3 ? 'inactive' : ''">
+        <div class="step" v-if="step >= 3">
           <div class="step-title">
             <FingerPrintIcon class="step-icon"/>
             <span>Secure your account <span class="text-gray">(optional)</span></span>
@@ -286,7 +286,7 @@
 
         <!-- go direct to account / back to sign in buttons -->
         <div>
-          <div class="mt-6">
+          <div class="mt-12">
             <button
               v-if="step > 2"
               @click.prevent="goToAccount"
@@ -294,10 +294,11 @@
             >
               <span>Continue</span>
             </button>
-            <router-link v-else
-              :to="{ name: 'Sign In' }"
-              class="w-full block mt-2 text-sm text-center text-gray-500 underline hover:text-green"
-            >I already have an account</router-link>
+            <span v-else-if="!isGeneratingAccount"
+              class="w-full block mt-2 text-sm text-center text-gray-500">
+              Already have an account?<br>
+              <router-link :to="{ name: 'Sign In' }" class="underline hover:text-green">Return to Sign In</router-link>
+            </span>
           </div>
         </div>
       </div>
