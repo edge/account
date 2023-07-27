@@ -137,7 +137,7 @@ export default {
       return this.account && this.account.topup && this.account.topup.paymentMethod
     },
     canEnable() {
-      return this.paymentCard && this.paymentCard._key !== this.account.topup.paymentMethod
+      return this.paymentCard && (!this.account.topup || this.paymentCard._key !== this.account.topup.paymentMethod)
     }
   },
   methods: {
