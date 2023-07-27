@@ -207,7 +207,7 @@
                 class="w-full button"
                 :class="is2FAEnabled && !backupCodes ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
               >
-                <span>Enable Two-factor Authentication (2FA)</span>
+                <span>Enable Two-Factor Authentication (2FA)</span>
                 <div v-if="!is2FAEnabled || backupCodes" class="absolute right-3">
                   <ChevronDownIcon v-if="show2FA"
                     class="chevron-icon"
