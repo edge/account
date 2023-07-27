@@ -69,6 +69,11 @@
                   <ExclamationIcon class="w-3.5 h-3.5" />
                   <span class="errorMessage__text">{{ errors.emailInput }}</span>
                 </div>
+                <div v-if="errors.accountEmail" class="flex items-center errorMessage mt-2">
+                  <ExclamationIcon class="w-3.5 h-3.5" />
+                  <span class="errorMessage__text">{{ errors.accountEmail }}</span>
+                </div>
+
                 <!-- buttons -->
                 <div class="flex flex-col mt-2">
                   <!-- sign up -->
@@ -366,6 +371,7 @@ export default {
       emailInput: '',
       errors: {
         accountNumber: '',
+        accountEmail: '',
         emailInput: '',
         verificationCode: ''
       },
@@ -471,13 +477,20 @@ export default {
     async createEmailAccount() {
       try {
         this.isCreating = true
-        setTimeout(async () => {
-          await this.createAccount()
-          this.resetEmailCooldown()
-          this.changeStep(2)
-        }, 600)
+        this.errors.accountEmail = ''
+
+        // Wait 600ms to prevent spamming the create account endpoint
+        await new Promise(resolve => setTimeout(resolve, 600))
+        await this.createAccount()
+        this.resetEmailCooldown()
+        this.changeStep(2)
       }
       catch (error) {
+        // error.message is string, so simplest way is to check for substring
+        const emailInUse = typeof error.message === 'string' && error.message.includes('email address already in use')
+        this.errors.accountEmail = emailInUse
+          ? 'Email address already in use'
+          : 'Oops, something went wrong. Please try again.'
         this.isCreating = false
       }
     },
