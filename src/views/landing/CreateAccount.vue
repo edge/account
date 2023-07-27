@@ -26,7 +26,7 @@
                   @click.prevent="setAccountType('email')"
                   class="w-full button button--solid button--success"
                 >
-                  <span>Sign Up With Email</span>
+                  <span>Use Email Address</span>
                 </button>
                 <!-- error message  -->
                 <div v-if="errors.accountNumber" class="flex items-center errorMessage mt-2">
@@ -39,7 +39,7 @@
                   @click.prevent="createAnonymousAccount"
                   class="w-full button button--solid button--success"
                 >
-                  <span>Create Anonymous Account</span>
+                  <span>Sign Up Anonymously</span>
                 </button>
                 <!-- error message  -->
                 <div v-if="errors.accountNumber" class="flex items-center errorMessage mt-2">
@@ -196,7 +196,7 @@
         <div class="step" :class="step < 3 ? 'inactive' : ''">
           <div class="step-title">
             <FingerPrintIcon class="step-icon"/>
-            <span>Secure your account</span>
+            <span>Secure your account <span class="text-gray">(optional)</span></span>
           </div>
 
           <div class="step-content" v-if="step === 3">
@@ -236,7 +236,7 @@
                 class="w-full button"
                 :class="isEmailEnabled ? 'button--outline-success text-green bg-white hover:bg-white cursor-default' : 'button--success'"
               >
-                <span>Add Email</span>
+                <span>Add Email Address</span>
                 <div v-if="!isEmailEnabled" class="absolute right-3">
                   <ChevronDownIcon v-if="showAddEmail"
                     class="chevron-icon"
@@ -292,7 +292,7 @@
               @click.prevent="goToAccount"
               class="w-full button button--solid button--success"
             >
-              <span>Go directly to my account</span>
+              <span>Continue</span>
             </button>
             <router-link v-else
               :to="{ name: 'Sign In' }"
