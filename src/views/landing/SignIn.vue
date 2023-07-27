@@ -13,7 +13,7 @@
         </div>
         <!-- account sign in input -->
         <div v-else class="input-group">
-          <label for="accountNumber" class="label">Account details</label>
+          <!-- <label for="accountNumber" class="label">Account details</label> -->
           <div
             v-if="magicLinkResponse"
             class="account-number bg-white border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg cursor-default"
@@ -33,7 +33,7 @@
               <span>Signing in</span>
               <span class="ml-2"><LoadingSpinner /></span>
             </div>
-            <span v-else>Sign in</span>
+            <span v-else>Sign In</span>
           </button>
 
           <!-- divider -->
@@ -45,7 +45,7 @@
             :to="{ name: 'Sign In' }"
             class="button button--solid"
           >
-            <span>Return to sign in</span>
+            <span>Return to Sign In</span>
           </router-link>
         </div>
       </div>
@@ -54,13 +54,13 @@
     <!-- sign in with account number -->
     <div v-else-if="!requires2FA" >
       <Logo class="mb-6" />
-      <p class="pr-5 text-lg mb-6">
+      <p class="pr-5 text-lg mb-12">
         <span>Welcome back. Enter your account number or email to sign into the Edge Network.</span>
       </p>
       <div class="landingPage__form">
         <!-- account sign in input -->
         <div v-if="!magicLinkSent" class="input-group">
-          <label for="accountNumber" class="label">Account details</label>
+          <!-- <label for="accountNumber" class="label">Account details</label> -->
           <input
             id="accountNumber"
             class="account-number border border-gray rounded-md flex-1 px-3 py-2 text-center text-lg focus:outline-none"
@@ -91,7 +91,7 @@
               <span>Signing in</span>
               <span class="ml-2"><LoadingSpinner /></span>
             </div>
-            <span v-else>Sign in</span>
+            <span v-else>Sign In</span>
           </button>
 
           <!-- magic link sent confirmation -->
@@ -130,7 +130,7 @@
             @click.prevent="goToCreateAccount"
             class="button button--solid"
           >
-            <span>Create new account</span>
+            <span>Create Account</span>
           </button>
         </div>
       </div>
