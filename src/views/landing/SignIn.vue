@@ -109,7 +109,7 @@
             <!-- resend email button and feedback -->
             <p class="text-gray-500 my-2">
               Haven't received the email?
-              <span v-if="emailCooldown === 0"><span @click="resendEmail" class="underline cursor-pointer hover:text-green">Click here</span> to request another email.</span>
+              <span v-if="emailCooldown === 0"><span @click="signIn" class="underline cursor-pointer hover:text-green">Click here</span> to request another email.</span>
               <span v-else>Please wait {{ emailCooldown }} seconds.</span>
             </p>
             <button @click.prevent="magicLinkSent = false"
