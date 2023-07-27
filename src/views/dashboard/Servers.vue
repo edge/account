@@ -38,7 +38,7 @@
           :to="{ name: 'ServerDeploy' }"
           class="button button--success button--small"
         >
-          Deploy server
+          Deploy Server
         </router-link>
       </div>
     </div>
