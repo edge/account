@@ -5,7 +5,7 @@
       <div class="box">
         <div class="flex flex-col">
           <h4>Purchase XE</h4>
-          <p>You can also purchase XE with your credit or debit card. This is possible through one-off payments or enabling Pay by Credit Card which will ensure your invoices are always have paid on time.</p>
+          <p>You can also purchase XE with your credit or debit card. This is possible through one-off payments or by enabling Pay by Credit Card which will ensure your invoices are always have paid on time.</p>
           <span></span>
           <p>The current exchange rate is 1.00 USD = {{ formattedXE }} XE</p>
           <router-link

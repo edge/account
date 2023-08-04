@@ -10,10 +10,10 @@
     <p>
       <span v-if="autoPaymentCard">Your selected credit card will be used to pay your monthly invoices automatically.</span>
       <span v-else>Select a saved credit card to pay your monthly invoices automatically.</span>
-      <span> Your card will be charged on the 1st of each month.</span>
+      <span> Your next payment will be due on 1st {{ nextMonth }}.</span>
     </p>
 
-    <p>If you disable Pay by Credit Card, your services may be suspended if you have account doesn't have sufficient funds.</p>
+    <p>If you disable Pay by Credit Card, your services may be suspended if your account doesn't have sufficient funds.</p>
 
     <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-4">
       <div class="w-full pt-1" v-if="paymentMethods">
@@ -96,6 +96,7 @@ import DisableAutoPaymentsConfirmation from '@/components/confirmations/DisableA
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
+import moment from 'moment'
 import {
   CheckIcon,
   ChevronDownIcon
@@ -138,6 +139,11 @@ export default {
     },
     canEnable() {
       return this.paymentCard && (!this.account.topup || this.paymentCard._key !== this.account.topup.paymentMethod)
+    },
+    nextMonth() {
+      let nextMonth = moment().month() + 1
+      if (nextMonth === 12) nextMonth = 0
+      return moment.months()[nextMonth]
     }
   },
   methods: {

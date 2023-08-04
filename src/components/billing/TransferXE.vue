@@ -15,7 +15,8 @@
         </div>
         <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
       </div>
-      <span>The minimum required balance is ${{ balance.threshold.warning.usd.toFixed(2)}}. Please ensure your account remains above this level to avoid restrictions. Alternatively, you can set up Pay by Credit Card.</span>
+      <span v-if="!account.topup">The minimum required balance is ${{ balance.threshold.warning.usd.toFixed(2)}}. Please ensure your account remains above this level to avoid restrictions. Alternatively, you can set up Pay by Credit Card.</span>
+      <span v-else>Pay by Credit Card is enabled for your account. You may still add funds at any time.</span>
     </div>
   </div>
 </template>
