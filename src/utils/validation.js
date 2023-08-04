@@ -35,7 +35,7 @@ export const email = helpers.withMessage('Please enter a valid email', _email)
 /**
  * 6-digit confirmation code validator.
  */
-const confCodeRegexp = /^\d{1}\s\d{1}\s\d{1}\s\d{1}\s\d{1}\s\d{1}$/
+const confCodeRegexp = /^\d{1}\s?\d{1}\s?\d{1}\s?\d{1}\s?\d{1}\s?\d{1}$/
 export const confirmationCode = helpers.withMessage('The confirmation code is 6 digits', v => confCodeRegexp.test(v))
 
 /**
