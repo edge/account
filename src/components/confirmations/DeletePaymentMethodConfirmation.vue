@@ -10,7 +10,7 @@
       <div class="flex flex-col space-y-2">
         <li>This payment card will be permanently deleted.</li>
         <li v-if=isAutoPaymentCard class="font-bold">
-          This card is used for auto payments. Auto payments will be disabled if you continue.
+          This card is used for Pay by Credit Card. Automatic invoice payments will be disabled if you continue.
         </li>
       </div>
     </template>

@@ -4,7 +4,7 @@
       <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
     </template>
     <template v-slot:header>
-      <span>Disable auto payments</span>
+      <span>Disable Pay by Credit Card</span>
     </template>
     <template v-slot:body>
       <div class="flex flex-col space-y-2">

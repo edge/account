@@ -15,7 +15,7 @@
         </div>
         <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
       </div>
-      <span>The minimum required balance is ${{ balance.threshold.warning.usd.toFixed(2)}}. Please ensure your account remains above this level to avoid restrictions. Alternatively, you can set up automatic card payments.</span>
+      <span>The minimum required balance is ${{ balance.threshold.warning.usd.toFixed(2)}}. Please ensure your account remains above this level to avoid restrictions. Alternatively, you can set up Pay by Credit Card.</span>
     </div>
   </div>
 </template>

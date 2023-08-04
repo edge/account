@@ -4,7 +4,7 @@
 
     <div v-if="autoPaymentCard" class="flex items-center mb-4">
       <div><BadgeCheckIcon class="w-4 text-green mr-1" /></div>
-      <span>Auto payments enabled.</span>
+      <span>Pay by Credit Card enabled.</span>
     </div>
 
     <p>
@@ -13,7 +13,7 @@
       <span> Your card will be charged on the 1st of each month.</span>
     </p>
 
-    <p>If you disable automatic payments, your services may be suspended if you have account doesn't have sufficient funds.</p>
+    <p>If you disable Pay by Credit Card, your services may be suspended if you have account doesn't have sufficient funds.</p>
 
     <div v-if="paymentMethods.length" class="form flex flex-col space-y-1 mb-4">
       <div class="w-full pt-1" v-if="paymentMethods">
@@ -53,7 +53,7 @@
       </div>
     </div>
     <div v-else>
-      <p class="text-red">Please add a saved payment card below to be able to enable auto payments.</p>
+      <p class="text-red">Please add a saved payment card below to be able to enable Pay by Credit Card.</p>
     </div>
 
     <div class="buttons flex space-x-2 justify-end">
