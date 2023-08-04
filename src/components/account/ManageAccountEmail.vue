@@ -246,6 +246,7 @@ export default {
       this.resetEmailCooldown()
     },
     resetEmailCooldown() {
+      if (this.iEmailCooldown) clearInterval(this.iEmailCooldown)
       // set 15s email cooldown timer
       this.emailCooldown = 15
       this.iEmailCooldown = setInterval(() => {

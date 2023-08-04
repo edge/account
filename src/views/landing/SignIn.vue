@@ -112,7 +112,7 @@
               <span v-if="emailCooldown === 0"><span @click="signIn" class="underline cursor-pointer hover:text-green">Click here</span> to request another email.</span>
               <span v-else>Please wait {{ emailCooldown }} seconds.</span>
             </p>
-            <button @click.prevent="magicLinkSent = false"
+            <button @click.prevent="returnToSignIn"
               class="w-full text-sm text-center text-gray-500 underline hover:text-green"
             >
               Re-enter my account details
@@ -294,6 +294,7 @@ export default {
       this.signIn()
     },
     resetEmailCooldown() {
+      if (this.iEmailCooldown) clearInterval(this.iEmailCooldown)
       // set 15s email cooldown timer
       this.emailCooldown = 15
       this.iEmailCooldown = setInterval(() => {
@@ -307,6 +308,7 @@ export default {
     returnToSignIn() {
       this.signInInput = ''
       this.otpSecret = ''
+      this.magicLinkSent = false
       this.magicLinkResponse = null
       this.errors = {
         backupCode: '',
