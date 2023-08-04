@@ -59,7 +59,7 @@ export default {
       // format power dns error messages
       if (message.includes('RRset')) message = this.formatPowerDnsError(message)
 
-      return field ? [field, message].join(': ') : message
+      return field ? [field, message].join(': ') : message.toUpperCase()
     },
     overCapacityError() {
       return this.error.response && this.error.response.body.detail === 'there is no suitable node in cluster'
