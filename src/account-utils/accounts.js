@@ -63,10 +63,11 @@ export const removeEmail = async (host, sessionId) => {
   return response.body
 }
 
-export const resendVerificationEmail = async (host, sessionId) => {
+export const resendVerificationEmail = async (host, sessionId, signup) => {
   const url = `${host}/account/email/verify/resend`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ signup })
   return response.body
 }
 
