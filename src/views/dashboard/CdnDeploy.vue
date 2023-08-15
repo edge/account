@@ -21,22 +21,29 @@
                 <th class="type">Type</th>
                 <th>Value</th>
                 <th class="ttl">TTL</th>
+                <th></th>
               </tr>
-              <tr>
-                <td class="domain monospace" :title="`${ deployedIntegration.data.domain }`">
-                  {{ deployedIntegration.data.domain }}
+              <tr v-for="(record, index) in dnsRecordsToCreate" :key="record.domain">
+                <td class="domain monospace" :title="`${ record.domain }`">
+                  {{ record.domain }}
                 </td>
-                <td class="type monospace">CNAME</td>
+                <td class="type monospace">{{ record.zone && record.domain === record.zone ? 'ALIAS' : 'CNAME' }}</td>
                 <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
                 <td class="ttl monospace">3600</td>
-              </tr>
-              <tr v-for="domain in deployedIntegration.data.additionalDomains" :key=domain>
-                <td class="domain monospace" :title="`${domain}`">
-                  {{ domain }}
+                <td class="action">
+                  <button
+                    @click="createDnsRecord(index)"
+                    :disabled="!record.zone || record.recordExists || record.creating"
+                    class="button button--success button--extraSmall"
+                  >
+                    <div v-if="record.creating" class="flex space-2">
+                      <span>Creating</span>
+                      <LoadingSpinner />
+                    </div>
+                    <span v-else>Create record</span>
+                  </button>
+                  <!-- ADD TOOLTIP THAT STATES WHY BUTTON IS DISABLED -->
                 </td>
-                <td class="type monospace">CNAME</td>
-                <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
-                <td class="ttl monospace">3600</td>
               </tr>
             </table>
           </div>
@@ -51,6 +58,7 @@
         </div>
       </div>
     </div>
+
     <div v-else class="flex flex-col space-y-4">
       <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
         <div><ExclamationIcon class="w-5 text-red" /></div>
@@ -110,6 +118,7 @@ export default {
       deployed: false,
       deploying: false,
       deployedIntegration: null,
+      dnsRecords: [],
       httpError: null,
       integration: {
         name: '',
@@ -145,11 +154,47 @@ export default {
     },
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
+    },
+    dnsRecordsToCreate() {
+      return this.dnsRecords
     }
   },
   methods: {
     continueToIntegration() {
       this.$router.push({ name: 'CdnIntegration', params: { key: this.deployedIntegration._key } })
+    },
+    async createDnsRecord(index) {
+      const recordToCreate = this.dnsRecords[index]
+      try {
+        recordToCreate.creating = true
+        this.dnsRecords.splice(index, 1, recordToCreate)
+        const isApex = recordToCreate.domain === recordToCreate.zone
+        const subDomain = recordToCreate.domain.replace('.' + recordToCreate.zone, '')
+
+        const { record } = await api.dns.createRecord(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          recordToCreate.zone,
+          {
+            name: isApex ? '@' : subDomain,
+            ttl: 3600,
+            type: isApex ? 'ALIAS' : 'CNAME',
+            value: `gateway.${this.isTestnet ? 'test' : 'edge'}.network.`
+          }
+        )
+
+        await new Promise(resolve => setTimeout(resolve, 500))
+        if (record) recordToCreate.recordExists = true
+        recordToCreate.creating = false
+        this.dnsRecords.splice(index, 1, recordToCreate)
+      }
+      catch (error) {
+        /** @todo handle error */
+        console.error(error)
+        recordToCreate.creating = false
+        this.dnsRecords.splice(index, 1, recordToCreate)
+
+      }
     },
     async deployCdn() {
       try {
@@ -161,15 +206,21 @@ export default {
           this.integration
         )
         this.deployedIntegration = integration
-        setTimeout(() => {
-          this.deployed = true
-        }, 800)
+
+        const { records } = await api.integration.checkDnsRecords(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          integration._key
+        )
+        this.dnsRecords = records
+
+        await new Promise(resolve => setTimeout(resolve, 800))
+        this.deployed = true
       }
       catch (error) {
-        setTimeout(() => {
-          this.deploying = false
-          this.httpError = error
-        }, 800)
+        await new Promise(resolve => setTimeout(resolve, 800))
+        this.deploying = false
+        this.httpError = error
       }
     },
     onUpdateConfig(config, configMode) {
