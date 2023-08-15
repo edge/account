@@ -31,9 +31,32 @@
                 <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
                 <td class="ttl monospace">3600</td>
                 <td class="action">
+                  <Tooltip v-if="!record.zone"
+                    position="left"
+                    text="DNS not managed by Edge"
+                  >
+                    <button
+                      :disabled="true"
+                      class="button button--success button--extraSmall"
+                    >
+                      <span>Create record</span>
+                    </button>
+                  </Tooltip>
+                  <Tooltip v-else-if="record.recordExists"
+                    position="left"
+                    text="DNS record already exists"
+                  >
+                    <button
+                      :disabled="true"
+                      class="button button--success button--extraSmall"
+                    >
+                      <span>Create record</span>
+                    </button>
+                  </Tooltip>
                   <button
+                    v-else
                     @click="createDnsRecord(index)"
-                    :disabled="!record.zone || record.recordExists || record.creating"
+                    :disabled="record.creating"
                     class="button button--success button--extraSmall"
                   >
                     <div v-if="record.creating" class="flex space-2">
@@ -42,7 +65,6 @@
                     </div>
                     <span v-else>Create record</span>
                   </button>
-                  <!-- ADD TOOLTIP THAT STATES WHY BUTTON IS DISABLED -->
                 </td>
               </tr>
             </table>
@@ -97,6 +119,7 @@ import CdnEstimatedCosts from '@/components/cdn/CdnEstimatedCosts.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import Tooltip from '@/components/Tooltip'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
@@ -111,7 +134,8 @@ export default {
     CdnEstimatedCosts,
     ExclamationIcon,
     HttpError,
-    LoadingSpinner
+    LoadingSpinner,
+    Tooltip
   },
   data() {
     return {
