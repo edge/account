@@ -17,6 +17,11 @@
     </div>
 
     <ul v-else-if="servers.length" role="list" class="serverList">
+      <div class="float-right mb-2">
+        <ListSortingMenu
+          :fields="['Name', 'Date', 'OS', 'vCPUs', 'Disk', 'RAM', 'Bandwidth', 'Zone', 'Status']"
+        />
+      </div>
       <ServerListItem
         v-for="server in servers"
         :key="server._key"
@@ -49,6 +54,7 @@
 /* global process */
 
 import * as api from '@/account-utils/index'
+import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import ServerListItem from '@/components/server/ServerListItem'
@@ -60,6 +66,7 @@ export default {
     return 'Edge Account Portal » Servers'
   },
   components: {
+    ListSortingMenu,
     LoadingSpinner,
     Pagination,
     ServerListItem

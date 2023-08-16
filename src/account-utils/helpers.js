@@ -2,7 +2,7 @@
 export const toQueryString = data => Object.keys(data)
   .map(key => {
     const v = data[key]
-    if (v instanceof Array) return `${key}=${v.map(urlsafe).join(',')}`
+    if (v instanceof Array) return `${key}=${v.map(str => `${key}=${urlsafe(str)}`).join('&')}`
     return `${key}=${urlsafe(v)}`
   })
   .join('&')
