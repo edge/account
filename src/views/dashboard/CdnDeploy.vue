@@ -23,7 +23,7 @@
                 <th class="ttl">TTL</th>
                 <th></th>
               </tr>
-              <tr v-for="(record, index) in dnsRecordsToCreate" :key="record.domain">
+              <tr v-for="(record, index) in dnsRecords" :key="record.domain">
                 <td class="domain monospace" :title="`${ record.domain }`">
                   {{ record.domain }}
                 </td>
@@ -178,9 +178,6 @@ export default {
     },
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
-    },
-    dnsRecordsToCreate() {
-      return this.dnsRecords
     }
   },
   methods: {
