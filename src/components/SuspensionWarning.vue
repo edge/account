@@ -32,73 +32,55 @@ export default {
     ExclamationIcon
   },
   computed: {
-    ...mapGetters(['balanceSuspend', 'balanceWarning']),
+    ...mapGetters(['nextInvoiceDate']),
     ...mapState(['account', 'balance']),
     warning() {
-      const warningThreshold = this.balance.threshold.warning.usd
-
-      // The account is warned or suspended, and has an XE purchase pending
-      if (this.balance.purchases.pending > 0 && (this.balanceWarning || this.balanceSuspend)) {
+      // Show status of pending purchases irrespective of account status and Pay By Card configuration
+      if (this.balance.purchases.pending > 0) {
         return {
           class: bannerClass.blue,
           message: 'Your XE purchase is processing. Please allow up to 10 minutes for your balance to update.'
         }
       }
-      // If the account uses Pay By Card or is managed [by administrators] then no message will be shown
+
+      // Show no other possible warnings if account is managed (thus exempt from all billing effects) or uses Pay By Card
       if (this.account.managed || this.account.topup) return null
+
+      // Account has been suspended due to non-payment of invoices
+      if (this.account.suspended) {
+        return {
+          class: bannerClass.red,
+          message: [
+            this.balance.consumption.invoices.unpaid > 0 ? 'You have unpaid invoices.' : false,
+            'Please add funds or enable Pay By Credit Card to reactivate your services.',
+            'Failure to pay will result in your services being permanently deleted.'
+          ].filter(Boolean).join(' ')
+        }
+      }
+
+      // Account has been warned of low balance and should top up before next invoice
+      if (this.account.warned) {
+        const dateStr = this.nextInvoiceDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+
+        return {
+          class: bannerClass.yellow,
+          message: [
+            `Your balance minus usage is less than $${this.balance.threshold.warning.usd} and some actions have been restricted.`,
+            `Any services you are using may be suspended if you are unable to pay your next invoice on ${dateStr}.`,
+            'Add funds or enable Pay By Credit Card to prevent this happening.'
+          ].join(' ')
+        }
+      }
+
       // The account balance is exactly $0 and the account is not consuming any services (default message)
       if (this.balance.total.usd === 0 && !this.balance.consumption.any) {
         return {
           class: bannerClass.blue,
-          message: `Please transfer at least $${warningThreshold} of funds to your account or add a payment card to enable services.`
+          message: `Please transfer at least $${this.balance.threshold.warning.usd} of funds to your account or add a payment card to enable services.`
         }
       }
-      // The account is suspended (has unpaid invoices)
-      if (this.account.suspended) {
-        return {
-          class: bannerClass.red,
-          message: 'You have unpaid invoices. Please add funds to reactivate your services. Failure to pay will result in your services being permanently deleted.'
-        }
-      }
-      // The next invoice to the account will cause it to be suspended
-      if (this.balanceSuspend) {
-        return {
-          class: bannerClass.red,
-          message: 'Your balance is less than your current spend. Any services you are using will be suspended if you don\'t add funds to your account.'
-        }
-      }
-      // The account balance is below warning threshold, but it is not consuming any services
-      else if (this.balance.total.usd < warningThreshold && !this.balance.consumption.any) {
-        return {
-          class: bannerClass.yellow,
-          message: `Your balance is less than $${warningThreshold}. Please add funds to re-enable services.`
-        }
-      }
-      // The next invoice to the account will cause its balance to drop under the warning threshold, but it is not currently consuming any services
-      // (The account will already have a balance warning in API in this scenario)
-      else if (this.balanceWarning && !this.balance.consumption.any) {
-        return {
-          class: bannerClass.yellow,
-          message: `Your balance at the end of the day will be less than $${warningThreshold}. Please add funds to re-enable services.`
-        }
-      }
-      // The account balance is below warning threshold
-      else if (this.balance.total.usd < warningThreshold) {
-        return {
-          class: bannerClass.yellow,
-          message: `Your balance is less than $${warningThreshold}. Any services you are using may be suspended if you don't add funds to your account.`
-        }
-      }
-      // The next invoice to the account will cause its balance to drop under the warning threshold
-      // (Again, the account will already have a balance warning in API in this scenario)
-      else if (this.balanceWarning) {
-        return {
-          class: bannerClass.yellow,
-          message: `Your balance at the end of the day will be less than $${warningThreshold}. Any services you are using may be suspended if you don't add funds to your account.`
-        }
-      }
+
       return null
-      /* eslint-enable max-len */
     }
   }
 }
