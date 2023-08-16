@@ -166,6 +166,13 @@ const store = createStore({
       && state.balance
       && !getters.balanceSuspend
       && state.balance.available.usd < state.balance.threshold.warning.usd,
+    nextInvoiceDate: () => {
+      const date = new Date()
+      date.setUTCHours(0, 0, 0, 0)
+      date.setUTCDate(1)
+      date.setUTCMonth(date.getUTCMonth() + 1)
+      return date
+    },
     tasksByServerId: (state) => (serverId) => state.tasks.filter(task => task.entity === `servers/${serverId}`)
   }
 })
