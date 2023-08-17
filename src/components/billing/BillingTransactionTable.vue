@@ -4,24 +4,51 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell" width="15%">
-              Date
-            </th>
-            <th scope="col" class="tableHead__cell" width="15%">
-              Tx Hash
-            </th>
-            <th scope="col" class="tableHead__cell" width="20%">
-              From/To
-            </th>
-            <th scope="col" class="tableHead__cell" width="20%">
-              Memo
-            </th>
-            <th scope="col" class="tableHead__cell" width="15%">
-              Status
-            </th>
-            <th scope="col" class="tableHead__cell amount" width="15%">
-              Amount (XE)
-            </th>
+            <TableHeader
+              header="Date"
+              param="timestamp"
+              class="tableHead__cell"
+              width="15%"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Tx Hash"
+              param="hash"
+              class="tableHead__cell"
+              width="15%"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="From/To"
+              class="tableHead__cell"
+              width="20%"
+            />
+            <TableHeader
+              header="Memo"
+              param="data.memo"
+              class="tableHead__cell"
+              width="20%"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Status"
+              param="block.height"
+              class="tableHead__cell"
+              width="15%"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Amount (XE)"
+              param="amount"
+              class="tableHead__cell"
+              width="15%"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
           </tr>
         </thead>
         <tbody class="tableBody">
@@ -55,6 +82,7 @@ import * as index from '@edge/index-utils'
 import BillingTransactionTableItem from '@/components/billing/BillingTransactionTableItem'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
+import TableHeader from '@/components/TableHeader'
 import { mapState } from 'vuex'
 
 export default {
@@ -62,7 +90,8 @@ export default {
   components: {
     BillingTransactionTableItem,
     LoadingTableDataRow,
-    Pagination
+    Pagination,
+    TableHeader
   },
   data() {
     return {
@@ -70,6 +99,7 @@ export default {
       limit: 5,
       metadata: { totalCount: 0 },
       pageHistory: [1],
+      sortQuery: '',
       transactions: null
     }
   },
@@ -84,16 +114,19 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateTransactions() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = [this.sortQuery, '-timestamp']
+
       const transactions = await index.tx.transactions(
         process.env.VUE_APP_INDEX_URL,
         this.account.wallet.address,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       this.transactions = transactions.results
       this.metadata = transactions.metadata
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   mounted() {
@@ -107,6 +140,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updateTransactions()
+    },
+    sortQuery() {
       this.updateTransactions()
     }
   }
