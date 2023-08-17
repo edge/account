@@ -70,7 +70,4 @@ export default {
 .sort-menu__item {
   @apply group cursor-pointer flex rounded justify-between items-center w-full px-2 py-2.5 text-sm text-gray-600 hover:bg-gray-100;
 }
-/* .sort-menu__item:hover {
-  @apply bg-gray-100;
-} */
 </style>
