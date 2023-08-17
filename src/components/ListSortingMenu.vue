@@ -56,7 +56,7 @@ export default {
 
 <style scoped>
 .sort-menu {
-  @apply relative w-max;
+  @apply relative w-max z-10;
   /* @apply absolute top-8 right-8; */
 }
 .sort-menu__button {
