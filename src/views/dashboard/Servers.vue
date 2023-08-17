@@ -117,7 +117,7 @@ export default {
     },
     async updateServers() {
       const params = { limit: this.limit, page: this.currentPage }
-      if (this.sortQuery) params.sort = this.sortQuery
+      if (this.sortQuery) params.sort = [this.sortQuery, '-created']
 
       const { results, metadata } = await api.servers.getServers(
         process.env.VUE_APP_ACCOUNT_API_URL,

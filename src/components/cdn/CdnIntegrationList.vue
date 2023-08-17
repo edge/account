@@ -85,7 +85,7 @@ export default {
     },
     async updateIntegrations() {
       const params = { limit: this.limit, page: this.currentPage }
-      if (this.sortQuery) params.sort = this.sortQuery
+      if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
       const { results, metadata } = await api.integration.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
