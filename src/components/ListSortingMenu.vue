@@ -45,9 +45,9 @@ export default {
     },
     updateSort(field) {
       let newQuery = ''
-      if (this.isAsc(field)) newQuery = `-${field.param}`
-      else if (this.isDesc(field)) newQuery = undefined
-      else newQuery = field.param
+      if (this.isAsc(field)) newQuery = undefined
+      else if (this.isDesc(field)) newQuery = field.param
+      else newQuery = `-${field.param}`
       this.$emit('update-sort', newQuery)
     }
   }
