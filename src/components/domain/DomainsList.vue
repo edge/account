@@ -82,8 +82,6 @@ export default {
     async updateDomains() {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = this.sortQuery
-      console.log(this.sortQuery)
-      console.log(params.sort)
 
       const { results, metadata } = await api.dns.getZones(
         process.env.VUE_APP_ACCOUNT_API_URL,
