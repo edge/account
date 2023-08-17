@@ -5,18 +5,33 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell" width="180">
-              Date
-            </th>
-            <th scope="col" class="tableHead__cell" width="150">
-              Time
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Event
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Status
-            </th>
+            <TableHeader
+              header="Date"
+              param="created"
+              width="180"
+              class="tableHead__cell sm:rounded-tl-lg"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Time"
+              width="150"
+              class="tableHead__cell"
+            />
+            <TableHeader
+              header="Event"
+              param="action"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Status"
+              param="status"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
           </tr>
         </thead>
         <tbody class="tableBody">
@@ -47,6 +62,7 @@ import * as api from '@/account-utils'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import ServerHistoryItem from '@/components/server/ServerHistoryItem'
+import TableHeader from '@/components/TableHeader'
 import { mapState } from 'vuex'
 
 export default {
@@ -54,7 +70,8 @@ export default {
   components: {
     LoadingTableDataRow,
     Pagination,
-    ServerHistoryItem
+    ServerHistoryItem,
+    TableHeader
   },
   data() {
     return {
@@ -62,6 +79,7 @@ export default {
       metadata: { totalCount: 0 },
       pageHistory: [1],
       iTasks: null,
+      sortQuery: '',
       tasks: null
     }
   },
@@ -80,17 +98,20 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateTasks() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
+
       const { results, metadata } = await api.servers.getTasks(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       this.tasks = results
       this.metadata = metadata
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   mounted() {
@@ -104,6 +125,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updateTasks()
+    },
+    sortQuery() {
       this.updateTasks()
     }
   }

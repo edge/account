@@ -7,6 +7,13 @@
     </div>
     <!-- records list -->
     <ul v-if="records.length" class="recordList">
+      <div class="float-right mb-2">
+        <ListSortingMenu
+          :fields="sortFields"
+          :query="sortQuery"
+          @update-sort="updateSortQuery"
+        />
+      </div>
       <DomainRecordsListItem
         v-for="record in records"
         :key="record._key"
@@ -25,17 +32,25 @@
 
 <script>
 /* global process */
-
 import * as api from '@/account-utils/'
 import DomainRecordsListItem from '@/components/domain/DomainRecordsListItem'
+import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import { mapState } from 'vuex'
+
+const sortFields = [
+  { label: 'Type', param: 'type'},
+  { label: 'Hostname', param: 'name'},
+  { label: 'Value', param: 'value'},
+  { label: 'TTL', param: 'ttl'}
+]
 
 export default {
   name: 'DomainRecordsList',
   components: {
     DomainRecordsListItem,
+    ListSortingMenu,
     LoadingSpinner,
     Pagination
   },
@@ -46,7 +61,9 @@ export default {
       limit: 100,
       loaded: false,
       metadata: { totalCount: 0 },
-      pageHistory: [1]
+      pageHistory: [1],
+      sortFields: sortFields,
+      sortQuery: ''
     }
   },
   props: ['domain'],
@@ -61,18 +78,21 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRecords() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = [this.sortQuery, 'type', 'name', 'value']
+
       const { results, metadata } = await api.dns.getRecords(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.domain._key,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       this.records = results
       this.metadata = metadata
       this.loaded = true
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   async mounted() {
@@ -86,6 +106,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updateRecords()
+    },
+    sortQuery() {
       this.updateRecords()
     }
   }

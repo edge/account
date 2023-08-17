@@ -4,19 +4,38 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell" width="15%">
-              Date
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Description
-            </th>
-            <th scope="col" class="tableHead__cell" :width="hasUnpaidInvoice ? '' : '100'">
-              Status
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Amount (USD)
-            </th>
-            <th scope="col" class="tableHead__cell" width="130"></th>
+            <TableHeader
+              header="Date"
+              param="created"
+              width="15%"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Description"
+              class="tableHead__cell"
+            />
+            <TableHeader
+              header="Status"
+              param="status"
+              :width="hasUnpaidInvoice ? '' : '110'"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Amount (USD)"
+              param="amount"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header=""
+              class="tableHead__cell"
+              width="130"
+            />
           </tr>
         </thead>
         <tbody class="tableBody">
@@ -50,6 +69,7 @@ import * as api from '@/account-utils'
 import BillingInvoiceTableItem from '@/components/billing/BillingInvoiceTableItem'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
+import TableHeader from '@/components/TableHeader'
 import { mapState } from 'vuex'
 
 export default {
@@ -57,7 +77,8 @@ export default {
   components: {
     BillingInvoiceTableItem,
     LoadingTableDataRow,
-    Pagination
+    Pagination,
+    TableHeader
   },
   data() {
     return {
@@ -65,7 +86,8 @@ export default {
       invoices: null,
       limit: 5,
       metadata: { totalCount: 0 },
-      pageHistory: [1]
+      pageHistory: [1],
+      sortQuery: ''
     }
   },
   computed: {
@@ -82,16 +104,19 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateInvoices() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = [this.sortQuery, '-created']
+
       const { results, metadata } = await api.billing.getInvoices(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       this.invoices = results
       this.metadata = metadata
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   mounted() {
@@ -106,6 +131,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updateInvoices()
+    },
+    sortQuery() {
       this.updateInvoices()
     }
   }
