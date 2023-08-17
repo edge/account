@@ -1,27 +1,29 @@
 <template>
-  <Menu as='div' class="sort-menu">
-    <MenuButton class="sort-menu__button">
-      <SwitchVerticalIcon class="w-6 h-6 text-gray hover:text-green cursor-pointer float-right" />
-    </MenuButton>
-    <MenuItems class="sort-menu__items">
+  <Popover as='div' class="sort-menu">
+    <PopoverButton>
+      <div class="sort-menu__button">
+        <SwitchVerticalIcon class="w-6 h-6 text-gray hover:text-green cursor-pointer float-right" />
+      </div>
+    </PopoverButton>
+    <PopoverPanel class="sort-menu__items">
       <div class="px-1 py-2.5">
-        <MenuItem v-for="(field, index) in fields" :key="field"
-          v-slot="{ active }"
+        <div
+          v-for="(field) in fields" :key="field"
+          @click="updateSort(field)"
           class="sort-menu__item"
         >
-          <div :class="active && 'active'" class="flex justify-between">
-            <span>{{ field }}</span>
-            <!-- <ArrowNarrowDownIcon v-if="index === 1" class="w-4 h-4" /> -->
-          </div>
-        </MenuItem>
+          <span>{{ field.label }}</span>
+          <ArrowNarrowDownIcon v-if="isDesc(field)" class="w-4 h-4" />
+          <ArrowNarrowUpIcon v-if="isAsc(field)" class="w-4 h-4" />
+        </div>
       </div>
-    </MenuItems>
-  </Menu>
+    </PopoverPanel>
+  </Popover>
 </template>
 
 <script>
 import { ArrowNarrowDownIcon, ArrowNarrowUpIcon, SwitchVerticalIcon } from '@heroicons/vue/solid'
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 
 export default {
   name: 'ListSortingMenu',
@@ -29,12 +31,26 @@ export default {
     ArrowNarrowDownIcon,
     ArrowNarrowUpIcon,
     SwitchVerticalIcon,
-    Menu,
-    MenuButton,
-    MenuItems,
-    MenuItem
+    Popover,
+    PopoverButton,
+    PopoverPanel
   },
-  props: ['fields']
+  props: ['fields', 'query'],
+  methods: {
+    isAsc(field) {
+      return field.param === this.query
+    },
+    isDesc(field) {
+      return `-${field.param}` === this.query
+    },
+    updateSort(field) {
+      let newQuery = ''
+      if (this.isAsc(field)) newQuery = `-${field.param}`
+      else if (this.isDesc(field)) newQuery = undefined
+      else newQuery = field.param
+      this.$emit('update-sort', newQuery)
+    }
+  }
 }
 </script>
 
@@ -52,9 +68,9 @@ export default {
   @apply focus:outline-none;
 }
 .sort-menu__item {
-  @apply group flex rounded items-center w-full px-2 py-2.5 text-sm text-gray-600;
+  @apply group cursor-pointer flex rounded justify-between items-center w-full px-2 py-2.5 text-sm text-gray-600 hover:bg-gray-100;
 }
-.sort-menu__item.active {
+/* .sort-menu__item:hover {
   @apply bg-gray-100;
-}
+} */
 </style>

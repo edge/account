@@ -7,6 +7,13 @@
     </div>
     <!-- cdn integrations list -->
     <ul v-else-if="integrations.length" class="space-y-2">
+      <div class="float-right mb-2">
+        <ListSortingMenu
+          :fields="sortFields"
+          :query="sortQuery"
+          @update-sort="updateSortQuery"
+        />
+      </div>
       <CdnIntegrationListItem
         v-for="integration in integrations"
         :key="integration._key"
@@ -27,14 +34,23 @@
 
 import * as api from '@/account-utils/'
 import CdnIntegrationListItem from '@/components/cdn/CdnIntegrationListItem'
+import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import { mapState } from 'vuex'
+
+const sortFields = [
+  { label: 'Name', param: 'name'},
+  { label: 'Created', param: 'created'},
+  { label: 'Domain', param: 'data.domain' },
+  { label: 'Status', param: 'active'}
+]
 
 export default {
   name: 'CdnList',
   components: {
     CdnIntegrationListItem,
+    ListSortingMenu,
     LoadingSpinner,
     Pagination
   },
@@ -45,7 +61,9 @@ export default {
       limit: 10,
       loaded: false,
       metadata: { totalCount: 0 },
-      pageHistory: [1]
+      pageHistory: [1],
+      sortFields: sortFields,
+      sortQuery: ''
     }
   },
   computed: {
@@ -66,13 +84,13 @@ export default {
       return usage
     },
     async updateIntegrations() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = this.sortQuery
+
       const { results, metadata } = await api.integration.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       const usage = await this.updateUsage()
       // add usage data to each integration
@@ -90,6 +108,9 @@ export default {
       this.metadata = metadata
       this.$emit('update-integration-count', metadata.totalCount)
       this.loaded = true
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   async mounted() {
@@ -103,6 +124,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updateIntegrations()
+    },
+    sortQuery() {
       this.updateIntegrations()
     }
   }

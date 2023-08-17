@@ -7,6 +7,13 @@
     </div>
     <!-- domains list -->
     <ul v-else-if="domains.length" class="domainList">
+      <div class="float-right mb-2">
+        <ListSortingMenu
+          :fields="sortFields"
+          :query="sortQuery"
+          @update-sort="updateSortQuery"
+        />
+      </div>
       <DomainsListItem
         v-for="domain in domains"
         :key="domain._key"
@@ -31,14 +38,22 @@
 
 import * as api from '@/account-utils/'
 import DomainsListItem from '@/components/domain/DomainsListItem'
+import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import { mapState } from 'vuex'
+
+const sortFields = [
+  { label: 'Name', param: '_key'},
+  { label: 'Created', param: 'created'},
+  { label: 'Status', param: 'active'}
+]
 
 export default {
   name: 'DomainsList',
   components: {
     DomainsListItem,
+    ListSortingMenu,
     LoadingSpinner,
     Pagination
   },
@@ -49,7 +64,9 @@ export default {
       limit: 10,
       loaded: false,
       metadata: { totalCount: 0 },
-      pageHistory: [1]
+      pageHistory: [1],
+      sortFields: sortFields,
+      sortQuery: ''
     }
   },
   computed: {
@@ -63,17 +80,22 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateDomains() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = this.sortQuery
+      console.log(this.sortQuery)
+      console.log(params.sort)
+
       const { results, metadata } = await api.dns.getZones(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       this.domains = results
       this.metadata = metadata
       this.loaded = true
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   async mounted() {
@@ -87,6 +109,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updateDomains()
+    },
+    sortQuery() {
       this.updateDomains()
     }
   }
