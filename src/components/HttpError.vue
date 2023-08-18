@@ -32,7 +32,10 @@ const paramLookup = {
 }
 
 const messageLookup = {
-  'incorrect': field => `Invalid ${/[a-z]/.test(field) ? field.toLowerCase() : field}. Please try again`
+  'incorrect': field => {
+    if (field === 'TOTP') field = 'code'
+    return `Invalid ${/[a-z]/.test(field) ? field.toLowerCase() : field}. Please try again`
+  }
 }
 
 export default {
@@ -59,7 +62,7 @@ export default {
       // format power dns error messages
       if (message.includes('RRset')) message = this.formatPowerDnsError(message)
 
-      return field ? [field, message].join(': ') : message
+      return field ? [field, message].join(': ') : message.toUpperCase()
     },
     overCapacityError() {
       return this.error.response && this.error.response.body.detail === 'there is no suitable node in cluster'

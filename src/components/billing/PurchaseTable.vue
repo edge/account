@@ -4,24 +4,45 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="hidden lg:table-header-group tableHead">
           <tr>
-            <th scope="col" class="tableHead__cell">
-              Reference
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Date
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Time
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Sent (USD)
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Received (XE)
-            </th>
-            <th scope="col" class="tableHead__cell">
-              Status
-            </th>
+            <TableHeader
+              header="Reference"
+              param="_key"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Date"
+              param="created"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Time"
+              class="tableHead__cell"
+            />
+            <TableHeader
+              header="Sent (USD)"
+              param="send.amount"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Received (XE)"
+              param="receive.amount"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
+              header="Status"
+              param="status"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
           </tr>
         </thead>
         <tbody class="tableBody">
@@ -55,6 +76,7 @@ import * as api from '@/account-utils'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import PurchaseTableItem from '@/components/billing/PurchaseTableItem'
+import TableHeader from '@/components/TableHeader'
 import { mapState } from 'vuex'
 
 export default {
@@ -62,7 +84,8 @@ export default {
   components: {
     LoadingTableDataRow,
     PurchaseTableItem,
-    Pagination
+    Pagination,
+    TableHeader
   },
   data() {
     return {
@@ -70,7 +93,8 @@ export default {
       purchases: null,
       limit: 10,
       metadata: { totalCount: 0 },
-      pageHistory: [1]
+      pageHistory: [1],
+      sortQuery: ''
     }
   },
   computed: {
@@ -84,16 +108,19 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updatePurchases() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
+
       const purchases = await api.purchases.getPurchases(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       this.purchases = purchases.results
       this.metadata = purchases.metadata
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   mounted() {
@@ -108,6 +135,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updatePurchases()
+    },
+    sortQuery() {
       this.updatePurchases()
     }
   }

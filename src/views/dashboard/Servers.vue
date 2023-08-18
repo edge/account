@@ -17,6 +17,13 @@
     </div>
 
     <ul v-else-if="servers.length" role="list" class="serverList">
+      <div class="float-right mb-2">
+        <ListSortingMenu
+          :fields="sortFields"
+          :query="sortQuery"
+          @update-sort="updateSortQuery"
+        />
+      </div>
       <ServerListItem
         v-for="server in servers"
         :key="server._key"
@@ -49,10 +56,23 @@
 /* global process */
 
 import * as api from '@/account-utils/index'
+import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import ServerListItem from '@/components/server/ServerListItem'
 import { mapState } from 'vuex'
+
+const sortFields = [
+  { label: 'Name', param: 'settings.name'},
+  { label: 'Created', param: 'created'},
+  { label: 'OS', param: 'settings.os.version'},
+  { label: 'vCPUs', param: 'spec.cpus'},
+  { label: 'Disk', param: 'spec.disk'},
+  { label: 'RAM', param: 'spec.ram'},
+  { label: 'Bandwidth', param: 'spec.bandwidth'},
+  { label: 'Zone', param: 'region'},
+  { label: 'Status', param: 'status' }
+]
 
 export default {
   name: 'Servers',
@@ -60,6 +80,7 @@ export default {
     return 'Edge Account Portal » Servers'
   },
   components: {
+    ListSortingMenu,
     LoadingSpinner,
     Pagination,
     ServerListItem
@@ -72,7 +93,9 @@ export default {
       metadata: { totalCount: 0 },
       pageHistory: [1],
       regions: [],
-      servers: []
+      servers: [],
+      sortFields: sortFields,
+      sortQuery: ''
     }
   },
   computed: {
@@ -93,17 +116,20 @@ export default {
       this.regions = results
     },
     async updateServers() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = [this.sortQuery, '-created']
+
       const { results, metadata } = await api.servers.getServers(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       this.servers = results
       this.metadata = metadata
       this.loaded = true
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   async mounted() {
@@ -118,6 +144,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updateServers()
+    },
+    sortQuery() {
       this.updateServers()
     }
   }

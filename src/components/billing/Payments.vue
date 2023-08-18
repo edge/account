@@ -19,7 +19,7 @@
     </div>
     <div class="box flex flex-col">
       <h4>Payment Cards</h4>
-      <p>Adding a card makes it simple to top up your account in future and allows you to set up automatic invoice payments.</p>
+      <p>Adding a card makes it simple to add funds to your account and allows you to enable Pay by Credit Card for automatic invoice payments.</p>
       <div class="flex flex-col">
         <!-- current saved cards list -->
         <div class="flex flex-col">

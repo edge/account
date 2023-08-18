@@ -538,11 +538,13 @@ export default {
     async resendEmail() {
       await api.accounts.resendVerificationEmail(
         process.env.VUE_APP_ACCOUNT_API_URL,
-        this.generatedSession._key
+        this.generatedSession._key,
+        true
       )
       this.resetEmailCooldown()
     },
     resetEmailCooldown() {
+      if (this.iEmailCooldown) clearInterval(this.iEmailCooldown)
       // set 15s email cooldown timer
       this.emailCooldown = 15
       this.iEmailCooldown = setInterval(() => {

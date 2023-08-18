@@ -19,7 +19,7 @@
         <p class="mt-3 mb-1 text-gray-500">This deployment has been destroyed.</p>
         <router-link
           class="mt-4 button button--success button--small"
-          :to="{ name: 'CdnIntegrations'}"
+          :to="{ name: 'CdnIntegrations' }"
         >
           <span>Return to Content Delivery</span>
         </router-link>
@@ -116,7 +116,7 @@
         <p class="mt-3 mb-1 text-gray-500">This deployment either does not exist or has destroyed.</p>
         <router-link
           class="mt-4 button button--success button--small"
-          :to="{ name: 'Domains'}"
+          :to="{ name: 'CdnIntegrations' }"
         >
           <span>Return to Content Delivery</span>
         </router-link>

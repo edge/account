@@ -185,6 +185,9 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.beforeEach(async (to, from, next) => {
+  // for magic links, sign out of current session
+  if (to.name === 'Sign In' && to.query.t) store.dispatch('signOut')
+
   if (to.matched.some(record => record.meta.guest)) {
     if (store.state.isAuthed || await confirmSessionKey()) {
       next('/')

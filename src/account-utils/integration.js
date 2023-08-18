@@ -14,6 +14,14 @@ export const addIntegration = async (host, sessionId, integration) => {
   return response.body
 }
 
+// check DNS records for integration
+export const checkDnsRecords = async (host, sessionId, integrationKey) => {
+  const url = `${host}/integrations/${integrationKey}/dns`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // delete integration
 export const deleteIntegration = async (host, sessionId, integrationKey) => {
   const url = `${host}/integrations/${integrationKey}`

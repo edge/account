@@ -37,22 +37,47 @@
         <table class="divide-y divide-gray-200">
           <thead class="hidden sm:table-header-group tableHead">
             <tr>
-              <th scope="col" class="tableHead__cell sm:rounded-tl-lg" width="140">
-                Date
-              </th>
-              <th scope="col" class="tableHead__cell" width="70">
-                Time
-              </th>
-              <th scope="col" class="tableHead__cell" width="">
-                Name
-              </th>
-              <th scope="col" class="tableHead__cell" width="">
-                Size
-              </th>
-              <th scope="col" class="tableHead__cell status" width="">
-                Status
-              </th>
-              <th scope="col" class="tableHead__cell actions sm:rounded-tr-lg" width="50"></th>
+              <TableHeader
+                header="Date"
+                param="created"
+                width="140"
+                class="tableHead__cell sm:rounded-tl-lg"
+                :sortQuery="sortQuery"
+                @update-sort="updateSortQuery"
+              />
+              <TableHeader
+                header="Time"
+                width="70"
+                class="tableHead__cell"
+              />
+              <TableHeader
+                header="Name"
+                param="comment"
+                class="tableHead__cell"
+                :sortQuery="sortQuery"
+                @update-sort="updateSortQuery"
+              />
+              <TableHeader
+                header="Size"
+                param="size"
+                width="140"
+                class="tableHead__cell"
+                :sortQuery="sortQuery"
+                @update-sort="updateSortQuery"
+              />
+              <TableHeader
+                header="Status"
+                param="status"
+                width="140"
+                class="tableHead__cell"
+                :sortQuery="sortQuery"
+                @update-sort="updateSortQuery"
+              />
+              <TableHeader
+                header=""
+                width="50"
+                class="tableHead__cell sm:rounded-tr-lg"
+              />
             </tr>
           </thead>
           <tbody class="tableBody">
@@ -95,6 +120,7 @@ import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import ServerBackupItem from '@/components/server/ServerBackupItem'
 import ServerBackupUsage from '@/components/server/ServerBackupUsage'
+import TableHeader from '@/components/TableHeader'
 import useVuelidate from '@vuelidate/core'
 import { mapGetters, mapState } from 'vuex'
 
@@ -106,7 +132,8 @@ export default {
     LoadingTableDataRow,
     Pagination,
     ServerBackupItem,
-    ServerBackupUsage
+    ServerBackupUsage,
+    TableHeader
   },
   props: [
     'activeTasks',
@@ -125,7 +152,8 @@ export default {
       isUpdating: false,
       limit: 10,
       metadata: { totalCount: 0 },
-      pageHistory: [1]
+      pageHistory: [1],
+      sortQuery: ''
     }
   },
   validations() {
@@ -186,18 +214,21 @@ export default {
       this.attemptingAction = newState
     },
     async updateBackups() {
+      const params = { limit: this.limit, page: this.currentPage }
+      if (this.sortQuery) params.sort = [this.sortQuery, '-created']
+
       const { results, metadata } = await api.servers.getBackups(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         this.serverId,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
+        params
       )
       this.backups = results
       this.metadata = metadata
       this.loadedBackups = true
+    },
+    updateSortQuery (newQuery) {
+      this.sortQuery = newQuery
     }
   },
   mounted() {
@@ -216,6 +247,9 @@ export default {
   },
   watch: {
     pageHistory() {
+      this.updateBackups()
+    },
+    sortQuery() {
       this.updateBackups()
     }
   }
