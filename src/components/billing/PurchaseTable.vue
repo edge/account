@@ -24,14 +24,14 @@
             />
             <TableHeader
               header="Sent (USD)"
-              param="sent.amount"
+              param="send.amount"
               class="tableHead__cell"
               :sortQuery="sortQuery"
               @update-sort="updateSortQuery"
             />
             <TableHeader
               header="Received (XE)"
-              param="received.amount"
+              param="receive.amount"
               class="tableHead__cell"
               :sortQuery="sortQuery"
               @update-sort="updateSortQuery"
