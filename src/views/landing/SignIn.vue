@@ -394,7 +394,6 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.magicLinkToken
         )
-        console.log(this.magicLinkResponse)
         await this.signIn()
       }
       catch (error) {
