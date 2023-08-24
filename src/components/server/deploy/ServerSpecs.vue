@@ -419,10 +419,10 @@ export default {
     }
   },
   mounted() {
-    this.bandwidthValue = this.current ? this.current.spec.bandwidth || 10 : 10
-    this.cpusValue = this.current ? this.current.spec.cpus : 1
-    this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : 0.5
-    this.diskValue = this.current ? (this.current.spec.disk / 1024).toString() : 10
+    this.bandwidthValue = this.current ? this.current.spec.bandwidth || 10 : this.config.server.limit.bandwidth.min
+    this.cpusValue = this.current ? this.current.spec.cpus : this.config.server.limit.cpu.min
+    this.ramValue = this.current ? (this.current.spec.ram / 1024).toString() : this.config.server.limit.ram.min / 1024
+    this.diskValue = this.current ? (this.current.spec.disk / 1024).toString() : this.config.server.limit.disk.min / 1024
 
     // set to use manual disk input if current disk value doesn't match one of the slider values
     if (this.current && !this.diskOptions.data.some(d => d.value === this.diskValue.toString())) {
