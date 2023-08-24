@@ -303,11 +303,16 @@ export default {
     diskOptions() {
       const min = this.config.server.limit.disk.min / 1024
       const max = this.config.server.limit.disk.max / 1024
-      const data = [{ value: '10', label: '10GiB'}]
-      for (let i = 16; i <= max; i = i * 2) {
+
+      // add min value
+      const data = [{ value: `${min}`, label: `${min}${min < 1 ? 'MiB' : 'GiB'}`}]
+      // add all values of power of two up to (but not including) max
+      for (let i = this.getNextPowerOfTwo(min); i < max; i = i * 2) {
         const label = i < 1 ? `${i}MiB` : `${i}GiB`
         data.push({ value: i.toString(), label})
       }
+      // add max value
+      data.push({ value: `${max}`, label: `${max}${max < 1 ? 'MiB' : 'GiB'}`})
       return { min, max, data }
     },
     diskValueDecreased() {
@@ -324,11 +329,16 @@ export default {
     ramOptions() {
       const min = this.config.server.limit.ram.min / 1024
       const max = this.config.server.limit.ram.max / 1024
-      const data = []
-      for (let i = min; i <= max; i = i * 2) {
+
+      // add min value
+      const data = [{ value: `${min}`, label: `${min}${min < 1 ? 'MiB' : 'GiB'}`}]
+      // add all values of power of two up to (but not including) max
+      for (let i = this.getNextPowerOfTwo(min); i < max; i = i * 2) {
         const label = i < 1 ? `${i}MiB` : `${i}GiB`
         data.push({ value: i.toString(), label})
       }
+      // add max value
+      data.push({ value: `${max}`, label: `${max}${max < 1 ? 'MiB' : 'GiB'}`})
       return { min, max, data }
     },
     spec() {
@@ -368,6 +378,11 @@ export default {
       if (this.current) max += this.current.spec[spec]
       if (spec === 'disk' || spec === 'ram') return max / 1024
       return max
+    },
+    getNextPowerOfTwo(num) {
+      let nextPower = 1
+      while (nextPower <= num) nextPower <<= 1
+      return nextPower
     },
     hasExceededCapacity(spec) {
       return this[`${spec}Value`] > this.getMaxAvailableInput(spec)
