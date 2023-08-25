@@ -36,9 +36,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account', 'balance', 'config', 'tasks']),
+    ...mapState(['account', 'balance', 'config', 'services', 'tasks']),
     loaded() {
-      return this.account && this.balance && this.config
+      return this.account && this.balance && this.config && this.services
     }
   },
   components: {
@@ -62,6 +62,7 @@ export default {
     this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
     this.$store.dispatch('updateBalance')
+    this.$store.dispatch('updateServices')
     this.$store.dispatch('updateSubscriptions')
     this.$store.dispatch('updateUnreadNotifications')
 

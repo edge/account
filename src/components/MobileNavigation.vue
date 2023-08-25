@@ -10,7 +10,7 @@
           <span>{{ formattedAccountNumber }}</span>
         </div>
         <div class="mobileNavigation__menu">
-          <Menu :mainNav="mainNav" :closeNav=closeNav />
+          <Menu v-if="services" :mainNav="mainNav" :closeNav=closeNav />
         </div>
         <div class="mobileNavigation__tools">
           <NavigationTools :closeNav=closeNav />
@@ -26,51 +26,59 @@ import NavigationTools from '@/components/NavigationTools'
 // import Search from '@/components/Search'
 import { mapState } from 'vuex'
 
+const nav = [
+  {
+    _key: 'servers',
+    link: '/servers',
+    text: 'Servers'
+  },
+  {
+    _key: 'dns',
+    link: '/domains',
+    text: 'Domains'
+  },
+  {
+    _key: 'cdn',
+    link: '/cdn',
+    text: 'Content Delivery'
+  },
+  {
+    _key: 'storage',
+    link: '/storage',
+    text: 'Storage'
+  },
+  {
+    _key: 'databases',
+    link: '/databases',
+    text: 'Databases'
+  },
+  {
+    _key: 'shield',
+    link: '/shield',
+    text: 'Shield'
+  }
+]
+
 export default {
   name: 'MobileNavigation',
   props: ['closeNav'],
-  data: function () {
-    return {
-      mainNav: [
-        {
-          link: '/servers',
-          text: 'Servers'
-        },
-        {
-          link: '/domains',
-          text: 'Domains'
-        },
-        {
-          link: '/cdn',
-          text: 'Content Delivery'
-        },
-        {
-          link: '/storage',
-          text: 'Storage',
-          disabled: true
-        },
-        {
-          link: '/databases',
-          text: 'Databases',
-          disabled: true
-        },
-        {
-          link: '/shield',
-          text: 'Shield',
-          disabled: true
-        }
-      ]
-    }
-  },
   components: {
     Menu,
     NavigationTools
     // Search
   },
   computed: {
-    ...mapState(['account']),
+    ...mapState(['account', 'services']),
     formattedAccountNumber() {
       return format.accountNumberMasked(this.account._key)
+    },
+    mainNav() {
+      return nav.map(item => {
+        const service = this.services.find(s => s._key === item._key)
+        const disabled = !service || (!service.public && !service.beta)
+        const beta = service && service.beta
+        return { ...item, disabled, beta }
+      })
     }
   }
 }

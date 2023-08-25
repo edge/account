@@ -13,7 +13,8 @@
           class="main-nav__link"
           :class="location && isActive(item) ? 'router-link-active' : ''"
         >
-          {{item.text}}
+          <span>{{item.text}}</span>
+          <span v-if="item.beta" class="beta-tag">BETA</span>
         </router-link>
       </li>
     </ul>
@@ -61,7 +62,7 @@ export default {
     @apply flex flex-col w-full space-y-1;
   }
   .main-nav__link {
-    @apply block rounded-lg p-3;
+    @apply block rounded-lg p-3 flex items-center;
     @apply hover:bg-gray-100 hover:bg-opacity-50;
   }
 
@@ -101,5 +102,11 @@ export default {
     margin-top: -3px;
     stroke: #888888;
     width: 18px;
+  }
+
+  .beta-tag {
+    @apply text-green font-bold border border-green rounded-lg px-1.5 py-0.5 ml-1;
+    font-size: 0.5rem;
+    line-height: 0.5rem;
   }
 </style>

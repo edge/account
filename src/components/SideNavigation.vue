@@ -4,7 +4,7 @@
         <Logo/>
       </div>
       <div class="sideNavigation__menu">
-        <Menu :mainNav="mainNav"/>
+        <Menu v-if="services" :mainNav="mainNav" />
       </div>
       <!-- <div class="sideNavigation__tools">
         <NavigationTools/>
@@ -16,40 +16,52 @@
 import Logo from '@/components/Logo'
 import Menu from '@/components/Menu'
 // import NavigationTools from '@/components/NavigationTools'
+import { mapState } from 'vuex'
+
+const nav = [
+  {
+    _key: 'servers',
+    link: '/servers',
+    text: 'Servers'
+  },
+  {
+    _key: 'dns',
+    link: '/domains',
+    text: 'Domains'
+  },
+  {
+    _key: 'cdn',
+    link: '/cdn',
+    text: 'Content Delivery'
+  },
+  {
+    _key: 'storage',
+    link: '/storage',
+    text: 'Storage'
+  },
+  {
+    _key: 'databases',
+    link: '/databases',
+    text: 'Databases'
+  },
+  {
+    _key: 'shield',
+    link: '/shield',
+    text: 'Shield'
+  }
+]
 
 export default {
   name: 'SideNavigation',
-  data: function () {
-    return {
-      mainNav: [
-        {
-          link: '/servers',
-          text: 'Servers'
-        },
-        {
-          link: '/domains',
-          text: 'Domains'
-        },
-        {
-          link: '/cdn',
-          text: 'Content Delivery'
-        },
-        {
-          link: '/storage',
-          text: 'Storage',
-          disabled: true
-        },
-        {
-          link: '/databases',
-          text: 'Databases',
-          disabled: true
-        },
-        {
-          link: '/shield',
-          text: 'Shield',
-          disabled: true
-        }
-      ]
+  computed: {
+    ...mapState(['services']),
+    mainNav() {
+      return nav.map(item => {
+        const service = this.services.find(s => s._key === item._key)
+        const disabled = !service || (!service.public && !service.beta)
+        const beta = service && service.beta
+        return { ...item, disabled, beta }
+      })
     }
   },
   components: {
