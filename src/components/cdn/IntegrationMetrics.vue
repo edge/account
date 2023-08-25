@@ -2,8 +2,12 @@
   <div>
     <!-- range toggle -->
     <IntegrationMetricsRangeToggle :period=selectedPeriod @update-period=onUpdateTimePeriod />
+    <div v-if="loading" class="box flex items-center">
+      <span>Loading metrics</span>
+      <span class="ml-2"><LoadingSpinner /></span>
+    </div>
     <!-- charts -->
-    <div v-if=metrics class="metrics__grid">
+    <div v-else-if="metrics" class="metrics__grid">
       <IntegrationMetricsRequests :metrics=metrics :timeSeries=timeSeries />
       <IntegrationMetricsTraffic :metrics=metrics :timeSeries=timeSeries />
       <IntegrationMetricsCache :metrics=metrics :timeSeries=timeSeries />
@@ -21,6 +25,7 @@ import IntegrationMetricsCache from '@/components/cdn/IntegrationMetricsCache'
 import IntegrationMetricsRangeToggle from '@/components/cdn/IntegrationMetricsRangeToggle'
 import IntegrationMetricsRequests from '@/components/cdn/IntegrationMetricsRequests'
 import IntegrationMetricsTraffic from '@/components/cdn/IntegrationMetricsTraffic'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import moment from 'moment'
 
@@ -32,11 +37,13 @@ export default {
     IntegrationMetricsCache,
     IntegrationMetricsRangeToggle,
     IntegrationMetricsRequests,
-    IntegrationMetricsTraffic
+    IntegrationMetricsTraffic,
+    LoadingSpinner
   },
   data() {
     return {
       iMetrics: null,
+      loading: false,
       metrics: null,
       selectedPeriod: 'day',
       timeSeries: []
@@ -63,6 +70,11 @@ export default {
       )
       this.updateTimeSeries(results)
       this.metrics = results
+
+      if (!this.loading) return
+      // for initial load, set a 500ms delay before displaying metrics
+      await new Promise(resolve => setTimeout(resolve, 500))
+      this.loading = false
     },
     updateTimeSeries(metrics) {
       this.timeSeries = metrics.ts.map(ts => {
@@ -73,6 +85,7 @@ export default {
     }
   },
   mounted() {
+    this.loading = true
     this.updateMetrics()
     this.iMetrics = setInterval(() => {
       this.updateMetrics()
