@@ -17,6 +17,7 @@ const store = createStore({
     balance: null,
     isAuthed: false,
     isTestnet: process.env.VUE_APP_ACCOUNT_API_URL.includes('test'),
+    services: null,
     session: null,
     subscriptions: [],
     tasks: [],
@@ -50,6 +51,9 @@ const store = createStore({
     },
     setUnreadNotifications(state, unread) {
       state.unreadNotifications = unread
+    },
+    setServices(state, services) {
+      state.services = services
     },
     setSession(state, session) {
       state.session = session
@@ -102,6 +106,7 @@ const store = createStore({
     signOut({ commit }) {
       libcrisp.endSession()
       commit('setAccount', null)
+      commit('setServices', null)
       commit('setSession', null)
       commit('setTasks', [])
       commit('setSubscriptions', [])
@@ -121,12 +126,17 @@ const store = createStore({
         state.session._key
       )
       commit('setBalance', balance)
-
     },
     async updateConfig({ commit }) {
       const config = await api.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
       commit('setConfig', config)
-
+    },
+    async updateServices({ commit, state }) {
+      const { services } = await api.services.getAccountServices(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        state.session._key
+      )
+      commit('setServices', services)
     },
     async updateSubscriptions({ commit, state }) {
       const { results } = await api.products.subscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)

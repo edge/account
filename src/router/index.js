@@ -24,7 +24,9 @@ import Purchase from '@/components/billing/Purchase'
 import Server from '@/views/dashboard/Server'
 import ServerDeploy from '@/views/dashboard/ServerDeploy'
 import Servers from '@/views/dashboard/Servers'
+import Shield from '@/views/dashboard/Shield'
 import SignIn from '@/views/landing/SignIn'
+import Storage from '@/views/dashboard/Storage'
 import Support from '@/views/dashboard/Support'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
@@ -121,6 +123,16 @@ const routes = [
         component: Server
       },
       {
+        path: 'shield',
+        name: 'Shield',
+        component: Shield
+      },
+      {
+        path: 'storage',
+        name: 'Storage',
+        component: Storage
+      },
+      {
         path: '/support',
         name: 'Support',
         component: Support
@@ -145,7 +157,15 @@ const routes = [
       }
     ]
   },
-  { path: '/:catchAll(.*)', component: NotFound }
+  {
+    path: '/404',
+    name: 'Not Found',
+    component: NotFound
+  },
+  {
+    path: '/:catchAll(.*)',
+    component: NotFound
+  }
 ]
 
 const router = createRouter({
