@@ -1,5 +1,10 @@
 <template>
-  <div class="landingPage">
+  <div
+    class="landingPage"
+    style="background-image: url(/assets/edge-bg-map.png);
+      background-repeat: no-repeat;
+      background-size: cover;"
+  >
     <div class="landingPage__left">
       <router-view />
     </div>
@@ -9,15 +14,17 @@
 <script>
 
 export default {
-  name: 'LandingPage'
+  name: 'LandingPage',
+  computed: {
+    filePath() {
+      return '/assets/edge-bg-map.png'
+    }
+  }
 }
 </script>
 <style>
   .landingPage {
     @apply flex w-screen bg-white;
-    background-image: url("https://cdn.discordapp.com/attachments/976127390482849922/991745747651412078/unknown.png");
-    background-repeat: no-repeat;
-    background-size: cover;
     height: 100vh;
     height: calc(var(--vh, 1vh) * 100);
   }
