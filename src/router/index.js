@@ -27,6 +27,7 @@ import Servers from '@/views/dashboard/Servers'
 import Shield from '@/views/dashboard/Shield'
 import SignIn from '@/views/landing/SignIn'
 import Storage from '@/views/dashboard/Storage'
+import StorageInstance from '@/views/dashboard/StorageInstance'
 import Support from '@/views/dashboard/Support'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
@@ -131,6 +132,11 @@ const routes = [
         path: 'storage',
         name: 'Storage',
         component: Storage
+      },
+      {
+        path: 'storage/:id',
+        name: 'Storage Instance',
+        component: StorageInstance
       },
       {
         path: '/support',

@@ -1,5 +1,5 @@
 <template>
-  <div class="mainContent__inner server">
+  <div class="mainContent__inner">
     <h1>Edge Shield</h1>
     <div class="box">
       <span>Coming soon</span>
@@ -26,7 +26,4 @@ export default {
 </script>
 
 <style scoped>
-.mainContent__inner.server {
-  @apply pt-0 mt-6;
-}
 </style>
