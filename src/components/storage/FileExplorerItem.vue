@@ -11,22 +11,39 @@
     <!-- file/directory name -->
     <div>
       <!-- directory -->
+      <input
+        v-if="editing"
+        v-model="newName"
+        type="text"
+        placeholder="Enter name"
+        class="new-name-input"
+      >
       <button
-        v-if="item.directory"
+        v-else-if="item.directory"
         @click="openDirectory(item.directory)"
         class="dir-nav"
       >
-        {{ item.directory }}
+        <span>{{ item.directory }}</span>
       </button>
       <!-- file -->
-      <span v-else>{{ item.filename }}</span>
+      <div v-else>
+        <span>{{ item.filename }}</span>
+      </div>
     </div>
 
     <!-- file size -->
     <div><span>{{ formattedSize }}</span></div>
 
     <!-- actions -->
-    <div class="flex space-x-2 items-center">
+    <div v-if="editing" class="flex space-x-2 items-center">
+      <button @click="saveNewName" class="item-action">
+        <CheckIcon class="w-4 text-green" />
+      </button>
+      <button @click="toggleEditing" class="item-action">
+        <XIcon class="w-4 text-red" />
+      </button>
+    </div>
+    <div v-else class="flex space-x-2 items-center">
       <button @click="toggleEditing" class="item-action">
         <PencilIcon class="w-4" />
       </button>
@@ -43,26 +60,30 @@
 import * as api from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import {
+  CheckIcon,
   DocumentTextIcon,
   FolderIcon,
   FolderOpenIcon,
   PencilIcon,
-  TrashIcon
+  TrashIcon,
+  XIcon
 } from '@heroicons/vue/outline'
 
 export default {
   name: 'FileExplorerItem',
   components: {
+    CheckIcon,
     DocumentTextIcon,
     FolderIcon,
     FolderOpenIcon,
     PencilIcon,
-    TrashIcon
+    TrashIcon,
+    XIcon
   },
   props: ['path', 'item'],
   data() {
     return {
-      editingName: false,
+      editing: false,
       newName: this.item.filename || this.item.directory,
       showDeleteConfirmationModal: false
     }
@@ -77,11 +98,15 @@ export default {
       if (!this.path) this.$emit('update-path', (dir))
       else this.$emit('update-path', (this.path + '/' + dir))
     },
+    saveNewName() {
+      return
+    },
     toggleDeleteConfirmationModal() {
       this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
     },
     toggleEditing() {
-      this.editingName = !this.editingName
+      this.newName = this.item.filename || this.item.directory
+      this.editing = !this.editing
     }
   }
 }
@@ -98,5 +123,12 @@ export default {
 
 .dir-nav {
   @apply hover:text-green;
+}
+
+.new-name-input {
+  @apply border-b border-gray w-full box-border;
+}
+.new-name-input:focus {
+  outline: none;
 }
 </style>
