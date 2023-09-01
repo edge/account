@@ -1,15 +1,13 @@
 <template>
-  <div class="file-explorer box">
-    <div v-if="showUploadOverlay" class="file-drop-overlay">
-      <div class="bg-white p-4 rounded-md">
-        <div class="mb-4"><span>Upload your file:</span></div>
-        <div class="flex flex-col space-y-4 items-center justify-center py-6 px-10 rounded-md border border-dashed border-gray">
-          <span>Drop file here</span>
-          <span>or</span>
-          <button class="button button--outline-success button-small">Browse Files</button>
-        </div>
-      </div>
-    </div>
+  <div class="file-explorer box"
+    @dragenter.prevent="startFileDrag"
+    @dragleave.prevent="endFileDrag"
+  >
+    <FileUploadOverlay
+      v-show="showFileUploadOverlay"
+      @drop-file="resetDrag"
+      @close="toggleFileUploadOverlay"
+    />
 
     <div class="flex justify-between w-full items-center mb-6">
       <!-- breadcrumbs -->
@@ -17,7 +15,7 @@
 
       <!-- upload file/create directory buttons -->
       <div class="flex space-x-2">
-        <button @click="toggleUploadOverlay" class="button button--extraSmall button--outline-success">
+        <button @click="toggleFileUploadOverlay" class="button button--extraSmall button--outline-success">
           <div><DocumentAddIcon class="w-6 h-6" /></div>
         </button>
         <button class="button button--extraSmall button--outline-success">
@@ -55,6 +53,7 @@
 // import * as validation from '@/utils/validation'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import FileExplorerItem from '@/components/storage/FileExplorerItem'
+import FileUploadOverlay from '@/components/storage/FileUploadOverlay'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import {
@@ -100,11 +99,12 @@ const testFiles = [
 ]
 
 export default {
-  name: 'FileList',
+  name: 'FileExplorer',
   components: {
     Breadcrumbs,
     DocumentAddIcon,
     FileExplorerItem,
+    FileUploadOverlay,
     FolderAddIcon,
     HttpError,
     LoadingSpinner,
@@ -113,8 +113,9 @@ export default {
   props: ['instance'],
   data() {
     return {
+      dragCounter: 0,
       path: 'assets',
-      showUploadOverlay: false
+      showFileUploadOverlay: false
       // files: null
     }
   },
@@ -138,11 +139,25 @@ export default {
       if (path.length === 1) this.updatePath('')
       else this.updatePath(path.slice(0, path.length - 1).join('/'))
     },
-    toggleUploadOverlay() {
-      this.showUploadOverlay = !this.showUploadOverlay
+    resetDrag() {
+      this.dragCounter = 0
+    },
+    toggleFileUploadOverlay() {
+      this.showFileUploadOverlay = !this.showFileUploadOverlay
     },
     updatePath(newPath) {
       this.path = newPath
+    },
+    startFileDrag() {
+      this.dragCounter += 1
+      this.showFileUploadOverlay = true
+    },
+    async endFileDrag() {
+      this.dragCounter -= 1
+      if (this.dragCounter === 0) {
+        this.showFileUploadOverlay = false
+        this.resetDrag()
+      }
     }
   }
 }
@@ -151,11 +166,7 @@ export default {
 <style scoped>
 .file-explorer {
   @apply relative mt-4 mb-8;
-  min-height: 400px
-}
-
-.file-drop-overlay {
-  @apply absolute top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 z-10 rounded-lg flex items-center justify-center;
+  min-height: 600px
 }
 
 .item-row {

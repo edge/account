@@ -74,7 +74,7 @@
                 <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
                 <div class="mt-2 text-red">You are unable to add, edit or delete files as your balance is low. Please add funds or enable Pay by Credit Card to re-enable this service.</div>
               </div>
-              <FileList :instance="instance" ref="fileList" />
+              <FileExplorer :instance="instance" ref="fileList" />
             </TabPanel>
             <!-- configure -->
             <TabPanel>
@@ -94,8 +94,7 @@
 /* global process */
 
 import * as api from '@/account-utils'
-import FileList from '@/components/storage/FileList'
-import FileUpload from '@/components/storage/FileUpload'
+import FileExplorer from '@/components/storage/FileExplorer'
 import InstanceConfig from '@/components/storage/InstanceConfig'
 import InstanceDestroy from '@/components/storage/InstanceDestroy'
 import StatusDot from '@/components/StatusDot'
@@ -111,8 +110,7 @@ export default {
   components: {
     ArrowLeftIcon,
     ExclamationIcon,
-    FileList,
-    FileUpload,
+    FileExplorer,
     InstanceConfig,
     InstanceDestroy,
     StatusDot,
