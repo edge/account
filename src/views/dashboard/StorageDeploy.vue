@@ -22,7 +22,7 @@
       <!-- details -->
       <DeployInstanceDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
       <DeployInstanceConfig @update-config=onUpdateConfig :disableControls=disableControls />
-      <CdnEstimatedCosts />
+      <DeployInstanceEstimatedCosts />
 
       <!-- deploy button -->
       <button
@@ -49,7 +49,7 @@
 import * as api from '@/account-utils/'
 import DeployInstanceConfig from '@/components/storage/DeployInstanceConfig.vue'
 import DeployInstanceDisplayName from '@/components/storage/DeployInstanceDisplayName.vue'
-import CdnEstimatedCosts from '@/components/cdn/CdnEstimatedCosts.vue'
+import DeployInstanceEstimatedCosts from '@/components/storage/DeployInstanceEstimatedCosts.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -63,7 +63,7 @@ export default {
   components: {
     DeployInstanceConfig,
     DeployInstanceDisplayName,
-    CdnEstimatedCosts,
+    DeployInstanceEstimatedCosts,
     ExclamationIcon,
     HttpError,
     LoadingSpinner
