@@ -11,7 +11,6 @@
         v-model="dirName"
         @keypress.enter="addDir"
         @keyup.esc="cancel"
-        @blur="cancel"
         type="text"
         placeholder="Enter name"
         class="new-name-input"

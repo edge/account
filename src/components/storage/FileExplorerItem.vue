@@ -17,7 +17,6 @@
         v-model="newName"
         @keypress.enter="saveNewName"
         @keyup.esc="cancelEditing"
-        @blur="cancelEditing"
         type="text"
         placeholder="Enter name"
         class="new-name-input"
