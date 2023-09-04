@@ -1,12 +1,12 @@
 <template>
   <div class="file-explorer box"
-    @dragenter.prevent="startFileDrag"
-    @dragleave.prevent="endFileDrag"
+    @dragenter.prevent="onFileDragEnter"
+    @dragleave.prevent="onFileDragExit"
   >
     <FileUploadOverlay
       v-show="showFileUploadOverlay"
       @drop-file="resetDrag"
-      @close="toggleFileUploadOverlay"
+      @close="closeFileUploadOverlay"
     />
 
     <div class="flex justify-between w-full items-center mb-6">
@@ -15,7 +15,7 @@
 
       <!-- upload file/create directory buttons -->
       <div class="flex space-x-2">
-        <button @click="toggleFileUploadOverlay" class="button button--extraSmall button--outline-success">
+        <button @click="openFileUploadOverlay" class="button button--extraSmall button--outline-success">
           <div><DocumentAddIcon class="w-6 h-6" /></div>
         </button>
         <button @click="startAddNewDir" class="button button--extraSmall button--outline-success">
@@ -159,12 +159,29 @@ export default {
       if (path.length === 1) this.updatePath('')
       else this.updatePath(path.slice(0, path.length - 1).join('/'))
     },
+    closeFileUploadOverlay() {
+      this.showFileUploadOverlay = false
+    },
     getFiles() {
       /** @todo GET files */
+    },
+    onFileDragEnter() {
+      this.dragCounter += 1
+      this.openFileUploadOverlay()
+    },
+    onFileDragExit() {
+      this.dragCounter -= 1
+      if (this.dragCounter === 0) {
+        this.closeFileUploadOverlay()
+        this.resetDrag()
+      }
     },
     onUpdateName() {
       /** @todo PUT file/dir name */
       this.getFiles()
+    },
+    openFileUploadOverlay() {
+      this.showFileUploadOverlay = !this.showFileUploadOverlay
     },
     resetDrag() {
       this.dragCounter = 0
@@ -172,25 +189,10 @@ export default {
     toggleAddNewDir() {
       this.addingNewDir = !this.addingNewDir
     },
-    toggleFileUploadOverlay() {
-      this.showFileUploadOverlay = !this.showFileUploadOverlay
-    },
     updatePath(newPath) {
       this.path = newPath
       this.pathHistory = [...this.pathHistory, newPath]
     },
-    startFileDrag() {
-      this.dragCounter += 1
-      this.showFileUploadOverlay = true
-    },
-    async endFileDrag() {
-      this.dragCounter -= 1
-      if (this.dragCounter === 0) {
-        this.showFileUploadOverlay = false
-        this.resetDrag()
-      }
-    },
-
     startAddNewDir() {
       this.addingNewDir = true
     },

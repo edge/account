@@ -72,6 +72,9 @@ export default {
       this.files = []
       this.$emit('close')
     },
+    closeOverlayOnEscape(e) {
+      if (e.keyCode == 27) this.closeOverlay()
+    },
     handleDrop() {
       console.log('drop-file')
     },
@@ -112,6 +115,12 @@ export default {
     upload() {
       return
     }
+  },
+  mounted() {
+    window.addEventListener('keyup', this.closeOverlayOnEscape)
+  },
+  unmounted() {
+    window.removeEventListener('keyup', this.closeOverlayOnEscape)
   }
 }
 </script>
