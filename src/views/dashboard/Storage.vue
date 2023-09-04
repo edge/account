@@ -4,7 +4,7 @@
       <h1>Edge Storage</h1>
       <router-link
         v-if="instancesCount"
-        :to="{ name: 'CdnDeploy' }"
+        :to="{ name: 'Storage Deploy' }"
         class="button button--success button--small h-full mb-5 sm:mb-0"
       >
         Deploy Storage
@@ -22,7 +22,7 @@
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
         <p>You don't have any storage instances yet. Once you create your first deployment it will be available here.</p>
         <router-link
-          :to="{ name: 'CdnDeploy' }"
+          :to="{ name: 'Storage Deploy' }"
           class="button button--success button--small"
         >
           Deploy Storage
