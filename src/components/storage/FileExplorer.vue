@@ -18,7 +18,7 @@
         <button @click="toggleFileUploadOverlay" class="button button--extraSmall button--outline-success">
           <div><DocumentAddIcon class="w-6 h-6" /></div>
         </button>
-        <button class="button button--extraSmall button--outline-success">
+        <button @click="startAddNewDir" class="button button--extraSmall button--outline-success">
           <div><FolderAddIcon class="w-6 h-6" /></div>
         </button>
       </div>
@@ -26,7 +26,7 @@
 
     <!-- file explorer -->
     <div class="flex flex-col space-y-2">
-      <!-- back dir -->
+      <!-- back dir (..) -->
       <div v-if="path" class="item-row">
         <ReplyIcon class="w-4" />
         <div>
@@ -34,12 +34,20 @@
         </div>
       </div>
 
+      <!-- new directory -->
+      <FileExplorerNewDirectory
+        v-if="addingNewDir"
+        @add-dir="addNewDir"
+        @cancel="cancelAddNewDir"
+      />
+
       <!-- directories and files -->
       <FileExplorerItem
-        v-for="(item, index) in currentFiles"
+        v-for="(item, index) in currentDir"
         :key="index"
         :item="item"
         :path="path"
+        @update-name="onUpdateName"
         @update-path="updatePath"
       />
     </div>
@@ -53,6 +61,7 @@
 // import * as validation from '@/utils/validation'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import FileExplorerItem from '@/components/storage/FileExplorerItem'
+import FileExplorerNewDirectory from '@/components/storage/FileExplorerNewDirectory'
 import FileUploadOverlay from '@/components/storage/FileUploadOverlay'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -104,6 +113,7 @@ export default {
     Breadcrumbs,
     DocumentAddIcon,
     FileExplorerItem,
+    FileExplorerNewDirectory,
     FileUploadOverlay,
     FolderAddIcon,
     HttpError,
@@ -113,19 +123,21 @@ export default {
   props: ['instance'],
   data() {
     return {
+      addingNewDir: false,
+      files: testFiles,
       dragCounter: 0,
-      path: 'assets',
-      showFileUploadOverlay: false
-      // files: null
+      path: '',
+      pathHistory: [],
+      showFileUploadOverlay: false,
     }
   },
   computed: {
     // Temporary, until files come from API
-    currentFiles() {
-      if (!this.path) return testFiles
+    currentDir() {
+      if (!this.path) return this.files
 
       const dirs = this.path.split('/')
-      let directory = testFiles
+      let directory = this.files
       for (let i = 0; i < dirs.length; i++) {
         const dir = directory.find(d => d.directory === dirs[i])
         directory = dir.children || []
@@ -134,19 +146,38 @@ export default {
     }
   },
   methods: {
+    /** @todo
+     * handle broswer/mouse back and forward buttons for file navigation rather than page navigation
+     */
+
+    addNewDir(newDirName) {
+      /** @todo add new directory */
+      this.cancelAddNewDir()
+    },
     backDir() {
       const path = this.path.split('/')
       if (path.length === 1) this.updatePath('')
       else this.updatePath(path.slice(0, path.length - 1).join('/'))
     },
+    getFiles() {
+      /** @todo GET files */
+    },
+    onUpdateName() {
+      /** @todo PUT file/dir name */
+      this.getFiles()
+    },
     resetDrag() {
       this.dragCounter = 0
+    },
+    toggleAddNewDir() {
+      this.addingNewDir = !this.addingNewDir
     },
     toggleFileUploadOverlay() {
       this.showFileUploadOverlay = !this.showFileUploadOverlay
     },
     updatePath(newPath) {
       this.path = newPath
+      this.pathHistory = [...this.pathHistory, newPath]
     },
     startFileDrag() {
       this.dragCounter += 1
@@ -158,6 +189,13 @@ export default {
         this.showFileUploadOverlay = false
         this.resetDrag()
       }
+    },
+
+    startAddNewDir() {
+      this.addingNewDir = true
+    },
+    cancelAddNewDir() {
+      this.addingNewDir = false
     }
   }
 }

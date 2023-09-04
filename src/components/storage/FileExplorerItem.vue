@@ -13,11 +13,15 @@
       <!-- directory -->
       <input
         v-if="editing"
+        ref="new-name-input"
         v-model="newName"
+        @keypress.enter="saveNewName"
+        @keyup.esc="cancelEditing"
+        @blur="cancelEditing"
         type="text"
         placeholder="Enter name"
         class="new-name-input"
-      >
+      />
       <button
         v-else-if="item.directory"
         @click="openDirectory(item.directory)"
@@ -39,12 +43,12 @@
       <button @click="saveNewName" class="item-action">
         <CheckIcon class="w-4 text-green" />
       </button>
-      <button @click="toggleEditing" class="item-action">
+      <button @click="cancelEditing" class="item-action">
         <XIcon class="w-4 text-red" />
       </button>
     </div>
     <div v-else class="flex space-x-2 items-center">
-      <button @click="toggleEditing" class="item-action">
+      <button @click="startEditing" class="item-action">
         <PencilIcon class="w-4" />
       </button>
       <button @click="toggleDeleteConfirmationModal" class="item-action">
@@ -94,19 +98,30 @@ export default {
     }
   },
   methods: {
+    cancelEditing() {
+      this.editing = false
+    },
     openDirectory(dir) {
       if (!this.path) this.$emit('update-path', (dir))
       else this.$emit('update-path', (this.path + '/' + dir))
     },
     saveNewName() {
-      return
+      this.$emit('update-name', this.newName)
+    },
+    startEditing() {
+      this.newName = this.item.filename || this.item.directory
+      this.editing = true
     },
     toggleDeleteConfirmationModal() {
       this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
-    },
-    toggleEditing() {
-      this.newName = this.item.filename || this.item.directory
-      this.editing = !this.editing
+    }
+  },
+  watch: {
+    async editing() {
+      if (this.editing) {
+        await this.$nextTick()
+        this.$refs['new-name-input'].focus()
+      }
     }
   }
 }
