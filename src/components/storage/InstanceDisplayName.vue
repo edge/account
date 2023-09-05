@@ -4,6 +4,7 @@
       <input
         v-model="v$.newDisplayName.$model"
         @keypress.enter="confirmEdit"
+        ref="instance-name-input"
         class="displayName__input"
         placeholder="Enter a display name"
         type="text"
@@ -77,6 +78,7 @@ export default {
     async confirmEdit() {
       if (!this.canConfirmEdit) return
       try {
+        /** @todo save name using API */
         this.isSaving = true
         await api.storage.updateInstance(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -99,9 +101,11 @@ export default {
         }, 800)
       }
     },
-    startEditing() {
+    async startEditing() {
       this.isEditing = true
       this.newDisplayName = this.instance.name
+      await (this.$nextTick())
+      this.$refs['instance-name-input'].focus()
     }
   },
   setup() {

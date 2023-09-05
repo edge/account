@@ -42,7 +42,7 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'DomainDelete',
+  name: 'InstanceDelete',
   props: ['instance'],
   data() {
     return {

@@ -8,7 +8,7 @@
 
     <!-- @TODO replace with editable instance name, like CdnIntegration -->
     <div v-if="instance" class="w-full flex flex-wrap justify-between items-center">
-      <h1 class="mr-2">{{ instance.name }}</h1>
+      <InstanceDisplayName :instance="instance" />
       <div class="mb-4" v-if="instance">
         <StatusDot :isActive="true" :isInactive="false" :large="true" :statusText="'active'" />
       </div>
@@ -62,7 +62,23 @@
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
-                Configuration
+                Configure
+              </button>
+            </Tab>
+            <Tab v-slot="{selected}">
+              <button
+                class="tab"
+                :class="[selected ? 'tab--selected' : '']"
+              >
+                API Key
+              </button>
+            </Tab>
+            <Tab v-slot="{selected}">
+              <button
+                class="tab"
+                :class="[selected ? 'tab--selected' : '']"
+              >
+                Destroy
               </button>
             </Tab>
           </TabList>
@@ -78,10 +94,16 @@
             </TabPanel>
             <!-- configure -->
             <TabPanel>
-              <div class="flex flex-col space-y-4">
                 <InstanceConfig :instance="instance" />
-                <InstanceDestroy :instance="instance" @delete-instance="onDeleteInstance" />
+            </TabPanel>
+            <TabPanel>
+              <div class="flex flex-col space-y-4">
+                <!-- @todo -->
+                <span>API KEY TBD</span>
               </div>
+            </TabPanel>
+            <TabPanel>
+              <InstanceDestroy :instance="instance" @delete-instance="onDeleteInstance" />
             </TabPanel>
           </TabPanels>
       </TabGroup>
@@ -97,6 +119,7 @@ import * as api from '@/account-utils'
 import FileExplorer from '@/components/storage/FileExplorer'
 import InstanceConfig from '@/components/storage/InstanceConfig'
 import InstanceDestroy from '@/components/storage/InstanceDestroy'
+import InstanceDisplayName from '@/components/storage/InstanceDisplayName'
 import StatusDot from '@/components/StatusDot'
 import { ArrowLeftIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
@@ -113,6 +136,7 @@ export default {
     FileExplorer,
     InstanceConfig,
     InstanceDestroy,
+    InstanceDisplayName,
     StatusDot,
     TabGroup,
     TabList,

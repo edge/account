@@ -1,6 +1,6 @@
 <template>
   <div class="item-row">
-    <!-- icons -->
+        <!-- icons -->
     <!-- directory with files -->
     <FolderOpenIcon v-if="item.directory && item.children && item.children.length"  class="w-4" />
     <!-- empty directory -->
@@ -54,6 +54,14 @@
         <TrashIcon class="w-4" />
       </button>
     </div>
+
+    <!-- confirmation modal -->
+    <FileExplorerDeleteItemConfirmation
+      v-if="showDeleteConfirmationModal"
+      :item="item"
+      @modal-confirm="toggleDeleteConfirmationModal"
+      @modal-close="toggleDeleteConfirmationModal"
+    />
   </div>
 </template>
 
@@ -61,6 +69,7 @@
 /* global process */
 
 import * as api from '@/account-utils'
+import FileExplorerDeleteItemConfirmation from '@/components/storage/FileExplorerDeleteItemConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import {
   CheckIcon,
@@ -77,6 +86,7 @@ export default {
   components: {
     CheckIcon,
     DocumentTextIcon,
+    FileExplorerDeleteItemConfirmation,
     FolderIcon,
     FolderOpenIcon,
     PencilIcon,
@@ -107,20 +117,14 @@ export default {
     saveNewName() {
       this.$emit('update-name', this.newName)
     },
-    startEditing() {
+    async startEditing() {
       this.newName = this.item.filename || this.item.directory
       this.editing = true
+      await this.$nextTick()
+      this.$refs['new-name-input'].focus()
     },
     toggleDeleteConfirmationModal() {
       this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
-    }
-  },
-  watch: {
-    async editing() {
-      if (this.editing) {
-        await this.$nextTick()
-        this.$refs['new-name-input'].focus()
-      }
     }
   }
 }
