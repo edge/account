@@ -12,7 +12,7 @@
     </div>
     <InstanceList
       v-show="instancesCount"
-      @update-integration-count=onUpdateInstancesCount
+      @update-instance-count="onUpdateInstancesCount"
     />
     <div v-if="!loaded" class="flex items-center">
       <span>Loading storage instances</span>
@@ -48,6 +48,7 @@ export default {
   },
   data() {
     return {
+      instances: [],
       instancesCount: null,
       loaded: false
     }
@@ -64,9 +65,6 @@ export default {
   mounted() {
     const service = this.services.find(s => s._key === 'storage')
     if (!service || (!service.public && !service.beta)) this.$router.push({ name: 'Not Found' })
-
-    // TEMP
-    this.onUpdateInstancesCount()
   }
 }
 </script>
