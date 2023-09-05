@@ -12,7 +12,7 @@ import JsonEditor from '@/components/JsonEditor.vue'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'InstanceConfigCustomAdvanced',
+  name: 'StorageConfigCustomAdvanced',
   props: ['instanceConfig', 'initialInstanceConfig'],
   components: {
     JsonEditor

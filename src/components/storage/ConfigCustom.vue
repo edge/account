@@ -16,8 +16,8 @@
         :instanceConfig="config"
         @edit-config="onEditConfig"
       /> -->
-      <InstanceConfigCustomAdvanced v-if="isSelected('advanced')"
-        ref="instanceConfigCustomAdvanced"
+      <ConfigCustomAdvanced v-if="isSelected('advanced')"
+        ref="ConfigCustomAdvanced"
         :instanceConfig="config"
         :initialInstanceConfig="initialConfig"
         @update-config="onUpdateConfig"
@@ -27,14 +27,14 @@
 </template>
 
 <script>
-import InstanceConfigCustomAdvanced from '@/components/storage/InstanceConfigCustomAdvanced.vue'
-// import InstanceConfigCustomSimple from '@/components/storage/InstanceConfigCustomSimple.vue'
+import ConfigCustomAdvanced from '@/components/storage/ConfigCustomAdvanced.vue'
+// import ConfigCustomSimple from '@/components/storage/ConfigCustomSimple.vue'
 
 export default {
-  name: 'InstanceConfigCustom',
+  name: 'StorageConfigCustom',
   components: {
-    InstanceConfigCustomAdvanced,
-    // InstanceConfigCustomSimple
+    ConfigCustomAdvanced,
+    // ConfigCustomSimple
   },
   props: [
     'config',
@@ -58,7 +58,7 @@ export default {
       this.$emit('update-config', config)
     },
     resetConfig() {
-      if (this.isSelected('advanced')) this.$refs.instanceConfigCustomAdvanced.resetConfig()
+      if (this.isSelected('advanced')) this.$refs.ConfigCustomAdvanced.resetConfig()
     },
     selectTab(tab) {
       if (this.disableControls) return

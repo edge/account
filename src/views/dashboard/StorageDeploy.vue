@@ -21,7 +21,7 @@
 
       <!-- details -->
       <DeployInstanceDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
-      <DeployInstanceConfig @update-config=onUpdateConfig :disableControls=disableControls />
+      <InstanceConfig @update-config=onUpdateConfig :disableControls=disableControls />
       <DeployInstanceEstimatedCosts />
 
       <!-- deploy button -->
@@ -47,11 +47,11 @@
 /* global process */
 
 import * as api from '@/account-utils/'
-import DeployInstanceConfig from '@/components/storage/DeployInstanceConfig.vue'
 import DeployInstanceDisplayName from '@/components/storage/DeployInstanceDisplayName.vue'
 import DeployInstanceEstimatedCosts from '@/components/storage/DeployInstanceEstimatedCosts.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
+import InstanceConfig from '@/components/storage/InstanceConfig.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapGetters, mapState } from 'vuex'
 
@@ -61,11 +61,11 @@ export default {
     return 'Edge Account Portal » Storage'
   },
   components: {
-    DeployInstanceConfig,
     DeployInstanceDisplayName,
     DeployInstanceEstimatedCosts,
     ExclamationIcon,
     HttpError,
+    InstanceConfig,
     LoadingSpinner
   },
   data() {

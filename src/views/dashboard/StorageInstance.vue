@@ -62,7 +62,7 @@
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
-                Configure
+                Configuration
               </button>
             </Tab>
           </TabList>
@@ -79,7 +79,7 @@
             <!-- configure -->
             <TabPanel>
               <div class="flex flex-col space-y-4">
-                <InstanceConfig />
+                <InstanceConfig :instance="instance" />
                 <InstanceDestroy :instance="instance" @delete-instance="onDeleteInstance" />
               </div>
             </TabPanel>
@@ -154,13 +154,25 @@ export default {
     },
     async updateInstance() {
       this.instance = {
-        _key: '1234',
+        _key: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
         name: 'My Test Storage',
-        config: {}
+        configMode: 'advanced',
+        data: {
+          config: {
+            one: 'test one',
+            three: {
+              nestedOne: true,
+              nestedTwo: 'test nested two'
+            }
+          }
+        },
+        active: true,
+        created:1692986494307,
+        updated:1693844207047
       }
       return
 
-      // @TODO
+      /** @todo get instance from api */
       // try {
       //   const { instance } = await api.storage.getInstance(
       //     process.env.VUE_APP_ACCOUNT_API_URL,
@@ -182,7 +194,7 @@ export default {
     this.loading = true
     this.updateInstance()
     this.iInstance = setInterval(() => {
-      this.updateInstance()
+      // this.updateInstance()
     }, 10 * 1000)
     this.loading = false
   },

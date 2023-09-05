@@ -30,7 +30,7 @@
           </div>
         </RadioGroupOption>
       </RadioGroup>
-      <InstanceConfigCustom
+      <ConfigCustom
         ref="instance-config-custom"
         v-show="configMode === 'custom'"
         :config="config"
@@ -47,17 +47,17 @@
 </template>
 
 <script>
-import InstanceConfigCustom from '@/components/storage/InstanceConfigCustom.vue'
+import ConfigCustom from '@/components/storage/ConfigCustom.vue'
 import {
   RadioGroup,
   RadioGroupOption
 } from '@headlessui/vue'
 
 export default {
-  name: 'DeployInstanceConfig',
+  name: 'StorageConfig',
   props: ['disableControls', 'initialConfig', 'initialConfigMode'],
   components: {
-    InstanceConfigCustom,
+    ConfigCustom,
     RadioGroup,
     RadioGroupOption
   },
@@ -67,7 +67,7 @@ export default {
       customConfigMode: 'advanced',
       config: {
         one: 'test one',
-        two: undefined,
+        // two: undefined,
         three: {
           nestedOne: true,
           nestedTwo: 'test nested two'
@@ -86,7 +86,7 @@ export default {
       if (this.initialConfig) this.config = { ...this.initialConfig }
       else this.config = {
         one: 'test one',
-        two: undefined,
+        // two: undefined,
         three: {
           nestedOne: true,
           nestedTwo: 'test nested two'
