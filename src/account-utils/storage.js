@@ -10,6 +10,7 @@ import _ from 'lodash'
 const instances = [
   {
     _key: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
+    apiKey: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
     name: 'My Test Storage',
     configMode: 'advanced',
     data: {
@@ -27,6 +28,7 @@ const instances = [
   },
   {
     _key: 'caa9b2e270b5-146e-4821-adb3-f47ee395',
+    apiKey: 'caa9b2e270b5-146e-4821-adb3-f47ee395',
     name: 'My Second Test Storage',
     configMode: 'advanced',
     data: {
@@ -110,6 +112,7 @@ export const createInstance = async (host, sessionId, data) => {
   await new Promise(resolve => setTimeout(resolve, 600))
   const instance = {
     _key: '1af15b84-fe74-4416-83d8-df1b81a73ae1',
+    apiKey: '1af15b84-fe74-4416-83d8-df1b81a73ae1',
     ...data,
     created: Date.now(),
     updated: Date.now(),
@@ -201,6 +204,19 @@ export const getInstances = async (host, sessionId, params) => {
   // add query params
   if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+// regenerate instance api key
+export const regenerateApiKey = async (host, sessionId, instanceId) => {
+  // dummy response
+  await new Promise(resolve => setTimeout(resolve, 600))
+  const index = instances.findIndex(i => i._key === instanceId)
+  instances[index].apiKey = 'fe74-1af15b84-83d8-4416-df1b81a73ae1'
+  return { instance: instances[index] }
+  const url = `${host}/storage/${instanceId}/regenerate`
+  const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }

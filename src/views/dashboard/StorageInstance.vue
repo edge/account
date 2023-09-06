@@ -97,10 +97,10 @@
                 <InstanceConfig :instance="instance" />
             </TabPanel>
             <TabPanel>
-              <div class="flex flex-col space-y-4">
-                <!-- @todo -->
-                <span>API KEY TBD</span>
-              </div>
+              <InstanceApiKey
+                :instance="instance"
+                @regenerate="updateInstance"
+              />
             </TabPanel>
             <TabPanel>
               <InstanceDestroy
@@ -120,6 +120,7 @@
 
 import * as api from '@/account-utils'
 import FileExplorer from '@/components/storage/FileExplorer'
+import InstanceApiKey from '@/components/storage/InstanceApiKey'
 import InstanceConfig from '@/components/storage/InstanceConfig'
 import InstanceDestroy from '@/components/storage/InstanceDestroy'
 import InstanceDisplayName from '@/components/storage/InstanceDisplayName'
@@ -137,6 +138,7 @@ export default {
     ArrowLeftIcon,
     ExclamationIcon,
     FileExplorer,
+    InstanceApiKey,
     InstanceConfig,
     InstanceDestroy,
     InstanceDisplayName,

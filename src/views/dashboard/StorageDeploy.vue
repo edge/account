@@ -9,6 +9,31 @@
           <span>Storage has been successfully deployed to the network.</span>
         </div>
       </div>
+      <div class="box">
+        <div>
+          <h4>Storage API Key</h4>
+          <p class="text-gray-500">Some text to inform user what to do with API key, or what it is used for.</p>
+        </div>
+        <!-- account number display -->
+        <div class="api-key-wrapper">
+          <span v-if="showApiKey" class="api-key monospace">{{ deployedInstance.apiKey }}</span>
+          <span v-else class="api-key masked monospace">{{ maskedApiKey }}</span>
+          <!-- hide/show account number button button -->
+          <button
+            @click.prevent="toggleShowApiKey"
+            class="ml-2 text-gray-400 hover:text-green"
+          >
+            <EyeIcon v-if="showApiKey" class="ml-2 w-5 h-5" />
+            <EyeOffIcon v-else class="ml-2 w-5 h-5" />
+          </button>
+        </div>
+        <button
+            @click=continueToInstance
+            class="button button--small button--success w-full md:max-w-xs mt-5"
+          >
+            Continue
+          </button>
+      </div>
     </div>
 
     <!-- Deploy form -->
@@ -59,6 +84,7 @@ import DeployInstanceEstimatedCosts from '@/components/storage/DeployInstanceEst
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
@@ -67,11 +93,13 @@ export default {
     return 'Edge Account Portal » Storage'
   },
   components: {
+    Config,
     DeployInstanceDisplayName,
     DeployInstanceEstimatedCosts,
     ExclamationIcon,
+    EyeIcon,
+    EyeOffIcon,
     HttpError,
-    Config,
     LoadingSpinner
   },
   data() {
@@ -88,7 +116,8 @@ export default {
           config: {}
         }
       },
-      instanceKey: null
+      instanceKey: null,
+      showApiKey: false
     }
   },
   computed: {
@@ -101,6 +130,9 @@ export default {
     },
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
+    },
+    maskedApiKey() {
+      return this.deployedInstance.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
     }
   },
   methods: {
@@ -135,6 +167,9 @@ export default {
     },
     onUpdateName(name) {
       this.instance = { ...this.instance, name }
+    },
+    toggleShowApiKey() {
+      this.showApiKey = !this.showApiKey
     }
   },
   watch: {
@@ -154,5 +189,15 @@ th, td {
 }
 .domain {
   @apply truncate;
+}
+
+.api-key-wrapper {
+  @apply flex items-center justify-between relative w-max max-w-full;
+}
+.api-key {
+  @apply text-3xl text-green pr-4;
+}
+.api-key.masked {
+  @apply text-gray;
 }
 </style>
