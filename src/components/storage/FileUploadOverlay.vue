@@ -1,10 +1,10 @@
 <template>
   <!-- dragover.prevent and drop.prevent stop the file from opening if dropped outside the dropzone -->
-  <div class="file-drop-overlay" @dragover.prevent="" @drop.prevent="">
-    <div class="flex flex-col space-y-4 bg-white p-4 rounded-md">
-      <!-- title -->
-      <div><span>Upload your files:</span></div>
-
+  <FileExplorerOverlay @dragover.prevent="" @drop.prevent="">
+    <template v-slot:header>
+      <span class="">Upload Files</span>
+    </template>
+    <template v-slot:body>
       <!-- drop zone -->
       <div
         @drop.prevent="onDrop"
@@ -22,17 +22,17 @@
           <button @click="openFileExplorer" class="underline text-green ml-1">browse files</button>
           <input ref="file-input" type="file" multiple class="hidden" @change.prevent="onChange" />
         </div>
-
-        <div v-if="files.length" class="file-list">
-          <div class="underline">Files:</div>
-          <div v-for="file in files" :key="file.id" class="file">
-            <span>{{ file.name }}</span>
-            <button @click="removeFile(file.id)"><XIcon class="w-4 text-red" /></button>
-          </div>
+      </div>
+      <div v-if="files.length" class="file-list">
+        <div v-for="file in files" :key="file.id" class="file">
+          <span>{{ file.name }}</span>
+          <div v-if="file.status === 'uploading'"><LoadingSpinner class="w-4" /></div>
+          <div v-else-if="file.status === 'uploaded'"><CheckIcon class="w-4 text-green" /></div>
+          <button v-else @click="removeFile(file.id)"><XIcon class="w-4 text-red" /></button>
         </div>
       </div>
-
-      <!-- buttons -->
+    </template>
+    <template v-slot:buttons>
       <div class="w-full flex space-x-2 justify-between">
         <button
           @click="closeOverlay"
@@ -41,25 +41,35 @@
           <span>Cancel</span>
         </button>
         <button
+          @click="upload"
           :disabled="!files.length || uploading"
           class="w-full button button--small button--success"
         >
           <span>Upload</span>
         </button>
       </div>
-    </div>
-  </div>
+    </template>
+  </FileExplorerOverlay>
 </template>
 
 <script>
-import { CloudUploadIcon, XIcon } from '@heroicons/vue/outline'
+/* global process */
+
+import * as api from '@/account-utils'
+import FileExplorerOverlay from '@/components/storage/FileExplorerOverlay'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import { CheckIcon, CloudUploadIcon, XIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'FileUploadOverlay',
   components: {
+    CheckIcon,
     CloudUploadIcon,
+    FileExplorerOverlay,
+    LoadingSpinner,
     XIcon
   },
+  props: ['instance'],
   data() {
     return {
       dropZoneActive: false,
@@ -74,9 +84,6 @@ export default {
     },
     closeOverlayOnEscape(e) {
       if (e.keyCode == 27) this.closeOverlay()
-    },
-    handleDrop() {
-      console.log('drop-file')
     },
     loadFiles(filesToLoad) {
       const newFiles = [...filesToLoad]
@@ -112,8 +119,27 @@ export default {
     setDropZoneInactive() {
       this.dropZoneActive = false
     },
-    upload() {
-      return
+    async upload() {
+      try {
+        this.uploading = true
+        await Promise.all(this.files.map(async (file, index) => {
+          if (['uploaded', 'uploading'].includes(file.status)) return
+          this.files[index].status = 'uploading'
+          await api.storage.uploadFile(
+            process.env.VUE_APP_ACCOUNT_API_URL,
+            this.instance.apiKey,
+            this.path,
+            file.file
+          )
+          this.files[index].status = 'uploaded'
+        }))
+        this.uploading = false
+        this.$emit('upload')
+      }
+      catch (error) {
+        console.error(error)
+        this.uploading = false
+      }
     }
   },
   mounted() {
@@ -138,7 +164,7 @@ export default {
 }
 
 .file-list {
-  @apply w-full;
+  @apply w-full mt-2;
 }
 
 .file {

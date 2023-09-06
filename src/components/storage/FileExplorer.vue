@@ -5,13 +5,15 @@
   >
     <FileUploadOverlay
       v-show="showFileUploadOverlay"
+      :instance="instance"
       @drop-file="resetDrag"
       @close="closeFileUploadOverlay"
+      @upload="updateFiles"
     />
 
     <div class="flex justify-between w-full items-center mb-6">
       <!-- breadcrumbs -->
-      <Breadcrumbs @update-path="updatePath" :path="path" />
+      <Breadcrumbs @update-path="updatePath" :path="displayPath" />
 
       <!-- upload file/create directory buttons -->
       <div class="flex space-x-2">
@@ -27,7 +29,7 @@
     <!-- file explorer -->
     <div class="flex flex-col space-y-2">
       <!-- back dir (..) -->
-      <div v-if="path" class="item-row">
+      <div v-if="displayPath" class="item-row">
         <ReplyIcon class="w-4" />
         <div>
           <button @click="backDir" class="dir-nav">..</button>
@@ -38,16 +40,18 @@
       <FileExplorerNewDirectory
         v-if="addingNewDir"
         @add-dir="addNewDir"
-        @cancel="cancelAddNewDir"
+        @cancel="closeAddNewDir"
       />
 
       <!-- directories and files -->
       <FileExplorerItem
-        v-for="(item, index) in currentDir"
-        :key="index"
+        v-for="item in files"
+        :key="item.directory || item.filename"
+        :instance="instance"
         :item="item"
-        :path="path"
-        @update-name="onUpdateName"
+        :path="displayPath"
+        @delete="updateFiles"
+        @rename="updateFiles"
         @update-path="updatePath"
       />
     </div>
@@ -57,55 +61,20 @@
 <script>
 /* global process */
 
-// import * as api from '@/account-utils'
-// import * as validation from '@/utils/validation'
+import * as api from '@/account-utils'
+import * as validation from '@/utils/validation'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import FileExplorerItem from '@/components/storage/FileExplorerItem'
 import FileExplorerNewDirectory from '@/components/storage/FileExplorerNewDirectory'
 import FileUploadOverlay from '@/components/storage/FileUploadOverlay'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import { mapState } from 'vuex'
 import {
   DocumentAddIcon,
   FolderAddIcon,
   ReplyIcon
 } from '@heroicons/vue/outline'
-
-
-const testFiles = [
-  {
-    directory: 'assets',
-    children: [
-      {
-        directory: 'img',
-        children: [
-          { filename: '1.jpg', size: 213490 },
-          { filename: '2.jpg', size: 63490 },
-          { filename: '3.jpg', size: 253490 }
-        ]
-      },
-      {
-        directory: 'js',
-        children: [
-          { filename: 'index.js', size: 213490 },
-          { filename: 'module1.js', size: 63490 },
-          { filename: 'module2.js', size: 253490 }
-        ]
-      },
-      {
-        directory: 'css'
-      },
-      { filename: 'config.json', size: 12500 }
-    ]
-  },
-  {
-    directory: 'docs',
-    children: [
-      { filename: 'letter.pdf', size: 13050 }
-    ]
-  },
-  { filename: 'README.md', size: 213490 }
-]
 
 export default {
   name: 'FileExplorer',
@@ -124,7 +93,8 @@ export default {
   data() {
     return {
       addingNewDir: false,
-      files: testFiles,
+      displayPath: '',
+      files: [],
       dragCounter: 0,
       path: '',
       pathHistory: [],
@@ -132,27 +102,28 @@ export default {
     }
   },
   computed: {
-    // Temporary, until files come from API
-    currentDir() {
-      if (!this.path) return this.files
-
-      const dirs = this.path.split('/')
-      let directory = this.files
-      for (let i = 0; i < dirs.length; i++) {
-        const dir = directory.find(d => d.directory === dirs[i])
-        directory = dir.children || []
-      }
-      return directory
-    }
+    ...mapState(['session'])
   },
   methods: {
     /** @todo
      * handle broswer/mouse back and forward buttons for file navigation rather than page navigation
      */
 
-    addNewDir(newDirName) {
-      /** @todo add new directory */
-      this.cancelAddNewDir()
+    async addNewDir(newDirName) {
+      try {
+        await api.storage.createDirectory(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.instance._key,
+          this.path,
+          newDirName
+        )
+        this.closeAddNewDir()
+        await this.updateFiles()
+      }
+      catch (error) {
+        console.error(error)
+      }
     },
     backDir() {
       const path = this.path.split('/')
@@ -161,9 +132,6 @@ export default {
     },
     closeFileUploadOverlay() {
       this.showFileUploadOverlay = false
-    },
-    getFiles() {
-      /** @todo GET files */
     },
     onFileDragEnter() {
       this.dragCounter += 1
@@ -176,12 +144,8 @@ export default {
         this.resetDrag()
       }
     },
-    onUpdateName() {
-      /** @todo PUT file/dir name */
-      this.getFiles()
-    },
     openFileUploadOverlay() {
-      this.showFileUploadOverlay = !this.showFileUploadOverlay
+      this.showFileUploadOverlay = true
     },
     resetDrag() {
       this.dragCounter = 0
@@ -196,8 +160,35 @@ export default {
     startAddNewDir() {
       this.addingNewDir = true
     },
-    cancelAddNewDir() {
+    closeAddNewDir() {
       this.addingNewDir = false
+    },
+    async updateFiles() {
+      try {
+        this.httpError = null
+        const { files, path } = await api.storage.getFiles(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.instance._key,
+          this.path
+        )
+        this.files = files
+        this.displayPath = path
+        /** @todo investigate why it's not always auto-updating */
+        this.$forceUpdate()
+      }
+      catch (error) {
+        console.error(error)
+        this.httpError = error
+      }
+    }
+  },
+  mounted() {
+    this.updateFiles()
+  },
+  watch: {
+    path() {
+      this.updateFiles()
     }
   }
 }

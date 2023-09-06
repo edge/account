@@ -39,27 +39,9 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import { mapState } from 'vuex'
 
-const testInstances = [
-  {
-    _key: '1234abcd',
-    name: 'Test instance 1',
-    created: 1693726676000,
-    updated: 1693728676000,
-    active: true
-  },
-  {
-    _key: 'abcd1234',
-    name: 'Test instance 2',
-    created: 1693658276000,
-    updated: 1693658576000,
-    active: true
-  }
-]
-
 const sortFields = [
   { label: 'Name', param: 'name'},
   { label: 'Created', param: 'created'},
-  { label: 'Domain', param: 'data.domain' },
   { label: 'Status', param: 'active'}
 ]
 
@@ -97,14 +79,11 @@ export default {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
-      // const { results, metadata } = await api.storage.getInstances(
-      //   process.env.VUE_APP_ACCOUNT_API_URL,
-      //   this.session._key,
-      //   params
-      // )
-
-      const results = testInstances
-      const metadata = { totalCount: testInstances.length }
+      const { results, metadata } = await api.storage.getInstances(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        params
+      )
 
       this.instances = results
       this.metadata = metadata

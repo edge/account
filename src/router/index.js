@@ -140,7 +140,7 @@ const routes = [
         component: StorageDeploy
       },
       {
-        path: 'storage/:id',
+        path: 'storage/:key',
         name: 'Storage Instance',
         component: StorageInstance
       },

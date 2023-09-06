@@ -23,11 +23,11 @@
       </div>
     </div>
     <!-- delete confirmation modal -->
-    <DeleteDomainConfirmation
+    <StorageInstanceDestroyConfirmation
       v-if="showConfirmationModal"
       @modal-confirm="deleteInstance"
       @modal-close="toggleConfirmationModal"
-      :domainName="domain._key"
+      :instanceName="instance.name"
     />
   </div>
 </template>
@@ -36,9 +36,9 @@
 /* global process */
 
 import * as api from '@/account-utils'
-import DeleteDomainConfirmation from '@/components/confirmations/DeleteDomainConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import StorageInstanceDestroyConfirmation from '@/components/confirmations/StorageInstanceDestroyConfirmation'
 import { mapState } from 'vuex'
 
 export default {
@@ -52,9 +52,9 @@ export default {
     }
   },
   components: {
-    DeleteDomainConfirmation,
     HttpError,
-    LoadingSpinner
+    LoadingSpinner,
+    StorageInstanceDestroyConfirmation
   },
   computed: {
     ...mapState(['session'])
@@ -64,7 +64,6 @@ export default {
       this.isDeleting = true
       try {
         this.toggleConfirmationModal()
-        // @TODO
         await api.storage.deleteInstance(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -72,7 +71,7 @@ export default {
         )
         setTimeout(() => {
           this.isDeleting = false
-          this.$emit('delete-domain')
+          this.$emit('delete-instance')
         }, 500)
       }
       catch (error) {

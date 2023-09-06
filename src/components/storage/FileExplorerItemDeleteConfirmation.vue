@@ -1,7 +1,7 @@
 <template>
   <FileExplorerOverlay>
     <template v-slot:header>
-      <span>Delete {{ itemType }}</span>
+      <span class="text-red">Delete {{ itemType }}</span>
     </template>
     <template v-slot:body>
       <div class="flex flex-col space-y-2">
@@ -30,7 +30,7 @@
 import FileExplorerOverlay from '@/components/storage/FileExplorerOverlay'
 
 export default {
-  name: 'FileExplorerDeleteItemConfirmation',
+  name: 'FileExplorerItemDeleteConfirmation',
   components: {
     FileExplorerOverlay
   },

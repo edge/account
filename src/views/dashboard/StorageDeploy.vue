@@ -20,8 +20,14 @@
       </div>
 
       <!-- details -->
-      <DeployInstanceDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
-      <InstanceConfig @update-config=onUpdateConfig :disableControls=disableControls />
+      <DeployInstanceDisplayName
+        @update-details="onUpdateName"
+        :disableControls="disableControls"
+      />
+      <Config
+        @update-config="onUpdateConfig"
+        :disableControls="disableControls"
+      />
       <DeployInstanceEstimatedCosts />
 
       <!-- deploy button -->
@@ -47,11 +53,11 @@
 /* global process */
 
 import * as api from '@/account-utils/'
+import Config from '@/components/storage/Config.vue'
 import DeployInstanceDisplayName from '@/components/storage/DeployInstanceDisplayName.vue'
 import DeployInstanceEstimatedCosts from '@/components/storage/DeployInstanceEstimatedCosts.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
-import InstanceConfig from '@/components/storage/InstanceConfig.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapGetters, mapState } from 'vuex'
 
@@ -65,7 +71,7 @@ export default {
     DeployInstanceEstimatedCosts,
     ExclamationIcon,
     HttpError,
-    InstanceConfig,
+    Config,
     LoadingSpinner
   },
   data() {
@@ -73,11 +79,10 @@ export default {
       deployed: false,
       deploying: false,
       deployedInstance: null,
-      dnsRecords: [],
       httpError: null,
       instance: {
         name: '',
-        configMode: undefined,
+        configMode: 'advanced',
         data: {
           service: 'storage',
           config: {}
@@ -92,8 +97,7 @@ export default {
     canDeploy() {
       return !this.deploying &&
         this.instance.name &&
-        this.instance.data.domain &&
-        this.instance.data.config.origin
+        this.instance.data.config
     },
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
@@ -103,44 +107,11 @@ export default {
     continueToInstance() {
       this.$router.push({ name: 'Storage Instance', params: { key: this.deployedInstance._key } })
     },
-    async createDnsRecord(index) {
-      const recordToCreate = this.dnsRecords[index]
-      try {
-        recordToCreate.creating = true
-        this.dnsRecords.splice(index, 1, recordToCreate)
-        const isApex = recordToCreate.domain === recordToCreate.zone
-        const subDomain = recordToCreate.domain.replace('.' + recordToCreate.zone, '')
-
-        const { record } = await api.dns.createRecord(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          recordToCreate.zone,
-          {
-            name: isApex ? '@' : subDomain,
-            ttl: 3600,
-            type: isApex ? 'ALIAS' : 'CNAME',
-            value: `gateway.${this.isTestnet ? 'test' : 'edge'}.network.`
-          }
-        )
-
-        await new Promise(resolve => setTimeout(resolve, 500))
-        if (record) recordToCreate.recordExists = true
-        recordToCreate.creating = false
-        this.dnsRecords.splice(index, 1, recordToCreate)
-      }
-      catch (error) {
-        /** @todo handle error */
-        console.error(error)
-        recordToCreate.creating = false
-        this.dnsRecords.splice(index, 1, recordToCreate)
-
-      }
-    },
     async deployStorage() {
       try {
         this.deploying = true
         this.httpError = null
-        const { instance } = await api.storage.addInstance(
+        const { instance } = await api.storage.createInstance(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.instance
@@ -162,15 +133,8 @@ export default {
       instance.configMode = configMode
       this.instance = instance
     },
-    onUpdateDetails(name) {
+    onUpdateName(name) {
       this.instance = { ...this.instance, name }
-    },
-    onUpdateDomains(domains) {
-      const instance = { ...this.instance }
-      const domain = domains.find(domain => domain.primary)
-      instance.data.domain = domain && domain.name
-      instance.data.additionalDomains = domains.filter(domain =>  !domain.primary).map(domain => domain.name)
-      this.instance = instance
     }
   },
   watch: {
