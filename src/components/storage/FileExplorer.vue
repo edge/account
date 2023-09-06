@@ -27,13 +27,15 @@
     </div>
 
     <!-- file explorer -->
-    <div class="flex flex-col space-y-2">
+    <div class="flex flex-col">
       <!-- back dir (..) -->
-      <div v-if="displayPath" class="item-row">
-        <ReplyIcon class="w-4" />
-        <div>
-          <button @click="backDir" class="dir-nav">..</button>
-        </div>
+      <div v-if="displayPath"
+        @click="selectBack"
+        class="item-row"
+        :class="backSelected && 'selected'"
+      >
+        <ReplyIcon class="w-4 icon" />
+        <div class="name"><span>..</span></div>
       </div>
 
       <!-- new directory -->
@@ -47,13 +49,18 @@
       <FileExplorerItem
         v-for="item in files"
         :key="item.directory || item.filename"
+        :ref="item.directory || item.filename"
         :instance="instance"
         :item="item"
         :path="displayPath"
         @delete="updateFiles"
         @rename="updateFiles"
+        @select="onSelectItem"
         @update-path="updatePath"
       />
+      <div v-if="loaded && !files.length" class="py-1">
+        <span>This folder is empty</span>
+      </div>
     </div>
   </div>
 </template>
@@ -93,12 +100,15 @@ export default {
   data() {
     return {
       addingNewDir: false,
+      backSelected: false,
+      backSelectedTimeout: null,
       displayPath: '',
-      files: [],
       dragCounter: 0,
+      files: [],
+      loaded: false,
       path: '',
       pathHistory: [],
-      showFileUploadOverlay: false,
+      showFileUploadOverlay: false
     }
   },
   computed: {
@@ -133,6 +143,10 @@ export default {
     closeFileUploadOverlay() {
       this.showFileUploadOverlay = false
     },
+    deselectBack() {
+      this.backSelected = false
+      if (this.backSelectedTimeout) this.backSelectedTimeout = clearTimeout(this.backSelectedTimeout)
+    },
     onFileDragEnter() {
       this.dragCounter += 1
       this.openFileUploadOverlay()
@@ -144,11 +158,32 @@ export default {
         this.resetDrag()
       }
     },
+    onSelectItem(itemName) {
+      // deselect all other items
+      const itemNames = this.files.map(item => item.filename || item.directory)
+      itemNames.forEach(name => {
+        if (name !== itemName) this.$refs[name][0].deselect()
+      })
+      this.deselectBack()
+    },
     openFileUploadOverlay() {
       this.showFileUploadOverlay = true
     },
     resetDrag() {
       this.dragCounter = 0
+    },
+    selectBack() {
+      if (this.backSelectedTimeout) {
+        this.backSelectedTimeout = clearTimeout(this.backSelectedTimeout)
+        this.backDir()
+      }
+      else {
+        this.onSelectItem()
+        this.backSelected = true
+        this.backSelectedTimeout = setTimeout(() => {
+          this.backSelectedTimeout = clearTimeout(this.backSelectedTimeout)
+        }, 500)
+      }
     },
     toggleAddNewDir() {
       this.addingNewDir = !this.addingNewDir
@@ -172,6 +207,7 @@ export default {
           this.instance._key,
           this.path
         )
+        this.loaded = true
         this.files = files
         this.displayPath = path
         /** @todo investigate why it's not always auto-updating */
@@ -187,8 +223,9 @@ export default {
     this.updateFiles()
   },
   watch: {
-    path() {
-      this.updateFiles()
+    async path() {
+      await this.updateFiles()
+      this.deselectBack()
     }
   }
 }
@@ -201,14 +238,16 @@ export default {
 }
 
 .item-row {
-  @apply grid gap-x-4 items-center;
+  @apply grid gap-x-4 items-center py-1 cursor-pointer;
   grid-template-columns: max-content auto 150px max-content;
+}
+.item-row:hover .name, .item-row:hover .icon {
+  @apply text-green;
+}
+.item-row.selected {
+  @apply bg-gray-200;
 }
 .item-action {
   @apply cursor-pointer hover:text-green;
-}
-
-.dir-nav {
-  @apply hover:text-green;
 }
 </style>

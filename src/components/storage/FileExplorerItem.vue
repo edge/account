@@ -1,16 +1,16 @@
 <template>
-  <div class="item-row">
+  <div class="item-row" :class="selected && 'selected'" @click="select">
         <!-- icons -->
     <!-- directory with files -->
-    <FolderOpenIcon v-if="item.directory && item.children && item.children.length"  class="w-4" />
+    <FolderOpenIcon v-if="item.directory && item.children && item.children.length"  class="icon w-4" />
     <!-- empty directory -->
-    <FolderIcon v-else-if="item.directory" class="w-4" />
+    <FolderIcon v-else-if="item.directory" class="icon w-4" />
     <!-- file -->
-    <DocumentTextIcon v-else-if="item.filename" class="w-4" />
+    <DocumentTextIcon v-else-if="item.filename" class="icon w-4" />
 
     <!-- file/directory name -->
     <div>
-      <!-- directory -->
+      <!-- edit name -->
       <input
         v-if="editing"
         ref="new-name-input"
@@ -21,16 +21,9 @@
         placeholder="Enter name"
         class="new-name-input"
       />
-      <button
-        v-else-if="item.directory"
-        @click="openDirectory(item.directory)"
-        class="dir-nav"
-      >
-        <span>{{ item.directory }}</span>
-      </button>
-      <!-- file -->
-      <div v-else>
-        <span>{{ item.filename }}</span>
+      <!-- display name -->
+      <div v-else-if="itemName" class="name">
+        <span>{{ itemName }}</span>
       </div>
     </div>
 
@@ -105,6 +98,7 @@ export default {
       editing: false,
       newName: this.item.filename || this.item.directory,
       renaming: false,
+      selected: false,
       showDeleteConfirmationModal: false
     }
   },
@@ -112,6 +106,9 @@ export default {
     ...mapState(['session']),
     formattedSize() {
       return this.item.size ? format.bytes(this.item.size) : ''
+    },
+    itemName() {
+      return this.item.directory || this.item.filename
     }
   },
   methods: {
@@ -143,9 +140,14 @@ export default {
         this.deleting = false
       }
     },
-    openDirectory(dir) {
-      if (!this.path) this.$emit('update-path', (dir))
-      else this.$emit('update-path', (this.path + '/' + dir))
+    deselect() {
+      this.selected = false
+      this.editing = false
+      if (this.selectedTimeout) this.selectedTimeout = clearTimeout(this.selectedTimeout)
+    },
+    openDirectory() {
+      if (!this.path) this.$emit('update-path', (this.item.directory))
+      else this.$emit('update-path', (this.path + '/' + this.item.directory))
     },
     async renameItem() {
       try {
@@ -174,8 +176,21 @@ export default {
         this.renaming = false
       }
     },
+    select() {
+      if (this.selectedTimeout) {
+        this.selectedTimeout = clearTimeout(this.selectedTimeout)
+        this.openDirectory()
+      }
+      else {
+        this.$emit('select', this.itemName)
+        this.selected = true
+        this.selectedTimeout = setTimeout(() => {
+          this.selectedTimeout = clearTimeout(this.selectedTimeout)
+        }, 500)
+      }
+    },
     async startEditing() {
-      this.newName = this.item.filename || this.item.directory
+      this.newName = this.itemName
       this.editing = true
       await this.$nextTick()
       this.$refs['new-name-input'].focus()
@@ -189,19 +204,21 @@ export default {
 
 <style scoped>
 .item-row {
-  @apply grid gap-x-4 items-center;
+  @apply grid gap-x-4 items-center py-1 cursor-pointer;
   grid-template-columns: max-content auto 150px max-content;
+}
+.item-row:hover .name, .item-row:hover .icon {
+  @apply text-green;
+}
+.item-row.selected {
+  @apply bg-gray-200;
 }
 .item-action {
   @apply cursor-pointer;
 }
 
-.dir-nav {
-  @apply hover:text-green;
-}
-
 .new-name-input {
-  @apply border-b border-gray w-full box-border;
+  @apply bg-gray-200 border-b border-gray w-full box-border;
 }
 .new-name-input:focus {
   outline: none;
