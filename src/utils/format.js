@@ -25,6 +25,22 @@ export const accountNumberMasked = (accountNumber) => `XXXX XXXX XXXX ${accountN
 export const date = (timestamp) => moment(timestamp).format('LL')
 
 /**
+ * format bytes value to correct unit (kB, MB, GB, etc)
+ * @param {*} bytes value
+ * @return {string} value in bytes or kB, MB, etc with correct units
+ */
+export const bytes = (bytes) => {
+  const units = ['bytes', 'kB', 'MB', 'GB', 'TB']
+  let unitIndex = 0
+  let value = bytes
+  while (value / 1000 > 1) {
+    value = value / 1000
+    unitIndex++
+  }
+  return `${value.toFixed(2)} ${units[unitIndex]}`
+}
+
+/**
  * format MiB value to either MiB or GiB (when above 1024)
  * @param {*} MiB value in MiB
  * @return {string} value in MiB or GiB with correct units
@@ -32,7 +48,7 @@ export const date = (timestamp) => moment(timestamp).format('LL')
 export const mib = (MiB) => {
   if (MiB % 1024 === 0) return `${MiB / 1024} GiB`
   if (MiB / 1024 > 1) return `${(MiB / 1024).toFixed(2)} GiB`
-  return `${MiB} MiB`
+  return `${MiB.toFixed(2)} MiB`
 }
 
 /**
