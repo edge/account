@@ -15,7 +15,7 @@
       <div class="flex space-x-2 items-center">
         <!-- navigation arrows -->
         <button @click="backDir">
-          <ArrowLeftIcon class="w-4" :class="!path ? 'text-gray hover:text-gray cursor-default' : 'hover:text-green'"/>
+          <ArrowLeftIcon class="w-4" :class="!displayPath ? 'text-gray hover:text-gray cursor-default' : 'hover:text-green'"/>
         </button>
         <Breadcrumbs @update-path="updatePath" :path="displayPath" />
         <LoadingSpinner v-if="loading"/>
@@ -43,6 +43,7 @@
         <!-- new directory input -->
         <FileExplorerNewDirectory
           v-if="addingNewDir"
+          :creating="creatingNewDir"
           @add-dir="addNewDir"
           @cancel="closeAddNewDir"
         />
@@ -59,7 +60,7 @@
           :path="displayPath"
           @delete="updateFiles"
           @rename="updateFiles"
-          @select="onSelectFile"
+          @select-file="onSelectFile"
           @update-path="updatePath"
         />
       </div>
@@ -109,11 +110,14 @@ export default {
   data() {
     return {
       addingNewDir: false,
+      creatingNewDir: false,
+      // displayPath is the loaded directory
       displayPath: '',
       dragCounter: 0,
       files: [],
       loaded: false,
       loading: false,
+      // path is the selected directory, regardless of loaded state
       path: '',
       selectedFile: null,
       showFileUploadOverlay: false
@@ -126,6 +130,7 @@ export default {
     async addNewDir(newDirName) {
       if (!newDirName) return
       try {
+        this.creatingNewDir = true
         await api.storage.createDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
@@ -133,6 +138,7 @@ export default {
           this.path,
           newDirName
         )
+        this.creatingNewDir = false
         this.closeAddNewDir()
         await this.updateFiles()
       }

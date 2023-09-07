@@ -32,19 +32,19 @@
 
     <!-- actions -->
     <div v-if="editing" class="flex space-x-2 items-center">
-      <button @click="renameItem" class="item-action">
+      <button @click="renameItem" :disabled="renaming" class="item-action">
         <LoadingSpinner v-if="renaming" class="w-4" />
         <CheckIcon v-else class="w-4 text-green hover:text-green-300" />
       </button>
-      <button @click="cancelEditing" class="item-action">
-        <XIcon class="w-4 text-red hover:text-red-700" />
+      <button @click="cancelEditing" :disabled="renaming" class="item-action">
+        <XIcon class="w-4 text-red hover:text-red-700" :class="renaming && 'disabled'" />
       </button>
     </div>
     <div v-else class="flex space-x-2 items-center">
-      <button @click="startEditing" class="item-action hover:text-green">
-        <PencilIcon class="w-4" />
+      <button @click="startEditing" :disabled="deleting" class="item-action" >
+        <PencilIcon class="w-4 hover:text-green" :class="deleting && 'disabled'" />
       </button>
-      <button @click="toggleDeleteConfirmationModal" class="item-action hover:text-red">
+      <button @click="toggleDeleteConfirmationModal" :disabled="deleting" class="item-action text-red hover:text-red-700">
         <LoadingSpinner v-if="deleting" class="w-4" />
         <TrashIcon v-else class="w-4" />
       </button>
@@ -98,7 +98,6 @@ export default {
       editing: false,
       newName: this.item.filename || this.item.directory,
       renaming: false,
-      selected: false,
       showDeleteConfirmationModal: false
     }
   },
@@ -140,11 +139,6 @@ export default {
         this.deleting = false
       }
     },
-    deselect() {
-      this.selected = false
-      this.editing = false
-      if (this.selectedTimeout) this.selectedTimeout = clearTimeout(this.selectedTimeout)
-    },
     openDirectory() {
       if (!this.path) this.$emit('update-path', (this.item.directory))
       else this.$emit('update-path', (this.path + '/' + this.item.directory))
@@ -179,7 +173,7 @@ export default {
     },
     select() {
       if (this.item.directory) this.openDirectory()
-      else this.$emit('select', this.item)
+      else this.$emit('select-file', this.item)
     },
     async startEditing() {
       this.newName = this.itemName
@@ -202,11 +196,12 @@ export default {
 .item-row .name {
   @apply cursor-pointer hover:text-green hover:underline;
 }
-.item-row.selected {
-  @apply bg-gray-200;
-}
 .item-action {
   @apply cursor-pointer;
+}
+
+.disabled {
+  @apply cursor-default text-gray hover:text-gray;
 }
 
 .new-name-input {

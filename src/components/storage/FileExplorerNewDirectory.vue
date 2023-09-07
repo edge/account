@@ -23,10 +23,11 @@
     <!-- actions -->
     <div class="flex space-x-2 items-center">
       <button @click="addDir" class="item-action">
-        <CheckIcon class="w-4 text-green" />
+        <LoadingSpinner v-if="creating" class="w-4" />
+        <CheckIcon v-else class="w-4 text-green hover:text-green-300" />
       </button>
-      <button @click="cancel" class="item-action">
-        <XIcon class="w-4 text-red" />
+      <button @click="cancel" :disabled="creating" class="item-action">
+        <XIcon class="w-4 text-red hover:text-red-700" :class="creating && 'disabled'" />
       </button>
     </div>
   </div>
@@ -35,7 +36,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import {
   CheckIcon,
@@ -48,9 +48,10 @@ export default {
   components: {
     CheckIcon,
     FolderIcon,
+    LoadingSpinner,
     XIcon
   },
-  props: ['path'],
+  props: ['creating', 'path'],
   data() {
     return {
       dirName: ''
@@ -77,6 +78,10 @@ export default {
 }
 .item-action {
   @apply cursor-pointer hover:text-green;
+}
+
+.disabled {
+  @apply cursor-default text-gray hover:text-gray;
 }
 
 .new-name-input {
