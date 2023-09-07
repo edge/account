@@ -1,5 +1,5 @@
 <template>
-  <div class="item-row" :class="selected && 'selected'" @click="select">
+  <div class="item-row">
         <!-- icons -->
     <!-- directory with files -->
     <FolderOpenIcon v-if="item.directory && item.children && item.children.length"  class="icon w-4" />
@@ -22,8 +22,8 @@
         class="new-name-input"
       />
       <!-- display name -->
-      <div v-else-if="itemName" class="name">
-        <span>{{ itemName }}</span>
+      <div v-else-if="itemName">
+        <span class="name" @click="select">{{ itemName }}</span>
       </div>
     </div>
 
@@ -177,17 +177,8 @@ export default {
       }
     },
     select() {
-      if (this.selectedTimeout) {
-        this.selectedTimeout = clearTimeout(this.selectedTimeout)
-        this.openDirectory()
-      }
-      else {
-        this.$emit('select', this.itemName)
-        this.selected = true
-        this.selectedTimeout = setTimeout(() => {
-          this.selectedTimeout = clearTimeout(this.selectedTimeout)
-        }, 500)
-      }
+      if (this.item.directory) this.openDirectory()
+      else this.$emit('select', this.item)
     },
     async startEditing() {
       this.newName = this.itemName
@@ -204,11 +195,11 @@ export default {
 
 <style scoped>
 .item-row {
-  @apply grid gap-x-4 items-center py-1 cursor-pointer;
+  @apply grid gap-x-4 items-center py-1;
   grid-template-columns: max-content auto 150px max-content;
 }
-.item-row:hover .name, .item-row:hover .icon {
-  @apply text-green;
+.item-row .name {
+  @apply cursor-pointer hover:text-green hover:underline;
 }
 .item-row.selected {
   @apply bg-gray-200;
