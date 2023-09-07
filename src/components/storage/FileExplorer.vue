@@ -37,6 +37,7 @@
       <div class="w-full flex flex-col">
         <!-- back dir (..) -->
         <div v-if="displayPath" class="item-row">
+          <div class="w-4"></div>
           <ReplyIcon @click="backDir" class="w-4 icon cursor-pointer" />
           <div @click="backDir"><span class="name">..</span></div>
         </div>
@@ -124,7 +125,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session'])
+    ...mapState(['session']),
+    selectedItems() {
+      return this.files.filter(f => this.$refs[f.filename || f.directory][0].selected)
+    }
   },
   methods: {
     async addNewDir(newDirName) {
@@ -227,21 +231,21 @@ export default {
   min-height: 600px
 }
 
+.file-info-pane {
+  @apply ml-10 px-10 border-l border-gray;
+}
+
 .item-row {
   @apply grid gap-x-4 items-center py-1;
-  grid-template-columns: max-content auto 150px max-content;
+  grid-template-columns: max-content auto 150px max-content max-content;
 }
 .item-row .name {
   @apply cursor-pointer hover:text-green hover:underline;
 }
-.item-row.selected {
-  @apply bg-gray-200;
-}
 .item-action {
-  @apply cursor-pointer hover:text-green;
+  @apply cursor-pointer;
 }
-
-.file-info-pane {
-  @apply ml-10 px-10 border-l border-gray;
+.disabled {
+  @apply cursor-default text-gray hover:text-gray;
 }
 </style>

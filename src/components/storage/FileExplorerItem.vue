@@ -1,6 +1,6 @@
 <template>
   <div class="item-row">
-        <!-- icons -->
+    <!-- icons -->
     <!-- directory with files -->
     <FolderOpenIcon v-if="item.directory && item.children && item.children.length"  class="icon w-4" />
     <!-- empty directory -->
@@ -23,7 +23,7 @@
       />
       <!-- display name -->
       <div v-else-if="itemName">
-        <span class="name" @click="select">{{ itemName }}</span>
+        <span class="name" @click="openItem">{{ itemName }}</span>
       </div>
     </div>
 
@@ -48,6 +48,11 @@
         <LoadingSpinner v-if="deleting" class="w-4" />
         <TrashIcon v-else class="w-4" />
       </button>
+    </div>
+
+    <!-- selected checkbox -->
+    <div @click="toggleSelectItem" class="checkbox" :class="selected && 'selected'">
+      <CheckIcon v-if="selected" class="w-4 h-4 text-green"/>
     </div>
 
     <!-- confirmation modal -->
@@ -98,6 +103,7 @@ export default {
       editing: false,
       newName: this.item.filename || this.item.directory,
       renaming: false,
+      selected: false,
       showDeleteConfirmationModal: false
     }
   },
@@ -139,9 +145,16 @@ export default {
         this.deleting = false
       }
     },
+    deselect() {
+      this.selected = false
+    },
     openDirectory() {
       if (!this.path) this.$emit('update-path', (this.item.directory))
       else this.$emit('update-path', (this.path + '/' + this.item.directory))
+    },
+    openItem() {
+      if (this.item.directory) this.openDirectory()
+      else this.$emit('select-file', this.item)
     },
     async renameItem() {
       if (!this.newName) return
@@ -171,10 +184,6 @@ export default {
         this.renaming = false
       }
     },
-    select() {
-      if (this.item.directory) this.openDirectory()
-      else this.$emit('select-file', this.item)
-    },
     async startEditing() {
       this.newName = this.itemName
       this.editing = true
@@ -183,16 +192,22 @@ export default {
     },
     toggleDeleteConfirmationModal() {
       this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
+    },
+    toggleSelectItem() {
+      this.selected = !this.selected
     }
   }
 }
 </script>
 
 <style scoped>
-.item-row {
-  @apply grid gap-x-4 items-center py-1;
-  grid-template-columns: max-content auto 150px max-content;
+.checkbox {
+  @apply border border-gray-600 rounded-sm w-4 h-4 hover:border-green cursor-pointer flex items-center justify-center;
 }
+.checkbox.selected {
+  @apply border-green;
+}
+
 .item-row .name {
   @apply cursor-pointer hover:text-green hover:underline;
 }
