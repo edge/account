@@ -9,8 +9,8 @@
     <template v-slot:body>
       <span class="font-semibold">Warning: this cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>Your current API key will no longer be valid</li>
-        <li>Some other text about the API key</li>
+        <li>Your previous key will no longer work</li>
+        <li>It may take a few minutes for this to take effect</li>
       </div>
     </template>
     <template v-slot:buttons>

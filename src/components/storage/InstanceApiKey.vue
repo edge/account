@@ -3,7 +3,7 @@
     <div class="box">
       <div>
         <h4>Storage API Key</h4>
-        <p class="text-gray-500">Some text to inform user what to do with API key, or what it is used for.</p>
+        <p class="text-gray-500">Your unique API key facilitates secure access to Storage, allowing for script automation and direct uploads. Remember to keep it confidential to ensure the security of your data.</p>
       </div>
       <!-- account number display -->
       <div class="api-key-wrapper">
@@ -22,7 +22,7 @@
     <div class="box">
       <h4>Regenerate API Key</h4>
       <div>
-        <p class="text-gray-500">Some text about implications of regenerating the API key.</p>
+        <p class="text-gray-500">If you suspect that your API key has been compromised, or wish to reset it for any other reason, use this option to generate a new key. Your previous key will no longer work.</p>
         <div class="flex flex-col space-y-2">
           <button
             class="button button--error button--small w-full md:max-w-xs"

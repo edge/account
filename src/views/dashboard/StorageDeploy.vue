@@ -6,13 +6,13 @@
       <div class="box md:text-center">
         <h4 class="text-green text-2xl">Success</h4>
         <div class="max-w-xl m-auto">
-          <span>Storage has been successfully deployed to the network.</span>
+          <span>Your Storage deployment has been activated.</span>
         </div>
       </div>
       <div class="box">
         <div>
           <h4>Storage API Key</h4>
-          <p class="text-gray-500">Some text to inform user what to do with API key, or what it is used for.</p>
+          <p class="text-gray-500">Your unique API key facilitates secure access to Storage, allowing for script automation and direct uploads. Remember to keep it confidential to ensure the security of your data.</p>
         </div>
         <!-- account number display -->
         <div class="api-key-wrapper">
