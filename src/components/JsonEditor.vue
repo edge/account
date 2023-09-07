@@ -85,6 +85,7 @@ export default {
           this.showErrorDetail = false
 
           try {
+            if (Array.isArray(jsonParsed)) throw new Error('Config can not be array')
             if (this.validateFn) this.validateFn(jsonParsed, this.json)
             this.$emit('update:object', jsonParsed)
           }
