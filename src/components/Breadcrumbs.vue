@@ -2,10 +2,10 @@
   <div class="flex items-center">
     <HomeIcon
       @click="updatePath(-1)"
-      class="w-5 mr-2 mb-0.5 path"
+      class="w-5 mr-2 path"
       :class="!breadcrumbs && 'last'"
     />
-    <div v-if="breadcrumbs" class="flex space-2 text-lg">
+    <div v-if="breadcrumbs" class="flex space-2 text-md">
       <div
         v-for="(dir, index) in breadcrumbs"
         :key="dir"

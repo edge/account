@@ -6,7 +6,7 @@
     <template v-slot:body>
       <div class="flex flex-col space-y-2">
         <li>This {{ itemType.toLowerCase() }} will be permanently deleted</li>
-        <li v-if="item.directory && item.directory.length">All files in this folder will also be deleted</li>
+        <li v-if="item.directory && item.directory.length">All files in this directory will also be deleted</li>
       </div>
     </template>
     <template v-slot:buttons>
@@ -37,7 +37,7 @@ export default {
   props: ['item'],
   computed: {
     itemType() {
-      return this.item.directory ? 'Folder' : 'File'
+      return this.item.directory ? 'Directory' : 'File'
     }
   },
   methods: {

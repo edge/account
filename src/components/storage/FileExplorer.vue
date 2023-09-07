@@ -14,11 +14,11 @@
     <div class="flex justify-between w-full items-center mb-6">
       <div class="flex space-x-2 items-center">
         <!-- navigation arrows -->
-        <button @click="backDir"><ArrowLeftIcon class="w-4 hover:text-green"/></button>
-        <!-- <button @click="pathBack"><ArrowSmLeftIcon class="w-5 text-gray hover:text-green"/></button>
-        <button @click="pathForward"><ArrowSmRightIcon class="w-5 text-gray hover:text-green"/></button> -->
-        <!-- breadcrumbs -->
+        <button @click="backDir">
+          <ArrowLeftIcon class="w-4" :class="!path ? 'text-gray hover:text-gray cursor-default' : 'hover:text-green'"/>
+        </button>
         <Breadcrumbs @update-path="updatePath" :path="displayPath" />
+        <LoadingSpinner v-if="loading"/>
       </div>
 
       <!-- upload file/create directory buttons -->
@@ -87,8 +87,6 @@ import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import {
   ArrowLeftIcon,
-  // ArrowSmLeftIcon,
-  // ArrowSmRightIcon,
   FolderAddIcon,
   ReplyIcon
 } from '@heroicons/vue/outline'
@@ -97,8 +95,6 @@ export default {
   name: 'FileExplorer',
   components: {
     ArrowLeftIcon,
-    // ArrowSmLeftIcon,
-    // ArrowSmRightIcon,
     Breadcrumbs,
     CloudUploadIcon,
     FileExplorerItem,
@@ -117,9 +113,8 @@ export default {
       dragCounter: 0,
       files: [],
       loaded: false,
+      loading: false,
       path: '',
-      pathHistory: [''],
-      pathHistoryIndex: 0,
       selectedFile: null,
       showFileUploadOverlay: false
     }
@@ -128,11 +123,8 @@ export default {
     ...mapState(['session'])
   },
   methods: {
-    /** @todo
-     * handle broswer/mouse back and forward buttons for file navigation rather than page navigation
-     */
-
     async addNewDir(newDirName) {
+      if (!newDirName) return
       try {
         await api.storage.createDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -173,20 +165,6 @@ export default {
     openFileUploadOverlay() {
       this.showFileUploadOverlay = true
     },
-    pathBack() {
-      if (this.pathHistoryIndex) {
-        this.pathHistoryIndex--
-        this.selectedFile = null
-        this.path = this.pathHistory[this.pathHistoryIndex]
-      }
-    },
-    pathForward() {
-      if (this.pathHistoryIndex + 1 < this.pathHistory.length) {
-        this.pathHistoryIndex++
-        this.selectedFile = null
-        this.path = this.pathHistory[this.pathHistoryIndex]
-      }
-    },
     resetDrag() {
       this.dragCounter = 0
     },
@@ -194,10 +172,7 @@ export default {
       this.addingNewDir = !this.addingNewDir
     },
     updatePath(newPath) {
-      this.selectedFile = null
       this.path = newPath
-      this.pathHistory = [...this.pathHistory.slice(0, this.pathHistoryIndex + 1), newPath]
-      this.pathHistoryIndex++
     },
     startAddNewDir() {
       this.addingNewDir = true
@@ -208,12 +183,15 @@ export default {
     async updateFiles() {
       try {
         this.httpError = null
+        this.loading = true
         const { files, path } = await api.storage.getFiles(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.instance._key,
           this.path
         )
+        this.selectedFile = null
+        this.loading = false
         this.loaded = true
         this.files = files
         this.displayPath = path
@@ -259,6 +237,5 @@ export default {
 
 .file-info-pane {
   @apply ml-10 px-10 border-l border-gray;
-  height: 100%;
 }
 </style>

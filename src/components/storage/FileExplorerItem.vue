@@ -34,10 +34,10 @@
     <div v-if="editing" class="flex space-x-2 items-center">
       <button @click="renameItem" class="item-action">
         <LoadingSpinner v-if="renaming" class="w-4" />
-        <CheckIcon v-else class="w-4 text-green" />
+        <CheckIcon v-else class="w-4 text-green hover:text-green-300" />
       </button>
       <button @click="cancelEditing" class="item-action">
-        <XIcon class="w-4 text-red" />
+        <XIcon class="w-4 text-red hover:text-red-700" />
       </button>
     </div>
     <div v-else class="flex space-x-2 items-center">
@@ -150,6 +150,7 @@ export default {
       else this.$emit('update-path', (this.path + '/' + this.item.directory))
     },
     async renameItem() {
+      if (!this.newName) return
       try {
         this.renaming = true
         if (this.item.filename) await api.storage.renameFile(
@@ -157,7 +158,7 @@ export default {
           this.instance.apiKey,
           this.path,
           this.item.filename,
-          this.newName
+          this.newName.trim()
         )
         else await api.storage.renameDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
@@ -165,7 +166,7 @@ export default {
           this.instance._key,
           this.path,
           this.item.directory,
-          this.newName
+          this.newName.trim()
         )
         this.renaming = false
         this.cancelEditing()
@@ -209,7 +210,7 @@ export default {
 }
 
 .new-name-input {
-  @apply bg-gray-200 border-b border-gray w-full box-border;
+  @apply border-b border-gray w-full box-border;
 }
 .new-name-input:focus {
   outline: none;

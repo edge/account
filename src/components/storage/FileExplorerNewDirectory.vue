@@ -58,13 +58,10 @@ export default {
   },
   methods: {
     addDir() {
-      this.$emit('add-dir', this.dirName)
+      this.$emit('add-dir', this.dirName.trim())
     },
     cancel() {
       this.$emit('cancel')
-    },
-    test() {
-      console.log('test')
     }
   },
   mounted() {
