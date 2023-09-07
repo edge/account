@@ -14,7 +14,7 @@
     <div class="flex justify-between w-full items-center mb-6">
       <div class="flex space-x-2 items-center">
         <!-- navigation arrows -->
-        <button @click="backDir"><ReplyIcon class="w-4 hover:text-green"/></button>
+        <button @click="backDir"><ArrowLeftIcon class="w-4 hover:text-green"/></button>
         <!-- <button @click="pathBack"><ArrowSmLeftIcon class="w-5 text-gray hover:text-green"/></button>
         <button @click="pathForward"><ArrowSmRightIcon class="w-5 text-gray hover:text-green"/></button> -->
         <!-- breadcrumbs -->
@@ -36,10 +36,10 @@
     <div class="flex flex-1">
       <div class="w-full flex flex-col">
         <!-- back dir (..) -->
-        <!-- <div v-if="displayPath" class="item-row">
+        <div v-if="displayPath" class="item-row">
           <ReplyIcon @click="backDir" class="w-4 icon cursor-pointer" />
           <div @click="backDir"><span class="name">..</span></div>
-        </div> -->
+        </div>
         <!-- new directory input -->
         <FileExplorerNewDirectory
           v-if="addingNewDir"
@@ -86,8 +86,9 @@ import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import {
-  ArrowSmLeftIcon,
-  ArrowSmRightIcon,
+  ArrowLeftIcon,
+  // ArrowSmLeftIcon,
+  // ArrowSmRightIcon,
   FolderAddIcon,
   ReplyIcon
 } from '@heroicons/vue/outline'
@@ -95,8 +96,9 @@ import {
 export default {
   name: 'FileExplorer',
   components: {
-    ArrowSmLeftIcon,
-    ArrowSmRightIcon,
+    ArrowLeftIcon,
+    // ArrowSmLeftIcon,
+    // ArrowSmRightIcon,
     Breadcrumbs,
     CloudUploadIcon,
     FileExplorerItem,
