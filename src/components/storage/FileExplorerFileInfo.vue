@@ -71,8 +71,8 @@ export default {
 
 <style scoped>
 .file-info-pane {
-  @apply relative flex flex-col space-y-2 ml-8 px-8 border-l border-gray;
-  width: 60%;
+  @apply relative flex flex-col flex-shrink-0 space-y-2 ml-4 px-4 border-l border-gray;
+  width: 40%;
   max-width: 550px;
 }
 .header {

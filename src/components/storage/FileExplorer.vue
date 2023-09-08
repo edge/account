@@ -20,7 +20,7 @@
       @modal-close="toggleDeleteFilesConfirmation"
     />
 
-    <div class="w-full">
+    <div class="flex flex-col w-full">
       <div class="flex justify-between w-full items-center mb-6">
         <div class="flex space-x-2 items-center">
           <!-- navigation arrows -->
@@ -45,7 +45,7 @@
       </div>
 
       <!-- file explorer -->
-      <div class="w-full flex flex-col">
+      <div id="file-list" class="w-full flex flex-col pr-2 overflow-y-auto">
         <!-- headers -->
         <div class="item-row font-bold border-b border-gray" >
           <div class="w-4"></div>
@@ -158,6 +158,15 @@ export default {
     ...mapState(['session']),
     allItemsSelected() {
       return this.selectedItems.length && this.selectedItems.length === this.files.length
+    },
+    fileListOverflow() {
+      const el = document.getElementById('file-list')
+      if (!el) return false
+      const curOverflow = el.style.overflow
+      if (!curOverflow || curOverflow === 'visible' ) el.style.overflow = 'hidden'
+      const isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight
+      el.style.overflow = curOverflow
+      return isOverflowing
     },
     itemRefs() {
       return this.loaded && !this.loading && this.files.map(f => this.$refs[f.filename || f.directory][0])
@@ -285,11 +294,12 @@ export default {
 <style scoped>
 .file-explorer {
   @apply relative flex mt-4 mb-8;
-  min-height: 600px
+  min-height: 600px;
+  max-height: 768px;
 }
 
 .item-row {
-  @apply grid gap-x-4 items-center py-1;
+  @apply w-full grid gap-x-4 items-center py-1;
   grid-template-columns: max-content auto 150px max-content max-content;
 }
 .checkbox {

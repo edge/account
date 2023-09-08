@@ -9,7 +9,7 @@
     <DocumentTextIcon v-else-if="item.filename" class="icon w-4" />
 
     <!-- file/directory name -->
-    <div>
+    <div class="truncate">
       <!-- edit name -->
       <input
         v-if="editing"
@@ -22,8 +22,8 @@
         class="new-name-input"
       />
       <!-- display name -->
-      <div v-else-if="itemName">
-        <span class="name" @click="openItem">{{ itemName }}</span>
+      <div v-else-if="itemName" class="truncate">
+        <span class="name truncate" @click="openItem">{{ itemName }}</span>
       </div>
     </div>
 
