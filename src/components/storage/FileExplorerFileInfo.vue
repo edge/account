@@ -84,7 +84,7 @@ export default {
 }
 
 .close-icon {
-  @apply absolute border border-gray rounded-md bg-white text-gray hover:text-green;
+  @apply absolute border border-gray rounded-md bg-white text-gray hover:text-green hover:border-green;
   top: calc(50% - 12px);
   left: -12px;
 }
