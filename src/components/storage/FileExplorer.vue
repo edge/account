@@ -3,6 +3,7 @@
     @dragenter.prevent="onFileDragEnter"
     @dragleave.prevent="onFileDragExit"
   >
+    <!-- overlays -->
     <FileUploadOverlay
       v-show="showFileUploadOverlay"
       :integration="integration"
@@ -11,32 +12,39 @@
       @upload="updateFiles"
     />
 
-    <div class="flex justify-between w-full items-center mb-6">
-      <div class="flex space-x-2 items-center">
-        <!-- navigation arrows -->
-        <button @click="backDir">
-          <ArrowLeftIcon class="w-4" :class="!displayPath ? 'text-gray hover:text-gray cursor-default' : 'hover:text-green'"/>
-        </button>
-        <Breadcrumbs @update-path="updatePath" :path="displayPath" />
-        <LoadingSpinner v-if="loading"/>
+    <!-- delete confirmation modal -->
+    <FileExplorerItemDeleteConfirmation
+      v-if="showDeleteConfirmationModal"
+      :items="selectedItems"
+      @modal-confirm="deleteSelectedItems"
+      @modal-close="toggleDeleteFilesConfirmation"
+    />
+
+    <div class="w-full">
+      <div class="flex justify-between w-full items-center mb-6">
+        <div class="flex space-x-2 items-center">
+          <!-- navigation arrows -->
+          <button @click="backDir">
+            <ArrowLeftIcon class="w-4" :class="!displayPath ? 'text-gray hover:text-gray cursor-default' : 'hover:text-green'"/>
+          </button>
+          <Breadcrumbs @update-path="updatePath" :path="displayPath" />
+          <LoadingSpinner v-if="loading"/>
+        </div>
+        <!-- upload file/create directory buttons -->
+        <div class="flex space-x-2">
+          <button @click="openFileUploadOverlay" class="text-green hover:text-green-300">
+            <div><CloudUploadIcon class="w-5 h-5" /></div>
+          </button>
+          <button @click="startAddNewDir" class="text-green hover:text-green-300">
+            <div><FolderAddIcon class="w-6 h-6" /></div>
+          </button>
+          <button @click="toggleDeleteFilesConfirmation" :disabled="!someItemsSelected" class="text-red hover:text-red-700" :class="!someItemsSelected && 'disabled'">
+            <div><TrashIcon class="w-5 h-5" /></div>
+          </button>
+        </div>
       </div>
 
-      <!-- upload file/create directory buttons -->
-      <div class="flex space-x-2">
-        <button @click="openFileUploadOverlay" class="text-green hover:text-green-300">
-          <div><CloudUploadIcon class="w-5 h-5" /></div>
-        </button>
-        <button @click="startAddNewDir" class="text-green hover:text-green-300">
-          <div><FolderAddIcon class="w-6 h-6" /></div>
-        </button>
-        <button @click="toggleDeleteFilesConfirmation" :disabled="!someItemsSelected" class="text-red hover:text-red-700" :class="!someItemsSelected && 'disabled'">
-          <div><TrashIcon class="w-5 h-5" /></div>
-        </button>
-      </div>
-    </div>
-
-    <!-- file explorer -->
-    <div class="flex flex-1">
+      <!-- file explorer -->
       <div class="w-full flex flex-col">
         <!-- headers -->
         <div class="item-row font-bold border-b border-gray" >
@@ -49,13 +57,11 @@
             <div class="bg-gray-400 w-3 h-3" v-else-if="someItemsSelected"></div>
           </div>
         </div>
-
         <!-- back dir (..) -->
         <div v-if="displayPath" class="item-row">
           <ReplyIcon @click="backDir" class="w-4 icon cursor-pointer" />
           <div @click="backDir"><span class="name">..</span></div>
         </div>
-
         <!-- new directory input -->
         <FileExplorerNewDirectory
           v-if="addingNewDir"
@@ -63,7 +69,6 @@
           @add-dir="addNewDir"
           @cancel="closeAddNewDir"
         />
-
         <!-- directories and files -->
         <div v-if="loaded && !files.length" class="py-2 text-center">
           <span>This folder is empty</span>
@@ -81,20 +86,15 @@
           @update-path="updatePath"
         />
       </div>
-      <!-- file info side panel - @todo -->
-      <div v-if="selectedFile" class="file-info-pane w-max flex flex-col space-y-2">
-        <div>{{ selectedFile.filename }}</div>
-        <div>{{ selectedFile.size }}</div>
-      </div>
-
-      <!-- delete confirmation modal -->
-      <FileExplorerItemDeleteConfirmation
-        v-if="showDeleteConfirmationModal"
-        :items="selectedItems"
-        @modal-confirm="deleteSelectedItems"
-        @modal-close="toggleDeleteFilesConfirmation"
-      />
     </div>
+
+    <FileExplorerFileInfo
+      v-if="selectedFile"
+      :file="selectedFile"
+      :integration="integration"
+      :path="displayPath"
+      @close="deselectFile"
+    />
   </div>
 </template>
 
@@ -104,6 +104,7 @@
 import * as api from '@/account-utils'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import CloudUploadIcon from '@/components/icons/CloudUploadIcon'
+import FileExplorerFileInfo from '@/components/storage/FileExplorerFileInfo'
 import FileExplorerItem from '@/components/storage/FileExplorerItem'
 import FileExplorerItemDeleteConfirmation from '@/components/storage/FileExplorerItemDeleteConfirmation'
 import FileExplorerNewDirectory from '@/components/storage/FileExplorerNewDirectory'
@@ -125,6 +126,7 @@ export default {
     Breadcrumbs,
     CheckIcon,
     CloudUploadIcon,
+    FileExplorerFileInfo,
     FileExplorerItem,
     FileExplorerItemDeleteConfirmation,
     FileExplorerNewDirectory,
@@ -201,6 +203,9 @@ export default {
     deleteSelectedItems() {
       this.selectedRefs.forEach(ref => ref.deleteItem())
       this.toggleDeleteFilesConfirmation()
+    },
+    deselectFile() {
+      this.selectedFile = null
     },
     onFileDragEnter() {
       this.dragCounter += 1
@@ -279,12 +284,8 @@ export default {
 
 <style scoped>
 .file-explorer {
-  @apply relative flex flex-col mt-4 mb-8;
+  @apply relative flex mt-4 mb-8;
   min-height: 600px
-}
-
-.file-info-pane {
-  @apply ml-10 px-10 border-l border-gray;
 }
 
 .item-row {
