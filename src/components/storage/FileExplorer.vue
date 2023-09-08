@@ -29,6 +29,9 @@
         <button @click="startAddNewDir" class="text-green hover:text-green-300">
           <div><FolderAddIcon class="w-6 h-6" /></div>
         </button>
+        <button @click="toggleDeleteFilesConfirmation" :disabled="!someItemsSelected" class="text-red hover:text-red-700" :class="!someItemsSelected && 'disabled'">
+          <div><TrashIcon class="w-5 h-5" /></div>
+        </button>
       </div>
     </div>
 
@@ -49,10 +52,10 @@
 
         <!-- back dir (..) -->
         <div v-if="displayPath" class="item-row">
-          <div class="w-4"></div>
           <ReplyIcon @click="backDir" class="w-4 icon cursor-pointer" />
           <div @click="backDir"><span class="name">..</span></div>
         </div>
+
         <!-- new directory input -->
         <FileExplorerNewDirectory
           v-if="addingNewDir"
@@ -60,8 +63,9 @@
           @add-dir="addNewDir"
           @cancel="closeAddNewDir"
         />
+
         <!-- directories and files -->
-        <div v-if="loaded && !files.length" class="py-1">
+        <div v-if="loaded && !files.length" class="py-2 text-center">
           <span>This folder is empty</span>
         </div>
         <FileExplorerItem
@@ -82,6 +86,14 @@
         <div>{{ selectedFile.filename }}</div>
         <div>{{ selectedFile.size }}</div>
       </div>
+
+      <!-- delete confirmation modal -->
+      <FileExplorerItemDeleteConfirmation
+        v-if="showDeleteConfirmationModal"
+        :items="selectedItems"
+        @modal-confirm="deleteSelectedItems"
+        @modal-close="toggleDeleteFilesConfirmation"
+      />
     </div>
   </div>
 </template>
@@ -93,6 +105,7 @@ import * as api from '@/account-utils'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import CloudUploadIcon from '@/components/icons/CloudUploadIcon'
 import FileExplorerItem from '@/components/storage/FileExplorerItem'
+import FileExplorerItemDeleteConfirmation from '@/components/storage/FileExplorerItemDeleteConfirmation'
 import FileExplorerNewDirectory from '@/components/storage/FileExplorerNewDirectory'
 import FileUploadOverlay from '@/components/storage/FileUploadOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -101,7 +114,8 @@ import {
   ArrowLeftIcon,
   CheckIcon,
   FolderAddIcon,
-  ReplyIcon
+  ReplyIcon,
+  TrashIcon
 } from '@heroicons/vue/outline'
 
 export default {
@@ -112,11 +126,13 @@ export default {
     CheckIcon,
     CloudUploadIcon,
     FileExplorerItem,
+    FileExplorerItemDeleteConfirmation,
     FileExplorerNewDirectory,
     FileUploadOverlay,
     FolderAddIcon,
     LoadingSpinner,
-    ReplyIcon
+    ReplyIcon,
+    TrashIcon
   },
   props: ['instance'],
   data() {
@@ -132,19 +148,23 @@ export default {
       // path is the selected directory, regardless of loaded state
       path: '',
       selectedFile: null,
+      showDeleteConfirmationModal: false,
       showFileUploadOverlay: false
     }
   },
   computed: {
     ...mapState(['session']),
     allItemsSelected() {
-      return this.selectedItems.length === this.files.length
+      return this.selectedItems.length && this.selectedItems.length === this.files.length
     },
     itemRefs() {
-      return this.files.map(f => this.$refs[f.filename || f.directory][0])
+      return this.loaded && !this.loading && this.files.map(f => this.$refs[f.filename || f.directory][0])
+    },
+    selectedRefs() {
+      return this.selectedItems.map(f => this.$refs[f.filename || f.directory][0])
     },
     selectedItems() {
-      return this.files.filter(f => this.$refs[f.filename || f.directory][0].selected)
+      return this.loaded && !this.loading && this.files.filter(f => this.$refs[f.filename || f.directory][0].selected)
     },
     someItemsSelected() {
       return this.selectedItems.length
@@ -178,6 +198,10 @@ export default {
     closeFileUploadOverlay() {
       this.showFileUploadOverlay = false
     },
+    deleteSelectedItems() {
+      this.selectedRefs.forEach(ref => ref.deleteItem())
+      this.toggleDeleteFilesConfirmation()
+    },
     onFileDragEnter() {
       this.dragCounter += 1
       this.openFileUploadOverlay()
@@ -205,6 +229,9 @@ export default {
       if (this.allItemsSelected) this.itemRefs.forEach(ref => ref.selected = false)
       else this.itemRefs.forEach(ref => ref.selected = true)
     },
+    toggleDeleteFilesConfirmation() {
+      this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
+    },
     updatePath(newPath) {
       this.path = newPath
     },
@@ -225,8 +252,8 @@ export default {
           this.path
         )
         this.files = files
-        this.selectedFile = null
         await this.$nextTick()
+        this.selectedFile = null
         this.loading = false
         this.loaded = true
         this.displayPath = path
