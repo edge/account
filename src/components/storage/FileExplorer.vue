@@ -35,6 +35,18 @@
     <!-- file explorer -->
     <div class="flex flex-1">
       <div class="w-full flex flex-col">
+        <!-- headers -->
+        <div class="item-row font-bold border-b border-gray" >
+          <div class="w-4"></div>
+          <div>Name</div>
+          <div>Size</div>
+          <div></div>
+          <div v-if="loaded" @click="toggleSelectAllFiles" class="checkbox" :class="allItemsSelected && 'selected'">
+            <CheckIcon v-if="allItemsSelected" class="w-4 h-4 text-white"/>
+            <div class="bg-gray-400 w-3 h-3" v-else-if="someItemsSelected"></div>
+          </div>
+        </div>
+
         <!-- back dir (..) -->
         <div v-if="displayPath" class="item-row">
           <div class="w-4"></div>
@@ -78,17 +90,16 @@
 /* global process */
 
 import * as api from '@/account-utils'
-import * as validation from '@/utils/validation'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import CloudUploadIcon from '@/components/icons/CloudUploadIcon'
 import FileExplorerItem from '@/components/storage/FileExplorerItem'
 import FileExplorerNewDirectory from '@/components/storage/FileExplorerNewDirectory'
 import FileUploadOverlay from '@/components/storage/FileUploadOverlay'
-import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 import {
   ArrowLeftIcon,
+  CheckIcon,
   FolderAddIcon,
   ReplyIcon
 } from '@heroicons/vue/outline'
@@ -98,12 +109,12 @@ export default {
   components: {
     ArrowLeftIcon,
     Breadcrumbs,
+    CheckIcon,
     CloudUploadIcon,
     FileExplorerItem,
     FileExplorerNewDirectory,
     FileUploadOverlay,
     FolderAddIcon,
-    HttpError,
     LoadingSpinner,
     ReplyIcon
   },
@@ -126,8 +137,17 @@ export default {
   },
   computed: {
     ...mapState(['session']),
+    allItemsSelected() {
+      return this.selectedItems.length === this.files.length
+    },
+    itemRefs() {
+      return this.files.map(f => this.$refs[f.filename || f.directory][0])
+    },
     selectedItems() {
       return this.files.filter(f => this.$refs[f.filename || f.directory][0].selected)
+    },
+    someItemsSelected() {
+      return this.selectedItems.length
     }
   },
   methods: {
@@ -181,6 +201,10 @@ export default {
     toggleAddNewDir() {
       this.addingNewDir = !this.addingNewDir
     },
+    toggleSelectAllFiles() {
+      if (this.allItemsSelected) this.itemRefs.forEach(ref => ref.selected = false)
+      else this.itemRefs.forEach(ref => ref.selected = true)
+    },
     updatePath(newPath) {
       this.path = newPath
     },
@@ -200,10 +224,11 @@ export default {
           this.instance._key,
           this.path
         )
+        this.files = files
         this.selectedFile = null
+        await this.$nextTick()
         this.loading = false
         this.loaded = true
-        this.files = files
         this.displayPath = path
         /** @todo investigate why it's not always auto-updating */
         this.$forceUpdate()
@@ -238,6 +263,12 @@ export default {
 .item-row {
   @apply grid gap-x-4 items-center py-1;
   grid-template-columns: max-content auto 150px max-content max-content;
+}
+.checkbox {
+  @apply border border-gray-600 rounded-sm w-4 h-4 hover:border-green cursor-pointer flex items-center justify-center;
+}
+.checkbox.selected {
+  @apply border-green bg-green;
 }
 .item-row .name {
   @apply cursor-pointer hover:text-green hover:underline;

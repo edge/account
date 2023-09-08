@@ -52,7 +52,7 @@
 
     <!-- selected checkbox -->
     <div @click="toggleSelectItem" class="checkbox" :class="selected && 'selected'">
-      <CheckIcon v-if="selected" class="w-4 h-4 text-green"/>
+      <CheckIcon v-if="selected" class="w-4 h-4 text-white"/>
     </div>
 
     <!-- confirmation modal -->
@@ -205,7 +205,7 @@ export default {
   @apply border border-gray-600 rounded-sm w-4 h-4 hover:border-green cursor-pointer flex items-center justify-center;
 }
 .checkbox.selected {
-  @apply border-green;
+  @apply border-green bg-green;
 }
 
 .item-row .name {
