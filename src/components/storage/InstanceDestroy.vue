@@ -2,10 +2,10 @@
   <div class="pb-20">
     <div class="box domain_delete">
       <h4>Delete storage and files</h4>
-      <!-- instance not yet deleted -->
+      <!-- deployment not yet deleted -->
       <div>
-        <p class="mt-3 mb-1 text-gray-500">This is irreversible. The storage instance and associated files will be deleted.</p>
-        <p class="text-gray-500">Upon deletion, you will no longer be billed for this storage instance.</p>
+        <p class="mt-3 mb-1 text-gray-500">This is irreversible. The storage deployment and associated files will be deleted.</p>
+        <p class="text-gray-500">Upon deletion, you will no longer be billed for this storage deployment.</p>
         <div class="flex flex-col space-y-2">
           <button
             class="button button--error button--small w-full md:max-w-xs"

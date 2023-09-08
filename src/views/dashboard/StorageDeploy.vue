@@ -6,7 +6,7 @@
       <div class="box md:text-center">
         <h4 class="text-green text-2xl">Success</h4>
         <div class="max-w-xl m-auto">
-          <span>Your Storage deployment has been activated.</span>
+          <span>Your storage deployment has been activated.</span>
         </div>
       </div>
       <div class="box">

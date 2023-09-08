@@ -15,12 +15,12 @@
       @update-instance-count="onUpdateInstancesCount"
     />
     <div v-if="!loaded" class="flex items-center">
-      <span>Loading storage instances</span>
+      <span>Loading storage deployments</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
     <div v-else-if="!instancesCount" class="box">
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
-        <p>You don't have any storage instances yet. Once you create your first deployment it will be available here.</p>
+        <p>You don't have any storage deployments yet. Once you create your first deployment it will be available here.</p>
         <router-link
           :to="{ name: 'Storage Deploy' }"
           class="button button--success button--small"

@@ -9,7 +9,7 @@
     <template v-slot:body>
       <span class="font-semibold">Warning: this cannot be undone.</span>
       <div class="flex flex-col space-y-2 pt-4">
-        <li>This storage instance will be removed immediately</li>
+        <li>This storage deployment will be removed immediately</li>
         <li>All associated files will be deleted and cannot be recovered</li>
       </div>
     </template>

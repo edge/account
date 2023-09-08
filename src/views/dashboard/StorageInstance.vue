@@ -2,7 +2,7 @@
   <div class="mainContent__inner instance">
     <div class="w-max">
       <router-link :to="{ name: 'Storage' }" class="flex items-center space-x-1 hover:text-green mb-4">
-        <ArrowLeftIcon class="w-4" /><span>Storage Instances</span>
+        <ArrowLeftIcon class="w-4" /><span>Storage</span>
       </router-link>
     </div>
 
@@ -19,12 +19,12 @@
         <div class="flex items-center mt-4">
           <h4>Storage Deleted</h4>
         </div>
-        <p class="mt-3 mb-1 text-gray-500">This storage instance and all of its associated files have been destroyed.</p>
+        <p class="mt-3 mb-1 text-gray-500">This storage deployment and all of its associated files have been destroyed.</p>
         <router-link
           class="mt-4 button button--success button--small"
           :to="{ name: 'Storage'}"
         >
-          <span>Return to Storage Instances</span>
+          <span>Return to Storage Deployments</span>
         </router-link>
       </div>
     </div>
@@ -32,14 +32,14 @@
     <div v-else-if=notFound class="box">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="flex items-center mt-4">
-          <h4>Storage instance not found</h4>
+          <h4>Storage deployment not found</h4>
         </div>
-        <p class="mt-3 mb-1 text-gray-500">This storage instance either does not exist or has destroyed.</p>
+        <p class="mt-3 mb-1 text-gray-500">This storage deployment either does not exist or has destroyed.</p>
         <router-link
           class="mt-4 button button--success button--small"
           :to="{ name: 'Storage'}"
         >
-          <span>Return to Storage Instances</span>
+          <span>Return to Storage Deployments</span>
         </router-link>
       </div>
     </div>

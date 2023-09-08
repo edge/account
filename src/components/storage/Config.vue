@@ -41,7 +41,7 @@
         @update-config-mode="onUpdateConfigMode"
       />
     </div>
-    <!-- for save/cancel buttons when editing existing instances -->
+    <!-- for save/cancel buttons when editing existing deployments -->
     <slot name="buttons" />
   </div>
 </template>
