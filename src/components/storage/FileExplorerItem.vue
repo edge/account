@@ -96,7 +96,7 @@ export default {
     TrashIcon,
     XIcon
   },
-  props: ['instance', 'item', 'path'],
+  props: ['integration', 'item', 'path'],
   data() {
     return {
       deleting: false,
@@ -126,14 +126,14 @@ export default {
         this.deleting = true
         if (this.item.filename) await api.storage.deleteFile(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.instance.apiKey,
+          this.integration.apiKey,
           this.path,
           this.item.filename
         )
         else await api.storage.deleteDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance._key,
+          this.integration._key,
           this.path,
           this.item.directory
         )
@@ -162,7 +162,7 @@ export default {
         this.renaming = true
         if (this.item.filename) await api.storage.renameFile(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.instance.apiKey,
+          this.integration.apiKey,
           this.path,
           this.item.filename,
           this.newName.trim()
@@ -170,7 +170,7 @@ export default {
         else await api.storage.renameDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance._key,
+          this.integration._key,
           this.path,
           this.item.directory,
           this.newName.trim()

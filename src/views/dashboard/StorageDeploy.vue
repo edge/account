@@ -16,7 +16,7 @@
         </div>
         <!-- account number display -->
         <div class="api-key-wrapper">
-          <span v-if="showApiKey" class="api-key monospace">{{ deployedInstance.apiKey }}</span>
+          <span v-if="showApiKey" class="api-key monospace">{{ deployedIntegration.apiKey }}</span>
           <span v-else class="api-key masked monospace">{{ maskedApiKey }}</span>
           <!-- hide/show account number button button -->
           <button
@@ -28,7 +28,7 @@
           </button>
         </div>
         <button
-            @click=continueToInstance
+            @click=continueToIntegration
             class="button button--small button--success w-full md:max-w-xs mt-5"
           >
             Continue
@@ -45,7 +45,7 @@
       </div>
 
       <!-- details -->
-      <DeployInstanceDisplayName
+      <DeployIntegrationDisplayName
         @update-details="onUpdateName"
         :disableControls="disableControls"
       />
@@ -53,7 +53,7 @@
         @update-config="onUpdateConfig"
         :disableControls="disableControls"
       />
-      <StorageEstimatedCosts />
+      <EstimatedCosts />
 
       <!-- deploy button -->
       <button
@@ -79,11 +79,11 @@
 
 import * as api from '@/account-utils/'
 import Config from '@/components/storage/Config.vue'
-import DeployInstanceDisplayName from '@/components/storage/DeployInstanceDisplayName.vue'
+import DeployIntegrationDisplayName from '@/components/storage/DeployIntegrationDisplayName.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import StorageEstimatedCosts from '@/components/storage/StorageEstimatedCosts.vue'
+import EstimatedCosts from '@/components/storage/EstimatedCosts.vue'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 import { mapGetters, mapState } from 'vuex'
 
@@ -94,21 +94,21 @@ export default {
   },
   components: {
     Config,
-    DeployInstanceDisplayName,
+    DeployIntegrationDisplayName,
     ExclamationIcon,
     EyeIcon,
     EyeOffIcon,
     HttpError,
     LoadingSpinner,
-    StorageEstimatedCosts,
+    EstimatedCosts,
   },
   data() {
     return {
       deployed: false,
       deploying: false,
-      deployedInstance: null,
+      deployedIntegration: null,
       httpError: null,
-      instance: {
+      integration: {
         name: '',
         configMode: 'advanced',
         data: {
@@ -116,7 +116,7 @@ export default {
           config: {}
         }
       },
-      instanceKey: null,
+      integrationKey: null,
       showApiKey: false
     }
   },
@@ -125,30 +125,30 @@ export default {
     ...mapState(['balance', 'isTestnet', 'session']),
     canDeploy() {
       return !this.deploying &&
-        this.instance.name &&
-        this.instance.data.config
+        this.integration.name &&
+        this.integration.data.config
     },
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
     },
     maskedApiKey() {
-      return this.deployedInstance.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
+      return this.deployedIntegration.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
     }
   },
   methods: {
-    continueToInstance() {
-      this.$router.push({ name: 'Storage Instance', params: { key: this.deployedInstance._key } })
+    continueToIntegration() {
+      this.$router.push({ name: 'Storage Integration', params: { key: this.deployedIntegration._key } })
     },
     async deployStorage() {
       try {
         this.deploying = true
         this.httpError = null
-        const { instance } = await api.storage.createInstance(
+        const { integration } = await api.storage.createIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance
+          this.integration
         )
-        this.deployedInstance = instance
+        this.deployedIntegration = integration
 
         await new Promise(resolve => setTimeout(resolve, 800))
         this.deployed = true
@@ -160,20 +160,20 @@ export default {
       }
     },
     onUpdateConfig(config, configMode) {
-      const instance = { ...this.instance }
-      instance.data.config = { ...instance.data.config, ...config }
-      instance.configMode = configMode
-      this.instance = instance
+      const integration = { ...this.integration }
+      integration.data.config = { ...integration.data.config, ...config }
+      integration.configMode = configMode
+      this.integration = integration
     },
     onUpdateName(name) {
-      this.instance = { ...this.instance, name }
+      this.integration = { ...this.integration, name }
     },
     toggleShowApiKey() {
       this.showApiKey = !this.showApiKey
     }
   },
   watch: {
-    instance() {
+    integration() {
       this.httpError = null
     }
   }

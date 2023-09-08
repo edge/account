@@ -11,15 +11,15 @@
       >Advanced</button>
     </div>
     <div class="mt-4">
-      <!-- <InstanceConfigCustomSimple v-if="isSelected('simple')"
+      <!-- <IntegrationConfigCustomSimple v-if="isSelected('simple')"
         :disableControls="disableControls"
-        :instanceConfig="config"
+        :integrationConfig="config"
         @edit-config="onEditConfig"
       /> -->
       <ConfigCustomAdvanced v-if="isSelected('advanced')"
         ref="ConfigCustomAdvanced"
-        :instanceConfig="config"
-        :initialInstanceConfig="initialConfig"
+        :integrationConfig="config"
+        :initialIntegrationConfig="initialConfig"
         @update-config="onUpdateConfig"
       />
     </div>

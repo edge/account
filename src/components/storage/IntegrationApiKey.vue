@@ -7,7 +7,7 @@
       </div>
       <!-- account number display -->
       <div class="api-key-wrapper">
-        <span v-if="showApiKey" class="api-key monospace">{{ instance.apiKey }}</span>
+        <span v-if="showApiKey" class="api-key monospace">{{ integration.apiKey }}</span>
         <span v-else class="api-key masked monospace">{{ maskedApiKey }}</span>
         <!-- hide/show account number button button -->
         <button
@@ -59,8 +59,8 @@ import { mapState } from 'vuex'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
 export default {
-  name: 'InstanceDelete',
-  props: ['instance'],
+  name: 'IntegrationDelete',
+  props: ['integration'],
   data() {
     return {
       httpError: '',
@@ -79,7 +79,7 @@ export default {
   computed: {
     ...mapState(['session']),
     maskedApiKey() {
-      return this.instance.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
+      return this.integration.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
     }
   },
   methods: {
@@ -90,7 +90,7 @@ export default {
         await api.storage.regenerateApiKey(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance._key
+          this.integration._key
         )
         setTimeout(() => {
           this.isRegenerating = false

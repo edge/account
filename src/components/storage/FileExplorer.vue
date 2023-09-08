@@ -5,7 +5,7 @@
   >
     <FileUploadOverlay
       v-show="showFileUploadOverlay"
-      :instance="instance"
+      :integration="integration"
       @drop-file="resetDrag"
       @close="closeFileUploadOverlay"
       @upload="updateFiles"
@@ -72,7 +72,7 @@
           v-for="item in files"
           :key="item.directory || item.filename"
           :ref="item.directory || item.filename"
-          :instance="instance"
+          :integration="integration"
           :item="item"
           :path="displayPath"
           @delete="updateFiles"
@@ -134,7 +134,7 @@ export default {
     ReplyIcon,
     TrashIcon
   },
-  props: ['instance'],
+  props: ['integration'],
   data() {
     return {
       addingNewDir: false,
@@ -178,7 +178,7 @@ export default {
         await api.storage.createDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance._key,
+          this.integration._key,
           this.path,
           newDirName
         )
@@ -248,7 +248,7 @@ export default {
         const { files, path } = await api.storage.getFiles(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance._key,
+          this.integration._key,
           this.path
         )
         this.files = files

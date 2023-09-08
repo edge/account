@@ -31,7 +31,7 @@
         </RadioGroupOption>
       </RadioGroup>
       <ConfigCustom
-        ref="instance-config-custom"
+        ref="integration-config-custom"
         v-show="configMode === 'custom'"
         :config="config"
         :disableControls="disableControls"
@@ -92,7 +92,7 @@ export default {
           nestedTwo: 'test nested two'
         }
       }
-      this.$refs['instance-config-custom'].resetConfig()
+      this.$refs['integration-config-custom'].resetConfig()
     },
     updateConfig() {
       let config = {}

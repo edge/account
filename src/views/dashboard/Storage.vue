@@ -3,22 +3,22 @@
     <div class="flex flex-col sm:flex-row justify-between">
       <h1>Edge Storage</h1>
       <router-link
-        v-if="instancesCount"
+        v-if="integrationsCount"
         :to="{ name: 'Storage Deploy' }"
         class="button button--success button--small h-full mb-5 sm:mb-0"
       >
         Deploy Storage
       </router-link>
     </div>
-    <InstanceList
-      v-show="instancesCount"
-      @update-instance-count="onUpdateInstancesCount"
+    <IntegrationList
+      v-show="integrationsCount"
+      @update-integration-count="onUpdateIntegrationsCount"
     />
     <div v-if="!loaded" class="flex items-center">
       <span>Loading storage deployments</span>
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
-    <div v-else-if="!instancesCount" class="box">
+    <div v-else-if="!integrationsCount" class="box">
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
         <p>You don't have any storage deployments yet. Once you create your first deployment it will be available here.</p>
         <router-link
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import InstanceList from '@/components/storage/InstanceList'
+import IntegrationList from '@/components/storage/IntegrationList'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 
@@ -43,13 +43,13 @@ export default {
     return 'Edge Account Portal » Storage'
   },
   components: {
-    InstanceList,
+    IntegrationList,
     LoadingSpinner
   },
   data() {
     return {
-      instances: [],
-      instancesCount: null,
+      integrations: [],
+      integrationsCount: null,
       loaded: false
     }
   },
@@ -57,8 +57,8 @@ export default {
     ...mapState(['services'])
   },
   methods: {
-    onUpdateInstancesCount(count) {
-      this.instancesCount = count
+    onUpdateIntegrationsCount(count) {
+      this.integrationsCount = count
       this.loaded = true
     }
   },

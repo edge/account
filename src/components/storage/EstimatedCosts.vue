@@ -59,7 +59,7 @@ import VueSlider from 'vue-slider-component'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'StorageEstimatedCosts',
+  name: 'EstimatedCosts',
   components: {
     VueSlider
   },

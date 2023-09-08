@@ -23,11 +23,11 @@
       </div>
     </div>
     <!-- delete confirmation modal -->
-    <StorageInstanceDestroyConfirmation
+    <StorageIntegrationDestroyConfirmation
       v-if="showConfirmationModal"
-      @modal-confirm="deleteInstance"
+      @modal-confirm="deleteIntegration"
       @modal-close="toggleConfirmationModal"
-      :instanceName="instance.name"
+      :integrationName="integration.name"
     />
   </div>
 </template>
@@ -38,12 +38,12 @@
 import * as api from '@/account-utils'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import StorageInstanceDestroyConfirmation from '@/components/confirmations/StorageInstanceDestroyConfirmation'
+import StorageIntegrationDestroyConfirmation from '@/components/confirmations/StorageIntegrationDestroyConfirmation'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'InstanceDelete',
-  props: ['instance'],
+  name: 'IntegrationDelete',
+  props: ['integration'],
   data() {
     return {
       httpError: '',
@@ -54,24 +54,24 @@ export default {
   components: {
     HttpError,
     LoadingSpinner,
-    StorageInstanceDestroyConfirmation
+    StorageIntegrationDestroyConfirmation
   },
   computed: {
     ...mapState(['session'])
   },
   methods: {
-    async deleteInstance() {
+    async deleteIntegration() {
       this.isDeleting = true
       try {
         this.toggleConfirmationModal()
-        await api.storage.deleteInstance(
+        await api.storage.deleteIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance._key
+          this.integration._key
         )
         setTimeout(() => {
           this.isDeleting = false
-          this.$emit('delete-instance')
+          this.$emit('delete-integration')
         }, 500)
       }
       catch (error) {

@@ -6,7 +6,7 @@
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
     <!-- cdn integrations list -->
-    <ul v-else-if="instances.length" class="space-y-2">
+    <ul v-else-if="integrations.length" class="space-y-2">
       <div class="float-right mb-2">
         <ListSortingMenu
           :fields="sortFields"
@@ -14,10 +14,10 @@
           @update-sort="updateSortQuery"
         />
       </div>
-      <InstanceListItem
-        v-for="instance in instances"
-        :key="instance._key"
-        :instance="instance"
+      <IntegrationListItem
+        v-for="integration in integrations"
+        :key="integration._key"
+        :integration="integration"
       />
       <Pagination
         :currentPage=currentPage
@@ -33,7 +33,7 @@
 /* global process */
 
 import * as api from '@/account-utils/'
-import InstanceListItem from '@/components/storage/InstanceListItem'
+import IntegrationListItem from '@/components/storage/IntegrationListItem'
 import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
@@ -46,17 +46,17 @@ const sortFields = [
 ]
 
 export default {
-  name: 'InstanceList',
+  name: 'IntegrationList',
   components: {
-    InstanceListItem,
+    IntegrationListItem,
     ListSortingMenu,
     LoadingSpinner,
     Pagination
   },
   data() {
     return {
-      instances: [],
-      iInstances: null,
+      integrations: [],
+      iIntegrations: null,
       limit: 10,
       loaded: false,
       metadata: { totalCount: 0 },
@@ -75,19 +75,19 @@ export default {
     changePage(newPage) {
       this.pageHistory = [...this.pageHistory, newPage]
     },
-    async updateInstances() {
+    async updateIntegrations() {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
-      const { results, metadata } = await api.storage.getInstances(
+      const { results, metadata } = await api.storage.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         params
       )
 
-      this.instances = results
+      this.integrations = results
       this.metadata = metadata
-      this.$emit('update-instance-count', metadata.totalCount)
+      this.$emit('update-integration-count', metadata.totalCount)
       this.loaded = true
     },
     updateSortQuery (newQuery) {
@@ -95,9 +95,9 @@ export default {
     }
   },
   async mounted() {
-    await this.updateInstances()
+    await this.updateIntegrations()
     this.iIntegrations = setInterval(() => {
-      this.updateInstances()
+      this.updateIntegrations()
     }, 10000)
   },
   unmounted() {
@@ -105,10 +105,10 @@ export default {
   },
   watch: {
     pageHistory() {
-      this.updateInstances()
+      this.updateIntegrations()
     },
     sortQuery() {
-      this.updateInstances()
+      this.updateIntegrations()
     }
   }
 }

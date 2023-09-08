@@ -1,15 +1,15 @@
 <template>
-  <div class="mainContent__inner instance">
+  <div class="mainContent__inner integration">
     <div class="w-max">
       <router-link :to="{ name: 'Storage' }" class="flex items-center space-x-1 hover:text-green mb-4">
         <ArrowLeftIcon class="w-4" /><span>Storage</span>
       </router-link>
     </div>
 
-    <!-- @TODO replace with editable instance name, like CdnIntegration -->
-    <div v-if="instance" class="w-full flex flex-wrap justify-between items-center">
-      <InstanceDisplayName :instance="instance" />
-      <div class="mb-4" v-if="instance">
+    <!-- @TODO replace with editable integration name, like CdnIntegration -->
+    <div v-if="integration" class="w-full flex flex-wrap justify-between items-center">
+      <IntegrationDisplayName :integration="integration" />
+      <div class="mb-4" v-if="integration">
         <StatusDot :isActive="true" :isInactive="false" :large="true" :statusText="'active'" />
       </div>
     </div>
@@ -45,7 +45,7 @@
     </div>
 
     <!-- tabs -->
-    <div v-else-if="instance" class="pt-4">
+    <div v-else-if="integration" class="pt-4">
       <TabGroup>
         <div class="absolute top-0 right-0 w-10 h-5 bg-gradient-to-l from-gray-200" />
           <TabList class="tabs pr-6">
@@ -90,22 +90,22 @@
                 <div class="float-left mr-2 mt-2"><ExclamationIcon class="w-5 text-red" /></div>
                 <div class="mt-2 text-red">You are unable to add, edit or delete files as your balance is low. Please add funds or enable Pay by Credit Card to re-enable this service.</div>
               </div>
-              <FileExplorer :instance="instance" ref="fileList" />
+              <FileExplorer :integration="integration" ref="fileList" />
             </TabPanel>
             <!-- configure -->
             <TabPanel>
-                <InstanceConfig :instance="instance" />
+                <IntegrationConfig :integration="integration" />
             </TabPanel>
             <TabPanel>
-              <InstanceApiKey
-                :instance="instance"
-                @regenerate="updateInstance"
+              <IntegrationApiKey
+                :integration="integration"
+                @regenerate="updateIntegration"
               />
             </TabPanel>
             <TabPanel>
-              <InstanceDestroy
-                :instance="instance"
-                @delete-instance="onDeleteInstance"
+              <IntegrationDestroy
+                :integration="integration"
+                @delete-integration="onDeleteIntegration"
               />
             </TabPanel>
           </TabPanels>
@@ -120,17 +120,17 @@
 
 import * as api from '@/account-utils'
 import FileExplorer from '@/components/storage/FileExplorer'
-import InstanceApiKey from '@/components/storage/InstanceApiKey'
-import InstanceConfig from '@/components/storage/InstanceConfig'
-import InstanceDestroy from '@/components/storage/InstanceDestroy'
-import InstanceDisplayName from '@/components/storage/InstanceDisplayName'
+import IntegrationApiKey from '@/components/storage/IntegrationApiKey'
+import IntegrationConfig from '@/components/storage/IntegrationConfig'
+import IntegrationDestroy from '@/components/storage/IntegrationDestroy'
+import IntegrationDisplayName from '@/components/storage/IntegrationDisplayName'
 import StatusDot from '@/components/StatusDot'
 import { ArrowLeftIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
-  name: 'StorageInstance',
+  name: 'StorageIntegration',
   title() {
     return 'Edge Account Portal » Storage'
   },
@@ -138,10 +138,10 @@ export default {
     ArrowLeftIcon,
     ExclamationIcon,
     FileExplorer,
-    InstanceApiKey,
-    InstanceConfig,
-    InstanceDestroy,
-    InstanceDisplayName,
+    IntegrationApiKey,
+    IntegrationConfig,
+    IntegrationDestroy,
+    IntegrationDisplayName,
     StatusDot,
     TabGroup,
     TabList,
@@ -152,8 +152,8 @@ export default {
   data() {
     return {
       deleted: false,
-      instance: null,
-      iInstance: null,
+      integration: null,
+      iIntegration: null,
       loading: false,
       notFound: false
     }
@@ -161,13 +161,13 @@ export default {
   computed: {
     ...mapGetters(['balanceSuspend']),
     ...mapState(['balance', 'config', 'session']),
-    instanceId() {
+    integrationId() {
       return this.$route.params.key
     },
     isActive() {
       // @TODO
       return true
-      // return this.instance.active
+      // return this.integration.active
     },
     statusText() {
       return this.isActive ? 'Active' : 'Inactive'
@@ -177,39 +177,39 @@ export default {
     onUploadFile() {
       this.$refs.recordsList.updateRecords()
     },
-    onDeleteInstance() {
-      clearInterval(this.iInstance)
+    onDeleteIntegration() {
+      clearInterval(this.iIntegration)
       this.deleted = true
     },
-    async updateInstance() {
+    async updateIntegration() {
       try {
-        const { instance } = await api.storage.getInstance(
+        const { integration } = await api.storage.getIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instanceId
+          this.integrationId
         )
-        this.instance = instance
+        this.integration = integration
       }
       catch (error) {
         console.error(error)
         if (error.status === 404) {
           this.notFound = true
-          clearInterval(this.iInstance)
+          clearInterval(this.iIntegration)
         }
       }
     }
   },
   mounted() {
     this.loading = true
-    this.updateInstance()
-    this.iInstance = setInterval(() => {
-      // this.updateInstance()
+    this.updateIntegration()
+    this.iIntegration = setInterval(() => {
+      // this.updateIntegration()
     }, 10 * 1000)
     this.loading = false
   },
   unmounted() {
-    clearInterval(this.iInstance)
-    this.iInstance = null
+    clearInterval(this.iIntegration)
+    this.iIntegration = null
   }
 }
 </script>
@@ -217,7 +217,7 @@ export default {
 .box.suspend {
   @apply pt-4;
 }
-.mainContent__inner.instance {
+.mainContent__inner.integration {
   @apply pt-0 mt-6;
 }
 </style>

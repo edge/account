@@ -69,7 +69,7 @@ export default {
     LoadingSpinner,
     XIcon
   },
-  props: ['instance'],
+  props: ['integration'],
   data() {
     return {
       dropZoneActive: false,
@@ -127,7 +127,7 @@ export default {
           this.files[index].status = 'uploading'
           await api.storage.uploadFile(
             process.env.VUE_APP_ACCOUNT_API_URL,
-            this.instance.apiKey,
+            this.integration.apiKey,
             this.path,
             file.file
           )

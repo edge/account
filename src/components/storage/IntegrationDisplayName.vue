@@ -4,14 +4,14 @@
       <input
         v-model="v$.newDisplayName.$model"
         @keypress.enter="confirmEdit"
-        ref="instance-name-input"
+        ref="integration-name-input"
         class="displayName__input"
         placeholder="Enter a display name"
         type="text"
       />
       <ValidationError :errors="v$.newDisplayName.$errors" />
     </div>
-    <h1 v-else class="w-max mb-0">{{ instance.name }}</h1>
+    <h1 v-else class="w-max mb-0">{{ integration.name }}</h1>
 
     <div v-if=isEditing class="mt-3">
       <button @click=confirmEdit :disabled="!canConfirmEdit" class="ml-2">
@@ -42,8 +42,8 @@ import useVuelidate from '@vuelidate/core'
 import { CheckIcon, PencilIcon, XIcon } from '@heroicons/vue/outline'
 
 export default {
-  name: 'InstanceDisplayName',
-  props: ['disableControls', 'instance'],
+  name: 'IntegrationDisplayName',
+  props: ['disableControls', 'integration'],
   components: {
     CheckIcon,
     LoadingSpinner,
@@ -80,16 +80,16 @@ export default {
       try {
         /** @todo save name using API */
         this.isSaving = true
-        await api.storage.updateInstance(
+        await api.storage.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance._key,
+          this.integration._key,
           {
-            ...this.instance,
+            ...this.integration,
             name: this.newDisplayName
           }
         )
-        this.$emit('update-instance')
+        this.$emit('update-integration')
         setTimeout(() => {
           this.isSaving = false
           this.isEditing = false
@@ -103,9 +103,9 @@ export default {
     },
     async startEditing() {
       this.isEditing = true
-      this.newDisplayName = this.instance.name
+      this.newDisplayName = this.integration.name
       await (this.$nextTick())
-      this.$refs['instance-name-input'].focus()
+      this.$refs['integration-name-input'].focus()
     }
   },
   setup() {

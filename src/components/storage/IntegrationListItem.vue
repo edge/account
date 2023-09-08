@@ -1,7 +1,7 @@
 <template>
   <li
-    @click="goToInstance"
-    class="instanceList__item"
+    @click="goToIntegration"
+    class="integrationList__item"
     :class="isActive ? 'active' : isInactive ? 'inactive' : ''"
   >
     <!-- name -->
@@ -9,9 +9,9 @@
       <span
         class="text-md truncate"
         :class="isActive ? 'text-green' : 'text-red'"
-        :title="instance.name"
+        :title="integration.name"
       >
-        {{ instance.name }}
+        {{ integration.name }}
       </span>
     </div>
     <!-- domain -->
@@ -32,29 +32,29 @@ import StatusDot from '@/components/StatusDot'
 import moment from 'moment'
 
 export default {
-  name: 'InstanceListItem',
+  name: 'IntegrationListItem',
   components: {
     StatusDot
   },
-  props: ['instance'],
+  props: ['integration'],
   computed: {
     created() {
-      const created = moment(this.instance.created).fromNow()
+      const created = moment(this.integration.created).fromNow()
       return created === 'a few seconds ago' ? 'Just now' : created
     },
     isActive() {
-      return this.instance.active
+      return this.integration.active
     },
     isInactive() {
-      return this.instance.suspended || !this.isActive
+      return this.integration.suspended || !this.isActive
     },
     statusText() {
       return this.isActive ? 'Active' : 'Suspended'
     }
   },
   methods: {
-    goToInstance() {
-      this.$router.push(`/storage/${this.instance._key}`)
+    goToIntegration() {
+      this.$router.push(`/storage/${this.integration._key}`)
     }
   }
 }
@@ -66,14 +66,14 @@ font-size: 0.8rem;
 }
 
 /* list item */
-.instanceList__item {
+.integrationList__item {
 @apply grid auto-rows-auto gap-y-4 bg-white text-gray-500 border-t-8 border-gray-400 rounded-md w-full p-5;
 @apply cursor-pointer transition-all duration-100;
 }
-.instanceList__item.active {
+.integrationList__item.active {
 @apply border-green;
 }
-.instanceList__item.inactive {
+.integrationList__item.inactive {
 @apply border-red;
 }
 
@@ -92,7 +92,7 @@ font-size: 0.8rem;
 }
 
 @media (min-width: 350px) {
-  .instanceList__item {
+  .integrationList__item {
     grid-template-columns: repeat(2, 1fr);
   }
   .status {
@@ -104,7 +104,7 @@ font-size: 0.8rem;
 }
 
 @screen sm {
-  .instanceList__item {
+  .integrationList__item {
     @apply border-l-8 border-t-0;
     @apply flex justify-between gap-x-2;
   }

@@ -23,7 +23,7 @@ import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
 
 export default {
-  name: 'DeployInstanceDisplayName',
+  name: 'DeployIntegrationDisplayName',
   props: ['disableControls', 'initialDisplayName'],
   components: {
     ValidationError

@@ -28,7 +28,7 @@ import Shield from '@/views/dashboard/Shield'
 import SignIn from '@/views/landing/SignIn'
 import Storage from '@/views/dashboard/Storage'
 import StorageDeploy from '@/views/dashboard/StorageDeploy'
-import StorageInstance from '@/views/dashboard/StorageInstance'
+import StorageIntegration from '@/views/dashboard/StorageIntegration'
 import Support from '@/views/dashboard/Support'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
@@ -141,8 +141,8 @@ const routes = [
       },
       {
         path: 'storage/:key',
-        name: 'Storage Instance',
-        component: StorageInstance
+        name: 'Storage Integration',
+        component: StorageIntegration
       },
       {
         path: '/support',

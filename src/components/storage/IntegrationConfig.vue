@@ -1,6 +1,6 @@
 <template>
   <Config
-    ref="instance-config"
+    ref="integration-config"
     :disableControls="disableControls"
     :initialConfig="liveConfig"
     :initialConfigMode="liveConfigMode"
@@ -47,8 +47,8 @@ import _ from 'lodash'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'InstanceConfig',
-  props: ['disableControls', 'instance'],
+  name: 'IntegrationConfig',
+  props: ['disableControls', 'integration'],
   components: {
     Config,
     HttpError,
@@ -72,10 +72,10 @@ export default {
       return false
     },
     liveConfig() {
-      return this.instance.data.config
+      return this.integration.data.config
     },
     liveConfigMode() {
-      return this.instance.configMode
+      return this.integration.configMode
     }
   },
   methods: {
@@ -85,24 +85,24 @@ export default {
     },
     resetChanges() {
       this.httpError = null
-      this.$refs['instance-config'].resetConfig()
-      this.workingConfig = { ...this.instance.data.config }
+      this.$refs['integration-config'].resetConfig()
+      this.workingConfig = { ...this.integration.data.config }
     },
     async saveChanges() {
-      /** @todo save instance updates using api */
-      const updatedInstance = { ...this.instance }
-      updatedInstance.configMode = this.configMode
-      updatedInstance.data.config = {
-        ...updatedInstance.data.config,
+      /** @todo save integration updates using api */
+      const updatedIntegration = { ...this.integration }
+      updatedIntegration.configMode = this.configMode
+      updatedIntegration.data.config = {
+        ...updatedIntegration.data.config,
         ...this.workingConfig
       }
       try {
         this.isSaving = true
-        await api.storage.updateInstance(
+        await api.storage.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.instance._key,
-          updatedInstance
+          this.integration._key,
+          updatedIntegration
         )
         this.$emit('refresh-integration')
       }
@@ -115,7 +115,7 @@ export default {
     }
   },
   mounted() {
-    this.workingConfig = { ...this.instance.data.config }
+    this.workingConfig = { ...this.integration.data.config }
   },
   watch: {
     workingConfig() {

@@ -7,7 +7,7 @@ import { toQueryString } from './helpers'
 
 // dummy data
 import _ from 'lodash'
-const instances = [
+const integrations = [
   {
     _key: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
     apiKey: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
@@ -93,24 +93,24 @@ const getDirectory = (path) => {
 }
 
 // add a file at a given path
-export const createDirectory = async (host, sessionId, instanceId, path, directoryName) => {
+export const createDirectory = async (host, sessionId, integrationId, path, directoryName) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 200))
   const dirData = { directory: directoryName, children: [] }
   getDirectory(path).push(dirData)
   return dirData
-  const url = `${host}/storage/${instanceId}`
+  const url = `${host}/storage/${integrationId}`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send(data)
   return response.body
 }
 
-// create a new storage instance
-export const createInstance = async (host, sessionId, data) => {
+// create a new storage integration
+export const createIntegration = async (host, sessionId, data) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 600))
-  const instance = {
+  const integration = {
     _key: '1af15b84-fe74-4416-83d8-df1b81a73ae1',
     apiKey: '1af15b84-fe74-4416-83d8-df1b81a73ae1',
     ...data,
@@ -118,8 +118,8 @@ export const createInstance = async (host, sessionId, data) => {
     updated: Date.now(),
     active: true
   }
-  instances.push(instance)
-  return { instance }
+  integrations.push(integration)
+  return { integration }
   const url = `${host}/storage`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
@@ -128,14 +128,14 @@ export const createInstance = async (host, sessionId, data) => {
 }
 
 // delete a directory and associated files
-export const deleteDirectory = async (host, sessionId, instanceId, path, directory) => {
+export const deleteDirectory = async (host, sessionId, integrationId, path, directory) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 400))
   const dir = getDirectory(path)
   const index = dir.findIndex(i => i.directory === directory)
   dir.splice(index, 1)
   return directory
-  const url = `${host}/storage/${instanceId}/${path}`
+  const url = `${host}/storage/${integrationId}/${path}`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -153,48 +153,48 @@ export const deleteFile = async (host, apiKey, path, filename) => {
   return 'tbd'
 }
 
-// delete storage instance
-export const deleteInstance = async (host, sessionId, instanceId) => {
+// delete storage integration
+export const deleteIntegration = async (host, sessionId, integrationId) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 1200))
-  const index = instances.findIndex(i => i._key === instanceId)
-  const instance = instances[index]
-  instances.splice(index, 1)
-  return { instance }
-  const url = `${host}/storage/${instanceId}`
+  const index = integrations.findIndex(i => i._key === integrationId)
+  const integration = integrations[index]
+  integrations.splice(index, 1)
+  return { integration }
+  const url = `${host}/storage/${integrationId}`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
-// get storage instance by id
-export const getInstance = async (host, sessionId, instanceId) => {
+// get storage integration by id
+export const getIntegration = async (host, sessionId, integrationId) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 200))
-  return { instance: instances.find(i => i._key === instanceId) }
-  const url = `${host}/storage/${instanceId}`
+  return { integration: integrations.find(i => i._key === integrationId) }
+  const url = `${host}/storage/${integrationId}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
 // get files in give directory
-export const getFiles = async (host, sessionId, instanceId, path) => {
+export const getFiles = async (host, sessionId, integrationId, path) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 200))
   return { files: getDirectory(path), path }
-  const url = `${host}/storage/${instanceId}/${path}`
+  const url = `${host}/storage/${integrationId}/${path}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
-// get all storage instances for session account
-export const getInstances = async (host, sessionId, params) => {
+// get all storage integrations for session account
+export const getIntegrations = async (host, sessionId, params) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 200))
   return {
-    results: instances,
+    results: integrations,
     metadata: {
       count: 2,
       totalCount: 2
@@ -208,21 +208,21 @@ export const getInstances = async (host, sessionId, params) => {
   return response.body
 }
 
-// regenerate instance api key
-export const regenerateApiKey = async (host, sessionId, instanceId) => {
+// regenerate integration api key
+export const regenerateApiKey = async (host, sessionId, integrationId) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 600))
-  const index = instances.findIndex(i => i._key === instanceId)
-  instances[index].apiKey = 'fe74-1af15b84-83d8-4416-df1b81a73ae1'
-  return { instance: instances[index] }
-  const url = `${host}/storage/${instanceId}/regenerate`
+  const index = integrations.findIndex(i => i._key === integrationId)
+  integrations[index].apiKey = 'fe74-1af15b84-83d8-4416-df1b81a73ae1'
+  return { integration: integrations[index] }
+  const url = `${host}/storage/${integrationId}/regenerate`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
 // rename directory
-export const renameDirectory = async (host, sessionId, instanceId, path, directory, newDirectoryName) => {
+export const renameDirectory = async (host, sessionId, integrationId, path, directory, newDirectoryName) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 400))
   const dir = getDirectory(path)
@@ -245,14 +245,14 @@ export const renameFile = async (host, apiKey, path, filename, newFilename) => {
   return 'tbd'
 }
 
-// update storage instance
-export const updateInstance = async (host, sessionId, instanceId, data) => {
+// update storage integration
+export const updateIntegration = async (host, sessionId, integrationId, data) => {
   // dummy response
-  const index = instances.findIndex(i => i._key === instanceId)
-  const instance = _.merge(instances[index], data)
-  instances[index] = instance
-  return { instance }
-  const url = `${host}/storage/${instanceId}`
+  const index = integrations.findIndex(i => i._key === integrationId)
+  const integration = _.merge(integrations[index], data)
+  integrations[index] = integration
+  return { integration }
+  const url = `${host}/storage/${integrationId}`
   const response = await superagent.put(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send(data)
