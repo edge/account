@@ -2,14 +2,14 @@
   <div class="box">
     <h4>Estimated Costs</h4>
     <p class="pb-4">Use the calculator below to estimate costs based on expected usage. Actual costs will be dependent on usage.</p>
-    <div class="w-full grid grid-cols-1 gap-x-4 gap-y-6">
+    <div class="w-full grid grid-cols-1 gap-x-4 gap-y-6 xl:grid-cols-2">
       <div class="flex-1 flex flex-col">
         <div class="slider__box" :class="disableControls ? 'disabled' : ''">
-          <span class="slider__title">Traffic (GB per day)</span>
+          <span class="slider__title">Storage (GB per day)</span>
           <vue-slider
             :disabled=disableControls
-            v-model=trafficValue
-            :vData="trafficMarks"
+            v-model=storageValue
+            :vData="storageMarks"
             ref="requestsSlider"
             :dotSize="20"
             width="100%"
@@ -18,7 +18,7 @@
             :max="1000"
             adsorb
             tooltip="always"
-            :tooltip-formatter=formatSliderTraffic
+            :tooltip-formatter=formatSliderStorage
             tooltipPlacement="top"
             :tooltip-style="styles.tooltip"
             :process-style="styles.process"
@@ -28,8 +28,9 @@
           />
         </div>
         <div class="slider_costs">
-          <span><span class="text-md">${{ config.cdn.dataCost }}</span> per GB traffic</span>
-          <span><span class="text-md">${{ dailyTrafficCost.toFixed(4) }}</span> per day</span>
+          <!-- @TODO use value from config -->
+          <span><span class="text-md">${{ 0.025 }}</span> per GB storage</span>
+          <span><span class="text-md">${{ dailyStorageCost.toFixed(4) }}</span> per day</span>
         </div>
       </div>
     </div>
@@ -37,7 +38,7 @@
       <div class="flex flex-col items-baseline">
         <span class="text-green">Estimated Daily Usage</span>
         <div class="usage_and_cost">
-          <span class="text-lg flex-shrink-0">{{ trafficValueDisplay }} Traffic</span>
+          <span class="text-lg flex-shrink-0">{{ storageValueDisplay }} Storage</span>
         </div>
       </div>
       <div class="flex flex-col items-baseline">
@@ -58,7 +59,7 @@ import VueSlider from 'vue-slider-component'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'CdnEstimatedCosts',
+  name: 'StorageEstimatedCosts',
   components: {
     VueSlider
   },
@@ -72,7 +73,7 @@ export default {
         process: { background: '#4ecd5f' },
         tooltip: { background: '#4ecd5f', borderColor: '#4ecd5f' }
       },
-      trafficMarks: [
+      storageMarks: [
         { value: '5', label: '5' },
         { value: '10', label: '10' },
         { value: '20', label: '20' },
@@ -82,28 +83,29 @@ export default {
         { value: '500', label: '500' },
         { value: '1000', label: '1000' }
       ],
-      trafficValue: 5
+      storageValue: 5
     }
   },
   computed: {
     ...mapState(['config']),
     dailyTotalCost() {
-      return this.dailyTrafficCost
+      return this.dailyStorageCost
     },
-    dailyTrafficCost() {
-      return this.trafficValue * 1e9 * this.config.cdn.dataCost / this.config.cdn.dataCostBasis
+    dailyStorageCost() {
+      /** @TODO use value from config */
+      return this.storageValue * 0.025
     },
     monthlyTotalCost() {
       return this.dailyTotalCost * 30
     },
-    trafficValueDisplay() {
-      return this.trafficValue >= 1000 ? `${this.trafficValue / 1000} TB` : `${this.trafficValue} GB`
+    storageValueDisplay() {
+      return this.storageValue >= 1000 ? `${this.storageValue / 1000} TB` : `${this.storageValue} GB`
     }
   },
   methods: {
-    formatSliderTraffic(traffic) {
-      if (traffic < 1000) return `${traffic} GB`
-      else return `${(traffic / 1000)} TB`
+    formatSliderStorage(storage) {
+      if (storage < 1000) return `${storage} GB`
+      else return `${(storage / 1000)} TB`
     }
   }
 }

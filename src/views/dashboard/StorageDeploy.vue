@@ -53,7 +53,7 @@
         @update-config="onUpdateConfig"
         :disableControls="disableControls"
       />
-      <DeployInstanceEstimatedCosts />
+      <StorageEstimatedCosts />
 
       <!-- deploy button -->
       <button
@@ -80,10 +80,10 @@
 import * as api from '@/account-utils/'
 import Config from '@/components/storage/Config.vue'
 import DeployInstanceDisplayName from '@/components/storage/DeployInstanceDisplayName.vue'
-import DeployInstanceEstimatedCosts from '@/components/storage/DeployInstanceEstimatedCosts.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import StorageEstimatedCosts from '@/components/storage/StorageEstimatedCosts.vue'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 import { mapGetters, mapState } from 'vuex'
 
@@ -95,12 +95,12 @@ export default {
   components: {
     Config,
     DeployInstanceDisplayName,
-    DeployInstanceEstimatedCosts,
     ExclamationIcon,
     EyeIcon,
     EyeOffIcon,
     HttpError,
-    LoadingSpinner
+    LoadingSpinner,
+    StorageEstimatedCosts,
   },
   data() {
     return {
