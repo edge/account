@@ -54,7 +54,7 @@
           <div></div>
           <div v-if="loaded" @click="toggleSelectAllFiles" class="checkbox" :class="allItemsSelected && 'selected'">
             <CheckIcon v-if="allItemsSelected" class="w-4 h-4 text-white"/>
-            <div class="bg-gray-400 w-3 h-3" v-else-if="someItemsSelected"></div>
+            <MinusIcon v-else-if="someItemsSelected" class="w-3 h-3" />
           </div>
         </div>
         <!-- back dir (..) -->
@@ -74,16 +74,20 @@
           <span>This folder is empty</span>
         </div>
         <FileExplorerItem
-          v-for="item in files"
+          v-for="(item, index) in files"
           :key="item.directory || item.filename"
           :ref="item.directory || item.filename"
+          :index="index"
           :integration="integration"
           :item="item"
           :path="displayPath"
           @delete="updateFiles"
           @rename="updateFiles"
-          @select-file="onSelectFile"
+          @select-item="onSelectItem"
+          @select-item-ctrl="onSelectItemWithCtrl"
+          @select-item-shift="onSelectItemWithShift"
           @update-path="updatePath"
+          @view-file="onViewFile"
         />
       </div>
     </div>
@@ -115,6 +119,7 @@ import {
   ArrowLeftIcon,
   CheckIcon,
   FolderAddIcon,
+  MinusIcon,
   ReplyIcon,
   TrashIcon
 } from '@heroicons/vue/outline'
@@ -133,6 +138,7 @@ export default {
     FileUploadOverlay,
     FolderAddIcon,
     LoadingSpinner,
+    MinusIcon,
     ReplyIcon,
     TrashIcon
   },
@@ -145,6 +151,7 @@ export default {
       displayPath: '',
       dragCounter: 0,
       files: [],
+      lastSelectedIndex: 0,
       loaded: false,
       loading: false,
       // path is the selected directory, regardless of loaded state
@@ -227,7 +234,30 @@ export default {
         this.resetDrag()
       }
     },
-    onSelectFile(file) {
+    onSelectItem(index) {
+      this.itemRefs.forEach((ref, i) => {
+        if (index === i) ref.selected = !ref.selected
+        else ref.selected = false
+      })
+      this.lastSelectedIndex = index
+    },
+    onSelectItemWithCtrl(index) {
+      this.itemRefs[index].selected = !this.itemRefs[index].selected
+      this.lastSelectedIndex = index
+    },
+    onSelectItemWithShift(index) {
+      const startIndex = Math.min(index, this.lastSelectedIndex)
+      const endIndex = Math.max(index, this.lastSelectedIndex) + 1
+
+      let selected = true
+      if (this.itemRefs[index].selected) selected = false
+
+      this.itemRefs
+        .slice(startIndex, endIndex)
+        .forEach((ref) => ref.selected = selected)
+      this.lastSelectedIndex = index
+    },
+    onViewFile(file) {
       this.selectedFile = file
     },
     openFileUploadOverlay() {
@@ -284,8 +314,14 @@ export default {
     this.updateFiles()
   },
   watch: {
+    allItemsSelected() {
+      if (this.allItemsSelected) this.lastSelectedIndex = this.itemRefs.length - 1
+    },
     async path() {
       await this.updateFiles()
+    },
+    someItemsSelected() {
+      if (!this.someItemsSelected) this.lastSelectedIndex = 0
     }
   }
 }
@@ -294,14 +330,17 @@ export default {
 <style scoped>
 .file-explorer {
   @apply relative flex mt-4 mb-8;
-  min-height: 600px;
-  max-height: 768px;
+  height: 700px;
 }
 
 .item-row {
-  @apply w-full grid gap-x-4 items-center py-1;
+  @apply w-full grid gap-x-4 items-center py-1 pl-2 pr-1;
   grid-template-columns: max-content auto 150px max-content max-content;
 }
+.item-row.selected {
+  @apply bg-gray-300 rounded-md;
+}
+
 .checkbox {
   @apply border border-gray-600 rounded-sm w-4 h-4 hover:border-green cursor-pointer flex items-center justify-center;
 }

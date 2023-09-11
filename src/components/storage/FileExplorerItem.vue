@@ -1,5 +1,14 @@
 <template>
-  <div class="item-row">
+  <!--
+    "@click.stop" is used on a number of elements to prevent event bubbling.
+    This is so that clicking on a button or input doesn't also select/deselect the item.
+  -->
+  <div
+    @click.exact="$emit('select-item', this.index)"
+    @click.ctrl="$emit('select-item-ctrl', this.index)"
+    @click.shift="$emit('select-item-shift', this.index)"
+    class="item-row" :class="selected && 'selected'"
+  >
     <!-- icons -->
     <!-- directory with files -->
     <FolderOpenIcon v-if="item.directory && item.children && item.children.length"  class="icon w-4" />
@@ -15,6 +24,7 @@
         v-if="editing"
         ref="new-name-input"
         v-model="newName"
+        @click.stop=""
         @keypress.enter="renameItem"
         @keyup.esc="cancelEditing"
         type="text"
@@ -23,35 +33,38 @@
       />
       <!-- display name -->
       <div v-else-if="itemName" class="truncate">
-        <span class="name truncate" @click="openItem">{{ itemName }}</span>
+        <span class="name truncate select-none" @click.stop="onClickItemName">{{ itemName }}</span>
       </div>
     </div>
 
     <!-- file size -->
-    <div><span class="inline-block w-full text-right pr-10">{{ formattedSize }}</span></div>
+    <div><span class="inline-block w-full text-right pr-10 select-none">{{ formattedSize }}</span></div>
 
     <!-- actions -->
     <div v-if="editing" class="flex space-x-2 items-center">
-      <button @click="renameItem" :disabled="renaming" class="item-action">
+      <button @click.stop="renameItem" :disabled="renaming" class="item-action">
         <LoadingSpinner v-if="renaming" class="w-4" />
         <CheckIcon v-else class="w-4 text-green hover:text-green-300" />
       </button>
-      <button @click="cancelEditing" :disabled="renaming" class="item-action">
+      <button @click.stop="cancelEditing" :disabled="renaming" class="item-action">
         <XIcon class="w-4 text-red hover:text-red-700" :class="renaming && 'disabled'" />
       </button>
     </div>
     <div v-else class="flex space-x-2 items-center">
-      <button @click="startEditing" :disabled="deleting" class="item-action" >
+      <button @click.stop="startEditing" :disabled="deleting" class="item-action" >
         <PencilIcon class="w-4 hover:text-green" :class="deleting && 'disabled'" />
       </button>
-      <button @click="toggleDeleteConfirmationModal" :disabled="deleting" class="item-action text-red hover:text-red-700">
+      <button @click.stop="toggleDeleteConfirmationModal" :disabled="deleting" class="item-action text-red hover:text-red-700">
         <LoadingSpinner v-if="deleting" class="w-4" />
         <TrashIcon v-else class="w-4" />
       </button>
     </div>
 
     <!-- selected checkbox -->
-    <div @click="toggleSelectItem" class="checkbox" :class="selected && 'selected'">
+    <div
+      class="checkbox"
+      :class="selected && 'selected'"
+    >
       <CheckIcon v-if="selected" class="w-4 h-4 text-white"/>
     </div>
 
@@ -96,7 +109,7 @@ export default {
     TrashIcon,
     XIcon
   },
-  props: ['integration', 'item', 'path'],
+  props: ['integration', 'index', 'item', 'path'],
   data() {
     return {
       deleting: false,
@@ -152,9 +165,9 @@ export default {
       if (!this.path) this.$emit('update-path', (this.item.directory))
       else this.$emit('update-path', (this.path + '/' + this.item.directory))
     },
-    openItem() {
+    onClickItemName() {
       if (this.item.directory) this.openDirectory()
-      else this.$emit('select-file', this.item)
+      else this.$emit('view-file', this.item)
     },
     async renameItem() {
       if (!this.newName) return
@@ -192,9 +205,6 @@ export default {
     },
     toggleDeleteConfirmationModal() {
       this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
-    },
-    toggleSelectItem() {
-      this.selected = !this.selected
     }
   }
 }
