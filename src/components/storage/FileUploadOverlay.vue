@@ -25,7 +25,7 @@
       </div>
       <div v-if="files.length" class="file-list">
         <div v-for="file in files" :key="file.id" class="file">
-          <span>{{ file.name }}</span>
+          <span class="truncate">{{ file.name }}</span>
           <div v-if="file.status === 'uploading'"><LoadingSpinner class="w-4" /></div>
           <div v-else-if="file.status === 'uploaded'"><CheckIcon class="w-4 text-green" /></div>
           <button v-else @click="removeFile(file.id)"><XIcon class="w-4 text-red" /></button>
@@ -164,7 +164,8 @@ export default {
 }
 
 .file-list {
-  @apply w-full mt-2;
+  @apply w-full mt-2 overflow-y-auto flex-grow-0;
+  max-height: 300px
 }
 
 .file {

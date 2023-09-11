@@ -34,10 +34,12 @@ export default {
 
 <style scoped>
 .file-explorer-overlay {
-  @apply absolute top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 z-10 rounded-lg flex items-center justify-center;
+  @apply absolute top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 z-10 rounded-lg flex sm:items-center justify-center;
 }
 .panel {
-  @apply inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-md sm:w-full;
+  @apply inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 align-middle max-w-md w-full;
+  height: max-content;
+  max-height: 600px;
 }
 .header {
   @apply flex flex-col w-full items-center text-2xl;

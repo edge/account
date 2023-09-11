@@ -11,7 +11,7 @@
   >
     <!-- icons -->
     <!-- directory with files -->
-    <FolderOpenIcon v-if="item.directory && item.children && item.children.length"  class="icon w-4" />
+    <FolderOpenIcon v-if="item.directory && item.children && item.children.length" class="icon w-4" />
     <!-- empty directory -->
     <FolderIcon v-else-if="item.directory" class="icon w-4" />
     <!-- file -->
@@ -38,7 +38,7 @@
     </div>
 
     <!-- file size -->
-    <div><span class="inline-block w-full text-right pr-10 select-none">{{ formattedSize }}</span></div>
+    <div class="hidden sm:block"><span class="inline-block w-full text-right pr-10 select-none">{{ formattedSize }}</span></div>
 
     <!-- actions -->
     <div v-if="editing" class="flex space-x-2 items-center">
@@ -63,6 +63,9 @@
     <!-- selected checkbox -->
     <div
       class="checkbox"
+      @click.stop.exact="$emit('select-item-ctrl', this.index)"
+      @click.stop.ctrl="$emit('select-item-ctrl', this.index)"
+      @click.stop.shift="$emit('select-item-shift', this.index)"
       :class="selected && 'selected'"
     >
       <CheckIcon v-if="selected" class="w-4 h-4 text-white"/>

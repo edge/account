@@ -45,12 +45,12 @@
       </div>
 
       <!-- file explorer -->
-      <div id="file-list" class="w-full flex flex-col pr-2 overflow-y-auto">
+      <div class="w-full flex flex-col overflow-y-auto">
         <!-- headers -->
         <div class="item-row font-bold border-b border-gray" >
           <div class="w-4"></div>
           <div>Name</div>
-          <div>Size</div>
+          <div class="hidden sm:block">Size</div>
           <div></div>
           <div v-if="loaded" @click="toggleSelectAllFiles" class="checkbox" :class="allItemsSelected && 'selected'">
             <CheckIcon v-if="allItemsSelected" class="w-4 h-4 text-white"/>
@@ -165,15 +165,6 @@ export default {
     ...mapState(['session']),
     allItemsSelected() {
       return this.selectedItems.length && this.selectedItems.length === this.files.length
-    },
-    fileListOverflow() {
-      const el = document.getElementById('file-list')
-      if (!el) return false
-      const curOverflow = el.style.overflow
-      if (!curOverflow || curOverflow === 'visible' ) el.style.overflow = 'hidden'
-      const isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight
-      el.style.overflow = curOverflow
-      return isOverflowing
     },
     itemRefs() {
       return this.loaded && !this.loading && this.files.map(f => this.$refs[f.filename || f.directory][0])
@@ -335,7 +326,12 @@ export default {
 
 .item-row {
   @apply w-full grid gap-x-4 items-center py-1 pl-2 pr-1;
-  grid-template-columns: max-content auto 150px max-content max-content;
+  grid-template-columns: max-content auto max-content max-content;
+}
+@screen sm {
+  .item-row {
+    grid-template-columns: max-content auto 150px max-content max-content;
+  }
 }
 .item-row.selected {
   @apply bg-gray-300 rounded-md;
