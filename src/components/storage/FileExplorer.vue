@@ -60,7 +60,7 @@
         <!-- back dir (..) -->
         <div v-if="displayPath" class="item-row">
           <ReplyIcon @click="backDir" class="w-4 icon cursor-pointer" />
-          <div @click="backDir"><span class="name">..</span></div>
+          <div><span @click="backDir" class="name">..</span></div>
         </div>
         <!-- new directory input -->
         <FileExplorerNewDirectory
