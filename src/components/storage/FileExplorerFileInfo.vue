@@ -10,15 +10,15 @@
       <div class="flex flex-col space-y-2">
         <div class="info size">
           <span class="label">Size:</span>
-          <span>{{ formattedSize }}</span>
+          <span class="value">{{ formattedSize }}</span>
         </div>
         <div class="info uploaded">
           <span class="label">Uploaded:</span>
-          <span>{{ formattedCreated }}</span>
+          <span class="value">{{ formattedCreated }}</span>
         </div>
         <div class="info modified">
           <span class="label">Last Modified:</span>
-          <span>{{ formattedUpdated }}</span>
+          <span class="value">{{ formattedUpdated }}</span>
         </div>
       </div>
     </div>
@@ -80,7 +80,13 @@ export default {
 }
 
 .info {
-  @apply w-full flex justify-between;
+  @apply w-full flex flex-col;
+}
+.info .label {
+  @apply text-black;
+}
+.info .value {
+  @apply text-gray-500;
 }
 
 .close-icon {
