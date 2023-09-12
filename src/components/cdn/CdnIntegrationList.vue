@@ -42,7 +42,7 @@ import { mapState } from 'vuex'
 const sortFields = [
   { label: 'Name', param: 'name'},
   { label: 'Created', param: 'created'},
-  { label: 'Domain', param: 'data.domain' },
+  { label: 'Domain', param: 'data.config.domain' },
   { label: 'Status', param: 'active'}
 ]
 

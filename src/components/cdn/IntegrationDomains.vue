@@ -127,10 +127,10 @@ export default {
       isSaving: false,
       workingDomains: [
         {
-          name: this.integration.data.domain,
+          name: this.integration.data.config.domain,
           primary: true
         },
-        ...this.integration.data.additionalDomains.map(domain => ({ name: domain }))
+        ...this.integration.data.config.additionalDomains.map(domain => ({ name: domain }))
       ]
     }
   },
@@ -145,10 +145,10 @@ export default {
     liveDomains() {
       return [
         {
-          name: this.integration.data.domain,
+          name: this.integration.data.config.domain,
           primary: true
         },
-        ...this.integration.data.additionalDomains.map(domain => ({ name: domain }))
+        ...this.integration.data.config.additionalDomains.map(domain => ({ name: domain }))
       ]
     }
   },
@@ -196,8 +196,8 @@ export default {
     async saveChanges() {
       const updatedIntegration = { ...this.integration }
       const domain = this.workingDomains.find(domain => domain.primary)
-      updatedIntegration.data.domain = domain && domain.name
-      updatedIntegration.data.additionalDomains = this.workingDomains.filter(domain =>  !domain.primary).map(domain => domain.name)
+      updatedIntegration.data.config.domain = domain && domain.name
+      updatedIntegration.data.config.additionalDomains = this.workingDomains.filter(domain =>  !domain.primary).map(domain => domain.name)
       try {
         this.isSaving = true
         await api.integration.updateIntegration(
@@ -230,10 +230,10 @@ export default {
   mounted() {
     this.workingDomains =  [
       {
-        name: this.integration.data.domain,
+        name: this.integration.data.config.domain,
         primary: true
       },
-      ...this.integration.data.additionalDomains.map(domain => ({ name: domain }))
+      ...this.integration.data.config.additionalDomains.map(domain => ({ name: domain }))
     ],
     this.updateDnsRecords()
   }

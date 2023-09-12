@@ -173,7 +173,7 @@ export default {
     canDeploy() {
       return !this.deploying &&
         this.integration.name &&
-        this.integration.data.domain &&
+        this.integration.data.config.domain &&
         this.integration.data.config.origin
     },
     disableControls() {
@@ -256,8 +256,8 @@ export default {
     onUpdateDomains(domains) {
       const integration = { ...this.integration }
       const domain = domains.find(domain => domain.primary)
-      integration.data.domain = domain && domain.name
-      integration.data.additionalDomains = domains.filter(domain =>  !domain.primary).map(domain => domain.name)
+      integration.data.config.domain = domain && domain.name
+      integration.data.config.additionalDomains = domains.filter(domain =>  !domain.primary).map(domain => domain.name)
       this.integration = integration
     }
   },

@@ -78,7 +78,8 @@ export default {
       return false
     },
     liveConfig() {
-      return this.integration.data.config
+      const { domain, additionalDomains, ...config } = this.integration.data.config
+      return config
     },
     liveConfigMode() {
       return this.integration.configMode
