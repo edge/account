@@ -227,7 +227,7 @@ export default {
     },
     onSelectItem(index) {
       this.itemRefs.forEach((ref, i) => {
-        if (index === i) ref.selected = !ref.selected
+        if (index === i) ref.selected = true
         else ref.selected = false
       })
       this.lastSelectedIndex = index
