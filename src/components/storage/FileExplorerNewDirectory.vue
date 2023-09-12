@@ -1,7 +1,7 @@
 <template>
   <div class="item-row">
     <!-- icons -->
-    <FolderIcon class="w-4" />
+    <FolderIcon class="w-5 sm:w-4" />
 
     <!-- file/directory name -->
     <div>
@@ -23,11 +23,11 @@
     <!-- actions -->
     <div class="flex space-x-2 items-center">
       <button @click="addDir" class="item-action">
-        <LoadingSpinner v-if="creating" class="w-4" />
-        <CheckIcon v-else class="w-4 text-green hover:text-green-300" />
+        <LoadingSpinner v-if="creating" class="w-5 sm:w-4" />
+        <CheckIcon v-else class="w-5 sm:w-4 text-green hover:text-green-300" />
       </button>
       <button @click="cancel" :disabled="creating" class="item-action">
-        <XIcon class="w-4 text-red hover:text-red-700" :class="creating && 'disabled'" />
+        <XIcon class="w-5 sm:w-4 text-red hover:text-red-700" :class="creating && 'disabled'" />
       </button>
     </div>
   </div>

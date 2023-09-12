@@ -11,11 +11,11 @@
   >
     <!-- icons -->
     <!-- directory with files -->
-    <FolderOpenIcon v-if="item.directory && item.children && item.children.length" class="icon w-4" />
+    <FolderOpenIcon v-if="item.directory && item.children && item.children.length" class="icon w-5 sm:w-4" />
     <!-- empty directory -->
-    <FolderIcon v-else-if="item.directory" class="icon w-4" />
+    <FolderIcon v-else-if="item.directory" class="icon w-5 sm:w-4" />
     <!-- file -->
-    <DocumentTextIcon v-else-if="item.filename" class="icon w-4" />
+    <DocumentTextIcon v-else-if="item.filename" class="icon w-5 sm:w-4" />
 
     <!-- file/directory name -->
     <div class="truncate">
@@ -43,20 +43,20 @@
     <!-- actions -->
     <div v-if="editing" class="flex space-x-2 items-center">
       <button @click.stop="renameItem" :disabled="renaming" class="item-action">
-        <LoadingSpinner v-if="renaming" class="w-4" />
-        <CheckIcon v-else class="w-4 text-green hover:text-green-300" />
+        <LoadingSpinner v-if="renaming" class="w-5 sm:w-4" />
+        <CheckIcon v-else class="w-5 sm:w-4 text-green hover:text-green-300" />
       </button>
       <button @click.stop="cancelEditing" :disabled="renaming" class="item-action">
-        <XIcon class="w-4 text-red hover:text-red-700" :class="renaming && 'disabled'" />
+        <XIcon class="w-5 sm:w-4 text-red hover:text-red-700" :class="renaming && 'disabled'" />
       </button>
     </div>
     <div v-else class="flex space-x-2 items-center">
       <button @click.stop="startEditing" :disabled="deleting" class="item-action" >
-        <PencilIcon class="w-4 hover:text-green" :class="deleting && 'disabled'" />
+        <PencilIcon class="w-5 sm:w-4 hover:text-green" :class="deleting && 'disabled'" />
       </button>
       <button @click.stop="toggleDeleteConfirmationModal" :disabled="deleting" class="item-action text-red hover:text-red-700">
-        <LoadingSpinner v-if="deleting" class="w-4" />
-        <TrashIcon v-else class="w-4" />
+        <LoadingSpinner v-if="deleting" class="w-5 sm:w-4" />
+        <TrashIcon v-else class="w-5 sm:w-4" />
       </button>
     </div>
 
@@ -68,7 +68,7 @@
       @click.stop.shift="$emit('select-item-shift', this.index)"
       :class="selected && 'selected'"
     >
-      <CheckIcon v-if="selected" class="w-4 h-4 text-white"/>
+      <CheckIcon v-if="selected" class="w-5 sm:w-4 h-4 text-white"/>
     </div>
 
     <!-- confirmation modal -->
