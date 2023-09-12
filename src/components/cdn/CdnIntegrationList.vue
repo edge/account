@@ -84,7 +84,7 @@ export default {
       return usage
     },
     async updateIntegrations() {
-      const params = { limit: this.limit, page: this.currentPage }
+      const params = { limit: this.limit, page: this.currentPage, service: 'cdn' }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
       const { results, metadata } = await api.integration.getIntegrations(
