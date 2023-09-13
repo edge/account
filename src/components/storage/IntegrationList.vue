@@ -14,10 +14,10 @@
           @update-sort="updateSortQuery"
         />
       </div>
-      <CdnIntegrationListItem
+      <IntegrationListItem
         v-for="integration in integrations"
         :key="integration._key"
-        :integration=integration
+        :integration="integration"
       />
       <Pagination
         :currentPage=currentPage
@@ -33,7 +33,7 @@
 /* global process */
 
 import * as api from '@/account-utils/'
-import CdnIntegrationListItem from '@/components/cdn/CdnIntegrationListItem'
+import IntegrationListItem from '@/components/storage/IntegrationListItem'
 import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
@@ -42,14 +42,13 @@ import { mapState } from 'vuex'
 const sortFields = [
   { label: 'Name', param: 'name'},
   { label: 'Created', param: 'created'},
-  { label: 'Domain', param: 'data.config.domain' },
   { label: 'Status', param: 'active'}
 ]
 
 export default {
-  name: 'CdnList',
+  name: 'IntegrationList',
   components: {
-    CdnIntegrationListItem,
+    IntegrationListItem,
     ListSortingMenu,
     LoadingSpinner,
     Pagination
@@ -76,35 +75,17 @@ export default {
     changePage(newPage) {
       this.pageHistory = [...this.pageHistory, newPage]
     },
-    async updateUsage() {
-      const usage = await api.integration.getIntegrationsUsage(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
-      return usage
-    },
     async updateIntegrations() {
-      const params = { limit: this.limit, page: this.currentPage, service: 'cdn' }
+      const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
-      const { results, metadata } = await api.integration.getIntegrations(
+      const { results, metadata } = await api.storage.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         params
       )
-      const usage = await this.updateUsage()
-      // add usage data to each integration
-      this.integrations = results.map(i => {
-        const u = usage[i._key]
-        const int = {
-          ...i,
-          usage: {
-            requests: u.cdn.requests.cached + u.cdn.requests.uncached,
-            traffic: u.cdn.data.out.cached + u.cdn.data.out.uncached
-          }
-        }
-        return int
-      })
+
+      this.integrations = results
       this.metadata = metadata
       this.$emit('update-integration-count', metadata.totalCount)
       this.loaded = true

@@ -17,7 +17,7 @@
       <!-- domain -->
       <div class="cdnList__field domain overflow-hidden">
         <span class="cdnList__header">Domain</span>
-        <span class="text-m" :title="integration.data.domain">{{ integration.data.domain }}</span>
+        <span class="text-m" :title="integration.data.config.domain">{{ integration.data.config.domain }}</span>
       </div>
       <!-- requests -->
       <div class="cdnList__field requests">

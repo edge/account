@@ -1,10 +1,10 @@
 <template>
-  <CdnConfig
-    ref="cdnConfig"
-    :disableControls=disableControls
-    :initialConfig=liveConfig
-    :initialConfigMode=liveConfigMode
-    @update-config=onUpdateConfig
+  <Config
+    ref="integration-config"
+    :disableControls="disableControls"
+    :initialConfig="liveConfig"
+    :initialConfigMode="liveConfigMode"
+    @update-config="onUpdateConfig"
   >
     <template v-slot:buttons>
       <div>
@@ -33,14 +33,14 @@
         </div>
       </div>
     </template>
-  </CdnConfig>
+  </Config>
 </template>
 
 <script>
 /* global process */
 
 import * as api from '@/account-utils'
-import CdnConfig from '@/components/cdn/CdnConfig'
+import Config from '@/components/storage/Config'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import _ from 'lodash'
@@ -50,7 +50,7 @@ export default {
   name: 'IntegrationConfig',
   props: ['disableControls', 'integration'],
   components: {
-    CdnConfig,
+    Config,
     HttpError,
     LoadingSpinner
   },
@@ -68,18 +68,11 @@ export default {
       return this.hasConfigChanges
     },
     hasConfigChanges() {
-      if (this.workingConfig) {
-        const working = {
-          ...this.workingConfig,
-          cache: { ...this.workingConfig.cache }
-        }
-        if (!_.isEqual(this.liveConfig, working)) return true
-      }
+      if (this.workingConfig && !_.isEqual(this.liveConfig, this.workingConfig)) return true
       return false
     },
     liveConfig() {
-      const { domain, additionalDomains, ...config } = this.integration.data.config
-      return config
+      return this.integration.data.config
     },
     liveConfigMode() {
       return this.integration.configMode
@@ -92,10 +85,11 @@ export default {
     },
     resetChanges() {
       this.httpError = null
-      this.$refs.cdnConfig.resetConfig()
+      this.$refs['integration-config'].resetConfig()
       this.workingConfig = { ...this.integration.data.config }
     },
     async saveChanges() {
+      /** @todo save integration updates using api */
       const updatedIntegration = { ...this.integration }
       updatedIntegration.configMode = this.configMode
       updatedIntegration.data.config = {
@@ -104,7 +98,7 @@ export default {
       }
       try {
         this.isSaving = true
-        await api.integration.updateIntegration(
+        await api.storage.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,

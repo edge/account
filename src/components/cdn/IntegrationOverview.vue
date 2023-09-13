@@ -13,13 +13,13 @@
         </div>
         <div class="details__item">
           <span class="details__label">Primary Domain</span>
-          <span class="details__info">{{ integration.data.domain }}</span>
+          <span class="details__info">{{ integration.data.config.domain }}</span>
         </div>
-        <div class="details__item lg:row-start-3" v-if="integration.data.additionalDomains.length">
+        <div class="details__item lg:row-start-3" v-if="integration.data.config.additionalDomains.length">
           <span class="details__label">Additional Domains</span>
           <div class="flex flex-col space-y-2 truncate">
             <span
-              v-for="domain in integration.data.additionalDomains"
+              v-for="domain in integration.data.config.additionalDomains"
               :key="domain"
               class="details__info"
             >
@@ -61,8 +61,8 @@ export default {
     },
     domains() {
       return [
-        this.integration.data.domain,
-        ...this.integration.data.additionalDomains
+        this.integration.data.config.domain,
+        ...this.integration.data.config.additionalDomains
       ]
     },
     isActive() {

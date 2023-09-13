@@ -27,6 +27,8 @@ import Servers from '@/views/dashboard/Servers'
 import Shield from '@/views/dashboard/Shield'
 import SignIn from '@/views/landing/SignIn'
 import Storage from '@/views/dashboard/Storage'
+import StorageDeploy from '@/views/dashboard/StorageDeploy'
+import StorageIntegration from '@/views/dashboard/StorageIntegration'
 import Support from '@/views/dashboard/Support'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
@@ -131,6 +133,16 @@ const routes = [
         path: 'storage',
         name: 'Storage',
         component: Storage
+      },
+      {
+        path: 'storage/deploy',
+        name: 'Storage Deploy',
+        component: StorageDeploy
+      },
+      {
+        path: 'storage/:key',
+        name: 'Storage Integration',
+        component: StorageIntegration
       },
       {
         path: '/support',
