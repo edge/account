@@ -149,9 +149,9 @@ export default {
         configMode: undefined,
         data: {
           service: 'cdn',
-          domain: '',
-          additionalDomains: [],
           config: {
+            additionalDomains: [],
+            domain: '',
             origin: '',
             maxAssetSize: undefined,
             requestTimeout: undefined,
