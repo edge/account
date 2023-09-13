@@ -97,7 +97,7 @@
       :file="fileToView"
       :integration="integration"
       :path="displayPath"
-      @close="deselectFile"
+      @close="removeFileToView"
     />
   </div>
 </template>
