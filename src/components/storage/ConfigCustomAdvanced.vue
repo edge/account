@@ -33,10 +33,7 @@ export default {
       this.$refs['integration-config-json-editor'].setJson()
     },
     validateConfig(config) {
-      // additional ttl validations
-      if (config.cache && config.cache.ttl !== undefined && config.cache.ttl < this.config.cdn.minimumTTL) {
-        throw new Error(`ttl must be no less than ${this.config.cdn.minimumTTL}`)
-      }
+      /** @todo add additional config validations when determined */
     }
   }
 }

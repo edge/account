@@ -17,7 +17,7 @@
       />
     </div>
 
-    <!-- file size -->
+    <!-- blank div for file size column -->
     <div></div>
 
     <!-- actions -->
@@ -34,8 +34,6 @@
 </template>
 
 <script>
-/* global process */
-
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import {
   CheckIcon,
@@ -44,7 +42,7 @@ import {
 } from '@heroicons/vue/outline'
 
 export default {
-  name: 'FileExplorerItem',
+  name: 'FileExplorerNewDirectory',
   components: {
     CheckIcon,
     FolderIcon,

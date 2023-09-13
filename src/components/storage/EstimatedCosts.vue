@@ -28,7 +28,7 @@
           />
         </div>
         <div class="slider_costs">
-          <!-- @TODO use value from config -->
+          <!-- @todo use value from config -->
           <span><span class="text-md">${{ 0.025 }}</span> per GB storage</span>
           <span><span class="text-md">${{ dailyStorageCost.toFixed(4) }}</span> per day</span>
         </div>

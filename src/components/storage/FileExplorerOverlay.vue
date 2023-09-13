@@ -15,7 +15,7 @@
 <script>
 
 export default {
-  name: 'Modal',
+  name: 'FileExplorerOverlay',
   methods: {
     closeOnEscape(e) {
       if (e.key === 'Escape') {

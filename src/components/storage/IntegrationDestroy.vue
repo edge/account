@@ -42,7 +42,7 @@ import StorageIntegrationDestroyConfirmation from '@/components/confirmations/St
 import { mapState } from 'vuex'
 
 export default {
-  name: 'IntegrationDelete',
+  name: 'IntegrationDestroy',
   props: ['integration'],
   data() {
     return {

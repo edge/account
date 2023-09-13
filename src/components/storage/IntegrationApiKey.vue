@@ -59,7 +59,7 @@ import { mapState } from 'vuex'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
 export default {
-  name: 'IntegrationDelete',
+  name: 'IntegrationApiKey',
   props: ['integration'],
   data() {
     return {

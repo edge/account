@@ -7,7 +7,7 @@
     <FileUploadOverlay
       v-show="showFileUploadOverlay"
       :integration="integration"
-      @drop-file="resetDrag"
+      @drop-file="resetDragCounter"
       @close="closeFileUploadOverlay"
       @upload="updateFiles"
     />
@@ -67,7 +67,7 @@
           v-if="addingNewDir"
           :creating="creatingNewDir"
           @add-dir="addNewDir"
-          @cancel="closeAddNewDir"
+          @cancel="cancelAddNewDir"
         />
         <!-- directories and files -->
         <div v-if="loaded && !files.length" class="py-2 text-center">
@@ -93,8 +93,8 @@
     </div>
 
     <FileExplorerFileInfo
-      v-if="selectedFile"
-      :file="selectedFile"
+      v-if="fileToView"
+      :file="fileToView"
       :integration="integration"
       :path="displayPath"
       @close="deselectFile"
@@ -147,16 +147,17 @@ export default {
     return {
       addingNewDir: false,
       creatingNewDir: false,
-      // displayPath is the loaded directory
+      // currently loaded (displayed) directory
       displayPath: '',
+      // number of dragEnter minus number of dragExit
       dragCounter: 0,
       files: [],
+      fileToView: null,
       lastSelectedIndex: 0,
       loaded: false,
       loading: false,
-      // path is the selected directory, regardless of loaded state
+      // selected directory, regardless of loaded state
       path: '',
-      selectedFile: null,
       showDeleteConfirmationModal: false,
       showFileUploadOverlay: false
     }
@@ -169,11 +170,11 @@ export default {
     itemRefs() {
       return this.loaded && !this.loading && this.files.map(f => this.$refs[f.filename || f.directory][0])
     },
-    selectedRefs() {
-      return this.selectedItems.map(f => this.$refs[f.filename || f.directory][0])
-    },
     selectedItems() {
       return this.loaded && !this.loading && this.files.filter(f => this.$refs[f.filename || f.directory][0].selected)
+    },
+    selectedRefs() {
+      return this.selectedItems.map(f => this.$refs[f.filename || f.directory][0])
     },
     someItemsSelected() {
       return this.selectedItems.length
@@ -192,7 +193,7 @@ export default {
           newDirName
         )
         this.creatingNewDir = false
-        this.closeAddNewDir()
+        this.cancelAddNewDir()
         await this.updateFiles()
       }
       catch (error) {
@@ -204,6 +205,9 @@ export default {
       if (path.length === 1) this.updatePath('')
       else this.updatePath(path.slice(0, path.length - 1).join('/'))
     },
+    cancelAddNewDir() {
+      this.addingNewDir = false
+    },
     closeFileUploadOverlay() {
       this.showFileUploadOverlay = false
     },
@@ -211,9 +215,7 @@ export default {
       this.selectedRefs.forEach(ref => ref.deleteItem())
       this.toggleDeleteFilesConfirmation()
     },
-    deselectFile() {
-      this.selectedFile = null
-    },
+    // onFileDragEnter and onFileDragExit prevent the file upload overlay from flickering open/closed as a file is dragged
     onFileDragEnter() {
       this.dragCounter += 1
       this.openFileUploadOverlay()
@@ -222,7 +224,7 @@ export default {
       this.dragCounter -= 1
       if (this.dragCounter === 0) {
         this.closeFileUploadOverlay()
-        this.resetDrag()
+        this.resetDragCounter()
       }
     },
     onSelectItem(index) {
@@ -249,13 +251,19 @@ export default {
       this.lastSelectedIndex = index
     },
     onViewFile(file) {
-      this.selectedFile = file
+      this.fileToView = file
     },
     openFileUploadOverlay() {
       this.showFileUploadOverlay = true
     },
-    resetDrag() {
+    removeFileToView() {
+      this.fileToView = null
+    },
+    resetDragCounter() {
       this.dragCounter = 0
+    },
+    startAddNewDir() {
+      this.addingNewDir = true
     },
     toggleAddNewDir() {
       this.addingNewDir = !this.addingNewDir
@@ -270,12 +278,6 @@ export default {
     updatePath(newPath) {
       this.path = newPath
     },
-    startAddNewDir() {
-      this.addingNewDir = true
-    },
-    closeAddNewDir() {
-      this.addingNewDir = false
-    },
     async updateFiles() {
       try {
         this.httpError = null
@@ -288,11 +290,10 @@ export default {
         )
         this.files = files
         await this.$nextTick()
-        this.selectedFile = null
+        this.fileToView = null
         this.loading = false
         this.loaded = true
         this.displayPath = path
-        /** @todo investigate why it's not always auto-updating */
         this.$forceUpdate()
       }
       catch (error) {
@@ -308,8 +309,8 @@ export default {
     allItemsSelected() {
       if (this.allItemsSelected) this.lastSelectedIndex = this.itemRefs.length - 1
     },
-    async path() {
-      await this.updateFiles()
+    path() {
+      this.updateFiles()
     },
     someItemsSelected() {
       if (!this.someItemsSelected) this.lastSelectedIndex = 0
