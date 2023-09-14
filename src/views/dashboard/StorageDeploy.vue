@@ -16,7 +16,7 @@
         </div>
         <!-- account number display -->
         <div class="api-key-wrapper">
-          <span v-if="showApiKey" class="api-key monospace">{{ deployedIntegration.apiKey }}</span>
+          <span v-if="showApiKey" class="api-key monospace">{{ apiKey }}</span>
           <span v-else class="api-key masked monospace">{{ maskedApiKey }}</span>
           <!-- hide/show account number button button -->
           <button
@@ -80,10 +80,11 @@
 import * as api from '@/account-utils/'
 import Config from '@/components/storage/Config.vue'
 import DeployIntegrationDisplayName from '@/components/storage/DeployIntegrationDisplayName.vue'
+import EstimatedCosts from '@/components/storage/EstimatedCosts.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import EstimatedCosts from '@/components/storage/EstimatedCosts.vue'
+import { v4 as uuidv4 } from 'uuid'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 import { mapGetters, mapState } from 'vuex'
 
@@ -95,12 +96,12 @@ export default {
   components: {
     Config,
     DeployIntegrationDisplayName,
+    EstimatedCosts,
     ExclamationIcon,
     EyeIcon,
     EyeOffIcon,
     HttpError,
-    LoadingSpinner,
-    EstimatedCosts,
+    LoadingSpinner
   },
   data() {
     return {
@@ -113,7 +114,13 @@ export default {
         configMode: 'advanced',
         data: {
           service: 'storage',
-          config: {}
+          config: {
+            apiKeys: {
+              [uuidv4()]: {
+                active: true
+              }
+            }
+          }
         }
       },
       integrationKey: null,
@@ -131,8 +138,15 @@ export default {
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
     },
+    apiKey() {
+      let apiKey = ''
+      for (const key in this.deployedIntegration.data.config.apiKeys) {
+        if (this.deployedIntegration.data.config.apiKeys[key].active) apiKey = key
+      }
+      return apiKey
+    },
     maskedApiKey() {
-      return this.deployedIntegration.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
+      return this.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
     }
   },
   methods: {
@@ -143,7 +157,7 @@ export default {
       try {
         this.deploying = true
         this.httpError = null
-        const { integration } = await api.files.createIntegration(
+        const { integration } = await api.integration.addIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration

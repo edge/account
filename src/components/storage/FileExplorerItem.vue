@@ -142,7 +142,7 @@ export default {
         this.deleting = true
         if (this.item.filename) await api.files.deleteFile(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.integration.apiKey,
+          this.integration.data.config.apiKey,
           this.path,
           this.item.filename
         )
@@ -178,7 +178,7 @@ export default {
         this.renaming = true
         if (this.item.filename) await api.files.renameFile(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.integration.apiKey,
+          this.integration.data.config.apiKey,
           this.path,
           this.item.filename,
           this.newName.trim()

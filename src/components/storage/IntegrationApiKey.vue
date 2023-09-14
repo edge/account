@@ -7,7 +7,7 @@
       </div>
       <!-- account number display -->
       <div class="api-key-wrapper">
-        <span v-if="showApiKey" class="api-key monospace">{{ integration.apiKey }}</span>
+        <span v-if="showApiKey" class="api-key monospace">{{ apiKey }}</span>
         <span v-else class="api-key masked monospace">{{ maskedApiKey }}</span>
         <!-- hide/show account number button button -->
         <button
@@ -78,8 +78,15 @@ export default {
   },
   computed: {
     ...mapState(['session']),
+    apiKey() {
+      let apiKey = ''
+      for (const key in this.integration.data.config.apiKeys) {
+        if (this.integration.data.config.apiKeys[key].active) apiKey = key
+      }
+      return apiKey
+    },
     maskedApiKey() {
-      return this.integration.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
+      return this.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
     }
   },
   methods: {

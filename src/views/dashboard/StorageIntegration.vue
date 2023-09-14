@@ -6,7 +6,6 @@
       </router-link>
     </div>
 
-    <!-- @TODO replace with editable integration name, like CdnIntegration -->
     <div v-if="integration" class="w-full flex flex-wrap justify-between items-center">
       <IntegrationDisplayName :integration="integration" />
       <div class="mb-4" v-if="integration">
@@ -111,7 +110,6 @@
           </TabPanels>
       </TabGroup>
     </div>
-    <!-- add new dns record -->
   </div>
 </template>
 
@@ -165,9 +163,7 @@ export default {
       return this.$route.params.key
     },
     isActive() {
-      // @TODO
-      return true
-      // return this.integration.active
+      return this.integration.active
     },
     statusText() {
       return this.isActive ? 'Active' : 'Inactive'
@@ -183,7 +179,7 @@ export default {
     },
     async updateIntegration() {
       try {
-        const { integration } = await api.files.getIntegration(
+        const { integration } = await api.integration.getIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integrationId
@@ -203,7 +199,7 @@ export default {
     this.loading = true
     this.updateIntegration()
     this.iIntegration = setInterval(() => {
-      // this.updateIntegration()
+      this.updateIntegration()
     }, 10 * 1000)
     this.loading = false
   },

@@ -64,7 +64,7 @@ export default {
       this.isDeleting = true
       try {
         this.toggleConfirmationModal()
-        await api.files.deleteIntegration(
+        await api.integration.deleteIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key

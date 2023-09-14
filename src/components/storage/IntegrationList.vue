@@ -76,10 +76,10 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateIntegrations() {
-      const params = { limit: this.limit, page: this.currentPage }
+      const params = { limit: this.limit, page: this.currentPage, service: 'storage' }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
-      const { results, metadata } = await api.files.getIntegrations(
+      const { results, metadata } = await api.integration.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         params

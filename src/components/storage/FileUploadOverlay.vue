@@ -127,7 +127,7 @@ export default {
           this.files[index].status = 'uploading'
           await api.files.uploadFile(
             process.env.VUE_APP_ACCOUNT_API_URL,
-            this.integration.apiKey,
+            this.integration.data.config.apiKey,
             this.path,
             file.file
           )

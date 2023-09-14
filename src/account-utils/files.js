@@ -10,11 +10,11 @@ import _ from 'lodash'
 const integrations = [
   {
     _key: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
-    apiKey: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
     name: 'My Test Storage',
     configMode: 'advanced',
     data: {
       config: {
+        apiKey: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
         one: 'test one',
         three: {
           nestedOne: true,
@@ -28,11 +28,11 @@ const integrations = [
   },
   {
     _key: 'caa9b2e270b5-146e-4821-adb3-f47ee395',
-    apiKey: 'caa9b2e270b5-146e-4821-adb3-f47ee395',
     name: 'My Second Test Storage',
     configMode: 'advanced',
     data: {
       config: {
+        apiKey: 'caa9b2e270b5-146e-4821-adb3-f47ee395',
         one: 'test one',
         three: {
           nestedOne: true,
@@ -106,27 +106,6 @@ export const createDirectory = async (host, sessionId, integrationId, path, dire
   return response.body
 }
 
-// create a new storage integration
-export const createIntegration = async (host, sessionId, data) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 600))
-  const integration = {
-    _key: '1af15b84-fe74-4416-83d8-df1b81a73ae1',
-    apiKey: '1af15b84-fe74-4416-83d8-df1b81a73ae1',
-    ...data,
-    created: Date.now(),
-    updated: Date.now(),
-    active: true
-  }
-  integrations.push(integration)
-  return { integration }
-  const url = `${host}/storage`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(data)
-  return response.body
-}
-
 // delete a directory and associated files
 export const deleteDirectory = async (host, sessionId, integrationId, path, directory) => {
   // dummy response
@@ -153,56 +132,12 @@ export const deleteFile = async (host, apiKey, path, filename) => {
   return 'tbd'
 }
 
-// delete storage integration
-export const deleteIntegration = async (host, sessionId, integrationId) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 1200))
-  const index = integrations.findIndex(i => i._key === integrationId)
-  const integration = integrations[index]
-  integrations.splice(index, 1)
-  return { integration }
-  const url = `${host}/storage/${integrationId}`
-  const response = await superagent.delete(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-// get storage integration by id
-export const getIntegration = async (host, sessionId, integrationId) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 200))
-  return { integration: integrations.find(i => i._key === integrationId) }
-  const url = `${host}/storage/${integrationId}`
-  const response = await superagent.get(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
 // get files in give directory
 export const getFiles = async (host, sessionId, integrationId, path) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 200))
   return { files: getDirectory(path), path }
   const url = `${host}/storage/${integrationId}/${path}`
-  const response = await superagent.get(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-// get all storage integrations for session account
-export const getIntegrations = async (host, sessionId, params) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 200))
-  return {
-    results: integrations,
-    metadata: {
-      count: 2,
-      totalCount: 2
-    }
-  }
-  let url = `${host}/storage`
-  // add query params
-  if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -243,20 +178,6 @@ export const renameFile = async (host, apiKey, path, filename, newFilename) => {
   return dir[index]
   const url = 'tbd'
   return 'tbd'
-}
-
-// update storage integration
-export const updateIntegration = async (host, sessionId, integrationId, data) => {
-  // dummy response
-  const index = integrations.findIndex(i => i._key === integrationId)
-  const integration = _.merge(integrations[index], data)
-  integrations[index] = integration
-  return { integration }
-  const url = `${host}/storage/${integrationId}`
-  const response = await superagent.put(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(data)
-  return response.body
 }
 
 // upload a file

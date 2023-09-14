@@ -78,9 +78,8 @@ export default {
     async confirmEdit() {
       if (!this.canConfirmEdit) return
       try {
-        /** @todo save name using API */
         this.isSaving = true
-        await api.files.updateIntegration(
+        await api.integration.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
