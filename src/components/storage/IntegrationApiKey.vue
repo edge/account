@@ -87,7 +87,7 @@ export default {
       this.isRegenerating = true
       try {
         this.toggleShowConfirmationModal()
-        await api.storage.regenerateApiKey(
+        await api.files.regenerateApiKey(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key

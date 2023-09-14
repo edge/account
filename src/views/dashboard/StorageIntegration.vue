@@ -183,7 +183,7 @@ export default {
     },
     async updateIntegration() {
       try {
-        const { integration } = await api.storage.getIntegration(
+        const { integration } = await api.files.getIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integrationId

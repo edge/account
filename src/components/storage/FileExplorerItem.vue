@@ -140,13 +140,13 @@ export default {
       try {
         this.showDeleteConfirmationModal = false
         this.deleting = true
-        if (this.item.filename) await api.storage.deleteFile(
+        if (this.item.filename) await api.files.deleteFile(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.integration.apiKey,
           this.path,
           this.item.filename
         )
-        else await api.storage.deleteDirectory(
+        else await api.files.deleteDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
@@ -176,14 +176,14 @@ export default {
       if (!this.newName) return
       try {
         this.renaming = true
-        if (this.item.filename) await api.storage.renameFile(
+        if (this.item.filename) await api.files.renameFile(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.integration.apiKey,
           this.path,
           this.item.filename,
           this.newName.trim()
         )
-        else await api.storage.renameDirectory(
+        else await api.files.renameDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,

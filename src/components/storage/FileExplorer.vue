@@ -185,7 +185,7 @@ export default {
       if (!newDirName) return
       try {
         this.creatingNewDir = true
-        await api.storage.createDirectory(
+        await api.files.createDirectory(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
@@ -282,7 +282,7 @@ export default {
       try {
         this.httpError = null
         this.loading = true
-        const { files, path } = await api.storage.getFiles(
+        const { files, path } = await api.files.getFiles(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,

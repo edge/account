@@ -125,7 +125,7 @@ export default {
         await Promise.all(this.files.map(async (file, index) => {
           if (['uploaded', 'uploading'].includes(file.status)) return
           this.files[index].status = 'uploading'
-          await api.storage.uploadFile(
+          await api.files.uploadFile(
             process.env.VUE_APP_ACCOUNT_API_URL,
             this.integration.apiKey,
             this.path,

@@ -98,7 +98,7 @@ export default {
       }
       try {
         this.isSaving = true
-        await api.storage.updateIntegration(
+        await api.files.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,

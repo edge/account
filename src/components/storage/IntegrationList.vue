@@ -79,7 +79,7 @@ export default {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
-      const { results, metadata } = await api.storage.getIntegrations(
+      const { results, metadata } = await api.files.getIntegrations(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.session._key,
         params
