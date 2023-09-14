@@ -193,7 +193,7 @@ export const uploadFile = async (host, integrationId, apiKey, path, file) => {
   const response = await superagent.post(url)
     .set({ 'Integration': `${integrationId}` })
     .set({ 'Authorization': `Bearer ${apiKey}` })
-    .attach(file.name, file)
+    .attach('file', file)
   console.log(response.body)
   return fileData
 }
