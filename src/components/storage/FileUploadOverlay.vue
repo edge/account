@@ -69,12 +69,21 @@ export default {
     LoadingSpinner,
     XIcon
   },
-  props: ['integration'],
+  props: ['integration', 'path'],
   data() {
     return {
       dropZoneActive: false,
       files: [],
       uploading: false
+    }
+  },
+  computed: {
+    apiKey() {
+      let apiKey = ''
+      for (const key in this.integration.data.config.apiKeys) {
+        if (this.integration.data.config.apiKeys[key].active) apiKey = key
+      }
+      return apiKey
     }
   },
   methods: {
@@ -126,8 +135,9 @@ export default {
           if (['uploaded', 'uploading'].includes(file.status)) return
           this.files[index].status = 'uploading'
           await api.files.uploadFile(
-            process.env.VUE_APP_ACCOUNT_API_URL,
-            this.integration.data.config.apiKey,
+            process.env.VUE_APP_GATEWAY_URL,
+            this.integration._key,
+            this.apiKey,
             this.path,
             file.file
           )

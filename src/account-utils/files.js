@@ -181,13 +181,19 @@ export const renameFile = async (host, apiKey, path, filename, newFilename) => {
 }
 
 // upload a file
-export const uploadFile = async (host, apiKey, path, file) => {
+export const uploadFile = async (host, integrationId, apiKey, path, file) => {
   // dummy response
   const delay = Math.floor(Math.random() * 1000) + 500
   await new Promise(resolve => setTimeout(resolve, delay))
   const fileData = { filename: file.name, size: file.size }
   getDirectory(path).push(fileData)
+  // return fileData
+
+  const url = `${host}/files${path ? '/' + path : ''}/${file.name}`
+  const response = await superagent.post(url)
+    .set({ 'Integration': `${integrationId}` })
+    .set({ 'Authorization': `Bearer ${apiKey}` })
+    .attach(file.name, file)
+  console.log(response.body)
   return fileData
-  const url = 'tbd'
-  return 'tbd'
 }

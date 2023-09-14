@@ -7,6 +7,7 @@
     <FileUploadOverlay
       v-show="showFileUploadOverlay"
       :integration="integration"
+      :path="path"
       @drop-file="resetDragCounter"
       @close="closeFileUploadOverlay"
       @upload="updateFiles"
