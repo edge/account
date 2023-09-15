@@ -90,7 +90,6 @@ export default {
       this.workingConfig = { ...this.integration.data.config }
     },
     async saveChanges() {
-      /** @todo save integration updates using api */
       const updatedIntegration = { ...this.integration }
       updatedIntegration.configMode = this.configMode
       updatedIntegration.data.config = {

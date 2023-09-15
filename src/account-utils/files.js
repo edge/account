@@ -143,19 +143,6 @@ export const getFiles = async (host, sessionId, integrationId, path) => {
   return response.body
 }
 
-// regenerate integration api key
-export const regenerateApiKey = async (host, sessionId, integrationId) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 600))
-  const index = integrations.findIndex(i => i._key === integrationId)
-  integrations[index].apiKey = 'fe74-1af15b84-83d8-4416-df1b81a73ae1'
-  return { integration: integrations[index] }
-  const url = `${host}/storage/${integrationId}/regenerate`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
 // rename directory
 export const renameDirectory = async (host, sessionId, integrationId, path, directory, newDirectoryName) => {
   // dummy response

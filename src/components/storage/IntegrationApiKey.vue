@@ -56,6 +56,7 @@ import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import StorageRegenerateKeyConfirmation from '@/components/confirmations/StorageRegenerateKeyConfirmation'
 import { mapState } from 'vuex'
+import { v4 as uuidv4 } from 'uuid'
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
 export default {
@@ -92,12 +93,21 @@ export default {
   methods: {
     async regenerateApiKey() {
       this.isRegenerating = true
+      const updatedIntegration = { ...this.integration }
+      const updatedApiKeys = {
+        [uuidv4()]: { active: true }
+      }
+      updatedIntegration.data.config = {
+        ...updatedIntegration.data.config,
+        apiKeys: updatedApiKeys
+      }
       try {
         this.toggleShowConfirmationModal()
-        await api.files.regenerateApiKey(
+        await api.integration.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.integration._key
+          this.integration._key,
+          updatedIntegration
         )
         setTimeout(() => {
           this.isRegenerating = false
