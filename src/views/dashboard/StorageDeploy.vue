@@ -31,7 +31,7 @@
             @click=continueToIntegration
             class="button button--small button--success w-full md:max-w-xs mt-5"
           >
-            Continue
+            Continue to Deployment
           </button>
       </div>
     </div>

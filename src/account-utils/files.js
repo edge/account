@@ -82,7 +82,7 @@ export const deleteDirectory = async (host, sessionId, integrationId, path, dire
 }
 
 // delete a file
-export const deleteFile = async (host, apiKey, path, filename) => {
+export const deleteFile = async (host, integrationId, apiKey, path, filename) => {
   // dummy response
   await new Promise(resolve => setTimeout(resolve, 400))
   const dir = getDirectory(path)
