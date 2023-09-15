@@ -6,45 +6,6 @@ import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
 // dummy data
-import _ from 'lodash'
-const integrations = [
-  {
-    _key: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
-    name: 'My Test Storage',
-    configMode: 'advanced',
-    data: {
-      config: {
-        apiKey: 'f47ee395-146e-4821-adb3-caa9b2e270b5',
-        one: 'test one',
-        three: {
-          nestedOne: true,
-          nestedTwo: 'test nested two'
-        }
-      }
-    },
-    active: true,
-    created:1692986494307,
-    updated:1693844207047
-  },
-  {
-    _key: 'caa9b2e270b5-146e-4821-adb3-f47ee395',
-    name: 'My Second Test Storage',
-    configMode: 'advanced',
-    data: {
-      config: {
-        apiKey: 'caa9b2e270b5-146e-4821-adb3-f47ee395',
-        one: 'test one',
-        three: {
-          nestedOne: true,
-          nestedTwo: 'test nested two'
-        }
-      }
-    },
-    active: true,
-    created:1692986494307,
-    updated:1693844207047
-  }
-]
 const fileTree = [
   {
     directory: 'assets',
