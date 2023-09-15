@@ -28,6 +28,9 @@
           <span class="truncate">{{ file.name }}</span>
           <div v-if="file.status === 'uploading'"><LoadingSpinner class="w-4" /></div>
           <div v-else-if="file.status === 'uploaded'"><CheckIcon class="w-4 text-green" /></div>
+          <div v-else-if="file.status === 'failed'"><Tooltip position="left" theme="error" text="Failed to upload">
+            <ExclamationIcon class="w-4 text-red" />
+          </Tooltip></div>
           <button v-else @click="removeFile(file.id)"><XIcon class="w-4 text-red" /></button>
         </div>
       </div>
@@ -42,7 +45,7 @@
         </button>
         <button
           @click="upload"
-          :disabled="!files.length || uploading"
+          :disabled="!files.length || allUploaded || uploading"
           class="w-full button button--small button--success"
         >
           <span>Upload</span>
@@ -58,15 +61,18 @@
 import * as api from '@/account-utils'
 import FileExplorerOverlay from '@/components/storage/FileExplorerOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { CheckIcon, CloudUploadIcon, XIcon } from '@heroicons/vue/outline'
+import Tooltip from '@/components/Tooltip'
+import { CheckIcon, CloudUploadIcon, ExclamationIcon, XIcon } from '@heroicons/vue/outline'
 
 export default {
   name: 'FileUploadOverlay',
   components: {
     CheckIcon,
     CloudUploadIcon,
+    ExclamationIcon,
     FileExplorerOverlay,
     LoadingSpinner,
+    Tooltip,
     XIcon
   },
   props: ['integration', 'path'],
@@ -78,6 +84,9 @@ export default {
     }
   },
   computed: {
+    allUploaded() {
+      return this.files.every(f => f.status === 'uploaded')
+    },
     apiKey() {
       let apiKey = ''
       for (const key in this.integration.data.config.apiKeys) {
@@ -132,16 +141,22 @@ export default {
       try {
         this.uploading = true
         await Promise.all(this.files.map(async (file, index) => {
-          if (['uploaded', 'uploading'].includes(file.status)) return
-          this.files[index].status = 'uploading'
-          await api.files.uploadFile(
-            process.env.VUE_APP_GATEWAY_URL,
-            this.integration._key,
-            this.apiKey,
-            this.path,
-            file.file
-          )
-          this.files[index].status = 'uploaded'
+          try {
+            if (['uploaded', 'uploading'].includes(file.status)) return
+            this.files[index].status = 'uploading'
+            await api.files.uploadFile(
+              process.env.VUE_APP_GATEWAY_URL,
+              this.integration._key,
+              this.apiKey,
+              this.path,
+              file.file
+            )
+            this.files[index].status = 'uploaded'
+          }
+          catch (error) {
+            console.error(error)
+            this.files[index].status = 'failed'
+          }
         }))
         this.uploading = false
         this.$emit('upload')
@@ -174,7 +189,7 @@ export default {
 }
 
 .file-list {
-  @apply w-full mt-2 overflow-y-auto flex-grow-0;
+  @apply w-full mt-2 overflow-y-auto overflow-x-hidden pb-1;
   max-height: 300px
 }
 
