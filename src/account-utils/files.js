@@ -104,6 +104,13 @@ export const getFiles = async (host, sessionId, integrationId, path) => {
   return response.body
 }
 
+export const getNode = async (host, sessionId, integrationId, path) => {
+  const url = `${host}/storage/${integrationId}/fs/${path}`
+  const res = await superagent.get(url)
+    .set({ Authorization: `Bearer ${sessionId}` })
+  return res.body
+}
+
 // rename directory
 export const renameDirectory = async (host, sessionId, integrationId, path, directory, newDirectoryName) => {
   // dummy response

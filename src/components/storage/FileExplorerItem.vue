@@ -10,12 +10,10 @@
     class="item-row" :class="selected && 'selected'"
   >
     <!-- icons -->
-    <!-- directory with files -->
-    <FolderOpenIcon v-if="item.directory && item.children && item.children.length" class="icon w-5 sm:w-4" />
-    <!-- empty directory -->
-    <FolderIcon v-else-if="item.directory" class="icon w-5 sm:w-4" />
+    <!-- empty folder -->
+    <FolderIcon v-if="isFolder" class="icon w-5 sm:w-4" />
     <!-- file -->
-    <DocumentTextIcon v-else-if="item.filename" class="icon w-5 sm:w-4" />
+    <DocumentTextIcon v-else class="icon w-5 sm:w-4" />
 
     <!-- file/directory name -->
     <div class="truncate">
@@ -93,7 +91,6 @@ import {
   CheckIcon,
   DocumentTextIcon,
   FolderIcon,
-  FolderOpenIcon,
   PencilIcon,
   TrashIcon,
   XIcon
@@ -106,7 +103,6 @@ export default {
     DocumentTextIcon,
     FileExplorerItemDeleteConfirmation,
     FolderIcon,
-    FolderOpenIcon,
     LoadingSpinner,
     PencilIcon,
     TrashIcon,
@@ -128,8 +124,12 @@ export default {
     formattedSize() {
       return this.item.size ? format.bytes(this.item.size) : ''
     },
+    isFolder() {
+      return this.item.type === 'folder'
+    },
     itemName() {
-      return this.item.directory || this.item.filename
+      const parts = this.item.fullPath.split('/')
+      return parts[parts.length - 1]
     }
   },
   methods: {
@@ -165,11 +165,10 @@ export default {
       this.selected = false
     },
     openDirectory() {
-      if (!this.path) this.$emit('update-path', (this.item.directory))
-      else this.$emit('update-path', (this.path + '/' + this.item.directory))
+      this.$emit('update-path', (this.item.fullPath))
     },
     onClickItemName() {
-      if (this.item.directory) this.openDirectory()
+      if (this.isFolder) this.openDirectory()
       else this.$emit('view-file', this.item)
     },
     async renameItem() {
