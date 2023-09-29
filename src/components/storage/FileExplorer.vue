@@ -284,13 +284,13 @@ export default {
       try {
         this.httpError = null
         this.loading = true
-        const { subNodes } = await api.files.getNode(
+        const { children } = await api.files.getNode(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
           this.path
         )
-        this.files = subNodes
+        this.files = children
         await this.$nextTick()
         this.fileToView = null
         this.loading = false
