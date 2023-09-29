@@ -125,7 +125,7 @@ export default {
       return this.item.size ? format.bytes(this.item.size) : ''
     },
     isFolder() {
-      return this.item.type === 'folder'
+      return !this.item.file
     },
     itemName() {
       const parts = this.item.fullPath.split('/')
