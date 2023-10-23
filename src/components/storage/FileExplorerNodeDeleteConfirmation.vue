@@ -1,16 +1,33 @@
 <template>
   <FileExplorerOverlay>
     <template v-slot:header>
-      <span class="text-red">Delete {{ nodeType }}</span>
+      <span v-if="isBulk" class="text-red">Delete files/folders</span>
+      <span v-else-if="isFolder">Delete folder</span>
+      <span v-else>Delete file</span>
     </template>
     <template v-slot:body>
-      <div v-if="nodes && nodes.length > 1" class="flex flex-col space-y-2">
-        <li>{{ filesCount ? `${filesCount} file${filesCount > 1 ? 's' : ''}` : '' }}{{ filesCount && foldersCount ? ' and ' : '' }}{{ foldersCount && `${foldersCount} folder${foldersCount > 1 ? 's' : ''}` }} will be permanently deleted</li>
-        <li v-if="foldersContainChildren">All files in the folder{{ foldersCount > 1 ? 's' : ''}} will also be deleted</li>
+      <div v-if="isBulk" class="flex flex-col space-y-2">
+        <li>
+          <span v-if="numFiles > 1">{{ numFiles }} files</span>
+          <span v-else-if="numFiles == 1">1 file</span>
+
+          <span v-if="numFiles > 0 && numFolders > 0"> and </span>
+
+          <span v-if="numFolders > 1">{{ numFolders }} folders</span>
+          <span v-else-if="numFolders == 1">1 folder</span>
+
+          <span> will be permanently deleted.</span>
+        </li>
+        <li v-if="numFolders > 0">Any files in deleted folders will also be deleted.</li>
       </div>
-      <div v-else class="flex flex-col space-y-2">
-        <li>This {{ nodeType.toLowerCase() }} will be permanently deleted</li>
-        <li v-if="nodeToDelete.folder && nodeToDelete.folder.length">All files in this folder will also be deleted</li>
+      <div v-else-if="isFolder" class="flex flex-col space-y-2">
+        <li>The folder <span class="node-name">{{ name }}</span> and any files it contains will be permanently deleted.</li>
+      </div>
+      <div v-else-if="isFile" class="flex flex-col space-y-2">
+        <li>The file <span class="node-name">{{ name }}</span> will be permanently deleted.</li>
+      </div>
+      <div v-else>
+        <li></li>
       </div>
     </template>
     <template v-slot:buttons>
@@ -38,23 +55,33 @@ export default {
   components: {
     FileExplorerOverlay
   },
-  props: ['node', 'nodes'],
+  props: ['nodes'],
   computed: {
-    foldersCount() {
-      return this.nodes.filter(i => i.folder).length
+    isBulk() {
+      return this.num > 1
     },
-    foldersContainChildren() {
-      return this.nodes.some(i => i.folder && i.children && i.children.length)
+    isFile() {
+      return this.node ? !!this.node.file : false
     },
-    filesCount() {
-      return this.nodes.filter(i => i.filename).length
+    isFolder() {
+      return this.node ? !this.node.file : false
     },
-    nodeToDelete() {
-      return this.node || this.nodes[0]
+    name() {
+      if (!this.node) return ''
+      const path = this.node.fullPath.split('/')
+      return path[path.length-1]
     },
-    nodeType() {
-      if (this.nodes && this.nodes.length > 1) return 'Files'
-      else return this.nodeToDelete.folder ? 'Directory' : 'File'
+    node() {
+      return this.nodes.length > 0 ? this.nodes[0] : undefined
+    },
+    num() {
+      return this.nodes.length
+    },
+    numFiles() {
+      return this.nodes.filter(i => i.file).length
+    },
+    numFolders() {
+      return this.nodes.filter(i => !i.file).length
     }
   },
   methods: {
@@ -69,5 +96,7 @@ export default {
 </script>
 
 <style scoped>
-
+.node-name {
+  @apply font-bold;
+}
 </style>

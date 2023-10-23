@@ -72,7 +72,7 @@
     <!-- confirmation modal -->
     <FileExplorerNodeDeleteConfirmation
       v-if="showDeleteConfirmationModal"
-      :node="node"
+      :nodes="[node]"
       @modal-confirm="deleteNode"
       @modal-close="toggleDeleteConfirmationModal"
     />
@@ -140,24 +140,18 @@ export default {
       try {
         this.showDeleteConfirmationModal = false
         this.deleting = true
-        if (this.node.filename) await api.files.deleteFile(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.integration.data.config.apiKey,
-          this.path,
-          this.node.filename
-        )
-        else await api.files.deleteDirectory(
+        await api.files.deleteNode(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
-          this.path,
-          this.node.folder
+          this.node.fullPath
         )
-        this.deleting = false
         this.$emit('delete')
       }
       catch (error) {
         console.error(error)
+      }
+      finally {
         this.deleting = false
       }
     },

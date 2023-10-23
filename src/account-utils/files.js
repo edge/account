@@ -61,30 +61,11 @@ export const createFolder = async (host, sessionId, integrationId, path, folderN
   return response.body
 }
 
-// delete a directory and associated files
-export const deleteDirectory = async (host, sessionId, integrationId, path, directory) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 400))
-  const dir = getDirectory(path)
-  const index = dir.findIndex(i => i.directory === directory)
-  dir.splice(index, 1)
-  return directory
-  const url = `${host}/storage/${integrationId}/${path}`
-  const response = await superagent.delete(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
+// delete a node (folder or file)
+export const deleteNode = async (host, sessionId, integrationId, fullPath) => {
+  const url = `${host}/storage/${integrationId}/fs/${fullPath}`
+  const response = await superagent.delete(url).set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
-}
-
-// delete a file
-export const deleteFile = async (host, integrationId, apiKey, path, filename) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 400))
-  const dir = getDirectory(path)
-  const index = dir.findIndex(i => i.filename === filename)
-  dir.splice(index, 1)
-  return filename
-  const url = 'tbd'
-  return 'tbd'
 }
 
 // get files in give directory
