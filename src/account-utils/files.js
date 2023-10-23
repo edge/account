@@ -68,46 +68,38 @@ export const deleteNode = async (host, sessionId, integrationId, fullPath) => {
   return response.body
 }
 
-// get files in give directory
-export const getFiles = async (host, sessionId, integrationId, path) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 200))
-  return { files: getDirectory(path), path }
-  const url = `${host}/storage/${integrationId}/${path}`
-  const response = await superagent.get(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-export const getNode = async (host, sessionId, integrationId, path) => {
-  const url = `${host}/storage/${integrationId}/fs/${path}`
-  const res = await superagent.get(url)
-    .set({ Authorization: `Bearer ${sessionId}` })
+/**
+ * Get a node (and its children, if the node is a folder).
+ *
+ * Options may be an empty object. Usable properties include:
+ *
+ * ```js
+ * const options = {
+ *   // Sort folders to top (default 0/false)
+ *   folderTop: 1,
+ *   // Sort order, prefix with hyphen for descending sort. Can be fullPath, size, created, or lastModified
+ *   sort: 'fullPath',
+ *   // Limit number of results to retrieve
+ *   limit: 10,
+ *   // Page to retrieve (affected by limit)
+ *   page: 1
+ * }
+ * ```
+ */
+export const getNode = async (host, sessionId, integrationId, fullPath, options) => {
+  const url = `${host}/storage/${integrationId}/fs/${fullPath}`
+  const req = superagent.get(url).set({ Authorization: `Bearer ${sessionId}` })
+  if (options) req.query(options)
+  const res = await req
   return res.body
 }
 
-// rename directory
-export const renameDirectory = async (host, sessionId, integrationId, path, directory, newDirectoryName) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 400))
-  const dir = getDirectory(path)
-  const index = dir.findIndex(i => i.directory === directory)
-  dir[index].directory = newDirectoryName
-  return dir[index]
-  const url = 'tbd'
-  return 'tbd'
-}
-
-// rename file
-export const renameFile = async (host, apiKey, path, filename, newFilename) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 400))
-  const dir = getDirectory(path)
-  const index = dir.findIndex(i => i.filename === filename)
-  dir[index].filename = newFilename
-  return dir[index]
-  const url = 'tbd'
-  return 'tbd'
+// move node
+export const moveNode = async (host, sessionId, integrationId, fullPath, path, nodeName) => {
+  const url = `${host}/storage/${integrationId}/fs/${fullPath}`
+  const data = { fullPath: path.length ? `${path}/${nodeName}` : nodeName }
+  const res = await superagent.put(url).set({ 'Authorization': `Bearer ${sessionId}` }).send(data)
+  return res.body
 }
 
 // upload a file

@@ -169,28 +169,22 @@ export default {
       if (!this.newName) return
       try {
         this.renaming = true
-        if (this.node.filename) await api.files.renameFile(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.integration.data.config.apiKey,
-          this.path,
-          this.node.filename,
-          this.newName.trim()
-        )
-        else await api.files.renameDirectory(
+        await api.files.moveNode(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
+          this.node.fullPath,
           this.path,
-          this.node.folder,
           this.newName.trim()
         )
-        this.renaming = false
-        this.cancelEditing()
         this.$emit('rename')
       }
       catch (error) {
         console.error(error)
+      }
+      finally {
         this.renaming = false
+        this.cancelEditing()
       }
     },
     async startEditing() {
