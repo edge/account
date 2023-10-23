@@ -3,75 +3,44 @@
 // that can be found in the LICENSE.md file. All rights reserved.
 
 import superagent from 'superagent'
-import { toQueryString } from './helpers'
 
-// dummy data
-const fileTree = [
-  {
-    directory: 'assets',
-    children: [
-      {
-        directory: 'img',
-        children: [
-          { filename: '1.jpg', size: 213490 },
-          { filename: '2.jpg', size: 63490 },
-          { filename: '3.jpg', size: 253490 }
-        ]
-      },
-      {
-        directory: 'js',
-        children: [
-          { filename: 'index.js', size: 213490 },
-          { filename: 'module1.js', size: 63490 },
-          { filename: 'module2.js', size: 253490 }
-        ]
-      },
-      {
-        directory: 'css'
-      },
-      { filename: 'config.json', size: 12500 }
-    ]
-  },
-  {
-    directory: 'docs',
-    children: [
-      { filename: 'letter.pdf', size: 13050 }
-    ]
-  },
-  { filename: 'README.md', size: 213490 }
-]
-const getDirectory = (path) => {
-  if (!path) return fileTree
-  else {
-    const dirs = path.split('/')
-    let currentDir = fileTree
-    for (let i = 0; i < dirs.length; i++) {
-      const dir = currentDir.find(d => d.directory === dirs[i])
-      currentDir = dir.children || []
-    }
-    return currentDir
-  }
-}
-
-// add a folder at a given path
-export const createFolder = async (host, sessionId, integrationId, path, folderName) => {
-  const fullPath = path.length ? `${path}/${folderName}` : folderName
+/**
+ * Create a folder.
+ *
+ * @param {string} host API base URL
+ * @param {string} sessionId API token
+ * @param {string} integrationId Integration ID
+ * @param {string} fullPath Path to [folder] node
+ * @return {object} New node data
+ */
+export const createFolder = async (host, sessionId, integrationId, fullPath) => {
   const url = `${host}/storage/${integrationId}/fs/${fullPath}`
-  const response = await superagent.post(url).set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-// delete a node (folder or file)
-export const deleteNode = async (host, sessionId, integrationId, fullPath) => {
-  const url = `${host}/storage/${integrationId}/fs/${fullPath}`
-  const response = await superagent.delete(url).set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
+  const res = await superagent.post(url).set({ 'Authorization': `Bearer ${sessionId}` })
+  return res.body
 }
 
 /**
- * Get a node (and its children, if the node is a folder).
+ * Delete a node.
+ * This can be a folder or a file.
+ * If it is a folder, all child nodes are deleted automatically by API.
  *
- * Options may be an empty object. Usable properties include:
+ * @param {string} host API base URL
+ * @param {string} sessionId API token
+ * @param {string} integrationId Integration ID
+ * @param {string} fullPath Path to node
+ * @return {object} Old node data
+ */
+export const deleteNode = async (host, sessionId, integrationId, fullPath) => {
+  const url = `${host}/storage/${integrationId}/fs/${fullPath}`
+  const res = await superagent.delete(url).set({ 'Authorization': `Bearer ${sessionId}` })
+  return res.body
+}
+
+/**
+ * Get a node.
+ * If the node is a folder, then its child nodes can be navigated via the same API.
+ *
+ * Options may be an empty object. If it is given, usable properties include:
  *
  * ```js
  * const options = {
@@ -85,6 +54,13 @@ export const deleteNode = async (host, sessionId, integrationId, fullPath) => {
  *   page: 1
  * }
  * ```
+ *
+ * @param {string} host API base URL
+ * @param {string} sessionId API token
+ * @param {string} integrationId Integration ID
+ * @param {string} fullPath Path to node
+ * @param {object} options Query parameters for navigating child nodes
+ * @return {object} Node data
  */
 export const getNode = async (host, sessionId, integrationId, fullPath, options) => {
   const url = `${host}/storage/${integrationId}/fs/${fullPath}`
@@ -94,26 +70,36 @@ export const getNode = async (host, sessionId, integrationId, fullPath, options)
   return res.body
 }
 
-// move node
-export const moveNode = async (host, sessionId, integrationId, fullPath, path, nodeName) => {
+/**
+ * Move a node.
+ * This can be a folder or a file.
+ * If it is a folder, all child nodes are moved automatically by API.
+ *
+ * @param {string} host API base URL
+ * @param {string} sessionId API token
+ * @param {string} integrationId Integration ID
+ * @param {string} fullPath Path to node
+ * @param {string} newPath **New** path to node
+ * @return {object} Node data
+ */
+export const moveNode = async (host, sessionId, integrationId, fullPath, newPath) => {
   const url = `${host}/storage/${integrationId}/fs/${fullPath}`
-  const data = { fullPath: path.length ? `${path}/${nodeName}` : nodeName }
-  const res = await superagent.put(url).set({ 'Authorization': `Bearer ${sessionId}` }).send(data)
+  const res = await superagent.put(url).set({ 'Authorization': `Bearer ${sessionId}` }).send({ fullPath: newPath })
   return res.body
 }
 
-// upload a file
-export const uploadFile = async (host, integrationId, apiKey, path, file) => {
-  const url = `${host}/files${path ? '/' + path : ''}/${file.name}`
-  const response = await superagent.post(url)
-    .set({ 'Integration': `${integrationId}` })
-    .set({ 'Authorization': `Bearer ${apiKey}` })
-    .attach('file', file)
-  // return response.body
-  console.log(response.body)
-
-  // dummy response - will remove once `getFiles()` works
-  const fileData = { filename: file.name, size: file.size }
-  getDirectory(path).push(fileData)
-  return fileData
+/**
+ * Upload a file.
+ *
+ * @param {string} host Gateway URL (**not** API base URL)
+ * @param {string} integrationId Integration ID
+ * @param {string} apiKey Integration API key
+ * @param {string} fullPath Path to file
+ * @param {object} file File data
+ * @return {object} Gateway response with UUID
+ */
+export const uploadFile = async (host, integrationId, apiKey, fullPath, file) => {
+  const url = `${host}/files/${integrationId}/${fullPath}`
+  const res = await superagent.post(url).set({ 'Authorization': `Bearer ${apiKey}` }).attach('file', file)
+  return res.body
 }

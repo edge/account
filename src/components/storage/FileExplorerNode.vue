@@ -169,13 +169,13 @@ export default {
       if (!this.newName) return
       try {
         this.renaming = true
+        const fullPath = this.path.length > 0 ? `${this.path}/${this.newName}` : this.newName
         await api.files.moveNode(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
           this.node.fullPath,
-          this.path,
-          this.newName.trim()
+          fullPath
         )
         this.$emit('rename')
       }

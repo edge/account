@@ -181,20 +181,20 @@ export default {
       if (!name) return
       try {
         this.creatingFolder = true
+        const fullPath = this.path.length > 0 ? `${this.path}/${name}` : name
         await api.files.createFolder(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
-          this.path,
-          name
+          fullPath
         )
-        this.creatingFolder = false
         await this.updateFiles()
       }
       catch (error) {
         console.error(error)
       }
       finally {
+        this.creatingFolder = false
         this.cancelCreateFolder()
       }
     },

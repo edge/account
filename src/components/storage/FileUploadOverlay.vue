@@ -144,12 +144,14 @@ export default {
           try {
             if (['uploaded', 'uploading'].includes(file.status)) return
             this.files[index].status = 'uploading'
+            const fullPath = this.path.length > 0 ? `${this.path}/${file.name}` : file.name
             await api.files.uploadFile(
               process.env.VUE_APP_GATEWAY_URL,
               this.integration._key,
               this.apiKey,
-              this.path,
-              file.file
+              fullPath,
+              file.file,
+              process.env.VUE_APP_GATEWAY_HOSTNAME
             )
             this.files[index].status = 'uploaded'
           }
