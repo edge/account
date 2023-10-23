@@ -3,13 +3,13 @@
     <!-- icons -->
     <FolderIcon class="w-5 sm:w-4" />
 
-    <!-- file/directory name -->
+    <!-- folder name -->
     <div>
-      <!-- directory -->
+      <!-- folder -->
       <input
-        ref="new-dir-input"
-        v-model="dirName"
-        @keypress.enter="addDir"
+        ref="name-input"
+        v-model="name"
+        @keypress.enter="submit"
         @keyup.esc="cancel"
         type="text"
         placeholder="Enter name"
@@ -22,12 +22,12 @@
 
     <!-- actions -->
     <div class="flex space-x-2 items-center">
-      <button @click="addDir" class="item-action">
-        <LoadingSpinner v-if="creating" class="w-5 sm:w-4" />
+      <button @click="submit" class="item-action">
+        <LoadingSpinner v-if="loading" class="w-5 sm:w-4" />
         <CheckIcon v-else class="w-5 sm:w-4 text-green hover:text-green-300" />
       </button>
-      <button @click="cancel" :disabled="creating" class="item-action">
-        <XIcon class="w-5 sm:w-4 text-red hover:text-red-700" :class="creating && 'disabled'" />
+      <button @click="cancel" :disabled="loading" class="item-action">
+        <XIcon class="w-5 sm:w-4 text-red hover:text-red-700" :class="loading && 'disabled'" />
       </button>
     </div>
   </div>
@@ -42,29 +42,29 @@ import {
 } from '@heroicons/vue/outline'
 
 export default {
-  name: 'FileExplorerNewDirectory',
+  name: 'FileExplorerNewFolder',
   components: {
     CheckIcon,
     FolderIcon,
     LoadingSpinner,
     XIcon
   },
-  props: ['creating', 'path'],
+  props: ['loading'],
   data() {
     return {
-      dirName: ''
+      name: ''
     }
   },
   methods: {
-    addDir() {
-      this.$emit('add-dir', this.dirName.trim())
-    },
     cancel() {
       this.$emit('cancel')
+    },
+    submit() {
+      this.$emit('submit', this.name.trim())
     }
   },
   mounted() {
-    this.$refs['new-dir-input'].focus()
+    this.$refs['name-input'].focus()
   }
 }
 </script>

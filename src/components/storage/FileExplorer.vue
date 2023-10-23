@@ -36,7 +36,7 @@
           <button @click="openFileUploadOverlay" class="text-green hover:text-green-300">
             <div><CloudUploadIcon class="w-5 h-5" /></div>
           </button>
-          <button @click="startAddNewDir" class="text-green hover:text-green-300">
+          <button @click="startCreateFolder" class="text-green hover:text-green-300">
             <div><FolderAddIcon class="w-6 h-6" /></div>
           </button>
           <button @click="toggleDeleteFilesConfirmation" :disabled="!someItemsSelected" class="text-red hover:text-red-700" :class="!someItemsSelected && 'disabled'">
@@ -64,12 +64,7 @@
           <div><span @click="backDir" class="name">..</span></div>
         </div>
         <!-- new directory input -->
-        <FileExplorerNewDirectory
-          v-if="addingNewDir"
-          :creating="creatingNewDir"
-          @add-dir="addNewDir"
-          @cancel="cancelAddNewDir"
-        />
+        <FileExplorerNewFolder v-if="showCreateFolder" :loading="creatingFolder" @submit="createFolder" @cancel="cancelCreateFolder"/>
         <!-- directories and files -->
         <div v-if="loaded && !files.length" class="py-2 text-center">
           <span>This folder is empty</span>
@@ -112,7 +107,7 @@ import CloudUploadIcon from '@/components/icons/CloudUploadIcon'
 import FileExplorerFileInfo from '@/components/storage/FileExplorerFileInfo'
 import FileExplorerItem from '@/components/storage/FileExplorerItem'
 import FileExplorerItemDeleteConfirmation from '@/components/storage/FileExplorerItemDeleteConfirmation'
-import FileExplorerNewDirectory from '@/components/storage/FileExplorerNewDirectory'
+import FileExplorerNewFolder from '@/components/storage/FileExplorerNewFolder'
 import FileUploadOverlay from '@/components/storage/FileUploadOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -135,7 +130,7 @@ export default {
     FileExplorerFileInfo,
     FileExplorerItem,
     FileExplorerItemDeleteConfirmation,
-    FileExplorerNewDirectory,
+    FileExplorerNewFolder,
     FileUploadOverlay,
     FolderAddIcon,
     LoadingSpinner,
@@ -146,8 +141,8 @@ export default {
   props: ['integration'],
   data() {
     return {
-      addingNewDir: false,
-      creatingNewDir: false,
+      showCreateFolder: false,
+      creatingFolder: false,
       // currently loaded (displayed) directory
       displayPath: '',
       // number of dragEnter minus number of dragExit
@@ -182,23 +177,25 @@ export default {
     }
   },
   methods: {
-    async addNewDir(newDirName) {
-      if (!newDirName) return
+    async createFolder(name) {
+      if (!name) return
       try {
-        this.creatingNewDir = true
-        await api.files.createDirectory(
+        this.creatingFolder = true
+        await api.files.createFolder(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
           this.path,
-          newDirName
+          name
         )
-        this.creatingNewDir = false
-        this.cancelAddNewDir()
+        this.creatingFolder = false
         await this.updateFiles()
       }
       catch (error) {
         console.error(error)
+      }
+      finally {
+        this.cancelCreateFolder()
       }
     },
     backDir() {
@@ -206,8 +203,8 @@ export default {
       if (path.length === 1) this.updatePath('')
       else this.updatePath(path.slice(0, path.length - 1).join('/'))
     },
-    cancelAddNewDir() {
-      this.addingNewDir = false
+    cancelCreateFolder() {
+      this.showCreateFolder = false
     },
     closeFileUploadOverlay() {
       this.showFileUploadOverlay = false
@@ -263,11 +260,11 @@ export default {
     resetDragCounter() {
       this.dragCounter = 0
     },
-    startAddNewDir() {
-      this.addingNewDir = true
+    startCreateFolder() {
+      this.showCreateFolder = true
     },
-    toggleAddNewDir() {
-      this.addingNewDir = !this.addingNewDir
+    toggleCreateFolder() {
+      this.showCreateFolder = !this.showCreateFolder
     },
     toggleSelectAllFiles() {
       if (this.allItemsSelected) this.itemRefs.forEach(ref => ref.selected = false)

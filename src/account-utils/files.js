@@ -53,17 +53,11 @@ const getDirectory = (path) => {
   }
 }
 
-// add a file at a given path
-export const createDirectory = async (host, sessionId, integrationId, path, directoryName) => {
-  // dummy response
-  await new Promise(resolve => setTimeout(resolve, 200))
-  const dirData = { directory: directoryName, children: [] }
-  getDirectory(path).push(dirData)
-  return dirData
-  const url = `${host}/storage/${integrationId}`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(data)
+// add a folder at a given path
+export const createFolder = async (host, sessionId, integrationId, path, folderName) => {
+  const fullPath = path.length ? `${path}/${folderName}` : folderName
+  const url = `${host}/storage/${integrationId}/fs/${fullPath}`
+  const response = await superagent.post(url).set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
