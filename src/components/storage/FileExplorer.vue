@@ -5,12 +5,12 @@
   >
     <!-- overlays -->
     <FileUploadOverlay
-      v-show="showFileUploadOverlay"
+      v-if="showFileUploadOverlay"
       :integration="integration"
       :path="path"
       @drop-file="resetDragCounter"
       @close="closeFileUploadOverlay"
-      @upload="updateFiles"
+      @upload="completeFileUpload"
     />
 
     <!-- delete confirmation modal -->
@@ -71,8 +71,8 @@
         </div>
         <FileExplorerNode
           v-for="(node, index) in nodes"
-          :key="node.folder || node.filename"
-          :ref="node.folder || node.filename"
+          :key="node.fullPath"
+          :ref="node.fullPath"
           :index="index"
           :integration="integration"
           :node="node"
@@ -164,13 +164,13 @@ export default {
       return this.selectedNodes.length && this.selectedNodes.length === this.nodes.length
     },
     nodeRefs() {
-      return this.loaded && !this.loading && this.nodes.map(f => this.$refs[f.filename || f.folder][0])
+      return this.loaded && !this.loading && this.nodes.map(f => this.$refs[f.fullPath][0])
     },
     selectedNodes() {
-      return this.loaded && !this.loading && this.nodes.filter(f => this.$refs[f.filename || f.folder][0].selected)
+      return this.loaded && !this.loading && this.nodes.filter(f => this.$refs[f.fullPath][0].selected)
     },
     selectedRefs() {
-      return this.selectedNodes.map(f => this.$refs[f.filename || f.folder][0])
+      return this.selectedNodes.map(f => this.$refs[f.fullPath][0])
     },
     someNodesSelected() {
       return this.selectedNodes.length
@@ -208,6 +208,12 @@ export default {
     },
     closeFileUploadOverlay() {
       this.showFileUploadOverlay = false
+    },
+    completeFileUpload() {
+      setTimeout(() => {
+        this.closeFileUploadOverlay()
+        this.updateFiles()
+      }, 1000)
     },
     deleteSelectedNodes() {
       this.selectedRefs.forEach(ref => ref.deleteNode())
