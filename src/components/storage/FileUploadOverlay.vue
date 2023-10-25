@@ -150,8 +150,7 @@ export default {
               this.integration._key,
               this.apiKey,
               fullPath,
-              file.file,
-              process.env.VUE_APP_GATEWAY_HOSTNAME
+              file.file
             )
             this.files[index].status = 'uploaded'
           }
