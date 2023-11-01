@@ -35,6 +35,11 @@ const nav = [
     text: 'Content Delivery'
   },
   {
+    _key: 'pages',
+    link: '/pages',
+    text: 'Pages'
+  },
+  {
     _key: 'storage',
     link: '/storage',
     text: 'Storage'
