@@ -35,7 +35,7 @@ const nav = [
     text: 'Content Delivery'
   },
   {
-    _key: 'pages',
+    _key: 'page',
     link: '/pages',
     text: 'Pages'
   },
@@ -45,7 +45,7 @@ const nav = [
     text: 'Storage'
   },
   {
-    _key: 'databases',
+    _key: 'db',
     link: '/databases',
     text: 'Databases'
   },

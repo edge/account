@@ -19,9 +19,9 @@ import Invoices from '@/components/billing/Invoices'
 import Landing from '@/views/Landing'
 import NotFound from '@/views/404'
 import Notifications from '@/views/dashboard/Notifications'
+import PageDeploy from '@/views/dashboard/PageDeploy'
+import PageIntegration from '@/views/dashboard/PageIntegration'
 import Pages from '@/views/dashboard/Pages'
-import PagesDeploy from '@/views/dashboard/PagesDeploy'
-import PagesIntegration from '@/views/dashboard/PagesIntegration'
 import Payments from '@/components/billing/Payments'
 import Purchase from '@/components/billing/Purchase'
 import Server from '@/views/dashboard/Server'
@@ -119,12 +119,12 @@ const routes = [
       {
         path: 'pages/deploy',
         name: 'Pages Deploy',
-        component: PagesDeploy
+        component: PageDeploy
       },
       {
-        path: 'pages/:key',
+        path: 'page/:key',
         name: 'Pages Integration',
-        component: PagesIntegration
+        component: PageIntegration
       },
       {
         path: 'servers',

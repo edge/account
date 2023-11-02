@@ -33,7 +33,7 @@
 /* global process */
 
 import * as api from '@/account-utils/'
-import IntegrationListItem from '@/components/pages/IntegrationListItem'
+import IntegrationListItem from '@/components/page/IntegrationListItem'
 import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
@@ -76,7 +76,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateIntegrations() {
-      const params = { limit: this.limit, page: this.currentPage, service: 'pages' }
+      const params = { limit: this.limit, page: this.currentPage, service: 'page' }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
       const { results, metadata } = await api.integration.getIntegrations(

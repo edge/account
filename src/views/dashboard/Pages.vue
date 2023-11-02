@@ -33,14 +33,14 @@
 </template>
 
 <script>
-import IntegrationList from '@/components/pages/IntegrationList'
+import IntegrationList from '@/components/page/IntegrationList'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'Storage',
+  name: 'Pages',
   title() {
-    return 'Edge Account Portal » Storage'
+    return 'Edge Account Portal » Pages'
   },
   components: {
     IntegrationList,
@@ -63,7 +63,7 @@ export default {
     }
   },
   mounted() {
-    const service = this.services.find(s => s._key === 'storage')
+    const service = this.services.find(s => s._key === 'page')
     if (!service || (!service.public && !service.beta)) this.$router.push({ name: 'Not Found' })
   }
 }

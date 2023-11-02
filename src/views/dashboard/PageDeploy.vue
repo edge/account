@@ -8,14 +8,10 @@
         <div class="max-w-xl m-auto">
           <span>Your page has been activated.</span>
         </div>
-      </div>
-      <div class="box">
-        <button
-            @click=continueToIntegration
-            class="button button--small button--success w-full md:max-w-xs mt-5"
-          >
+        <button @click=continueToIntegration
+          class="button button--small button--success w-full md:max-w-xs mt-5">
             Continue to Deployment
-          </button>
+        </button>
       </div>
     </div>
 
@@ -28,7 +24,19 @@
       </div>
 
       <!-- details -->
-      <p>TODO B</p>
+      <DeployIntegrationDisplayName
+        @update-details="onUpdateName"
+        :disableControls="disableControls"
+      />
+      <DeployIntegrationDomain
+        @update-details="onUpdateDomain"
+        :disableControls="disableControls"
+      />
+      <DeployIntegrationContent
+        @update-details="onUpdateContent"
+        :disableControls="disableControls"
+      />
+      <!-- <EstimatedCosts /> -->
 
       <!-- deploy button -->
       <button
@@ -50,15 +58,16 @@
 </template>
 
 <script>
-// /* global process */
+/* global process */
 
-// import * as api from '@/account-utils/'
-// import DeployIntegrationDisplayName from '@/components/storage/DeployIntegrationDisplayName.vue'
-// import EstimatedCosts from '@/components/storage/EstimatedCosts.vue'
+import * as api from '@/account-utils/'
+import DeployIntegrationContent from '@/components/page/DeployIntegrationContent.vue'
+import DeployIntegrationDisplayName from '@/components/page/DeployIntegrationDisplayName.vue'
+import DeployIntegrationDomain from '@/components/page/DeployIntegrationDomain.vue'
+// import EstimatedCosts from '@/components/page/EstimatedCosts.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { v4 as uuidv4 } from 'uuid'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
@@ -67,7 +76,9 @@ export default {
     return 'Edge Account Portal » Pages'
   },
   components: {
-    // DeployIntegrationDisplayName,
+    DeployIntegrationContent,
+    DeployIntegrationDisplayName,
+    DeployIntegrationDomain,
     // EstimatedCosts,
     ExclamationIcon,
     HttpError,
@@ -81,20 +92,15 @@ export default {
       httpError: null,
       integration: {
         name: '',
-        configMode: 'advanced',
         data: {
-          service: 'storage',
+          service: 'page',
           config: {
-            apiKeys: {
-              [uuidv4()]: {
-                active: true
-              }
-            }
+            domain: '',
+            content: ''
           }
         }
       },
-      integrationKey: null,
-      showApiKey: false
+      integrationKey: null
     }
   },
   computed: {
@@ -103,7 +109,8 @@ export default {
     canDeploy() {
       return !this.deploying &&
         this.integration.name &&
-        this.integration.data.config
+        this.integration.data?.config?.domain &&
+        this.integration.data?.config?.content
     },
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
@@ -111,19 +118,19 @@ export default {
   },
   methods: {
     continueToIntegration() {
-      this.$router.push({ name: 'Pages Integration', params: { key: this.deployedIntegration._key } })
+      this.$router.push({ name: 'Page Integration', params: { key: this.deployedIntegration._key } })
     },
     async deployPage() {
       try {
         this.deploying = true
         this.httpError = null
-        // TODO
-        // const { integration } = await api.integration.addIntegration(
-        //   process.env.VUE_APP_ACCOUNT_API_URL,
-        //   this.session._key,
-        //   this.integration
-        // )
-        // this.deployedIntegration = integration
+
+        const { integration } = await api.integration.addIntegration(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.integration
+        )
+        this.deployedIntegration = integration
 
         await new Promise(resolve => setTimeout(resolve, 800))
         this.deployed = true
@@ -134,14 +141,18 @@ export default {
         this.httpError = error
       }
     },
-    onUpdateConfig(config, configMode) {
-      const integration = { ...this.integration }
-      integration.data.config = { ...integration.data.config, ...config }
-      integration.configMode = configMode
-      this.integration = integration
-    },
     onUpdateName(name) {
       this.integration = { ...this.integration, name }
+    },
+    onUpdateDomain(domain) {
+      const integration = { ...this.integration }
+      integration.data.config = { ...integration.data.config, domain }
+      this.integration = integration
+    },
+    onUpdateContent(content) {
+      const integration = { ...this.integration }
+      integration.data.config = { ...integration.data.config, content }
+      this.integration = integration
     }
   },
   watch: {
