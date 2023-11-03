@@ -1,38 +1,45 @@
 <template>
   <div class="mainContent__inner mb-16">
-    <h1>Edge Storage</h1>
+    <h1>Edge Pages</h1>
     <!-- Successfully deployed -->
     <div v-if="deployed" class="space-y-4">
       <div class="box md:text-center">
         <h4 class="text-green text-2xl">Success</h4>
         <div class="max-w-xl m-auto">
-          <span>Your storage deployment has been activated.</span>
+          <span>Your page has been activated.</span>
         </div>
+
       </div>
       <div class="box">
-        <div>
-          <h4>Storage API Key</h4>
-          <p class="text-gray-500">Your unique API key facilitates secure access to Storage, allowing for script automation and direct uploads. Remember to keep it confidential to ensure the security of your data.</p>
+        <h4>DNS Settings</h4>
+        <div class="flex flex-col space-y-4 overflow-x-visible">
+          <span>Please create the following DNS record to enabled Edge Pages to work:</span>
+          <div class="overflow-x-auto">
+            <table class="my-4 space-y-2">
+              <tr>
+                <th class="domain">Hostname</th>
+                <th class="type">Type</th>
+                <th>Value</th>
+                <th class="ttl">TTL</th>
+              </tr>
+              <tr>
+                <td class="domain monospace" :title="domain">{{ domain }}</td>
+                <td class="type monospace">{{ recordType }}</td>
+                <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
+                <td class="ttl monospace">3600</td>
+              </tr>
+            </table>
+          </div>
+          <span>You can set these up later, but Pages won't become operational until you do.</span>
+          <span>Changes can take up to 24 hours. If you require any assistance, please contact support@edge.network</span>
+
+          <div class="text-center">
+            <button @click="continueToIntegration"
+              class="button button--small button--success w-full md:max-w-xs mt-5">
+                Continue to Deployment
+            </button>
+          </div>
         </div>
-        <!-- account number display -->
-        <div class="api-key-wrapper">
-          <span v-if="showApiKey" class="api-key monospace">{{ apiKey }}</span>
-          <span v-else class="api-key masked monospace">{{ maskedApiKey }}</span>
-          <!-- hide/show account number button button -->
-          <button
-            @click.prevent="toggleShowApiKey"
-            class="ml-2 text-gray-400 hover:text-green"
-          >
-            <EyeIcon v-if="showApiKey" class="ml-2 w-5 h-5" />
-            <EyeOffIcon v-else class="ml-2 w-5 h-5" />
-          </button>
-        </div>
-        <button
-            @click=continueToIntegration
-            class="button button--small button--success w-full md:max-w-xs mt-5"
-          >
-            Continue to Deployment
-          </button>
       </div>
     </div>
 
@@ -49,15 +56,19 @@
         @update-details="onUpdateName"
         :disableControls="disableControls"
       />
-      <Config
-        @update-config="onUpdateConfig"
+      <DeployIntegrationDomain
+        @update-details="onUpdateDomain"
         :disableControls="disableControls"
       />
-      <EstimatedCosts />
+      <DeployIntegrationContent
+        @update-details="onUpdateContent"
+        :disableControls="disableControls"
+      />
+      <!-- <EstimatedCosts /> -->
 
       <!-- deploy button -->
       <button
-        @click="deployStorage"
+        @click="deployPage"
         :disabled="!canDeploy"
         class="button button--success self-end w-full md:max-w-xs"
       >
@@ -78,28 +89,26 @@
 /* global process */
 
 import * as api from '@/account-utils/'
-import Config from '@/components/storage/Config.vue'
-import DeployIntegrationDisplayName from '@/components/storage/DeployIntegrationDisplayName.vue'
-import EstimatedCosts from '@/components/storage/EstimatedCosts.vue'
+import DeployIntegrationContent from '@/components/page/DeployIntegrationContent.vue'
+import DeployIntegrationDisplayName from '@/components/page/DeployIntegrationDisplayName.vue'
+import DeployIntegrationDomain from '@/components/page/DeployIntegrationDomain.vue'
+// import EstimatedCosts from '@/components/page/EstimatedCosts.vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
-import { v4 as uuidv4 } from 'uuid'
-import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
-  name: 'StorageDeploy',
+  name: 'PagesDeploy',
   title() {
-    return 'Edge Account Portal » Storage'
+    return 'Edge Account Portal » Pages'
   },
   components: {
-    Config,
+    DeployIntegrationContent,
     DeployIntegrationDisplayName,
-    EstimatedCosts,
+    DeployIntegrationDomain,
+    // EstimatedCosts,
     ExclamationIcon,
-    EyeIcon,
-    EyeOffIcon,
     HttpError,
     LoadingSpinner
   },
@@ -108,23 +117,19 @@ export default {
       deployed: false,
       deploying: false,
       deployedIntegration: null,
+      apex: null,
       httpError: null,
       integration: {
         name: '',
-        configMode: 'advanced',
         data: {
-          service: 'storage',
+          service: 'page',
           config: {
-            apiKeys: {
-              [uuidv4()]: {
-                active: true
-              }
-            }
+            domain: '',
+            content: ''
           }
         }
       },
-      integrationKey: null,
-      showApiKey: false
+      integrationKey: null
     }
   },
   computed: {
@@ -133,36 +138,42 @@ export default {
     canDeploy() {
       return !this.deploying &&
         this.integration.name &&
-        this.integration.data.config
+        this.integration.data?.config?.domain &&
+        this.integration.data?.config?.content
+    },
+    domain() {
+      return this.integration.data?.config?.domain
+    },
+    recordType() {
+      return this.apex ? 'ALIAS' : 'CNAME'
     },
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
-    },
-    apiKey() {
-      let apiKey = ''
-      for (const key in this.deployedIntegration.data.config.apiKeys) {
-        if (this.deployedIntegration.data.config.apiKeys[key].active) apiKey = key
-      }
-      return apiKey
-    },
-    maskedApiKey() {
-      return this.apiKey.replaceAll(/[a-zA-Z0-9]/gi, 'x')
     }
   },
   methods: {
     continueToIntegration() {
-      this.$router.push({ name: 'Storage Integration', params: { key: this.deployedIntegration._key } })
+      this.$router.push({ name: 'Pages Integration', params: { key: this.deployedIntegration._key } })
     },
-    async deployStorage() {
+    async deployPage() {
       try {
         this.deploying = true
         this.httpError = null
+
         const { integration } = await api.integration.addIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration
         )
         this.deployedIntegration = integration
+
+        // Check whether the domain is apex/not
+        const psl = await api.helpers.pslParse(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          integration.data.config.domain
+        )
+        this.apex = psl.apex
 
         await new Promise(resolve => setTimeout(resolve, 800))
         this.deployed = true
@@ -173,17 +184,18 @@ export default {
         this.httpError = error
       }
     },
-    onUpdateConfig(config, configMode) {
-      const integration = { ...this.integration }
-      integration.data.config = { ...integration.data.config, ...config }
-      integration.configMode = configMode
-      this.integration = integration
-    },
     onUpdateName(name) {
       this.integration = { ...this.integration, name }
     },
-    toggleShowApiKey() {
-      this.showApiKey = !this.showApiKey
+    onUpdateDomain(domain) {
+      const integration = { ...this.integration }
+      integration.data.config = { ...integration.data.config, domain }
+      this.integration = integration
+    },
+    onUpdateContent(content) {
+      const integration = { ...this.integration }
+      integration.data.config = { ...integration.data.config, content }
+      this.integration = integration
     }
   },
   watch: {

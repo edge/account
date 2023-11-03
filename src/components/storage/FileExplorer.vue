@@ -5,18 +5,19 @@
   >
     <!-- overlays -->
     <FileUploadOverlay
-      v-show="showFileUploadOverlay"
+      v-if="showFileUploadOverlay"
       :integration="integration"
+      :path="path"
       @drop-file="resetDragCounter"
       @close="closeFileUploadOverlay"
-      @upload="updateFiles"
+      @upload="completeFileUpload"
     />
 
     <!-- delete confirmation modal -->
-    <FileExplorerItemDeleteConfirmation
+    <FileExplorerNodeDeleteConfirmation
       v-if="showDeleteConfirmationModal"
-      :items="selectedItems"
-      @modal-confirm="deleteSelectedItems"
+      :nodes="selectedNodes"
+      @modal-confirm="deleteSelectedNodes"
       @modal-close="toggleDeleteFilesConfirmation"
     />
 
@@ -30,15 +31,15 @@
           <Breadcrumbs @update-path="updatePath" :path="displayPath" />
           <LoadingSpinner v-if="loading"/>
         </div>
-        <!-- upload file/create directory buttons -->
+        <!-- upload file/create folder buttons -->
         <div class="flex space-x-2">
           <button @click="openFileUploadOverlay" class="text-green hover:text-green-300">
             <div><CloudUploadIcon class="w-5 h-5" /></div>
           </button>
-          <button @click="startAddNewDir" class="text-green hover:text-green-300">
+          <button @click="startCreateFolder" class="text-green hover:text-green-300">
             <div><FolderAddIcon class="w-6 h-6" /></div>
           </button>
-          <button @click="toggleDeleteFilesConfirmation" :disabled="!someItemsSelected" class="text-red hover:text-red-700" :class="!someItemsSelected && 'disabled'">
+          <button @click="toggleDeleteFilesConfirmation" :disabled="!someNodesSelected" class="text-red hover:text-red-700" :class="!someNodesSelected && 'disabled'">
             <div><TrashIcon class="w-5 h-5" /></div>
           </button>
         </div>
@@ -47,45 +48,40 @@
       <!-- file explorer -->
       <div class="w-full flex flex-col overflow-y-auto">
         <!-- headers -->
-        <div class="item-row font-bold border-b border-gray" >
+        <div class="node-row font-bold border-b border-gray" >
           <div class="w-4"></div>
           <div>Name</div>
           <div class="hidden sm:block">Size</div>
           <div></div>
-          <div v-if="loaded" @click="toggleSelectAllFiles" class="checkbox" :class="allItemsSelected && 'selected'">
-            <CheckIcon v-if="allItemsSelected" class="w-4 h-4 text-white"/>
-            <MinusIcon v-else-if="someItemsSelected" class="w-3 h-3" />
+          <div v-if="loaded" @click="toggleSelectAllFiles" class="checkbox" :class="allNodesSelected && 'selected'">
+            <CheckIcon v-if="allNodesSelected" class="w-4 h-4 text-white"/>
+            <MinusIcon v-else-if="someNodesSelected" class="w-3 h-3" />
           </div>
         </div>
         <!-- back dir (..) -->
-        <div v-if="displayPath" class="item-row">
+        <div v-if="displayPath" class="node-row">
           <ReplyIcon @click="backDir" class="w-5 sm:w-4 icon cursor-pointer" />
           <div><span @click="backDir" class="name">..</span></div>
         </div>
-        <!-- new directory input -->
-        <FileExplorerNewDirectory
-          v-if="addingNewDir"
-          :creating="creatingNewDir"
-          @add-dir="addNewDir"
-          @cancel="cancelAddNewDir"
-        />
-        <!-- directories and files -->
-        <div v-if="loaded && !files.length" class="py-2 text-center">
+        <!-- new folder input -->
+        <FileExplorerNewFolder v-if="showCreateFolder" :loading="creatingFolder" @submit="createFolder" @cancel="cancelCreateFolder"/>
+        <!-- folders and files -->
+        <div v-if="loaded && !nodes.length" class="py-2 text-center">
           <span>This folder is empty</span>
         </div>
-        <FileExplorerItem
-          v-for="(item, index) in files"
-          :key="item.directory || item.filename"
-          :ref="item.directory || item.filename"
+        <FileExplorerNode
+          v-for="(node, index) in nodes"
+          :key="node.fullPath"
+          :ref="node.fullPath"
           :index="index"
           :integration="integration"
-          :item="item"
+          :node="node"
           :path="displayPath"
           @delete="updateFiles"
           @rename="updateFiles"
-          @select-item="onSelectItem"
-          @select-item-ctrl="onSelectItemWithCtrl"
-          @select-item-shift="onSelectItemWithShift"
+          @select-node="onSelectNode"
+          @select-node-ctrl="onSelectNodeWithCtrl"
+          @select-node-shift="onSelectNodeWithShift"
           @update-path="updatePath"
           @view-file="onViewFile"
         />
@@ -109,9 +105,9 @@ import * as api from '@/account-utils'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import CloudUploadIcon from '@/components/icons/CloudUploadIcon'
 import FileExplorerFileInfo from '@/components/storage/FileExplorerFileInfo'
-import FileExplorerItem from '@/components/storage/FileExplorerItem'
-import FileExplorerItemDeleteConfirmation from '@/components/storage/FileExplorerItemDeleteConfirmation'
-import FileExplorerNewDirectory from '@/components/storage/FileExplorerNewDirectory'
+import FileExplorerNewFolder from '@/components/storage/FileExplorerNewFolder'
+import FileExplorerNode from '@/components/storage/FileExplorerNode'
+import FileExplorerNodeDeleteConfirmation from '@/components/storage/FileExplorerNodeDeleteConfirmation'
 import FileUploadOverlay from '@/components/storage/FileUploadOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -132,9 +128,9 @@ export default {
     CheckIcon,
     CloudUploadIcon,
     FileExplorerFileInfo,
-    FileExplorerItem,
-    FileExplorerItemDeleteConfirmation,
-    FileExplorerNewDirectory,
+    FileExplorerNode,
+    FileExplorerNodeDeleteConfirmation,
+    FileExplorerNewFolder,
     FileUploadOverlay,
     FolderAddIcon,
     LoadingSpinner,
@@ -145,18 +141,18 @@ export default {
   props: ['integration'],
   data() {
     return {
-      addingNewDir: false,
-      creatingNewDir: false,
-      // currently loaded (displayed) directory
+      showCreateFolder: false,
+      creatingFolder: false,
+      // currently loaded (displayed) folder
       displayPath: '',
       // number of dragEnter minus number of dragExit
       dragCounter: 0,
-      files: [],
+      nodes: [],
       fileToView: null,
       lastSelectedIndex: 0,
       loaded: false,
       loading: false,
-      // selected directory, regardless of loaded state
+      // selected folder, regardless of loaded state
       path: '',
       showDeleteConfirmationModal: false,
       showFileUploadOverlay: false
@@ -164,40 +160,42 @@ export default {
   },
   computed: {
     ...mapState(['session']),
-    allItemsSelected() {
-      return this.selectedItems.length && this.selectedItems.length === this.files.length
+    allNodesSelected() {
+      return this.selectedNodes.length && this.selectedNodes.length === this.nodes.length
     },
-    itemRefs() {
-      return this.loaded && !this.loading && this.files.map(f => this.$refs[f.filename || f.directory][0])
+    nodeRefs() {
+      return this.loaded && !this.loading && this.nodes.map(f => this.$refs[f.fullPath][0])
     },
-    selectedItems() {
-      return this.loaded && !this.loading && this.files.filter(f => this.$refs[f.filename || f.directory][0].selected)
+    selectedNodes() {
+      return this.loaded && !this.loading && this.nodes.filter(f => this.$refs[f.fullPath][0].selected)
     },
     selectedRefs() {
-      return this.selectedItems.map(f => this.$refs[f.filename || f.directory][0])
+      return this.selectedNodes.map(f => this.$refs[f.fullPath][0])
     },
-    someItemsSelected() {
-      return this.selectedItems.length
+    someNodesSelected() {
+      return this.selectedNodes.length
     }
   },
   methods: {
-    async addNewDir(newDirName) {
-      if (!newDirName) return
+    async createFolder(name) {
+      if (!name) return
       try {
-        this.creatingNewDir = true
-        await api.storage.createDirectory(
+        this.creatingFolder = true
+        const fullPath = this.path.length > 0 ? `${this.path}/${name}` : name
+        await api.files.createFolder(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
-          this.path,
-          newDirName
+          fullPath
         )
-        this.creatingNewDir = false
-        this.cancelAddNewDir()
         await this.updateFiles()
       }
       catch (error) {
         console.error(error)
+      }
+      finally {
+        this.creatingFolder = false
+        this.cancelCreateFolder()
       }
     },
     backDir() {
@@ -205,14 +203,20 @@ export default {
       if (path.length === 1) this.updatePath('')
       else this.updatePath(path.slice(0, path.length - 1).join('/'))
     },
-    cancelAddNewDir() {
-      this.addingNewDir = false
+    cancelCreateFolder() {
+      this.showCreateFolder = false
     },
     closeFileUploadOverlay() {
       this.showFileUploadOverlay = false
     },
-    deleteSelectedItems() {
-      this.selectedRefs.forEach(ref => ref.deleteItem())
+    completeFileUpload() {
+      setTimeout(() => {
+        this.closeFileUploadOverlay()
+        this.updateFiles()
+      }, 1000)
+    },
+    deleteSelectedNodes() {
+      this.selectedRefs.forEach(ref => ref.deleteNode())
       this.toggleDeleteFilesConfirmation()
     },
     // onFileDragEnter and onFileDragExit prevent the file upload overlay from flickering open/closed as a file is dragged
@@ -227,25 +231,25 @@ export default {
         this.resetDragCounter()
       }
     },
-    onSelectItem(index) {
-      this.itemRefs.forEach((ref, i) => {
+    onSelectNode(index) {
+      this.nodeRefs.forEach((ref, i) => {
         if (index === i) ref.selected = true
         else ref.selected = false
       })
       this.lastSelectedIndex = index
     },
-    onSelectItemWithCtrl(index) {
-      this.itemRefs[index].selected = !this.itemRefs[index].selected
+    onSelectNodeWithCtrl(index) {
+      this.nodeRefs[index].selected = !this.nodeRefs[index].selected
       this.lastSelectedIndex = index
     },
-    onSelectItemWithShift(index) {
+    onSelectNodeWithShift(index) {
       const startIndex = Math.min(index, this.lastSelectedIndex)
       const endIndex = Math.max(index, this.lastSelectedIndex) + 1
 
       let selected = true
-      if (this.itemRefs[index].selected) selected = false
+      if (this.nodeRefs[index].selected) selected = false
 
-      this.itemRefs
+      this.nodeRefs
         .slice(startIndex, endIndex)
         .forEach((ref) => ref.selected = selected)
       this.lastSelectedIndex = index
@@ -262,38 +266,38 @@ export default {
     resetDragCounter() {
       this.dragCounter = 0
     },
-    startAddNewDir() {
-      this.addingNewDir = true
+    startCreateFolder() {
+      this.showCreateFolder = true
     },
-    toggleAddNewDir() {
-      this.addingNewDir = !this.addingNewDir
+    toggleCreateFolder() {
+      this.showCreateFolder = !this.showCreateFolder
     },
     toggleSelectAllFiles() {
-      if (this.allItemsSelected) this.itemRefs.forEach(ref => ref.selected = false)
-      else this.itemRefs.forEach(ref => ref.selected = true)
+      if (this.allNodesSelected) this.nodeRefs.forEach(ref => ref.selected = false)
+      else this.nodeRefs.forEach(ref => ref.selected = true)
     },
     toggleDeleteFilesConfirmation() {
       this.showDeleteConfirmationModal = !this.showDeleteConfirmationModal
     },
     updatePath(newPath) {
       this.path = newPath
+      this.displayPath = newPath
     },
     async updateFiles() {
       try {
         this.httpError = null
         this.loading = true
-        const { files, path } = await api.storage.getFiles(
+        const { children } = await api.files.getNode(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
           this.path
         )
-        this.files = files
+        this.nodes = children
         await this.$nextTick()
         this.fileToView = null
         this.loading = false
         this.loaded = true
-        this.displayPath = path
         this.$forceUpdate()
       }
       catch (error) {
@@ -306,14 +310,14 @@ export default {
     this.updateFiles()
   },
   watch: {
-    allItemsSelected() {
-      if (this.allItemsSelected) this.lastSelectedIndex = this.itemRefs.length - 1
+    allNodesSelected() {
+      if (this.allNodesSelected) this.lastSelectedIndex = this.nodeRefs.length - 1
     },
     path() {
       this.updateFiles()
     },
-    someItemsSelected() {
-      if (!this.someItemsSelected) this.lastSelectedIndex = 0
+    someNodesSelected() {
+      if (!this.someNodesSelected) this.lastSelectedIndex = 0
     }
   }
 }
@@ -325,16 +329,16 @@ export default {
   height: 700px;
 }
 
-.item-row {
+.node-row {
   @apply w-full grid gap-x-4 items-center py-1 pl-2 pr-1;
   grid-template-columns: max-content auto max-content max-content;
 }
 @screen sm {
-  .item-row {
+  .node-row {
     grid-template-columns: max-content auto 150px max-content max-content;
   }
 }
-.item-row.selected {
+.node-row.selected {
   @apply bg-gray-300 rounded-md;
 }
 
@@ -344,10 +348,10 @@ export default {
 .checkbox.selected {
   @apply border-green bg-green;
 }
-.item-row .name {
+.node-row .name {
   @apply cursor-pointer hover:text-green hover:underline;
 }
-.item-action {
+.node-action {
   @apply cursor-pointer;
 }
 .disabled {

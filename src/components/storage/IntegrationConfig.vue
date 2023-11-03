@@ -72,7 +72,8 @@ export default {
       return false
     },
     liveConfig() {
-      return this.integration.data.config
+      const { apiKeys, ...config } = this.integration.data.config
+      return config
     },
     liveConfigMode() {
       return this.integration.configMode
@@ -89,7 +90,6 @@ export default {
       this.workingConfig = { ...this.integration.data.config }
     },
     async saveChanges() {
-      /** @todo save integration updates using api */
       const updatedIntegration = { ...this.integration }
       updatedIntegration.configMode = this.configMode
       updatedIntegration.data.config = {
@@ -98,7 +98,7 @@ export default {
       }
       try {
         this.isSaving = true
-        await api.storage.updateIntegration(
+        await api.integration.updateIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           this.integration._key,
