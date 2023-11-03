@@ -34,19 +34,32 @@
         :initialContent="content"
       />
 
-      <!-- update button -->
-      <button
-        @click="updatePage"
-        :disabled="!canUpdate"
-        class="button button--success self-end w-full md:max-w-xs"
-      >
+      <div class="flex justify-between">
+        <button class="button button--error w-1/4"
+          @click="toggleConfirmationModal"
+          >
+          Delete
+        </button>
+        <button class="button button--success w-1/4"
+          @click="updatePage"
+          :disabled="!canUpdate"
+          >
           <div v-if="updating" class="flex flex-row items-center">
             <span>Updating</span>
             <span class="ml-2"><LoadingSpinner /></span>
           </div>
-        <span v-else>Update</span>
-      </button>
+          <span v-else>Update</span>
+        </button>
+      </div>
     </div>
+
+    <!-- destroy confirmation modal -->
+    <DeletePageConfirmation
+      v-if="showConfirmationModal"
+      @modal-confirm="confirmDeletePage"
+      @modal-close="toggleConfirmationModal"
+      :pageName="integration.name"
+    />
   </div>
 </template>
 
@@ -63,6 +76,7 @@
 /* global process */
 
 import * as api from '@/account-utils'
+import DeletePageConfirmation from '@/components/confirmations/DeletePageConfirmation.vue'
 import DeployIntegrationContent from '@/components/page/DeployIntegrationContent.vue'
 import DeployIntegrationDisplayName from '@/components/page/DeployIntegrationDisplayName.vue'
 import DeployIntegrationDomain from '@/components/page/DeployIntegrationDomain.vue'
@@ -76,6 +90,7 @@ export default {
     return 'Edge Account Portal » Page'
   },
   components: {
+    DeletePageConfirmation,
     DeployIntegrationContent,
     DeployIntegrationDisplayName,
     DeployIntegrationDomain,
@@ -91,7 +106,8 @@ export default {
       iIntegration: null,
       loading: false,
       notFound: false,
-      updating: false
+      updating: false,
+      showConfirmationModal: false
     }
   },
   computed: {
@@ -130,9 +146,10 @@ export default {
     }
   },
   methods: {
-    onDeleteIntegration() {
-      // clearInterval(this.iIntegration)
-      // this.deleted = true
+    toggleConfirmationModal() {
+      console.log('toggleConfirmationModal B', this.showConfirmationModal)
+      this.showConfirmationModal = !this.showConfirmationModal
+      console.log('toggleConfirmationModal A', this.showConfirmationModal)
     },
     onUpdateName(name) {
       this.integration = { ...this.integration, name }
@@ -149,6 +166,26 @@ export default {
       integration.data.config = { ...integration.data.config, content }
       this.integration = integration
       this.changed = true
+    },
+    async confirmDeletePage() {
+      try {
+        await api.integration.deleteIntegration(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          this.integration._key
+        )
+        clearInterval(this.iIntegration)
+        this.deleted = true
+        this.showConfirmationModal = false
+        this.$router.push({ name: 'Pages' })
+      }
+      catch (error) {
+        console.error(error)
+        if (error.status === 404) {
+          this.notFound = true
+          clearInterval(this.iIntegration)
+        }
+      }
     },
     async updatePage() {
       this.updating = true
@@ -180,6 +217,7 @@ export default {
           this.integrationId
         )
         this.integration = integration
+
         console.log(this.integration)
       }
       catch (error) {

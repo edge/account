@@ -123,10 +123,10 @@ font-size: 0.8rem;
     @apply row-start-2;
   }
   .created {
-    @apply row-start-2;
+    @apply row-start-3;
   }
   .updated {
-    @apply row-start-2;
+    @apply row-start-3;
   }
 }
 
@@ -137,7 +137,7 @@ font-size: 0.8rem;
   }
   .name {
     @apply flex-1 flex-shrink-0 col-span-1 row-span-2 justify-center;
-    flex-basis: 350px;
+    flex-basis: 250px;
   }
   .domain {
     @apply flex-1 row-start-2 flex-shrink-0;

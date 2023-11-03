@@ -8,10 +8,38 @@
         <div class="max-w-xl m-auto">
           <span>Your page has been activated.</span>
         </div>
-        <button @click=continueToIntegration
-          class="button button--small button--success w-full md:max-w-xs mt-5">
-            Continue to Deployment
-        </button>
+
+      </div>
+      <div class="box">
+        <h4>DNS Settings</h4>
+        <div class="flex flex-col space-y-4 overflow-x-visible">
+          <span>Please create the following DNS record to enabled Edge Pages to work:</span>
+          <div class="overflow-x-auto">
+            <table class="my-4 space-y-2">
+              <tr>
+                <th class="domain">Hostname</th>
+                <th class="type">Type</th>
+                <th>Value</th>
+                <th class="ttl">TTL</th>
+              </tr>
+              <tr>
+                <td class="domain monospace" :title="domain">{{ domain }}</td>
+                <td class="type monospace">{{ recordType }}</td>
+                <td class="monospace">gateway.{{ isTestnet ? 'test' : 'edge'}}.network</td>
+                <td class="ttl monospace">3600</td>
+              </tr>
+            </table>
+          </div>
+          <span>You can set these up later, but Pages won't become operational until you do.</span>
+          <span>Changes can take up to 24 hours. If you require any assistance, please contact support@edge.network</span>
+
+          <div class="text-center">
+            <button @click="continueToIntegration"
+              class="button button--small button--success w-full md:max-w-xs mt-5">
+                Continue to Deployment
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -89,6 +117,7 @@ export default {
       deployed: false,
       deploying: false,
       deployedIntegration: null,
+      apex: null,
       httpError: null,
       integration: {
         name: '',
@@ -112,13 +141,19 @@ export default {
         this.integration.data?.config?.domain &&
         this.integration.data?.config?.content
     },
+    domain() {
+      return this.integration.data?.config?.domain
+    },
+    recordType() {
+      return this.apex ? 'ALIAS' : 'CNAME'
+    },
     disableControls() {
       return this.balanceSuspend || this.balanceWarning
     }
   },
   methods: {
     continueToIntegration() {
-      this.$router.push({ name: 'Page Integration', params: { key: this.deployedIntegration._key } })
+      this.$router.push({ name: 'Pages Integration', params: { key: this.deployedIntegration._key } })
     },
     async deployPage() {
       try {
@@ -131,6 +166,14 @@ export default {
           this.integration
         )
         this.deployedIntegration = integration
+
+        // Check whether the domain is apex/not
+        const psl = await api.helpers.pslParse(
+          process.env.VUE_APP_ACCOUNT_API_URL,
+          this.session._key,
+          integration.data.config.domain
+        )
+        this.apex = psl.apex
 
         await new Promise(resolve => setTimeout(resolve, 800))
         this.deployed = true
