@@ -22,6 +22,7 @@
             :class="balanceSuspend || balanceWarning ? 'cursor-not-allowed' : ''"
             placeholder="Add a domain name"
             @keypress.enter=addDomain
+            @keyup="forceLowercaseDomainName"
             :disabled="balanceSuspend || balanceWarning"
 
           />
@@ -153,6 +154,10 @@ export default {
         this.addingDomain = false
         if (domain) this.$router.push({ name: 'Domain', params: { key: domain._key } })
       }, 800)
+    },
+    forceLowercaseDomainName() {
+      const hasUppercase = /[A-Z]/.test(this.newDomainName)
+      if (hasUppercase) this.newDomainName = this.newDomainName.toLowerCase()
     }
   },
   setup() {

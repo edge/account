@@ -86,6 +86,7 @@
             :placeholder="valueLabel.placeholder"
             required
             v-model="value"
+            @keyup="forceLowercaseValue"
             @keypress.enter=createRecord
           />
           <div v-if="valueError" class="errorMessage">
@@ -274,6 +275,12 @@ export default {
         }, 500)
       }
 
+    },
+    forceLowercaseValue() {
+      if (['ALIAS', 'CNAME', 'NS', 'MX'].includes(this.type)) {
+        const hasUppercase = /[A-Z]/.test(this.value)
+        if (hasUppercase) this.value = this.value.toLowerCase()
+      }
     },
     async getSyncRecords() {
       const { results, metadata} = await api.dns.getRecords(
