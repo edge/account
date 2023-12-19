@@ -103,6 +103,7 @@
           v-model=value
           :title=value
           @keypress.enter=confirmEditRecord
+          @keyup="forceLowercaseValue"
         />
         <span v-else class="recordList__value"
           :title="mxValue ? mxValue.value : record.value"
@@ -404,6 +405,12 @@ export default {
         this.httpError = error
       }
       this.isDeleting = false
+    },
+    forceLowercaseValue() {
+      if (['ALIAS', 'CNAME', 'NS', 'MX'].includes(this.type)) {
+        const hasUppercase = /[A-Z]/.test(this.value)
+        if (hasUppercase) this.value = this.value.toLowerCase()
+      }
     },
     async getSyncRecords() {
       const { results, metadata} = await api.dns.getRecords(
