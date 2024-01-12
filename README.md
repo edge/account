@@ -4,6 +4,10 @@
 
 Account portal for managing Edge services
 
+## System Requirements
+
+- Node.js v18+
+
 ## Environment variables
 
  * `VUE_APP_ACCOUNT_API_URL`: e.g. http://0.0.0.0:8001

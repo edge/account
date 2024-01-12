@@ -1,7 +1,7 @@
 <template>
   <div class="referralCode">
     <h4>Referral Code</h4>
-    <p class="text-gray-500">Edge provides a generous referral programme for new business to the network. The referral programme pays 10% of revenue for any business introduced. Full stop. Forever.</p>
+    <p class="text-gray-500">Edge's referral program pays you for new business introduced to the network. The program pays 20% of revenue for any business introduced in year 1, 10% in year 2 and 5% in year 3.</p>
     <p class="text-gray-500">Just share the below link with new users and when they sign up your referral rewards will be paid monthly in XE directly to your account.</p>
     <p v-if="referralCount" class="text-gray-500">
       You currently have {{ referralCount }} referral{{referralCount > 1 ? 's' : ''}}.

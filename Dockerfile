@@ -5,7 +5,7 @@
 #
 # 1. Build the Vue app
 #
-FROM node:lts AS build
+FROM node:18 AS build
 
 ARG ACCOUNT_API_URL
 ARG CRISP_WEBSITE_ID
