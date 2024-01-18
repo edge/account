@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-col space-y-4">
     <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
+      <AutoPayment :paymentMethods=paymentMethods />
       <AddFundsCalculator @update="onCalculatorUpdate">
         <template v-slot:buttons>
           <button
@@ -15,7 +16,6 @@
           </div>
         </template>
       </AddFundsCalculator>
-      <AutoPayment :paymentMethods=paymentMethods />
     </div>
     <div class="box flex flex-col">
       <h4>Payment Cards</h4>
