@@ -15,7 +15,7 @@
             <!-- STEP 1: Payment -->
             <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 py-4">
               <div>
-                <div v-if="true || progress.payment" class="w-8 h-8 bg-edge-green rounded-full flex items-center justify-center">
+                <div v-if="progress.payment" class="w-8 h-8 bg-edge-green rounded-full flex items-center justify-center">
                   <CheckIcon class="w-5 h-5 text-white" />
                 </div>
                 <div v-else class="w-8 h-8 rounded-full border-2 border-edge-green"></div>
@@ -32,7 +32,7 @@
             <!-- STEP 2: Deploy -->
             <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 py-4">
               <div>
-                <div v-if="true || progress.service" class="w-8 h-8 bg-edge-green rounded-full flex items-center justify-center">
+                <div v-if="progress.service" class="w-8 h-8 bg-edge-green rounded-full flex items-center justify-center">
                   <CheckIcon class="w-5 h-5 text-white" />
                 </div>
                 <div v-else class="w-8 h-8 rounded-full border-2 border-edge-green"></div>
