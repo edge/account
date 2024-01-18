@@ -3,23 +3,21 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 
 export default {
   name: 'Index',
   title() {
     return 'Edge Account Portal » Index'
   },
-  components: {
-  },
   computed: {
-  },
-  methods: {
+    ...mapState(['account', 'progress'])
   },
   mounted() {
-    this.$router.replace({ name: 'Servers' })
+    // If user has finished account setup, redirect to cdn, otherwise, to getting started.
+    const isSetup = this.account.isSetup || this.progress.all
+    if (isSetup) this.$router.replace({ name: 'Content Delivery' })
+    else this.$router.replace({ name: 'Getting Started' })
   }
 }
 </script>
-
-<style scoped>
-</style>

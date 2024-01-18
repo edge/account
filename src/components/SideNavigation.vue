@@ -20,6 +20,11 @@ import { mapState } from 'vuex'
 
 const nav = [
   {
+    _key: 'cdn',
+    link: '/cdn',
+    text: 'Content Delivery'
+  },
+  {
     _key: 'servers',
     link: '/servers',
     text: 'Servers'
@@ -28,11 +33,6 @@ const nav = [
     _key: 'dns',
     link: '/domains',
     text: 'Domains'
-  },
-  {
-    _key: 'cdn',
-    link: '/cdn',
-    text: 'Content Delivery'
   },
   {
     _key: 'page',
@@ -59,14 +59,25 @@ const nav = [
 export default {
   name: 'SideNavigation',
   computed: {
-    ...mapState(['services']),
+    ...mapState(['progress', 'services']),
     mainNav() {
-      return nav.map(item => {
+      const navItems = nav.map(item => {
         const service = this.services.find(s => s._key === item._key)
         const disabled = !service || (!service.public && !service.beta)
         const beta = service && service.beta
         return { ...item, disabled, beta }
       })
+
+      // add getting started to the top of the nav if not completed
+      if (!this.progress.all) {
+        navItems.unshift({
+          _key: 'getting-started',
+          link: '/getting-started',
+          text: 'Getting Started'
+        })
+      }
+
+      return navItems
     }
   },
   components: {

@@ -347,7 +347,7 @@ export default {
             const payload = { account, session }
             this.$store.dispatch('signIn', payload)
             setTimeout(() => {
-              this.$router.push('/servers')
+              this.$router.push('/')
             }, 800)
           }
         }
