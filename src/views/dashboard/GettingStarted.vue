@@ -63,14 +63,14 @@
               icon="https://edge.network/assets/img/accounts/docs.svg"
               title="Launching an Edge Virtual Machine in two minutes"
               description="Get online quickly with our latest walkthrough."
-              link="#TODO"
+              link="https://youtu.be/jqx99OLYWds"
               buttonText="Watch"
             />
             <GuideCard
               icon="https://edge.network/assets/img/accounts/vm.svg"
               title="Image manipulation at the edge of the network"
               description="Discover how to streamline your content with Edge CDN."
-              link="#TODO"
+              link="https://edge.network/en/content-delivery/documentation/"
               buttonText="Read"
             />
           </div>

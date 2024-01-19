@@ -6,7 +6,7 @@
         <p class="text-md mt-2 mb-0">{{ title }}</p>
         <p class="text-sm text-gray-600 mt-0 mb-2">{{ description }}</p>
       </div>
-      <a :href="link" class="inline-block my-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded">
+      <a :href="link" target="_blank" class="inline-block my-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded">
         {{ buttonText }}
       </a>
     </div>
