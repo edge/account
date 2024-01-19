@@ -36,9 +36,7 @@ const store = createStore({
       libcrisp.setAccount(account)
     },
     setProgress(state, progress) {
-      console.log('==> setting progress to', progress)
       state.progress = progress
-      console.log('==> progress set to', state.progress)
     },
     setAnnouncements(state, announcements) {
       state.announcements = announcements
@@ -104,7 +102,6 @@ const store = createStore({
       commit('setSession', session)
     },
     signIn({ commit }, payload) {
-      console.log('sign in payload', payload)
       commit('setAccount', payload.account)
       commit('setSession', payload.session)
       commit('setIsAuthed', true)
@@ -121,21 +118,17 @@ const store = createStore({
       localStorage.removeItem('session')
     },
     async updateAccount({ commit, state }) {
-      console.log('=> updating account...')
       const { account } = await api.accounts.getAccount(
         process.env.VUE_APP_ACCOUNT_API_URL,
         state.session._key
       )
-      console.log('=> account updated:', account)
       commit('setAccount', account)
     },
     async updateProgress({ commit, state }) {
-      console.log('=> updating progress...')
       const progress = await api.accounts.getProgress(
         process.env.VUE_APP_ACCOUNT_API_URL,
         state.session._key
       )
-      console.log('=> progress updated:', progress)
       commit('setProgress', progress)
     },
     async updateBalance({ commit, state }) {
