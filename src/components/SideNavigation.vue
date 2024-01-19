@@ -59,7 +59,7 @@ const nav = [
 export default {
   name: 'SideNavigation',
   computed: {
-    ...mapState(['progress', 'services']),
+    ...mapState(['account', 'services']),
     mainNav() {
       const navItems = nav.map(item => {
         const service = this.services.find(s => s._key === item._key)
@@ -69,7 +69,7 @@ export default {
       })
 
       // add getting started to the top of the nav if not completed
-      if (!this.progress.all) {
+      if (this.account && !this.account.isSetup) {
         navItems.unshift({
           _key: 'getting-started',
           link: '/getting-started',

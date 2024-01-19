@@ -68,7 +68,7 @@ export default {
     // Search
   },
   computed: {
-    ...mapState(['account', 'progress', 'services']),
+    ...mapState(['account', 'services']),
     formattedAccountNumber() {
       return format.accountNumberMasked(this.account._key)
     },
@@ -81,7 +81,7 @@ export default {
       })
 
       // add getting started to the top of the nav if not completed
-      if (!this.progress.all) {
+      if (this.account && !this.account.isSetup) {
         navItems.unshift({
           _key: 'getting-started',
           link: '/getting-started',
