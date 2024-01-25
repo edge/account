@@ -4,11 +4,11 @@
 
 import superagent from 'superagent'
 
-export const addEmail = async (host, sessionId, address) => {
+export const addEmail = async (host, sessionId, account, address) => {
   const url = `${host}/account/email`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ address })
+    .send({ account, address })
   return response.body
 }
 
@@ -63,18 +63,19 @@ export const getWallet = async (host, sessionId) => {
   return response.body
 }
 
-export const removeEmail = async (host, sessionId) => {
+export const removeEmail = async (host, sessionId, account) => {
   const url = `${host}/account/email`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ account })
   return response.body
 }
 
-export const resendVerificationEmail = async (host, sessionId, signup) => {
+export const resendVerificationEmail = async (host, sessionId, account) => {
   const url = `${host}/account/email/verify/resend`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ signup })
+    .send({ account })
   return response.body
 }
 
@@ -85,19 +86,19 @@ export const sendMagicLink = async (host, address) => {
   return response.body
 }
 
-export const updateEmail = async (host, sessionId, address) => {
+export const updateEmail = async (host, sessionId, account, address) => {
   const url = `${host}/account/email`
   const response = await superagent.put(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ address })
+    .send({ account, address })
   return response.body
 }
 
-export const verifyEmail = async (host, sessionId, secret) => {
+export const verifyEmail = async (host, sessionId, account, secret) => {
   const url = `${host}/account/email/verify`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ secret })
+    .send({ account, secret })
   return response.body
 }
 
