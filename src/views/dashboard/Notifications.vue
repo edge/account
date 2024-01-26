@@ -157,7 +157,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session', 'unreadNotifications']),
+    ...mapState(['account', 'session', 'unreadNotifications']),
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
     }
@@ -183,7 +183,7 @@ export default {
     },
     async markAllRead() {
       if (this.notifications.length === 0) return
-      await api.notifications.markAllRead(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
+      await api.notifications.markAllRead(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.account._key)
       await this.refresh()
     },
     async markRead(notification) {

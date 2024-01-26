@@ -10,7 +10,7 @@ export const deleteNotifications = async (host, sessionId, notifications) => {
   const url = `${host}/notifications`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(notifications)
+    .send(notifications.map(n => ({ _key: n._key })))
   return response.body
 }
 
@@ -25,11 +25,11 @@ export const getNotifications = async (host, sessionId, params) => {
 }
 
 // mark all notifications read on account
-export const markAllRead = async (host, sessionId) => {
+export const markAllRead = async (host, sessionId, account) => {
   const url = `${host}/notifications/all`
   const response = await superagent.put(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ read: true })
+    .send({ account, read: true })
   return response.body
 }
 
