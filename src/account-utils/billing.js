@@ -13,9 +13,11 @@ export const addPaymentMethod = async (host, sessionId, data) => {
   return response.body
 }
 
-export const createStripeSetupIntent = async (host, sessionId) => {
+export const createStripeSetupIntent = async (host, sessionId, account) => {
   const url = `${host}/billing/paymentMethods/setup/stripe`
-  const response = await superagent.post(url).set({ 'Authorization': `Bearer ${sessionId}` })
+  const response = await superagent.post(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ account })
   return response.body
 }
 
@@ -26,10 +28,11 @@ export const deletePaymentMethod = async (host, sessionId, paymentMethodKey) => 
   return response.body
 }
 
-export const disableAutoPayment = async (host, sessionId) => {
+export const disableAutoPayment = async (host, sessionId, account) => {
   const url = `${host}/account/topup`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ account })
   return response.body
 }
 

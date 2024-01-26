@@ -180,6 +180,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
+            account: this.account._key,
             name: 'Credit Card',
             stripe: this.$route.query.setup_intent
           }
@@ -202,7 +203,8 @@ export default {
       if (this.showAddNewCard) return
       const { setup } = await api.billing.createStripeSetupIntent(
         process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
+        this.session._key,
+        this.account._key
       )
       this.stripeElements = this.stripe.elements({ clientSecret: setup.client_secret })
       this.paymentElement = this.stripeElements.create('payment')
@@ -215,6 +217,7 @@ export default {
       this.showCheckout = true
 
       const data = {
+        account: this.account._key,
         send: {
           amount: this.calculatedUSD,
           currency: 'USD'
