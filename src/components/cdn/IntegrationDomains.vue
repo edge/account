@@ -135,7 +135,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isTestnet', 'session']),
+    ...mapState(['account', 'isTestnet', 'session']),
     canSaveChanges() {
       return this.hasChanges && this.workingDomains.length
     },
@@ -166,6 +166,7 @@ export default {
           this.session._key,
           recordToCreate.zone,
           {
+            account: this.account._key,
             name: isApex ? '@' : subDomain,
             ttl: 3600,
             type: isApex ? 'ALIAS' : 'CNAME',

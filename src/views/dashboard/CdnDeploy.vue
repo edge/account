@@ -169,7 +169,7 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
-    ...mapState(['balance', 'isTestnet', 'session']),
+    ...mapState(['account', 'balance', 'isTestnet', 'session']),
     canDeploy() {
       return !this.deploying &&
         this.integration.name &&
@@ -197,6 +197,7 @@ export default {
           this.session._key,
           recordToCreate.zone,
           {
+            account: this.account._key,
             name: isApex ? '@' : subDomain,
             ttl: 3600,
             type: isApex ? 'ALIAS' : 'CNAME',
