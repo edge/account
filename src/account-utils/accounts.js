@@ -42,6 +42,13 @@ export const getAccount = async (host, sessionId) => {
   return response.body
 }
 
+export const getProgress = async (host, sessionId) => {
+  const url = `${host}/account/progress`
+  const response = await superagent.get(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 export const getReferrals = async (host, sessionId) => {
   const url = `${host}/account/referred`
   const response = await superagent.get(url)

@@ -14,6 +14,7 @@ import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
 import Domain from '@/views/dashboard/Domain'
 import Domains from '@/views/dashboard/Domains'
+import GettingStarted from '@/views/dashboard/GettingStarted'
 import Index from '@/views/dashboard/Index'
 import Invoices from '@/components/billing/Invoices'
 import Landing from '@/views/Landing'
@@ -105,6 +106,11 @@ const routes = [
         path: 'domains',
         name: 'Domains',
         component: Domains
+      },
+      {
+        path: 'getting-started',
+        name: 'Getting Started',
+        component: GettingStarted
       },
       {
         path: 'notifications',

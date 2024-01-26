@@ -3,7 +3,7 @@
     <SideNavigation />
     <main class="flex flex-col w-full mainContent">
       <TopNavigation />
-      <SuspensionWarning v-if="loaded" />
+      <SuspensionWarning v-if="loaded && !isGettingStarted" />
       <Announcements v-if="loaded" />
       <router-view v-if="loaded" />
     </main>
@@ -39,6 +39,9 @@ export default {
     ...mapState(['account', 'balance', 'config', 'services', 'tasks']),
     loaded() {
       return this.account && this.balance && this.config && this.services
+    },
+    isGettingStarted() {
+      return this.$route.name === 'Getting Started'
     }
   },
   components: {
@@ -61,6 +64,7 @@ export default {
     this.$store.dispatch('getAnnouncements')
     this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
+    this.$store.dispatch('updateProgress')
     this.$store.dispatch('updateBalance')
     this.$store.dispatch('updateServices')
     this.$store.dispatch('updateSubscriptions')

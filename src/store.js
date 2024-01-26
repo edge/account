@@ -17,6 +17,11 @@ const store = createStore({
     balance: null,
     isAuthed: false,
     isTestnet: process.env.VUE_APP_ACCOUNT_API_URL.includes('test'),
+    progress: {
+      all: false,
+      payment: false,
+      service: false
+    },
     services: null,
     session: null,
     subscriptions: [],
@@ -33,6 +38,9 @@ const store = createStore({
     setAccount(state, account) {
       state.account = account
       libcrisp.setAccount(account)
+    },
+    setProgress(state, progress) {
+      state.progress = progress
     },
     setAnnouncements(state, announcements) {
       state.announcements = announcements
@@ -119,6 +127,13 @@ const store = createStore({
         state.session._key
       )
       commit('setAccount', account)
+    },
+    async updateProgress({ commit, state }) {
+      const progress = await api.accounts.getProgress(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        state.session._key
+      )
+      commit('setProgress', progress)
     },
     async updateBalance({ commit, state }) {
       const balance = await api.billing.getBalance(
