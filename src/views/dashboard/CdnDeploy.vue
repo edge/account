@@ -225,7 +225,7 @@ export default {
         const { integration } = await api.integration.addIntegration(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          this.integration
+          { ...this.integration, account: this.account._key }
         )
         this.deployedIntegration = integration
 
