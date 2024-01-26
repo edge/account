@@ -5,14 +5,6 @@
 import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
-// add IP address to server
-export const addIPAddress = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}/ip`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
 // create a backup
 export const createBackup = async (host, sessionId, serverId, comment) => {
   const url = `${host}/servers/${serverId}/backups`
@@ -35,20 +27,11 @@ export const createServer = async (host, sessionId, accountId, serverOptions) =>
   return response.body
 }
 
-// delete specific IP address from server
+// delete server backup
 export const deleteBackup = async (host, sessionId, serverId, backupID) => {
   const url = `${host}/servers/${serverId}/backups/${backupID}`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-// delete specific IP address from server
-export const deleteIPAddress = async (host, sessionId, serverId, ip) => {
-  const url = `${host}/servers/${serverId}/ip`
-  const response = await superagent.delete(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ ip })
   return response.body
 }
 
