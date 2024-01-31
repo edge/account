@@ -5,7 +5,7 @@
 
 def buildAndPushImage(registryCredential, repository, buildArgs) {
   docker.withRegistry("https://registry.edge.network", registryCredential) {
-    def image = docker.build("registry.edge.network/$repository", "$buildArgs .")
+    def image = docker.build("registry.edge.network/$repository", "--no-cache $buildArgs .")
     image.push()
   }
 }
