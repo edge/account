@@ -23,9 +23,9 @@
               <div>
                 <p class="text-md mb-2">Add a Payment Method to Get Started</p>
                 <p class="text-gray-800 mb-2">Link a payment method to deploy services.</p>
-                <button class="button button--success button--small h-8 w-max flex-shrink-0" @click="addPaymentMethod">
+                <router-link to="/billing/payments" class="button button--success button--small h-8 w-max flex-shrink-0">
                   Add a Payment Method
-                </button>
+                </router-link>
               </div>
             </div>
 
@@ -42,17 +42,17 @@
                 <p class="text-gray-800 mb-2">Launch your own CDN, add your domains, spin up a virtual machine or publish an Edge Page!</p>
                 <div class="flex space-x-2">
                   <router-link to="/cdn/deploy" class="button button--success button--small h-8 w-max flex-shrink-0">
-                  Deploy CDN
-                </router-link>
-                <router-link to="/domains" class="button button--success button--small h-8 w-max flex-shrink-0">
-                  Deploy DNS
-                </router-link>
-                <router-link to="/servers/deploy" class="button button--success button--small h-8 w-max flex-shrink-0">
-                  Deploy Server
-                </router-link>
-                <router-link to="/pages" class="button button--success button--small h-8 w-max flex-shrink-0">
-                  Deploy Page
-                </router-link>
+                    Deploy CDN
+                  </router-link>
+                  <router-link to="/domains" class="button button--success button--small h-8 w-max flex-shrink-0">
+                    Deploy DNS
+                  </router-link>
+                  <router-link to="/servers/deploy" class="button button--success button--small h-8 w-max flex-shrink-0">
+                    Deploy Server
+                  </router-link>
+                  <router-link to="/pages" class="button button--success button--small h-8 w-max flex-shrink-0">
+                    Deploy Page
+                  </router-link>
                 </div>
               </div>
             </div>
