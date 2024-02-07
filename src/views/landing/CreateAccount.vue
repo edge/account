@@ -7,7 +7,8 @@
 
     <div>
       <p class="pr-5 text-lg mb-12">
-        <span>All you need to sign in to Edge is a secret account number, known only to you.</span>
+        <span v-if="accountType === 'anonymous'">Sign up anonymously. It's free and instant.</span>
+        <span v-else>Sign up using your email address. It's free and instant.</span>
       </p>
 
       <div>
@@ -148,7 +149,6 @@
             </div>
             <!-- instructions -->
             <span class="text-gray-500">
-              Not quite there yet.
               Check your emails and enter the confirmation code below to verify your email address.
             </span>
             <!-- resend email button and feedback -->
@@ -365,7 +365,7 @@ export default {
   data() {
     return {
       accountNumber: '',
-      accountType: null,
+      accountType: 'email',
       copied: false,
       emailCooldown: 0,
       emailInput: '',

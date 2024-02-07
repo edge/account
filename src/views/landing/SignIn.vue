@@ -55,7 +55,7 @@
     <div v-else-if="!requires2FA" >
       <Logo class="mb-6" />
       <p class="pr-5 text-lg mb-12">
-        <span>Welcome back. Enter your account number or email to sign into the Edge Network.</span>
+        <span>Welcome to Edge. Enter your email address or account number to sign in.</span>
       </p>
       <div class="landingPage__form">
         <!-- account sign in input -->
