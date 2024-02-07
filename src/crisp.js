@@ -8,6 +8,8 @@ export const endSession = () => {
 
 export const session = () => new Promise((resolve, reject) => {
   if (hasCrisp) return resolve(window.$crisp)
+  // if Crisp is not set up at all, quietly resolve without error
+  if (!window.CRISP_WEBSITE_ID) return resolve()
 
   let t = null
   let i = null
@@ -32,7 +34,7 @@ export const session = () => new Promise((resolve, reject) => {
 export const setAccount = (account) => session()
   // https://docs.crisp.chat/guides/chatbox-sdks/web-sdk/dollar-crisp/#change-user-nickname
   .then(crisp => {
-    if (!account) return
+    if (!account || !crisp) return
     const name = crisp.get('user:nickname')
     if (!name || !/^XX[0-9]{2}-[0-9]{4}$/.test(name)) {
       const masked = `XX${account._key.slice(-6, -4)}-${account._key.slice(-4)}`
@@ -44,6 +46,7 @@ export const setAccount = (account) => session()
 export const setSubscriptions = (subscriptions) => session()
   // https://docs.crisp.chat/guides/chatbox-sdks/web-sdk/dollar-crisp/#push-session-segments
   .then(crisp => {
+    if (!crisp) return
     crisp.push(['set', 'session:segments', [['account', ...subscriptions.map(s => s.product)], true]])
   })
   .catch(err => console.error(err))
