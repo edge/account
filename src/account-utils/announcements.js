@@ -6,11 +6,11 @@ import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
 // dismiss (mark as read) array of announcements by id
-export const dismissAnnouncements = async (host, sessionId, announcements) => {
+export const dismissAnnouncements = async (host, sessionId, account, announcements) => {
   const url = `${host}/announcements/read`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ announcements })
+    .send({ account, announcements })
   return response.body
 }
 
@@ -33,10 +33,10 @@ export const getAnnouncements = async (host, sessionId, params) => {
 }
 
 // undismiss (mark as unread) array of announcemets by id
-export const undismissAnnouncements = async (host, sessionId, announcements) => {
+export const undismissAnnouncements = async (host, sessionId, account, announcements) => {
   const url = `${host}/announcements/read`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ announcements })
+    .send({ account, announcements })
   return response.body
 }

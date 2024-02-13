@@ -224,7 +224,8 @@ export default {
         this.toggleRemoveConfirmationModal()
         await api.accounts.removeEmail(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
+          this.session._key,
+          this.account._key
         )
         setTimeout(async () => {
           await this.updateAccount()
@@ -241,7 +242,8 @@ export default {
     async resendEmail() {
       await api.accounts.resendVerificationEmail(
         process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
+        this.session._key,
+        this.account._key
       )
       this.resetEmailCooldown()
     },
@@ -279,6 +281,7 @@ export default {
         await api.accounts.updateEmail(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
+          this.account._key,
           this.newEmail
         )
 
@@ -304,6 +307,7 @@ export default {
         await api.accounts.verifyEmail(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
+          this.account._key,
           this.secret
         )
         setTimeout(async () => {

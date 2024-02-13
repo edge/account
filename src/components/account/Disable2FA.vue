@@ -112,7 +112,7 @@ export default {
     async disable2FA() {
       this.isLoading = true
       try {
-        const body = {}
+        const body = { account: this.account._key }
         this.useBackupCode ? body.backupCode = this.backupCode : body.otp = this.otp
         await api.accounts.disableTOTP(
           process.env.VUE_APP_ACCOUNT_API_URL,

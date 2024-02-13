@@ -277,7 +277,7 @@ export default {
   props: ['record'],
   computed: {
     ...mapGetters(['balanceSuspend']),
-    ...mapState(['config','session']),
+    ...mapState(['account', 'config','session']),
     canConfirmEdit() {
       if (this.type === 'MX' && this.priorityError) return false
       return !this.balanceSuspend && this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
@@ -375,6 +375,7 @@ export default {
           this.record.zone,
           this.record._key,
           {
+            account: this.account._key,
             name: this.hostname.toLowerCase(),
             ttl: this.ttl,
             type: this.type,

@@ -33,7 +33,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['account', 'session']),
     announcementText() {
       return md.render(this.announcement.content)
     }
@@ -44,6 +44,7 @@ export default {
         await api.announcements.dismissAnnouncements(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
+          this.account._key,
           [this.announcement._key]
         )
         this.dismissed = true

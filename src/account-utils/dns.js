@@ -6,14 +6,11 @@ import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
 // create a new domain
-export const addZone = async (host, sessionId, zoneKey) => {
+export const addZone = async (host, sessionId, account, zone) => {
   const url = `${host}/dns`
-  const options = {
-    zone: zoneKey
-  }
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(options)
+    .send({ account, zone })
   return response.body
 }
 
