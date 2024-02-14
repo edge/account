@@ -185,6 +185,7 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
+            account: this.account._key,
             otp: this.otp,
             secret: this.secret.base32
           }

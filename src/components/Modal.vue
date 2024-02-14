@@ -29,12 +29,14 @@ export default {
   mounted() {
     window.addEventListener('keydown', this.closeOnEscape)
     document.documentElement.style.overflow = 'hidden'
-    document.querySelector('.crisp-client').style.display = 'none'
+    const crispClient = document.querySelector('.crisp-client')
+    if (crispClient) crispClient.style.display = 'none'
   },
   unmounted() {
     window.removeEventListener('keydown', this.closeOnEscape)
     document.documentElement.style.overflow = 'auto'
-    document.querySelector('.crisp-client').style.display = 'block'
+    const crispClient = document.querySelector('.crisp-client')
+    if (crispClient) crispClient.style.display = 'block'
   }
 }
 </script>

@@ -539,7 +539,7 @@ export default {
       await api.accounts.resendVerificationEmail(
         process.env.VUE_APP_ACCOUNT_API_URL,
         this.generatedSession._key,
-        true
+        this.generatedAccount._key
       )
       this.resetEmailCooldown()
     },
@@ -565,6 +565,7 @@ export default {
         await api.accounts.verifyEmail(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.generatedSession._key,
+          this.generatedAccount._key,
           this.verificationSecret
         )
         setTimeout(async () => {

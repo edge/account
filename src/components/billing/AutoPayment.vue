@@ -153,7 +153,8 @@ export default {
         this.disabling = true
         await api.billing.disableAutoPayment(
           process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
+          this.session._key,
+          this.account._key
         )
         this.toggleDisableConfirmationModal()
         setTimeout(() => {
@@ -174,7 +175,10 @@ export default {
         await api.billing.enableAutoPayment(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
-          { paymentMethod: this.paymentCard._key }
+          {
+            account: this.account._key,
+            paymentMethod: this.paymentCard._key
+          }
         )
         setTimeout(() => {
           this.enabling = false

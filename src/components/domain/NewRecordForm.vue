@@ -189,7 +189,7 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend']),
-    ...mapState(['balance', 'config', 'session']),
+    ...mapState(['account', 'balance', 'config', 'session']),
     canCreateRecord() {
       if (this.type === 'MX' && this.priorityError) return false
       return !this.balanceSuspend && this.hostname && !this.hostnameError && this.ttl && this.type && this.value && !this.valueError
@@ -255,6 +255,7 @@ export default {
           this.session._key,
           this.domainName,
           {
+            account: this.account._key,
             name: this.hostname.toLowerCase(),
             ttl: this.ttl,
             type: this.type,

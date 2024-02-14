@@ -121,7 +121,7 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
-    ...mapState(['balance', 'session']),
+    ...mapState(['account', 'balance', 'session']),
     canAddDomain() {
       return !this.balanceWarning && !this.balanceSuspend && !this.v$.newDomainName.$invalid
     },
@@ -138,6 +138,7 @@ export default {
         const { zone } = await api.dns.addZone(
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
+          this.account._key,
           this.newDomainName.toLowerCase()
         )
         domain = zone
