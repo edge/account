@@ -45,11 +45,7 @@
 
     <!-- Deploy form -->
     <div v-else class="flex flex-col space-y-4">
-      <!-- balance warning message -->
-      <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
-        <div><ExclamationIcon class="w-5 text-red" /></div>
-        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds or set up Pay by Credit Card to deploy new services.</span>
-      </div>
+      <DeploymentWarning v-if="balanceSuspend || balanceWarning" />
 
       <!-- details -->
       <DeployIntegrationDisplayName
@@ -92,8 +88,8 @@ import * as api from '@/account-utils/'
 import DeployIntegrationContent from '@/components/page/DeployIntegrationContent.vue'
 import DeployIntegrationDisplayName from '@/components/page/DeployIntegrationDisplayName.vue'
 import DeployIntegrationDomain from '@/components/page/DeployIntegrationDomain.vue'
+import DeploymentWarning from '../../components/DeploymentWarning.vue'
 // import EstimatedCosts from '@/components/page/EstimatedCosts.vue'
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapGetters, mapState } from 'vuex'
@@ -107,11 +103,11 @@ export default {
     DeployIntegrationContent,
     DeployIntegrationDisplayName,
     DeployIntegrationDomain,
+    DeploymentWarning,
     // EstimatedCosts,
-    ExclamationIcon,
     HttpError,
     LoadingSpinner
-  },
+},
   data() {
     return {
       deployed: false,

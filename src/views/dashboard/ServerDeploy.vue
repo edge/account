@@ -3,10 +3,7 @@
     <h1>Deploy a new server</h1>
     <form class="flex flex-col col-span-12 pb-20 space-y-4">
       <!-- balance warning -->
-      <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
-        <div><ExclamationIcon class="w-5 text-red" /></div>
-        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds or set up Pay by Credit Card to deploy new services.</span>
-      </div>
+      <DeploymentWarning v-if="balanceSuspend || balanceWarning" />
 
       <!-- network region -->
       <div class="box">
@@ -120,8 +117,8 @@
 
 import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
+import DeploymentWarning from '../../components/DeploymentWarning.vue'
 import Domain from '@/components/server/deploy/Domain'
-import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import NetworkRegion from '@/components/server/deploy/NetworkRegion'
@@ -140,8 +137,8 @@ export default {
     return 'Edge Account Portal » Deploy a new server'
   },
   components: {
+    DeploymentWarning,
     Domain,
-    ExclamationIcon,
     HttpError,
     LoadingSpinner,
     NetworkRegion,
@@ -149,8 +146,8 @@ export default {
     Password,
     ServerName,
     ServerSpecs,
-    ValidationError
-  },
+    ValidationError,
+},
   data() {
     return {
       areSpecsValid: true,

@@ -82,10 +82,7 @@
     </div>
 
     <div v-else class="flex flex-col space-y-4">
-      <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2">
-        <div><ExclamationIcon class="w-5 text-red" /></div>
-        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds or set up Pay by Credit Card to deploy new services.</span>
-      </div>
+      <DeploymentWarning v-if="balanceSuspend || balanceWarning" />
       <!-- details -->
       <CdnDisplayName @update-details=onUpdateDetails :disableControls=disableControls />
       <CdnDomains @update-domains=onUpdateDomains :disableControls=disableControls />
@@ -116,7 +113,7 @@ import CdnConfig from '@/components/cdn/CdnConfig.vue'
 import CdnDisplayName from '@/components/cdn/CdnDisplayName.vue'
 import CdnDomains from '@/components/cdn/CdnDomains.vue'
 import CdnEstimatedCosts from '@/components/cdn/CdnEstimatedCosts.vue'
-import { ExclamationIcon } from '@heroicons/vue/outline'
+import DeploymentWarning from '../../components/DeploymentWarning.vue'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
@@ -132,11 +129,11 @@ export default {
     CdnDisplayName,
     CdnDomains,
     CdnEstimatedCosts,
-    ExclamationIcon,
+    DeploymentWarning,
     HttpError,
     LoadingSpinner,
     Tooltip
-  },
+},
   data() {
     return {
       deployed: false,

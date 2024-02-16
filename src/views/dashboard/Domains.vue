@@ -3,10 +3,8 @@
     <h1>Edge Domains</h1>
 
     <!-- balance suspend warning -->
-    <div v-if="balanceSuspend || balanceWarning" class="box flex space-x-2 mb-4">
-        <div><ExclamationIcon class="w-5 text-red" /></div>
-        <span class="text-red">Deployments are disabled while your balance is below ${{ balance.threshold.warning.usd }}. Please add funds or set up Pay by Credit Card to deploy new services.</span>
-      </div>
+    <DeploymentWarning v-if="balanceSuspend || balanceWarning" className="mb-4"/>
+
     <!-- add new domain input -->
     <div class="box">
       <div class="flex flex-col space-y-2 w-full sm:space-x-4 sm:space-y-0 sm:items-end sm:flex-row">
@@ -83,13 +81,14 @@
 
 import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
+import DeploymentWarning from '../../components/DeploymentWarning.vue'
 import DomainsList from '@/components/domain/DomainsList'
 import HttpError from '@/components/HttpError'
+import { InformationCircleIcon } from '@heroicons/vue/outline'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
 import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
-import { ExclamationIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
@@ -98,8 +97,8 @@ export default {
     return 'Edge Account Portal » Domains'
   },
   components: {
+    DeploymentWarning,
     DomainsList,
-    ExclamationIcon,
     HttpError,
     InformationCircleIcon,
     LoadingSpinner,
