@@ -1,7 +1,7 @@
 <template>
   <div class="payment__item">
     <!-- <span class="uppercase text-xs pb-4">{{ paymentMethod.name }}</span> -->
-    <div v-if="account.topup" class="">
+    <div>
       <div v-if=isAutoPaymentCard class="flex items-center">
         <div><BadgeCheckIcon class="text-green w-4 mr-1" /></div>
         Auto payment card
@@ -125,9 +125,8 @@ export default {
           process.env.VUE_APP_ACCOUNT_API_URL,
           this.session._key,
           {
-            paymentMethod: this.paymentMethod._key,
-            targetBalance: this.account.topup.targetBalance,
-            threshold: this.account.topup.threshold
+            account: this.account._key,
+            paymentMethod: this.paymentMethod._key
           }
         )
         this.$store.dispatch('updateAccount')

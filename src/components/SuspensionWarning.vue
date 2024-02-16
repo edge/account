@@ -76,7 +76,9 @@ export default {
       if (this.balance.total.usd === 0 && !this.balance.consumption.any) {
         return {
           class: bannerClass.blue,
-          message: `Please transfer at least $${this.balance.threshold.warning.usd} of funds to your account or add a payment card to enable services.`
+          message: this.account && this.account.useCryptoView
+            ? `Please transfer at least $${this.balance.threshold.warning.usd} of funds to your account or add a payment card to enable services.`
+            : 'Please add a payment card to enable services.'
         }
       }
 

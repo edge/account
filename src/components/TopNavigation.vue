@@ -16,7 +16,7 @@
 
     <!-- user nav and deploy button - hidden on small screens -->
     <div class="topNavigation__wrapper hidden md:flex w-full items-center">
-      <div class="balance hidden flex-col flex-shrink-0">
+      <div v-if="account.useCryptoView" class="balance hidden flex-col flex-shrink-0">
         <div class="flex-shrink-0 flex space-x-1">
           <span class="font-bold">Balance: </span>
           <span>{{ formattedBalance }} XE / {{ formattedUSDBalance }} USD </span>
@@ -34,6 +34,18 @@
           </Tooltip>
         </div>
       </div>
+      <div v-else class="balance hidden flex-col flex-shrink-0">
+        <div class="items-center flex-shrink-0 flex space-x-1">
+          <span class="font-bold">Usage: </span>
+          <span>{{ formattedUSDEstimatedCost }} USD </span>
+          <Tooltip position="right" theme="white"
+            text="This shows accrued costs since your last payment."
+          >
+            <InformationCircleIcon class="w-4 text-gray hover:text-green"/>
+          </Tooltip>
+        </div>
+      </div>
+
       <span class="topNavigation__right">
         <NotificationsLink />
         <UserMenu />

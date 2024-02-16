@@ -1,11 +1,11 @@
 <template>
   <div class="mainContent__inner space-y-4">
     <h1>Billing</h1>
-    <div class="flex flex-col space-y-4 lg:grid lg:grid-cols-2 lg:gap-x-6 lg:space-y-0">
+    <div v-if="account.useCryptoView" class="flex flex-col space-y-4 lg:gap-x-6 lg:space-y-0">
       <div class="box"><DetailsBox/></div>
-      <div class="box"><ReferralCode /></div>
     </div>
-    <div class="tabs flex space-x-2 pt-4">
+
+    <div v-if="account.useCryptoView" class="tabs flex space-x-2 pt-4">
       <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Payments'}">Payments</router-link>
       </div>
@@ -14,6 +14,14 @@
       </div>
       <div class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Wallet'}">Wallet</router-link>
+      </div>
+    </div>
+    <div v-else class="tabs flex space-x-2 pt-4">
+      <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Invoices'}">Invoices</router-link>
+      </div>
+      <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Payments'}">Payment Cards</router-link>
       </div>
     </div>
     <router-view />
@@ -25,7 +33,6 @@
 
 import * as format from '@/utils/format'
 import DetailsBox from '@/components/account/DetailsBox'
-import ReferralCode from '@/components/ReferralCode'
 import { mapState } from 'vuex'
 
 export default {
@@ -34,8 +41,7 @@ export default {
     return 'Edge Account Portal » Billing'
   },
   components: {
-    DetailsBox,
-    ReferralCode
+    DetailsBox
   },
   data() {
     return {
@@ -74,7 +80,14 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.fullPath === '/billing' || this.$route.fullPath === '/billing/') this.$router.push({ name: 'Payments' })
+    if (this.$route.fullPath === '/billing' || this.$route.fullPath === '/billing/') {
+      if (this.account && (this.account.useCryptoView || !this.account.topup)) {
+        this.$router.push({ name: 'Payments' })
+      }
+      else {
+        this.$router.push({ name: 'Invoices' })
+      }
+    }
   }
 }
 </script>

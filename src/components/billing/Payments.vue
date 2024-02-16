@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col space-y-4">
-    <div class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
+    <div v-if="account.useCryptoView" class="flex flex-col space-y-4 lg:flex-row lg:space-x-6 lg:space-y-0">
       <AutoPayment :paymentMethods=paymentMethods />
       <AddFundsCalculator @update="onCalculatorUpdate">
         <template v-slot:buttons>
@@ -73,7 +73,7 @@
         </div>
       </div>
     </div>
-    <div class="box">
+    <div v-if="account.useCryptoView" class="box">
       <h4>Purchase History</h4>
       <PurchaseTable />
     </div>
@@ -185,7 +185,19 @@ export default {
             stripe: this.$route.query.setup_intent
           }
         )
-        this.$refs.paymentMethodList.updatePaymentMethods()
+        const methods = await this.$refs.paymentMethodList.updatePaymentMethods()
+        if (methods.length === 1 && !this.account.useCryptoView) {
+          // If the account uses fiat view, the sole payment method should be enabled by default
+          await api.billing.enableAutoPayment(
+            process.env.VUE_APP_ACCOUNT_API_URL,
+            this.session._key,
+            {
+              account: this.account._key,
+              paymentMethod: methods[0]._key
+            }
+          )
+          this.$refs.paymentMethodList.updatePaymentMethods()
+        }
       }
     },
     onCalculatorUpdate({ usd, xe }) {

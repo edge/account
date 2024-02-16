@@ -28,9 +28,6 @@
       </div>
     </div>
     <div class="box">
-      <ReferralCode />
-    </div>
-    <div class="box">
       <h4>Two-factor Authentication (2FA)</h4>
       <div>
         <Disable2FA v-if="is2FAEnabled && !showAddExtra2FA && !backupCodes" />
@@ -44,10 +41,24 @@
         </button>
       </div>
     </div>
+
+    <div class="box">
+      <h4>Crypto Payments</h4>
+      <p class="text-gray-500">
+        Edge runs on its own layer 0 blockchain, and payments are settled in its own coin, called XE, in the background.
+        By default payment information in the account interface is presented in fiat.
+        If you would prefer to see payment information in crypto, you can enable it here.
+      </p>
+      <button v-if="account.useCryptoView" @click="toggleCryptoView" class="text-sm py-3 button button--outline-error">Disable Crypto Payments</button>
+      <button v-else @click="toggleCryptoView" class="text-sm py-3 button button--outline-success">Enable Crypto Payments</button>
+    </div>
   </div>
 </template>
 
 <script>
+/* global process */
+
+import * as api from '@/account-utils'
 import * as format from '@/utils/format'
 import AddAccountEmail from '@/components/account/AddAccountEmail'
 import Disable2FA from '@/components/account/Disable2FA'
@@ -72,7 +83,7 @@ export default {
     ReferralCode
   },
   computed: {
-    ...mapState(['account', 'backupCodes']),
+    ...mapState(['account', 'backupCodes', 'session']),
     formattedAccountNumber() {
       return format.accountNumber(this.account._key)
     },
@@ -103,6 +114,15 @@ export default {
     },
     onEnable2FA() {
       this.showAddExtra2FA = false
+    },
+    async toggleCryptoView() {
+      await api.accounts.updateAccount(
+        process.env.VUE_APP_ACCOUNT_API_URL,
+        this.session._key,
+        this.account._key,
+        { useCryptoView: !this.account.useCryptoView }
+      )
+      this.$store.dispatch('updateAccount')
     },
     toggleShowAccountNumber() {
       this.showAccountNumber = !this.showAccountNumber
