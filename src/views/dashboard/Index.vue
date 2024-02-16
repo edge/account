@@ -16,7 +16,7 @@ export default {
   mounted() {
     // If user has finished account setup, redirect to cdn, otherwise, to getting started.
     const isSetup = this.account?.isSetup || this.progress?.all
-    if (isSetup) this.$router.replace({ name: 'Content Delivery' })
+    if (isSetup) this.$router.replace({ name: 'CdnIntegrations' })
     else this.$router.replace({ name: 'Getting Started' })
   }
 }
