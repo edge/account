@@ -51,6 +51,18 @@
         <div class="divider"></div>
         <MenuItem v-slot="{ active }">
           <button
+            @click.prevent="navigate('/referral-program')"
+            :class="[
+              'menu__item',
+              active ? 'active' : ''
+            ]"
+          >
+            Referral Program
+          </button>
+        </MenuItem>
+        <div class="divider"></div>
+        <MenuItem v-slot="{ active }">
+          <button
             @click.prevent="signOut"
             :class="[
               'menu__item',

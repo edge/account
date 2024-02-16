@@ -8,7 +8,8 @@
       <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
         <span>{{ warning.message }}</span>
         <router-link to="/billing/payments" class="button button--solid button--small h-8 w-max flex-shrink-0">
-          Add Funds
+          <span v-if="account.useCryptoView">Add Funds</span>
+          <span v-else>Add Payment Card</span>
         </router-link>
       </div>
     </div>
@@ -76,7 +77,9 @@ export default {
       if (this.balance.total.usd === 0 && !this.balance.consumption.any) {
         return {
           class: bannerClass.blue,
-          message: `Please transfer at least $${this.balance.threshold.warning.usd} of funds to your account or add a payment card to enable services.`
+          message: this.account && this.account.useCryptoView
+            ? `Please transfer at least $${this.balance.threshold.warning.usd} of funds to your account or add a payment card to enable services.`
+            : 'Please add a payment card to enable services.'
         }
       }
 

@@ -4,7 +4,7 @@
     <main class="flex flex-col w-full mainContent">
       <TopNavigation />
       <SuspensionWarning v-if="loaded && !isGettingStarted" />
-      <Announcements v-if="loaded" />
+      <Announcements v-if="loaded && showAnnouncements" />
       <router-view v-if="loaded" />
     </main>
   </div>
@@ -42,6 +42,12 @@ export default {
     },
     isGettingStarted() {
       return this.$route.name === 'Getting Started'
+    },
+    showAnnouncements() {
+      if (this.$route.path === '/' || this.$route.path === '/getting-started') {
+        return false
+      }
+      return true
     }
   },
   components: {

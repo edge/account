@@ -25,6 +25,7 @@ import PageIntegration from '@/views/dashboard/PageIntegration'
 import Pages from '@/views/dashboard/Pages'
 import Payments from '@/components/billing/Payments'
 import Purchase from '@/components/billing/Purchase'
+import ReferralProgram from '@/views/dashboard/ReferralProgram'
 import Server from '@/views/dashboard/Server'
 import ServerDeploy from '@/views/dashboard/ServerDeploy'
 import Servers from '@/views/dashboard/Servers'
@@ -131,6 +132,11 @@ const routes = [
         path: 'page/:key',
         name: 'Pages Integration',
         component: PageIntegration
+      },
+      {
+        path: 'referral-program',
+        name: 'Referral Program',
+        component: ReferralProgram
       },
       {
         path: 'servers',

@@ -55,6 +55,7 @@ export default {
       this.paymentMethods = results
       this.metadata = metadata
       this.$emit('updatePaymentMethods', results)
+      return results
     }
   },
   mounted() {

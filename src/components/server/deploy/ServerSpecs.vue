@@ -280,8 +280,9 @@ export default {
     bandwidthOptions() {
       const min = this.config.server.limit.bandwidth.min
       const max = this.config.server.limit.bandwidth.max
-      const marks = { }
-      for (let i = min; i <= max; i += 10) marks[i] = i
+      const marks = { [min]: min }
+      const jump = max / 10
+      for (let i = jump; i <= max; i += jump) marks[i] = i
       return { min, max, marks }
     },
     cpuOptions() {
