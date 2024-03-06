@@ -16,17 +16,21 @@
 
     <!-- user nav and deploy button - hidden on small screens -->
     <div class="topNavigation__wrapper hidden md:flex w-full items-center">
-      <div v-if="account.useCryptoView" class="balance hidden flex-col flex-shrink-0">
+      <div v-if="balance && account.useCryptoView" class="balance hidden flex-col flex-shrink-0">
         <div class="flex-shrink-0 flex space-x-1">
           <span class="font-bold">Balance: </span>
-          <span>{{ formattedBalance }} XE / {{ formattedUSDBalance }} USD </span>
+          <span>{{ formatXE(balance.total.xe) }} XE / {{ formatUSD(balance.total.usd) }} USD </span>
           <span>
             (<router-link to="/billing/payments" class="text-green hover:underline">Add Funds</router-link>)
           </span>
         </div>
+        <div v-if="balance.credit.usd > 0" class="items-center flex-shrink-0 flex space-x-1">
+          <span class="font-bold">Credit: </span>
+          <span>{{ formatXE(balance.credit.xe) }} XE / {{ formatUSD(balance.credit.usd) }} USD</span>
+        </div>
         <div class="items-center flex-shrink-0 flex space-x-1">
           <span class="font-bold">Usage: </span>
-          <span>{{ formattedEstimatedCost }} XE / {{ formattedUSDEstimatedCost }} USD </span>
+          <span>{{ formatXE(this.balance.reserved.xe) }} XE / {{ formatUSD(this.balance.reserved.usd) }} USD </span>
           <Tooltip position="right" theme="white"
             text="This shows accrued costs since your last payment."
           >
@@ -34,10 +38,14 @@
           </Tooltip>
         </div>
       </div>
-      <div v-else class="balance hidden flex-col flex-shrink-0">
+      <div v-else-if="balance" class="balance hidden flex-col flex-shrink-0">
+        <div v-if="balance.credit.usd > 0" class="items-center flex-shrink-0 flex space-x-1">
+          <span class="font-bold">Credit: </span>
+          <span>{{ formatUSD(balance.credit.usd) }} USD</span>
+        </div>
         <div class="items-center flex-shrink-0 flex space-x-1">
           <span class="font-bold">Usage: </span>
-          <span>{{ formattedUSDEstimatedCost }} USD </span>
+          <span>{{ formatUSD(this.balance.reserved.usd) }} USD </span>
           <Tooltip position="right" theme="white"
             text="This shows accrued costs since your last payment."
           >
@@ -91,26 +99,17 @@ export default {
     UserMenu
   },
   computed: {
-    ...mapState(['account', 'balance', 'session']),
-    formattedBalance() {
-      return this.balance && format.xe(this.balance.total.xe)
-    },
-    formattedEstimatedCost() {
-      return this.balance && format.xe(this.balance.reserved.xe)
-    },
-    formattedUSDEstimatedCost() {
-      return this.balance && format.usd(this.balance.reserved.usd, 2)
-    },
-    formattedUSDBalance() {
-      return this.usdBalance && format.usd(this.usdBalance, 2)
-    },
-    usdBalance() {
-      return this.balance && this.balance.total.usd
-    }
+    ...mapState(['account', 'balance', 'session'])
   },
   methods: {
     closeMobileNav() {
       this.showNav = false
+    },
+    formatUSD(usd) {
+      return format.usd(usd, 2)
+    },
+    formatXE(xe) {
+      return format.xe(xe)
     },
     toggleNav() {
       this.showNav = !this.showNav

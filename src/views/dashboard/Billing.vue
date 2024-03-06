@@ -23,6 +23,9 @@
       <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Payments'}">Payment Cards</router-link>
       </div>
+      <div class="tab" :class="isSelected('promotions') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Promotions'}">Promotions</router-link>
+      </div>
     </div>
     <router-view />
   </div>
