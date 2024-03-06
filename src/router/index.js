@@ -24,6 +24,7 @@ import PageDeploy from '@/views/dashboard/PageDeploy'
 import PageIntegration from '@/views/dashboard/PageIntegration'
 import Pages from '@/views/dashboard/Pages'
 import Payments from '@/components/billing/Payments'
+import Promotions from '@/components/billing/Promotions'
 import Purchase from '@/components/billing/Purchase'
 import ReferralProgram from '@/views/dashboard/ReferralProgram'
 import Server from '@/views/dashboard/Server'
@@ -75,6 +76,11 @@ const routes = [
             path: 'payments/purchase/:id',
             name: 'Purchase',
             component: Purchase
+          },
+          {
+            path: 'promotions',
+            name: 'Promotions',
+            component: Promotions
           },
           {
             path: 'wallet',
