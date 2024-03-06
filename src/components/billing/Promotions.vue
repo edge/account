@@ -12,9 +12,7 @@ import { useVuelidate } from '@vuelidate/core'
 import { computed, nextTick, reactive, ref } from 'vue'
 import { helpers, required } from '@vuelidate/validators'
 
-const store = useStore()
-const balance = store.state.balance
-const session = store.state.session
+const { account, balance, session } = useStore().state
 
 const formState = reactive({
   code: ''
@@ -30,6 +28,10 @@ const added = ref()
 const loading = ref(false)
 const error = ref()
 const showPromotions = ref(true)
+
+function formatXE(xe) {
+  return `${format.xe(xe)} XE`
+}
 
 function formatUSD(usd) {
   return `$${format.usd(usd, 2)}`
@@ -70,7 +72,8 @@ async function submit() {
   <div class="flex flex-col space-y-4">
     <div class="box">
       <h4>Active Promotional Codes</h4>
-      <p v-if="balance && balance.credit.usd">You have {{ formatUSD(balance.credit.usd) }} credit available.</p>
+      <p v-if="balance && balance.credit.usd">
+        You have {{ formatUSD(balance.credit.usd) }} <span v-if="account.useCryptoView">({{ formatXE(balance.credit.xe) }})</span> credit available.</p>
       <p v-else>You do not have any credit at the moment.</p>
 
       <PromotionTable v-if="showPromotions" limit="4" :status="['active', 'partConsumed']" />
