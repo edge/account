@@ -3,11 +3,13 @@
 
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import PromotionTable from './PromotionTable.vue'
+import ValidationError from '@/components/ValidationError.vue'
 import { useStore } from 'vuex'
 import { useVuelidate } from '@vuelidate/core'
-import { computed, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref } from 'vue'
 import { helpers, required } from '@vuelidate/validators'
 
 const store = useStore()
@@ -24,25 +26,36 @@ const v$ = useVuelidate({
 
 const canSubmit = computed(() => v$.value.$anyDirty && !v$.value.$invalid)
 
+const added = ref()
 const loading = ref(false)
 const error = ref()
+const showPromotions = ref(true)
 
 function formatUSD(usd) {
   return `$${format.usd(usd, 2)}`
 }
 
+async function reloadPromotions() {
+  showPromotions.value = false
+  await nextTick()
+  showPromotions.value = true
+}
+
 async function submit() {
   loading.value = true
   error.value = undefined
+  added.value = undefined
   try {
-    await api.promos.redeem(
+    const res = await api.promos.redeem(
       process.env.VUE_APP_ACCOUNT_API_URL,
       session._key,
       session.account,
       formState.code
     )
+    added.value = res.entitlement
     v$.value.code.$model = ''
     v$.value.$reset()
+    reloadPromotions()
   }
   catch (err) {
     error.value = err
@@ -60,11 +73,15 @@ async function submit() {
       <p v-if="balance && balance.credit.usd">You have {{ formatUSD(balance.credit.usd) }} credit available.</p>
       <p v-else>You do not have any credit at the moment.</p>
 
-      <PromotionTable limit="4" :status="['active', 'partConsumed']" />
+      <PromotionTable v-if="showPromotions" limit="4" :status="['active', 'partConsumed']" />
     </div>
 
     <div class="box">
       <h4>Redeem a Promotional Code</h4>
+
+      <div v-if="added" class="bg-green mb-4 p-2 rounded-4 overflow-hidden text-center text-white">
+        The code <strong>{{ added.code }}</strong> was successfully redeemed.
+      </div>
 
       <p>Redeem a code to claim credit or a discount:</p>
 
@@ -88,12 +105,12 @@ async function submit() {
           </div>
           <span v-else>Redeem</span>
         </button>
-        <div v-if="error">{{ error.message }}</div>
-        <div v-for="err in v$.code.$errors" :key="err.$uid">{{ err.$message }}</div>
+      </div>
+      <div class="mt-2">
+        <ValidationError :errors="v$.code.$errors" />
+        <HttpError :error="error" />
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-</style>
