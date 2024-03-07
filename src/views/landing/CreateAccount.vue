@@ -434,13 +434,40 @@ export default {
       }, 1000)
     },
     async createAccount() {
+      const referralCode = Cookies.get('referralCode')
+      const promoCode = Cookies.get('promoCode')
+
       this.isCreating = true
-      const body = { referralCode: Cookies.get('referralCode') }
+      const body = { referralCode }
       if (this.emailInput) body.address = this.emailInput
+
+      // create account (with referral code if given)
       const { account, session } = await api.accounts.createAccount(
         process.env.VUE_APP_ACCOUNT_API_URL,
         body
       )
+      Cookies.remove('referralCode')
+
+      // redeem promotional code if given
+      if (promoCode) {
+        try {
+          await api.promos.redeem(
+            process.env.VUE_APP_ACCOUNT_API_URL,
+            session._key,
+            session.account,
+            promoCode
+          )
+        }
+        catch (err) {
+          console.log(err)
+        }
+        finally {
+          // promo will only be attempted once - any error is ignored
+          Cookies.remove('promoCode')
+        }
+      }
+
+      // set state
       this.generatedAccount = account
       this.generatedSession = session
       this.isCreating = false
@@ -469,7 +496,6 @@ export default {
           clearInterval(numGeneratorId)
           this.isGeneratingAccount = false
           this.accountNumber = ''
-          if (error.response.body.param === 'referralCode') Cookies.remove('referralCode')
           this.errors.accountNumber = 'Oops, something went wrong. Please try again.'
         }
       }, 1000)
@@ -494,46 +520,23 @@ export default {
         this.isCreating = false
       }
     },
-    async generateAccount() {
-      this.isGeneratingAccount = true
-      this.errors.accountNumber = ''
-      this.accountNumber = this.generateRandomAccountNumber()
-      const numGeneratorId = setInterval(() => {
-        this.accountNumber = this.generateRandomAccountNumber()
-      }, 100)
-
-      setTimeout(async () => {
-        try {
-          const referralCode = Cookies.get('referralCode')
-
-          const { account, session } = await api.accounts.createAccount(
-            process.env.VUE_APP_ACCOUNT_API_URL,
-            referralCode
-          )
-          // finish number generator on newly generated account number and dispatch to store
-          clearInterval(numGeneratorId)
-          this.accountNumber = account._key
-          const payload = { account, session }
-          this.$store.dispatch('signIn', payload)
-          this.isGeneratingAccount = false
-          this.changeStep(2)
-        }
-        catch (error) {
-          clearInterval(numGeneratorId)
-          this.isGeneratingAccount = false
-          this.accountNumber = ''
-
-          if (error.response.body.param === 'referralCode') Cookies.remove('referralCode')
-
-          this.errors.accountNumber = 'Oops, something went wrong. Please try again.'
-        }
-      }, 1000)
-    },
     generateRandomAccountNumber() {
       return Math.floor(Math.random() * 1e16)
     },
     async goToAccount() {
       this.$router.push('/')
+    },
+    readPromoCode() {
+      const promoCode = this.$route.query.p
+      if (promoCode && /^[A-Za-z0-9-]+$/.test(promoCode)) {
+        Cookies.set('promoCode', promoCode, { expires: 1 })
+      }
+    },
+    readReferralCode() {
+      const referralCode = this.$route.query.r
+      if (referralCode && /^[A-Za-z0-9]{8}$/.test(referralCode)) {
+        Cookies.set('referralCode', referralCode, { expires: 1 })
+      }
     },
     async resendEmail() {
       await api.accounts.resendVerificationEmail(
@@ -607,9 +610,8 @@ export default {
     }
   },
   mounted() {
-    const referralCodeRegExp = /^[A-Za-z0-9]{8}$/
-    const referralCode = this.$route.query.r
-    if(referralCodeRegExp.test(referralCode)) Cookies.set('referralCode', referralCode, { expires: 1 })
+    this.readReferralCode()
+    this.readPromoCode()
   },
   setup() {
     return {
