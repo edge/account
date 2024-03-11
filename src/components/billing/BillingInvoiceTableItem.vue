@@ -51,6 +51,10 @@
       <span class="mr-2 lg:hidden">Amount:</span>
       <span class="truncate">{{ formattedAmount }} <span class="lg:hidden">USD</span></span>
     </td>
+    <td v-if="account.useCryptoView" class="tableBody__cell amount col-span-2">
+      <span class="mr-2 lg:hidden">XE amount:</span>
+      <span class="truncate">{{ formatXE(invoice.xeAmount) }} <span class="lg:hidden">XE</span></span>
+    </td>
     <td class="tableBody__cell table__button col-span-2">
       <div class="flex items-center w-full space-x-2 action_buttons">
         <button
@@ -93,7 +97,7 @@ export default {
   },
   props: ['invoice'],
   computed: {
-    ...mapState(['balance', 'session']),
+    ...mapState(['account', 'balance', 'session']),
     canPay() {
       return this.invoice.amount <= this.usdBalance
     },
@@ -167,6 +171,9 @@ export default {
     formatDate(ts, inclDay = true) {
       const date = format.date(ts)
       return inclDay ? date : date.split(' ').slice(1).join(' ')
+    },
+    formatXE(xe) {
+      return format.xe(xe)
     },
     async unholdInvoice() {
       if (!this.onHold || !this.canPay) return
