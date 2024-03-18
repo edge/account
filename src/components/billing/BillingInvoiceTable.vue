@@ -32,6 +32,14 @@
               @update-sort="updateSortQuery"
             />
             <TableHeader
+              v-if="account.useCryptoView"
+              header="Amount (XE)"
+              param="xeAmount"
+              class="tableHead__cell"
+              :sortQuery="sortQuery"
+              @update-sort="updateSortQuery"
+            />
+            <TableHeader
               header=""
               class="tableHead__cell"
               width="130"
@@ -91,7 +99,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['account', 'session']),
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
     },
