@@ -3,7 +3,6 @@
 
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
-import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import PromotionTable from './PromotionTable.vue'
 import ValidationError from '@/components/ValidationError.vue'
@@ -28,6 +27,24 @@ const added = ref()
 const loading = ref(false)
 const error = ref()
 const showPromotions = ref(true)
+
+const errorLookup = {
+  'exceeded maximum usage': 'Exceeded maximum usage.',
+  'exceeded maximum concurrent usage': 'Exceeded maximum concurrent usage.',
+  'incorrect code': 'Incorrect code.',
+  'not found': 'We couldn\'t find that promotional code.',
+  'promotion expired': 'This promotional code is no longer valid.'
+}
+
+const errorMessage = computed(() => {
+  let msg = ''
+  if (error.value) {
+    if (error.value.response) msg = error.value.response.body.reason || error.value.response.body.message
+    else msg = error.value.message
+  }
+  if (errorLookup[msg]) return errorLookup[msg]
+  return msg
+})
 
 function formatXE(xe) {
   return `${format.xe(xe)} XE`
@@ -82,10 +99,6 @@ async function submit() {
     <div class="box">
       <h4>Redeem a Promotional Code</h4>
 
-      <div v-if="added" class="bg-green mb-4 p-2 rounded-4 overflow-hidden text-center text-white">
-        The code <strong>{{ added.code }}</strong> was successfully redeemed.
-      </div>
-
       <p>Redeem a code to claim credit or a discount:</p>
 
       <div class="input-field flex items-center w-full">
@@ -109,11 +122,16 @@ async function submit() {
           <span v-else>Redeem</span>
         </button>
       </div>
-      <div class="mt-2">
+      <div class="mt-2 mb-2">
         <ValidationError :errors="v$.code.$errors" />
-        <HttpError :error="error" />
+      </div>
+
+      <div v-if="added" class="bg-green mb-4 p-2 rounded-4 overflow-hidden text-center text-white">
+        The code <strong>{{ added.code }}</strong> was successfully redeemed.
+      </div>
+      <div v-else-if="error" class="bg-red mb-4 p-2 rounded-4 overflow-hidden text-center text-white">
+        {{ errorMessage }}
       </div>
     </div>
   </div>
 </template>
-

@@ -109,9 +109,9 @@ effect(() => {
           </tr>
         </thead>
         <tbody class="tableBody">
-          <LoadingTableDataRow v-if="!entitlements" colspan="5" />
+          <LoadingTableDataRow v-if="!entitlements" colspan="7" />
           <tr v-else-if="!entitlements.length">
-            <td colspan="5" class="tableBody__cell text-center text-gray-500">No entitlements</td>
+            <td colspan="7" class="tableBody__cell text-center text-gray-500">No entitlements</td>
           </tr>
           <PromotionTableItem
             v-else
