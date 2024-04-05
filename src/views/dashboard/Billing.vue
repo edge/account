@@ -13,7 +13,7 @@
         <router-link :to="{name: 'Invoices'}">Invoices</router-link>
       </div>
       <div class="tab" :class="isSelected('promotions') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Promotions'}">Promotions</router-link>
+        <router-link :to="{name: 'Promotions'}">Promo Codes</router-link>
       </div>
       <div class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Wallet'}">Wallet</router-link>
@@ -27,7 +27,7 @@
         <router-link :to="{name: 'Payments'}">Payment Cards</router-link>
       </div>
       <div class="tab" :class="isSelected('promotions') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Promotions'}">Promotions</router-link>
+        <router-link :to="{name: 'Promotions'}">Promo Codes</router-link>
       </div>
     </div>
     <router-view />

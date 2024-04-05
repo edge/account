@@ -126,7 +126,7 @@ export default {
     StripeLoadingOverlay
   },
   computed: {
-    ...mapState(['account', 'balance', 'session']),
+    ...mapState(['account', 'balance', 'progress', 'session']),
     canStartPurchase() {
       return this.calculatedUSD >= 1
     },
@@ -197,6 +197,8 @@ export default {
             }
           )
           this.$refs.paymentMethodList.updatePaymentMethods()
+          // Redirect to getting started
+          if (!this.progress.all) this.$router.push('/getting-started')
         }
       }
     },

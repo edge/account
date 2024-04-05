@@ -32,8 +32,8 @@ const errorLookup = {
   'exceeded maximum usage': 'Exceeded maximum usage.',
   'exceeded maximum concurrent usage': 'Exceeded maximum concurrent usage.',
   'incorrect code': 'Incorrect code.',
-  'not found': 'We couldn\'t find that promotional code.',
-  'promotion expired': 'This promotional code is no longer valid.'
+  'not found': 'We couldn\'t find that promo code.',
+  'promotion expired': 'This promo code is no longer valid.'
 }
 
 const errorMessage = computed(() => {
@@ -88,7 +88,7 @@ async function submit() {
 <template>
   <div class="flex flex-col space-y-4">
     <div class="box">
-      <h4>Active Promotional Codes</h4>
+      <h4>Active Promo Codes</h4>
       <p v-if="balance && balance.credit.usd">
         You have {{ formatUSD(balance.credit.usd) }} <span v-if="account.useCryptoView">({{ formatXE(balance.credit.xe) }})</span> credit available.</p>
       <p v-else>You do not have any credit at the moment.</p>
@@ -97,17 +97,17 @@ async function submit() {
     </div>
 
     <div class="box">
-      <h4>Redeem a Promotional Code</h4>
+      <h4>Redeem a Promo Code</h4>
 
       <p>Redeem a code to claim credit or a discount:</p>
 
       <div class="input-field flex items-center w-full">
         <input
           v-model="v$.code.$model"
-          label="Promotional code"
+          label="Promo code"
           autocomplete="off"
           class="text-center overflow-hidden flex-1 px-3 py-2 text-lg rounded-md rounded-r-none focus:outline-none border border-gray border-r-0"
-          placeholder="YOURCODEHERE"
+          placeholder="Enter Promo Code"
           @keypress.enter=submit
         />
         <button
