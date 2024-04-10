@@ -438,7 +438,7 @@ export default {
       const promoCode = Cookies.get('promoCode')
 
       this.isCreating = true
-      const body = { referralCode }
+      const body = { promoCode, referralCode }
       if (this.emailInput) body.address = this.emailInput
 
       // create account (with referral code if given)
@@ -446,26 +446,8 @@ export default {
         process.env.VUE_APP_ACCOUNT_API_URL,
         body
       )
+      Cookies.remove('promoCode')
       Cookies.remove('referralCode')
-
-      // redeem promotional code if given
-      if (promoCode) {
-        try {
-          await api.promos.redeem(
-            process.env.VUE_APP_ACCOUNT_API_URL,
-            session._key,
-            session.account,
-            promoCode
-          )
-        }
-        catch (err) {
-          console.log(err)
-        }
-        finally {
-          // promo will only be attempted once - any error is ignored
-          Cookies.remove('promoCode')
-        }
-      }
 
       // set state
       this.generatedAccount = account

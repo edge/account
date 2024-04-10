@@ -39,6 +39,7 @@ import Support from '@/views/dashboard/Support'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
 import { createRouter, createWebHistory } from 'vue-router'
+import Promo from '../views/landing/Promo.vue'
 
 const routes = [
   {
@@ -203,6 +204,11 @@ const routes = [
         component: CreateAccount
       }
     ]
+  },
+  {
+    path: '/promo/:code',
+    name: 'Promo',
+    component: Promo
   },
   {
     path: '/404',
