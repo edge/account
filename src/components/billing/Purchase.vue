@@ -264,7 +264,7 @@ export default {
           this.purchaseId
         )
         this.purchase = purchase
-        this.$router.push({ name: 'Payments' })
+        this.$router.push({ name: 'Wallet' })
       }
       catch (error) {
         console.error(error)

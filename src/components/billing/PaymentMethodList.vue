@@ -1,5 +1,5 @@
 <template>
-  <div v-if="paymentMethods && paymentMethods.length" class="flex flex-col space-y-2">
+  <div v-if="paymentMethods && paymentMethods.length" class="flex flex-row flex-wrap gap-2">
     <PaymentMethodItem
       v-for="paymentMethod in paymentMethods"
       :autoPaymentCard=autoPaymentCard

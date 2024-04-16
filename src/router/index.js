@@ -23,7 +23,9 @@ import Notifications from '@/views/dashboard/Notifications'
 import PageDeploy from '@/views/dashboard/PageDeploy'
 import PageIntegration from '@/views/dashboard/PageIntegration'
 import Pages from '@/views/dashboard/Pages'
+import PaymentCards from '../components/billing/PaymentCards.vue'
 import Payments from '@/components/billing/Payments'
+import Promo from '../views/landing/Promo.vue'
 import Promotions from '@/components/billing/Promotions'
 import Purchase from '@/components/billing/Purchase'
 import ReferralProgram from '@/views/dashboard/ReferralProgram'
@@ -39,7 +41,6 @@ import Support from '@/views/dashboard/Support'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
 import { createRouter, createWebHistory } from 'vue-router'
-import Promo from '../views/landing/Promo.vue'
 
 const routes = [
   {
@@ -72,6 +73,11 @@ const routes = [
             path: 'payments',
             name: 'Payments',
             component: Payments
+          },
+          {
+            path: 'payment-cards',
+            name: 'Payment Cards',
+            component: PaymentCards
           },
           {
             path: 'payments/purchase/:id',

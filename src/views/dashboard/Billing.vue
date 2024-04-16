@@ -1,33 +1,21 @@
 <template>
   <div class="mainContent__inner space-y-4">
     <h1>Billing</h1>
-    <div v-if="account.useCryptoView" class="flex flex-col space-y-4 lg:gap-x-6 lg:space-y-0">
-      <div class="box"><DetailsBox/></div>
-    </div>
-
-    <div v-if="account.useCryptoView" class="tabs flex space-x-2 pt-4">
+    <div class="tabs flex space-x-2 pt-4">
+      <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Invoices'}">Invoices</router-link>
+      </div>
       <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Payments'}">Payments</router-link>
       </div>
-      <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Invoices'}">Invoices</router-link>
+      <div class="tab" :class="isSelected('payment-cards') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Payment Cards'}">Payment Cards</router-link>
       </div>
       <div class="tab" :class="isSelected('promotions') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Promotions'}">Promo Codes</router-link>
       </div>
-      <div class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
+      <div v-if="account.useCryptoView" class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Wallet'}">Wallet</router-link>
-      </div>
-    </div>
-    <div v-else class="tabs flex space-x-2 pt-4">
-      <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Invoices'}">Invoices</router-link>
-      </div>
-      <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Payments'}">Payment Cards</router-link>
-      </div>
-      <div class="tab" :class="isSelected('promotions') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Promotions'}">Promo Codes</router-link>
       </div>
     </div>
     <router-view />
@@ -38,16 +26,12 @@
 /* global process */
 
 import * as format from '@/utils/format'
-import DetailsBox from '@/components/account/DetailsBox'
 import { mapState } from 'vuex'
 
 export default {
   name: 'Billing',
   title() {
     return 'Edge Account Portal » Billing'
-  },
-  components: {
-    DetailsBox
   },
   data() {
     return {
@@ -87,8 +71,8 @@ export default {
   },
   mounted() {
     if (this.$route.fullPath === '/billing' || this.$route.fullPath === '/billing/') {
-      if (this.account && (this.account.useCryptoView || !this.account.topup)) {
-        this.$router.push({ name: 'Payments' })
+      if (this.account && !this.account.topup) {
+        this.$router.push({ name: 'Payment Cards' })
       }
       else {
         this.$router.push({ name: 'Invoices' })
