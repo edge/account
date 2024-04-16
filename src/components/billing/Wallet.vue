@@ -12,7 +12,6 @@ import { computed, ref } from 'vue'
 const router = useRouter()
 const store = useStore()
 
-const showCheckout = ref(false)
 const calculatedUSD = ref(0)
 const calculatedXE = ref(0)
 const purchasingUSD = ref(0)
@@ -28,7 +27,6 @@ function onCalculatorUpdate({ usd, xe }) {
 async function startPurchase() {
   purchasingUSD.value = calculatedUSD
   purchasingXE.value = calculatedXE
-  showCheckout.value = true
 
   const data = {
     account: store.state.account._key,

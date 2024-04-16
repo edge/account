@@ -63,7 +63,6 @@
 /* global process*/
 
 import * as api from '@/account-utils'
-import * as format from '@/utils/format'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentMethodList from '@/components/billing/PaymentMethodList'
 import { PlusCircleIcon } from '@heroicons/vue/outline'
@@ -77,17 +76,9 @@ export default {
     return {
       addCardError: null,
       addingCard: false,
-      copied: false,
-      iBalance: null,
-      rate: null,
       showAddNewCard: false,
       showCheckout: false,
-      calculatedUSD: 0,
-      calculatedXE: 0,
-      purchasingUSD: 0,
-      purchasingXE: 0,
 
-      purchase: null,
       paymentElement: null,
       paymentMethods: []
     }
@@ -99,22 +90,7 @@ export default {
     StripeLoadingOverlay
   },
   computed: {
-    ...mapState(['account', 'balance', 'progress', 'session']),
-    canStartPurchase() {
-      return this.calculatedUSD >= 1
-    },
-    explorerUrlWallet() {
-      return `${process.env.VUE_APP_EXPLORER_URL}/wallet/${this.account.wallet.address}`
-    },
-    formattedBalance() {
-      return format.xe(this.balance.total.xe)
-    },
-    formattedUSDBalance() {
-      return format.usd(this.usdBalance, 2)
-    },
-    usdBalance() {
-      return this.balance.total.usd
-    }
+    ...mapState(['account', 'progress', 'session'])
   },
   methods: {
     async addPaymentMethod() {
@@ -175,10 +151,6 @@ export default {
         }
       }
     },
-    onCalculatorUpdate({ usd, xe }) {
-      this.calculatedUSD = usd
-      this.calculatedXE = xe
-    },
     onCancelStripe() {
       this.addCardError = null
       this.addingCard = false
@@ -197,30 +169,6 @@ export default {
       this.paymentElement = this.stripeElements.create('payment')
       this.paymentElement.mount(this.$refs.paymentElement)
       this.showAddNewCard = true
-    },
-    async startPurchase() {
-      this.purchasingUSD = this.calculatedUSD
-      this.purchasingXE = this.calculatedXE
-      this.showCheckout = true
-
-      const data = {
-        account: this.account._key,
-        send: {
-          amount: this.calculatedUSD,
-          currency: 'USD'
-        },
-        receive: {
-          currency: 'XE'
-        }
-      }
-
-      const { purchase } = await api.purchases.createPurchase(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        data
-      )
-
-      this.$router.push({ name: 'Purchase', params: { id: purchase._key } })
     }
   },
   mounted() {
