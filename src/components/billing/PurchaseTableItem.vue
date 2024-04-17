@@ -28,10 +28,14 @@
       </div>
     </td>
     <td class="tableBody__cell">
-      <span class="mr-2 lg:hidden">Sent:</span>
-      <span class="truncate">{{ formattedSentAmount }} <span class="lg:hidden">USD</span></span>
+      <span class="mr-2 lg:hidden">Type:</span>
+      <span>{{ purchase.auto ? 'Automatic' : 'Manual' }}</span>
     </td>
     <td class="tableBody__cell">
+      <span class="mr-2 lg:hidden">Sent:</span>
+      <span class="truncate">${{ formattedSentAmount }} <span class="lg:hidden">USD</span></span>
+    </td>
+    <td class="tableBody__cell" v-if="account.useCryptoView">
       <span class="mr-2 lg:hidden">Received:</span>
       <span class="truncate">{{ formattedReceivedAmount }} <span class="lg:hidden">XE</span></span>
     </td>
@@ -55,6 +59,7 @@
 import * as format from '@/utils/format'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import Tooltip from '@/components/Tooltip'
+import { mapState } from 'vuex'
 import { CalendarIcon, ClockIcon } from '@heroicons/vue/outline'
 
 export default {
@@ -73,6 +78,7 @@ export default {
   },
   props: ['purchase'],
   computed: {
+    ...mapState(['account']),
     formattedDate() {
       return format.date(this.purchase.created)
     },

@@ -23,13 +23,18 @@
               class="tableHead__cell"
             />
             <TableHeader
-              header="Sent (USD)"
+              header="Type"
+              class="tableHead__cell"
+            />
+            <TableHeader
+              :header="account.useCryptoView ? 'Sent (USD)' : 'Paid (USD)'"
               param="send.amount"
               class="tableHead__cell"
               :sortQuery="sortQuery"
               @update-sort="updateSortQuery"
             />
             <TableHeader
+              v-if="account.useCryptoView"
               header="Received (XE)"
               param="receive.amount"
               class="tableHead__cell"
@@ -98,7 +103,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['account', 'session']),
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
     }

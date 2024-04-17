@@ -146,8 +146,8 @@
 <script>
 /* global process */
 
-import * as format from '@/utils/format'
 import * as api from '@/account-utils'
+import * as format from '@/utils/format'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentSelectionItem from '@/components/billing/PaymentSelectionItem'
@@ -264,7 +264,7 @@ export default {
           this.purchaseId
         )
         this.purchase = purchase
-        this.$router.push({ name: 'Payments' })
+        this.$router.push({ name: 'Wallet' })
       }
       catch (error) {
         console.error(error)
