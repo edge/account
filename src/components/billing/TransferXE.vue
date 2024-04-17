@@ -2,7 +2,10 @@
   <div class="box flex flex-col justify-start">
     <h4>Transfer XE</h4>
     <div class="flex flex-col">
-      <p>Transfer XE to the following wallet address to add funds to your account. Transactions may take up to 10 minutes to process.</p>
+      <p>
+        You can add funds directly to your account wallet from another wallet.
+        Transfer XE to this address:
+      </p>
       <div class="relative mb-4">
         <div class="flex items-center w-full">
           <span class="address">{{ account.wallet.address }}</span>
@@ -15,8 +18,11 @@
         </div>
         <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
       </div>
-      <span v-if="!account.topup">The minimum required balance is ${{ balance.threshold.warning.usd.toFixed(2)}}. Please ensure your account remains above this level to avoid restrictions. Alternatively, you can set up Pay by Credit Card.</span>
-      <span v-else>Pay by Credit Card is enabled for your account. You may still add funds at any time.</span>
+      <p>It will take about 10 minutes to confirm your transaction.</p>
+      <p>
+        If you do not already have XE in another wallet, you can get some through an exchange.
+        <a href="https://wiki.edge.network/getting-and-storing-tokens/exchanges" target="_blank" class="text-green">Learn more on the Edge Wiki</a>
+      </p>
     </div>
   </div>
 </template>

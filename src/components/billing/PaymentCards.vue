@@ -56,6 +56,62 @@
         </div>
       </div>
     </div>
+
+    <div class="box">
+      <FAQ>
+        <div>
+          <article>
+            <header>
+              <h4>When will I be billed?</h4>
+            </header>
+            <section>
+              <p>
+                Your invoice will be prepared on the first day of the month, each month.
+                If you set up an automatic payment method, it will be paid immediately - nothing for you to worry about.
+              </p>
+            </section>
+          </article>
+
+          <article>
+            <header>
+              <h4>I have unpaid invoices - what do I do?</h4>
+            </header>
+            <section>
+              <p>
+                If you use Edge services without an automatic payment method, you may not be able to pay invoices.
+                When this happens, your services may be suspended.
+              </p>
+              <p>
+                To pay your invoices and regain your services, simply add an automatic payment card to your account.
+                Your invoices will be paid shortly after as long as the card is valid.
+              </p>
+            </section>
+          </article>
+
+          <article>
+            <header>
+              <h4>Can I manage my account funding manually?</h4>
+            </header>
+            <section>
+              <p>
+                Yes. Edge invoices are paid using a native cryptocurrency called XE.
+                If you have an XE wallet, you can transfer funding from that into your account and use it to pay your invoices.
+              </p>
+              <p>
+                You can also purchase XE for your account using a payment card, even if it is used for automatic payments.
+                Please note you cannot withdraw this XE to another wallet.
+              </p>
+              <p v-if="account.useCryptoView">
+                <RouterLink :to="{ name: 'Wallet' }" class="text-green">View your wallet</RouterLink> to start funding your account manually.
+              </p>
+              <p v-else>
+                <RouterLink :to="{ name: 'Account' }" class="text-green">Enable Crypto View</RouterLink> to start funding your account manually.
+              </p>
+            </section>
+          </article>
+        </div>
+      </FAQ>
+    </div>
   </div>
 </template>
 
@@ -63,9 +119,11 @@
 /* global process*/
 
 import * as api from '@/account-utils'
+import FAQ from '../FAQ.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentMethodList from '@/components/billing/PaymentMethodList'
 import { PlusCircleIcon } from '@heroicons/vue/outline'
+import { RouterLink } from 'vue-router'
 import StripeLoadingOverlay from '@/components/billing/StripeLoadingOverlay'
 
 import { mapState } from 'vuex'
@@ -84,7 +142,9 @@ export default {
     }
   },
   components: {
+    FAQ,
     LoadingSpinner,
+    RouterLink,
     PaymentMethodList,
     PlusCircleIcon,
     StripeLoadingOverlay

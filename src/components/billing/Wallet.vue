@@ -2,15 +2,25 @@
 /* global process */
 
 import * as api from '@/account-utils'
+import * as format from '@/utils/format'
 import AddFundsCalculator from './AddFundsCalculator.vue'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
+import FAQ from '../FAQ.vue'
 import TransferXE from '@/components/billing/TransferXE'
-import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { RouterLink, useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
 
 const router = useRouter()
 const store = useStore()
+
+const balanceXE = computed(() => store.state.balance.total.xe)
+const balanceUSD = computed(() => store.state.balance.total.usd)
+const explorerURL = `${process.env.VUE_APP_EXPLORER_URL}/wallet/${store.state.account.wallet.address}`
+
+const minimumDeployBalance = computed(() => store.state.balance.threshold.warning.usd)
+const differenceUSD = computed(() => minimumDeployBalance.value - store.state.balance.total.usd)
+const differenceXE = computed(() => (differenceUSD.value / store.state.balance.token.usdPerXe) * 1e6)
 
 const calculatedUSD = ref(0)
 const calculatedXE = ref(0)
@@ -51,6 +61,21 @@ async function startPurchase() {
 
 <template>
   <div class="flex flex-col space-y-4">
+    <div class="box" style="padding-bottom: 0.5rem">
+      <h4>Wallet</h4>
+      <p v-if="balanceXE > 0">
+        Your account has a balance of {{ format.xe(balanceXE) }} XE, which currently exchanges to ${{ format.usd(balanceUSD, 2) }} USD.
+        <a :href="explorerURL" target="_blank" class="text-green">View in Explorer</a>
+      </p>
+      <p v-else>
+        Your account balance is ${{ format.usd(0, 2) }}.
+      </p>
+      <p v-if="differenceXE > 0">
+        The minimum required balance to deploy services is ${{ format.usd(minimumDeployBalance, 2) }} USD.
+        You need to add at least {{ format.xe(differenceXE) }} XE to reach this threshold.
+      </p>
+    </div>
+
     <div class="flex flex-col lg:grid lg:grid-cols-2 space-y-4 lg:gap-x-6 lg:space-y-0">
       <TransferXE />
       <AddFundsCalculator @update="onCalculatorUpdate">
@@ -68,9 +93,41 @@ async function startPurchase() {
         </template>
       </AddFundsCalculator>
     </div>
+
     <div class="box">
       <h4>Transactions</h4>
       <BillingTransactionTable />
+    </div>
+
+    <div class="box">
+      <FAQ>
+        <div>
+          <article>
+            <header>
+              <h4>What am I looking at?</h4>
+            </header>
+            <section>
+              <p>
+                You are using crypto view, which offers full visibility of your wallet and transactions on the XE blockchain.
+                This page allows you to manage your account balance directly using XE.
+              </p>
+              <p>
+                If you are unfamiliar with the use of cryptocurrency, you can <a href="https://wiki.edge.network/getting-and-storing-tokens/wallets" target="_blank" class="text-green">learn more about XE on the Edge Wiki</a>
+                or you can <RouterLink :to="{ name: 'Account' }" class="text-green">disable crypto view</RouterLink> for a more streamlined interface.
+              </p>
+            </section>
+          </article>
+
+          <article>
+            <header>
+              <h4>How do I withdraw funds from my account?</h4>
+            </header>
+            <section>
+              <p>We do not currently offer the facility to withdraw XE from your account to another wallet.</p>
+            </section>
+          </article>
+        </div>
+      </FAQ>
     </div>
   </div>
 </template>
