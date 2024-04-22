@@ -23,7 +23,7 @@
               <div>
                 <p class="text-md mb-2">Add a Payment Method to Get Started</p>
                 <p class="text-gray-800 mb-2">Link a payment method to deploy services.</p>
-                <router-link to="/billing/payments" class="button button--success button--small h-8 w-max flex-shrink-0">
+                <router-link :to="{ name: 'Payment Cards' }" class="button button--success button--small h-8 w-max flex-shrink-0">
                   Add a Payment Method
                 </router-link>
               </div>
