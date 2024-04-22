@@ -67,24 +67,21 @@
             </header>
             <section>
               <p>
-                Your invoice will be prepared on the first day of the month, each month.
-                If you set up an automatic payment method, it will be paid immediately - nothing for you to worry about.
+                Your invoice will be generated on the first day of each month.
+                If you have set up an automatic payment method, the invoice will be paid immediately, providing a seamless and convenient billing process.
               </p>
             </section>
           </article>
 
           <article>
             <header>
-              <h5>I have unpaid invoices - what do I do?</h5>
+              <h5>I have unpaid invoices &ndash; what do I do?</h5>
             </header>
             <section>
               <p>
-                If you use Edge services without an automatic payment method, you may not be able to pay invoices.
-                When this happens, your services may be suspended.
-              </p>
-              <p>
-                To pay your invoices and regain your services, simply add an automatic payment card to your account.
-                Your invoices will be paid shortly after as long as the card is valid.
+                If you use Edge services without an automatic payment method, you may have unpaid invoices, which can lead to a suspension of your services.
+                To resolve this issue and restore your services, please add a valid automatic payment card to your account.
+                Once the card is added, your outstanding invoices will be processed shortly thereafter.
               </p>
             </section>
           </article>
@@ -95,12 +92,10 @@
             </header>
             <section>
               <p>
-                Yes. Edge invoices are paid using a native cryptocurrency called XE.
-                If you have an XE wallet, you can transfer funding from that into your account and use it to pay your invoices.
-              </p>
-              <p>
-                You can also purchase XE for your account using a payment card, even if it is used for automatic payments.
-                Please note you cannot withdraw this XE to another wallet.
+                Yes, you can manage your account funding manually using XE, our native cryptocurrency.
+                If you have an XE wallet, you can transfer funds from your wallet to your account and use the balance to pay your invoices.
+                Additionally, you can purchase XE for your account using a payment card, even if the card is already set up for automatic payments.
+                However, please note that any XE purchased for your account cannot be withdrawn to another wallet.
               </p>
               <p v-if="account.useCryptoView">
                 <RouterLink :to="{ name: 'Wallet' }" class="text-green">View your wallet</RouterLink> to start funding your account manually.
