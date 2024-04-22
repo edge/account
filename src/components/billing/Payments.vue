@@ -17,11 +17,12 @@ const isCryptoView = Boolean(store.state.account?.useCryptoView)
     </div>
 
     <div class="box">
+      <h4>FAQ</h4>
       <FAQ>
         <div>
           <article>
             <header>
-              <h4>When do I make payments?</h4>
+              <h5>When do I make payments?</h5>
             </header>
             <section>
               <p>If you use an automatic payment method, then the billing processor will normally take payment directly after your invoice is prepared each month.</p>

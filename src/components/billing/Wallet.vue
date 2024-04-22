@@ -100,11 +100,12 @@ async function startPurchase() {
     </div>
 
     <div class="box">
+      <h4>FAQ</h4>
       <FAQ>
         <div>
           <article>
             <header>
-              <h4>What am I looking at?</h4>
+              <h5>What am I looking at?</h5>
             </header>
             <section>
               <p>
@@ -120,7 +121,7 @@ async function startPurchase() {
 
           <article>
             <header>
-              <h4>How do I withdraw funds from my account?</h4>
+              <h5>How do I withdraw funds from my account?</h5>
             </header>
             <section>
               <p>We do not currently offer the facility to withdraw XE from your account to another wallet.</p>

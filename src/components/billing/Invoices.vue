@@ -17,10 +17,11 @@ const isCryptoView = Boolean(store.state.account?.useCryptoView)
       <BillingInvoiceTable />
     </div>
     <div class="box">
+      <h4>FAQ</h4>
       <FAQ><div>
         <article>
           <header>
-            <h4>What happens if I don't pay an invoice?</h4>
+            <h5>What happens if I don't pay an invoice?</h5>
           </header>
           <section>
             <p v-if="isCryptoView">
@@ -40,7 +41,7 @@ const isCryptoView = Boolean(store.state.account?.useCryptoView)
 
         <article>
           <header>
-            <h4>How do I know if I have an unpaid invoice?</h4>
+            <h5>How do I know if I have an unpaid invoice?</h5>
           </header>
           <section>
             <p>If you add an email address to your account, you will receive an email notification when a new invoice is ready and whenever the status of your account changes.</p>
@@ -61,7 +62,7 @@ const isCryptoView = Boolean(store.state.account?.useCryptoView)
 
         <article>
           <header>
-            <h4>How do I pay an invoice?</h4>
+            <h5>How do I pay an invoice?</h5>
           </header>
           <section>
             <p>

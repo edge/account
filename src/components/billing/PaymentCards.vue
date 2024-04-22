@@ -58,11 +58,12 @@
     </div>
 
     <div class="box">
+      <h4>FAQ</h4>
       <FAQ>
         <div>
           <article>
             <header>
-              <h4>When will I be billed?</h4>
+              <h5>When will I be billed?</h5>
             </header>
             <section>
               <p>
@@ -74,7 +75,7 @@
 
           <article>
             <header>
-              <h4>I have unpaid invoices - what do I do?</h4>
+              <h5>I have unpaid invoices - what do I do?</h5>
             </header>
             <section>
               <p>
@@ -90,7 +91,7 @@
 
           <article>
             <header>
-              <h4>Can I manage my account funding manually?</h4>
+              <h5>Can I manage my account funding manually?</h5>
             </header>
             <section>
               <p>
