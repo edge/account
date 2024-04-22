@@ -109,12 +109,10 @@ async function startPurchase() {
             </header>
             <section>
               <p>
-                You are using crypto view, which offers full visibility of your wallet and transactions on the XE blockchain.
-                This page allows you to manage your account balance directly using XE.
-              </p>
-              <p>
-                If you are unfamiliar with the use of cryptocurrency, you can <a href="https://wiki.edge.network/getting-and-storing-tokens/wallets" target="_blank" class="text-green">learn more about XE on the Edge Wiki</a>
-                or you can <RouterLink :to="{ name: 'Account' }" class="text-green">disable crypto view</RouterLink> for a more streamlined interface.
+                You're currently using the crypto view, which provides comprehensive visibility of your wallet and transactions on the XE blockchain.
+                This page enables you to manage your account balance directly using XE.
+                If you're new to cryptocurrency, you can <a href="https://wiki.edge.network/getting-and-storing-tokens/wallets" target="_blank" class="text-green">learn more about XE on the Edge Wiki</a>.
+                Alternatively, if you prefer a more streamlined interface, you can <RouterLink :to="{ name: 'Account' }" class="text-green">disable the crypto view</RouterLink>
               </p>
             </section>
           </article>
@@ -124,7 +122,7 @@ async function startPurchase() {
               <h5>How do I withdraw funds from my account?</h5>
             </header>
             <section>
-              <p>We do not currently offer the facility to withdraw XE from your account to another wallet.</p>
+              <p>We don't currently offer the facility to withdraw XE from your account to another wallet.</p>
             </section>
           </article>
         </div>
