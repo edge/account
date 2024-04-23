@@ -11,7 +11,7 @@ const subscriber = ref()
 
 const store = useStore()
 
-const checked = computed(() => Boolean(subscriber && subscriber.value.isSubscribed))
+const checked = computed(() => Boolean(subscriber.value && subscriber.value.isSubscribed))
 
 async function reload() {
   if (!store.state.session) return
