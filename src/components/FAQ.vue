@@ -66,18 +66,18 @@ onMounted(() => {
     let _icon = icon
     if (!_icon) {
       _icon = document.createElement('div')
-      _icon.innerHTML = chevronUp
+      _icon.innerHTML = chevronDown
       header.appendChild(_icon)
     }
 
     header.addEventListener('click', () => {
       if (content.style.display === 'none') {
         content.style.display = ''
-        _icon.innerHTML = chevronDown
+        _icon.innerHTML = chevronUp
       }
       else {
         content.style.display = 'none'
-        _icon.innerHTML = chevronUp
+        _icon.innerHTML = chevronDown
       }
     })
   }
