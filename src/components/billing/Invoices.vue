@@ -43,7 +43,7 @@ const isCryptoView = Boolean(store.state.account?.useCryptoView)
               If you add an email address to your account, you will receive an email notification when a new invoice is generated and whenever your account status changes.
               You can also use your email address to log in to your Edge Account, keeping your account number secure.
               <span v-if="!accountEmail">
-                <RouterLink :to="{ name: 'Account' }" class="text-green">Add an email address</RouterLink>
+                <RouterLink :to="{ name: 'Account' }" class="text-green">Add an email address</RouterLink>.
               </span>
               <span v-else>
                 Your email address is <span class="text-green">{{ accountEmail }}</span>.
@@ -53,7 +53,7 @@ const isCryptoView = Boolean(store.state.account?.useCryptoView)
             <p>
               In addition to email notifications, you will receive a notification within this account portal, regardless of whether you have added an email address to your account.
               To view your notifications, click on the notification inbox at the top of the page or
-              <RouterLink :to="{ name: 'Notifications' }" class="text-green">click here to view your notifications</RouterLink>
+              <RouterLink :to="{ name: 'Notifications' }" class="text-green">click here to view your notifications</RouterLink>.
             </p>
           </section>
         </article>
