@@ -30,11 +30,11 @@ effect(() => {
   <div class="mainContent__inner space-y-4">
     <h1>Billing</h1>
     <div class="tabs flex space-x-2 pt-4">
-      <div class="tab" :class="isSelected('payment-cards') ? 'tab--selected' : ''">
-        <router-link :to="{name: 'Payment Cards'}">Payment Cards</router-link>
-      </div>
       <div class="tab" :class="isSelected('invoices') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Invoices'}">Invoices</router-link>
+      </div>
+      <div class="tab" :class="isSelected('payment-cards') ? 'tab--selected' : ''">
+        <router-link :to="{name: 'Payment Cards'}">Cards</router-link>
       </div>
       <div class="tab" :class="isSelected('payments') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Payments'}">Payments</router-link>
