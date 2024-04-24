@@ -19,6 +19,9 @@ html {
 .box h4 {
   @apply w-full mb-4 font-medium;
 }
+.box h5 {
+  @apply w-full mb-4 font-medium;
+}
 
 /*
   FORM STYLES

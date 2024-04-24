@@ -6,8 +6,12 @@
 
     <!-- not editing -->
     <div v-if="!isEditing" class="mt-4">
-      <!-- email display -->
-      <p class="text-2xl text-green">{{ account.email.address }}</p>
+      <div class="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-8 mb-6">
+        <!-- email display -->
+        <p class="text-2xl text-green mb-0">{{ account.email.address }}</p>
+
+        <SubscribeCheckbox />
+      </div>
 
       <!-- buttons -->
       <div class="flex flex-col sm:flex-row sm:space-x-2">
@@ -158,6 +162,7 @@ import DisableEmailConfirmation from '@/components/confirmations/DisableEmailCon
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
+import SubscribeCheckbox from '../../modules/newsletter/components/SubscribeCheckbox.vue'
 import UpdateEmailConfirmation from '@/components/confirmations/UpdateEmailConfirmation'
 import ValidationError from '@/components/ValidationError.vue'
 import useVuelidate from '@vuelidate/core'
@@ -170,6 +175,7 @@ export default {
     ExclamationIcon,
     HttpError,
     LoadingSpinner,
+    SubscribeCheckbox,
     UpdateEmailConfirmation,
     ValidationError
   },

@@ -23,13 +23,18 @@
               class="tableHead__cell"
             />
             <TableHeader
-              header="Sent (USD)"
+              header="Type"
+              class="tableHead__cell"
+            />
+            <TableHeader
+              :header="account.useCryptoView ? 'Sent (USD)' : 'Paid (USD)'"
               param="send.amount"
               class="tableHead__cell"
               :sortQuery="sortQuery"
               @update-sort="updateSortQuery"
             />
             <TableHeader
+              v-if="account.useCryptoView"
               header="Received (XE)"
               param="receive.amount"
               class="tableHead__cell"
@@ -46,9 +51,9 @@
           </tr>
         </thead>
         <tbody class="tableBody">
-          <LoadingTableDataRow v-if="!purchases" colspan="5" />
+          <LoadingTableDataRow v-if="!purchases" :colspan="account.useCryptoView ? 7 : 6" />
           <tr v-else-if="!purchases.length">
-            <td colspan="6" class="tableBody__cell text-center text-gray-500">No purchases</td>
+            <td :colspan="account.useCryptoView ? 7 : 6" class="tableBody__cell text-center text-gray-500 py-4">No purchases</td>
           </tr>
           <PurchaseTableItem
             v-else
@@ -98,7 +103,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['account', 'session']),
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
     }

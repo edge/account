@@ -47,9 +47,9 @@
           </tr>
         </thead>
         <tbody class="tableBody">
-          <LoadingTableDataRow v-if="!invoices" colspan="5" />
+          <LoadingTableDataRow v-if="!invoices" :colspan="account.useCryptoView ? 6 : 5" />
           <tr v-else-if="!invoices.length">
-            <td colspan="5" class="tableBody__cell text-center text-gray-500">No invoices</td>
+            <td :colspan="account.useCryptoView ? 6 : 5" class="tableBody__cell text-center text-gray-500 py-4">No invoices</td>
           </tr>
           <BillingInvoiceTableItem
             v-else

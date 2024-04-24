@@ -54,7 +54,7 @@
         <tbody class="tableBody">
           <LoadingTableDataRow v-if="!transactions" colspan="6" />
           <tr v-else-if="!transactions.length">
-            <td colspan="6" class="tableBody__cell text-center text-gray-500">No transactions</td>
+            <td colspan="6" class="tableBody__cell text-center text-gray-500 py-4">No transactions</td>
           </tr>
           <BillingTransactionTableItem
             v-else

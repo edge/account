@@ -7,16 +7,19 @@
       <div v-else><CashIcon class="w-8"/></div>
       <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
         <span>{{ warning.message }}</span>
-        <router-link to="/billing/payments" class="button button--solid button--small h-8 w-max flex-shrink-0">
-          <span v-if="account.useCryptoView">Add Funds</span>
-          <span v-else>Add Payment Card</span>
-        </router-link>
+        <RouterLink v-if="account.useCryptoView" :to="{ name: 'Wallet' }" class="button button--solid button--small h-8 w-max flex-shrink-0">
+          <span>Add Funds</span>
+        </RouterLink>
+        <RouterLink v-else :to="{ name: 'Payment Cards' }" class="button button--solid button--small h-8 w-max flex-shrink-0">
+          <span>Add Payment Card</span>
+        </RouterLink>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { RouterLink } from 'vue-router'
 import { CashIcon, ExclamationIcon } from '@heroicons/vue/outline'
 import { mapGetters, mapState } from 'vuex'
 
@@ -30,7 +33,8 @@ export default {
   name: 'SuspensionMessage',
   components: {
     CashIcon,
-    ExclamationIcon
+    ExclamationIcon,
+    RouterLink
   },
   computed: {
     ...mapGetters(['nextInvoiceDate']),
