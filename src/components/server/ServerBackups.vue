@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col pb-20 space-y-4">
+    <BackupStrategy :server="server" />
     <div class="box">
       <h4>Create a backup</h4>
       <p class="mt-3 text-gray-500">A backup is a disk image of your server, which can be used for recovery in case of data loss.</p>
@@ -114,6 +115,7 @@
 
 import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
+import BackupStrategy from './BackupStrategy.vue'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
@@ -127,6 +129,7 @@ import { mapGetters, mapState } from 'vuex'
 export default {
   name: 'ServerBackups',
   components: {
+    BackupStrategy,
     HttpError,
     LoadingSpinner,
     LoadingTableDataRow,
