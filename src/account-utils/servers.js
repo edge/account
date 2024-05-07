@@ -5,6 +5,15 @@
 import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
+// configure backup strategy
+export const configureBackupStrategy = async (host, sessionId, serverId, strategy) => {
+  const url = `${host}/server/${serverId}/backups/strategy`
+  const response = await superagent.put(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ strategy })
+  return response.body
+}
+
 // create a backup
 export const createBackup = async (host, sessionId, serverId, comment) => {
   const url = `${host}/server/${serverId}/backups`
@@ -40,6 +49,13 @@ export const deleteServer = async (host, sessionId, serverId) => {
   const url = `${host}/server/${serverId}`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
+// disable backup strategy
+export const disableBackupStrategy = async (host, sessionId, serverId) => {
+  const url = `${host}/server/${serverId}/backups/strategy`
+  const response = await superagent.delete(url).set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
