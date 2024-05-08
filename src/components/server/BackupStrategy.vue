@@ -8,6 +8,8 @@ import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 import { computed, reactive, ref } from 'vue'
 
+const emit = defineEmits(['update-server'])
+
 const props = defineProps({
   server: null
 })
@@ -91,6 +93,7 @@ async function disable() {
       store.state.session._key,
       props.server._key
     )
+    emit('update-server')
   }
   catch (err) {
     error.value = err
@@ -135,6 +138,7 @@ async function submit() {
       props.server._key,
       strategy
     )
+    emit('update-server')
   }
   catch (err) {
     error.value = err

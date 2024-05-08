@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col pb-20 space-y-4">
-    <BackupStrategy :server="server" />
+    <BackupStrategy :server="server" @update-server="updateServer" />
     <div class="box">
       <h4>Create a backup</h4>
       <p class="mt-3 text-gray-500">A backup is a disk image of your server, which can be used for recovery in case of data loss.</p>
@@ -229,6 +229,9 @@ export default {
       this.backups = results
       this.metadata = metadata
       this.loadedBackups = true
+    },
+    updateServer() {
+      this.$emit('update-server')
     },
     updateSortQuery (newQuery) {
       this.sortQuery = newQuery
