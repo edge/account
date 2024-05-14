@@ -124,7 +124,7 @@ async function submit() {
 
   const strategy = {
     schedule,
-    retention: parseInt(formState.retention * week)
+    retention: parseInt(formState.retention) * week
   }
 
   try {
@@ -161,6 +161,9 @@ function toggleDayOfWeek(day) {
 <template>
   <div class="box">
     <h4>Backup Strategy</h4>
+
+    <p v-if="currentConfig.enabled" class="mt-3 text-gray-500">Automatic backups are enabled for this server on the following schedule:</p>
+    <p v-else class="mt-3 text-gray-500">Automatic backups are not enabled for this server.</p>
 
     <form @submit.prevent="submit">
       <div class="input-group">
