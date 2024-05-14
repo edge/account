@@ -1,8 +1,10 @@
 <script setup>
 /* global process */
 import * as api from '@/account-utils'
+import Dropdown from '../Dropdown.vue'
 import HttpError from '../HttpError.vue'
 import cron from 'cron-validate'
+import reduce from '@/utils/reduce'
 import { required } from '@vuelidate/validators'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
@@ -17,10 +19,10 @@ const props = defineProps({
 const store = useStore()
 
 // Form/conversion constants
-const hours = (new Array(24)).fill(null).map((n, i) => `${i.toString().padStart(2, '0')}:00`)
+const hours = (new Array(24)).fill(null).map((n, i) => `${i.toString().padStart(2, '0')}:00`).reduce(reduce.arrayToObject, {})
 const daysOfWeek = ['S', 'M', 'T', 'W', 'Th', 'F', 'Sa']
-const daysOfMonth = (new Array(31)).fill(null).map((n, i) => (i + 1).toString())
-const retentionWeeks = (new Array(8)).fill(null).map((n, i) => (i + 1).toString())
+const daysOfMonth = (new Array(31)).fill(null).map((n, i) => (i + 1).toString()).reduce(reduce.arrayToObject, {})
+const retentionWeeks = (new Array(8)).fill(null).map((n, i) => (i + 1).toString()).reduce(reduce.arrayToObject, {})
 const week = 1000 * 60 * 60 * 24 * 7
 
 // Form state
@@ -30,7 +32,7 @@ const error = ref()
 // Parse current backup strategy, if server has one
 const currentConfig = computed(() => {
   const c = {
-    enabled: props.server.backups !== null,
+    enabled: Boolean(props.server.backups),
     hours: null,
     daysOfWeek: null,
     daysOfMonth: null,
@@ -103,10 +105,6 @@ async function disable() {
   }
 }
 
-function setPeriod(e) {
-  period.value = e.target.value
-}
-
 async function submit() {
   if (!await v$.value.$validate()) return
 
@@ -165,11 +163,11 @@ function toggleDayOfWeek(e) {
     <h4>Backup Strategy</h4>
 
     <form @submit.prevent="submit">
-      <label for="period">Period</label>
-      <select name="period" @change="setPeriod">
-        <option value="week" :selected="period === 'week'">Week</option>
-        <option value="month" :selected="period === 'month'">Month</option>
-      </select>
+      <Dropdown
+        label="Period"
+        v-model="period"
+        :options="{ week: 'Week', month: 'Month' }"
+      />
 
       <div v-if="period === 'week'">
         <label for="daysOfWeek">Days</label>
@@ -186,21 +184,24 @@ function toggleDayOfWeek(e) {
       </div>
 
       <div v-else-if="period === 'month'">
-        <label for="daysOfMonth">Day of the month</label>
-        <select name="daysOfMonth" v-model="v$.daysOfMonth.$model">
-          <option v-for="day in daysOfMonth" :key="day" :value="day">{{ day }}</option>
-        </select>
+        <Dropdown
+          label="Day of the month"
+          v-model="v$.daysOfMonth.$model"
+          :options="daysOfMonth"
+        />
       </div>
 
-      <label for="hours">Time of day</label>
-      <select name="hours" v-model="v$.hours.$model">
-        <option v-for="hour in hours" :key="hour" :value="hour">{{ hour }}</option>
-      </select>
+      <Dropdown
+        label="Time of day"
+        v-model="v$.hours.$model"
+        :options="hours"
+      />
 
-      <label for="retention">Backup retention (weeks)</label>
-      <select name="retention" v-model="v$.retention.$model">
-        <option v-for="weeks in retentionWeeks" :key="weeks" :value="weeks">{{ weeks }}</option>
-      </select>
+      <Dropdown
+        label="Backup retention (weeks)"
+        v-model="v$.retention.$model"
+        :options="retentionWeeks"
+      />
 
       <div class="buttons" v-if="currentConfig.enabled">
         <button
