@@ -146,14 +146,14 @@ async function submit() {
   }
 }
 
-function toggleDayOfWeek(e) {
-  const i = daysOfWeek.indexOf(e.target.value)
+function toggleDayOfWeek(day) {
+  const i = daysOfWeek.indexOf(day)
   if (i < 0 || i > daysOfWeek.length - 1) return
-  if (formState.daysOfWeek.includes(e.target.value)) {
-    v$.value.daysOfWeek.$model = formState.daysOfWeek.filter(d => d !== e.target.value)
+  if (formState.daysOfWeek.includes(day)) {
+    v$.value.daysOfWeek.$model = formState.daysOfWeek.filter(d => d !== day)
   }
   else {
-    v$.value.daysOfWeek.$model = [...formState.daysOfWeek, e.target.value]
+    v$.value.daysOfWeek.$model = [...formState.daysOfWeek, day]
   }
 }
 </script>
@@ -163,27 +163,33 @@ function toggleDayOfWeek(e) {
     <h4>Backup Strategy</h4>
 
     <form @submit.prevent="submit">
-      <Dropdown
-        label="Period"
-        v-model="period"
-        :options="{ week: 'Week', month: 'Month' }"
-      />
+      <div class="input-group">
+        <Dropdown
+          label="Period"
+          v-model="period"
+          :options="{ week: 'Week', month: 'Month' }"
+        />
+      </div>
 
-      <div v-if="period === 'week'">
-        <label for="daysOfWeek">Days</label>
-        <div v-for="day in daysOfWeek" :key="day">
-          <input
-            name="daysOfWeek"
-            :id="`daysOfWeek-${day}`"
-            :checked="formState.daysOfWeek.includes(day)"
-            :value="day" type="checkbox"
-            @change="toggleDayOfWeek"
-          />
-          <label :for="`daysOfWeek-${day}`">{{ day }}</label>
+      <div v-if="period === 'week'" class="mt-4 input-group">
+        <label class="label">Days</label>
+        <div class="flex flex-col md:flex-row gap-2 lg:gap-4 days-of-week">
+          <button
+            v-for="day in daysOfWeek"
+            :key="day"
+            type="button"
+            :class="{
+              button: true,
+              'button--small': true,
+              'button--success': formState.daysOfWeek.includes(day),
+              'button--outline': !formState.daysOfWeek.includes(day)
+            }"
+            @click="toggleDayOfWeek(day)"
+          >{{ day }}</button>
         </div>
       </div>
 
-      <div v-else-if="period === 'month'">
+      <div v-else-if="period === 'month'" class="mt-4 input-group">
         <Dropdown
           label="Day of the month"
           v-model="v$.daysOfMonth.$model"
@@ -191,31 +197,37 @@ function toggleDayOfWeek(e) {
         />
       </div>
 
-      <Dropdown
-        label="Time of day"
-        v-model="v$.hours.$model"
-        :options="hours"
-      />
+      <div class="mt-4 flex flex-col md:grid md:grid-cols-2 gap-4">
+        <div class="input-group">
+          <Dropdown
+            label="Time of day"
+            v-model="v$.hours.$model"
+            :options="hours"
+          />
+        </div>
 
-      <Dropdown
-        label="Backup retention (weeks)"
-        v-model="v$.retention.$model"
-        :options="retentionWeeks"
-      />
+        <div class="input-group">
+          <Dropdown
+            label="Backup retention (weeks)"
+            v-model="v$.retention.$model"
+            :options="retentionWeeks"
+          />
+        </div>
+      </div>
 
-      <div class="buttons" v-if="currentConfig.enabled">
+      <div class="buttons mt-4 flex flex-col sm:flex-row justify-end gap-2" v-if="currentConfig.enabled">
         <button
           type="submit"
-          class="mt-4 sm:mt-0 button button--success button--small sm:max-w-xs"
+          class="button button--success button--small sm:max-w-xs"
           :disabled="loading"
         >Update settings</button>
         <button
-          class="mt-4 sm:mt-0 button button--error button--small sm:max-w-xs"
+          class="button button--error button--small sm:max-w-xs"
           @click="disable"
           :disabled="loading"
         >Disable</button>
       </div>
-      <div class="buttons" v-else>
+      <div class="buttons mt-4 flex flex-col sm:flex-row justify-end gap-2" v-else>
         <button
           type="submit"
           class="mt-4 sm:mt-0 button button--success button--small sm:max-w-xs"
@@ -227,3 +239,10 @@ function toggleDayOfWeek(e) {
     </form>
   </div>
 </template>
+
+<style scoped>
+.days-of-week button {
+  flex-basis: 1;
+  flex-grow: 1;
+}
+</style>
