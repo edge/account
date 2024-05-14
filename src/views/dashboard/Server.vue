@@ -234,6 +234,7 @@
                 :disableActions=disableActions
                 :region=region
                 :server=server
+                @update-server="updateServer"
               />
             </TabPanel>
 
