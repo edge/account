@@ -1,8 +1,10 @@
 <template>
   <div class="flex flex-col pb-20 space-y-4">
+    <BackupStrategy :server="server" @update-server="updateServer" />
     <div class="box">
       <h4>Create a backup</h4>
-      <p class="mt-3 text-gray-500">A backup is a disk image of your server, which can be used for recovery in case of data loss.</p>
+      <p class="mt-3 text-gray-500">A backup is a disk image of your server, which can be used for recovery in case of data loss. You can create an instant backup at any time, whether or not automatic backups are enabled for this server.</p>
+      <p v-if="autoExpire" class="mt-3 text-gray-500">Manual backups for this server are subject to the same retention policy as automatic backups.</p>
       <div class="flex flex-col w-full mt-4 sm:space-x-4 sm:items-end sm:flex-row">
         <div class="flex-1 w-full sm:w-auto input-group">
           <label class="label">Backup name</label>
@@ -114,6 +116,7 @@
 
 import * as api from '@/account-utils'
 import * as validation from '@/utils/validation'
+import BackupStrategy from './BackupStrategy.vue'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
@@ -127,6 +130,7 @@ import { mapGetters, mapState } from 'vuex'
 export default {
   name: 'ServerBackups',
   components: {
+    BackupStrategy,
     HttpError,
     LoadingSpinner,
     LoadingTableDataRow,
@@ -163,13 +167,19 @@ export default {
   },
   computed: {
     ...mapGetters(['balanceSuspend', 'balanceWarning']),
-    ...mapState(['session']),
+    ...mapState(['config', 'session']),
     canCreate() {
       return !this.isCreating
         && !this.disableActions
         && !this.v$.comment.$invalid
         && !this.balanceSuspend
         && !this.balanceWarning
+    },
+    autoExpire() {
+      if (this.server.backups) {
+        return true
+      }
+      return false
     },
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
@@ -226,6 +236,9 @@ export default {
       this.backups = results
       this.metadata = metadata
       this.loadedBackups = true
+    },
+    updateServer() {
+      this.$emit('update-server')
     },
     updateSortQuery (newQuery) {
       this.sortQuery = newQuery

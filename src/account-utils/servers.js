@@ -5,9 +5,18 @@
 import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
+// configure backup strategy
+export const configureBackupStrategy = async (host, sessionId, serverId, strategy) => {
+  const url = `${host}/server/${serverId}/backups/strategy`
+  const response = await superagent.put(url)
+    .set({ 'Authorization': `Bearer ${sessionId}` })
+    .send({ strategy })
+  return response.body
+}
+
 // create a backup
 export const createBackup = async (host, sessionId, serverId, comment) => {
-  const url = `${host}/servers/${serverId}/backups`
+  const url = `${host}/server/${serverId}/backups`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send({ comment })
@@ -29,7 +38,7 @@ export const createServer = async (host, sessionId, accountId, serverOptions) =>
 
 // delete server backup
 export const deleteBackup = async (host, sessionId, serverId, backupID) => {
-  const url = `${host}/servers/${serverId}/backups/${backupID}`
+  const url = `${host}/server/${serverId}/backups/${backupID}`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -37,15 +46,22 @@ export const deleteBackup = async (host, sessionId, serverId, backupID) => {
 
 // delete server
 export const deleteServer = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}`
+  const url = `${host}/server/${serverId}`
   const response = await superagent.delete(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
+// disable backup strategy
+export const disableBackupStrategy = async (host, sessionId, serverId) => {
+  const url = `${host}/server/${serverId}/backups/strategy`
+  const response = await superagent.delete(url).set({ 'Authorization': `Bearer ${sessionId}` })
+  return response.body
+}
+
 // get backups for server by id
 export const getBackups = async (host, sessionId, serverId, params) => {
-  let url = `${host}/servers/${serverId}/backups`
+  let url = `${host}/server/${serverId}/backups`
   // add query params
   if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
@@ -55,7 +71,7 @@ export const getBackups = async (host, sessionId, serverId, params) => {
 
 // get total backups usage for server by id
 export const getBackupsUsage = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}/backups/usage`
+  const url = `${host}/server/${serverId}/backups/usage`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -69,7 +85,7 @@ export const getHostname = async (host, sessionId) => {
 }
 
 export const getMetrics = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}/metrics`
+  const url = `${host}/server/${serverId}/metrics`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -77,7 +93,7 @@ export const getMetrics = async (host, sessionId, serverId) => {
 
 // get server by id
 export const getServer = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}`
+  const url = `${host}/server/${serverId}`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -95,7 +111,7 @@ export const getServers = async (host, sessionId, params) => {
 
 // get server tasks by server id
 export const getTasks = async (host, sessionId, serverId, params) => {
-  let url = `${host}/servers/${serverId}/tasks`
+  let url = `${host}/server/${serverId}/tasks`
   // add query params
   if (params !== undefined) url += `?${toQueryString(params)}`
   const response = await superagent.get(url)
@@ -105,7 +121,7 @@ export const getTasks = async (host, sessionId, serverId, params) => {
 
 // get a server's VNC credentials, including a session id and VNC password
 export const getVncSession = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}/vnc/credentials`
+  const url = `${host}/server/${serverId}/vnc/credentials`
   const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -113,7 +129,7 @@ export const getVncSession = async (host, sessionId, serverId) => {
 
 // resize server
 export const resizeServer = async (host, sessionId, serverId, newServerSpec) => {
-  const url = `${host}/servers/${serverId}/resize`
+  const url = `${host}/server/${serverId}/resize`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send({ spec: newServerSpec })
@@ -122,7 +138,7 @@ export const resizeServer = async (host, sessionId, serverId, newServerSpec) => 
 
 // resize server
 export const restoreBackup = async (host, sessionId, serverId, backupId) => {
-  const url = `${host}/servers/${serverId}/backups/${backupId}/restore`
+  const url = `${host}/server/${serverId}/backup/${backupId}/restore`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -130,7 +146,7 @@ export const restoreBackup = async (host, sessionId, serverId, backupId) => {
 
 // start a server
 export const startServer = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}/start`
+  const url = `${host}/server/${serverId}/start`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -138,7 +154,7 @@ export const startServer = async (host, sessionId, serverId) => {
 
 // stop a server
 export const stopServer = async (host, sessionId, serverId) => {
-  const url = `${host}/servers/${serverId}/stop`
+  const url = `${host}/server/${serverId}/stop`
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
@@ -146,7 +162,7 @@ export const stopServer = async (host, sessionId, serverId) => {
 
 // update server - currently used only to update server name
 export const updateServer = async (host, sessionId, serverId, data) => {
-  const url = `${host}/servers/${serverId}`
+  const url = `${host}/server/${serverId}`
   const response = await superagent.put(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send(data)
