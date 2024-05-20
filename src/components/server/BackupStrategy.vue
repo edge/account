@@ -2,7 +2,9 @@
 /* global process */
 import * as api from '@/account-utils'
 import Dropdown from '../Dropdown.vue'
+import { ExclamationIcon } from '@heroicons/vue/solid'
 import HttpError from '../HttpError.vue'
+import Modal from '@/components/Modal.vue'
 import cron from 'cron-validate'
 import reduce from '@/utils/reduce'
 import { required } from '@vuelidate/validators'
@@ -31,6 +33,7 @@ const week = 1000 * 60 * 60 * 24 * 7
 const month = 1000 * 60 * 60 * 24 * 30
 
 // Form state
+const disableModalVisible = ref(false)
 const loading = ref(false)
 const error = ref()
 
@@ -93,6 +96,10 @@ const v$ = useVuelidate({
   retention: [required]
 }, formState)
 
+function closeDisableModal() {
+  disableModalVisible.value = false
+}
+
 async function disable() {
   try {
     loading.value = true
@@ -103,6 +110,7 @@ async function disable() {
       props.server._key
     )
     emit('update-server')
+    closeDisableModal()
   }
   catch (err) {
     error.value = err
@@ -110,6 +118,10 @@ async function disable() {
   finally {
     loading.value = false
   }
+}
+
+function openDisableModal() {
+  disableModalVisible.value = true
 }
 
 async function submit() {
@@ -241,7 +253,7 @@ function toggleDayOfWeek(day) {
         >Save changes</button>
         <button
           class="button button--error button--small sm:max-w-xs"
-          @click="disable"
+          @click="openDisableModal"
           :disabled="loading"
         >Disable</button>
       </div>
@@ -255,6 +267,24 @@ function toggleDayOfWeek(day) {
 
       <HttpError v-if="error" :error="error" />
     </form>
+
+    <Modal v-if="disableModalVisible" @modal-close="closeDisableModal">
+      <template v-slot:icon>
+        <ExclamationIcon class="w-8 h-8" aria-hidden="true" />
+      </template>
+      <template v-slot:header>
+        <span>Disable backups</span>
+      </template>
+      <template v-slot:body>
+        <div class="flex flex-col space-y-2 text-center">
+          <span>Are you sure you want to disable automatic backups?</span>
+        </div>
+      </template>
+      <template v-slot:buttons>
+        <button class="w-full mt-3 button button--small button--outline sm:mt-0" @click="closeDisableModal">Cancel</button>
+        <button class="w-full button button--small button--error" @click="disable">Confirm</button>
+      </template>
+    </Modal>
   </div>
 </template>
 
