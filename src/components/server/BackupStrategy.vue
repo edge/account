@@ -20,10 +20,15 @@ const store = useStore()
 
 // Form/conversion constants
 const hours = (new Array(24)).fill(null).map((n, i) => `${i.toString().padStart(2, '0')}:00`).reduce(reduce.arrayToObject, {})
-const daysOfWeek = ['S', 'M', 'T', 'W', 'Th', 'F', 'Sa']
+const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const orderedDaysOfWeek = [...daysOfWeek.slice(1), daysOfWeek[0]]
 const daysOfMonth = (new Array(31)).fill(null).map((n, i) => (i + 1).toString()).reduce(reduce.arrayToObject, {})
-const retentionWeeks = (new Array(8)).fill(null).map((n, i) => (i + 1).toString()).reduce(reduce.arrayToObject, {})
+const retentionWeeks = (new Array(12)).fill(null).map((n, i) => (i + 1).toString()).reduce(reduce.arrayToObject, {})
+retentionWeeks['0'] = 'No expiry'
+const retentionMonths = (new Array(12)).fill(null).map((n, i) => (i + 1).toString()).reduce(reduce.arrayToObject, {})
+retentionMonths['0'] = 'No expiry'
 const week = 1000 * 60 * 60 * 24 * 7
+const month = 1000 * 60 * 60 * 24 * 30
 
 // Form state
 const loading = ref(false)
@@ -55,28 +60,30 @@ const currentConfig = computed(() => {
   if (value.daysOfMonth !== '*') {
     // Monthly
     c.daysOfMonth = parseInt(value.daysOfMonth).toString()
-  }
-  else if (value.daysOfWeek !== '*') {
-    // Weekly
-    c.daysOfWeek = value.daysOfWeek.split(',').map(i => daysOfWeek[i])
+    c.retention = (strategy.retention / month).toString()
   }
   else {
-    // Daily (select all days)
-    c.daysOfWeek = [...daysOfWeek]
-  }
+    // Daily
+    if (value.daysOfWeek !== '*') {
+      c.daysOfWeek = value.daysOfWeek.split(',').map(i => daysOfWeek[i])
+    }
+    else {
+      c.daysOfWeek = [...daysOfWeek]
+    }
 
-  c.retention = (strategy.retention / week).toString()
+    c.retention = (strategy.retention / week).toString()
+  }
 
   return c
 })
 
-const period = ref(currentConfig.value.daysOfWeek !== null ? 'week' : 'month')
+const frequency = ref(currentConfig.value.daysOfWeek !== null ? 'week' : 'month')
 
 const formState = reactive({
   hours: currentConfig.value.hours || '00:00',
   daysOfWeek: currentConfig.value.daysOfWeek || [...daysOfWeek],
   daysOfMonth: currentConfig.value.daysOfMonth || '1',
-  retention: currentConfig.value.retention || '1'
+  retention: currentConfig.value.retention || '0'
 })
 
 const v$ = useVuelidate({
@@ -110,22 +117,22 @@ async function submit() {
 
   // Generate cron schedule based on form data
   let schedule = ''
+  let retention = 0
   const hours = parseInt(formState.hours.match(/^[0-9]{2}/))
-  if (period.value === 'week') {
+  if (frequency.value === 'week') {
     let days = '*'
     if (formState.daysOfWeek.length < daysOfWeek.length) {
       days = formState.daysOfWeek.map(d => daysOfWeek.indexOf(d).toString()).sort().join(',')
     }
     schedule = `0 ${hours} * * ${days}`
+    retention = parseInt(formState.retention) * week
   }
-  else if (period.value === 'month') {
+  else if (frequency.value === 'month') {
     schedule = `0 ${hours} ${formState.daysOfMonth.toString()} * *`
+    retention = parseInt(formState.retention) * month
   }
 
-  const strategy = {
-    schedule,
-    retention: parseInt(formState.retention) * week
-  }
+  const strategy = { schedule, retention }
 
   try {
     loading.value = true
@@ -137,6 +144,7 @@ async function submit() {
       strategy
     )
     emit('update-server')
+    v$.value.$reset()
   }
   catch (err) {
     error.value = err
@@ -168,17 +176,17 @@ function toggleDayOfWeek(day) {
     <form @submit.prevent="submit">
       <div class="input-group">
         <Dropdown
-          label="Period"
-          v-model="period"
-          :options="{ week: 'Week', month: 'Month' }"
+          label="Frequency"
+          v-model="frequency"
+          :options="{ week: 'Daily', month: 'Monthly' }"
         />
       </div>
 
-      <div v-if="period === 'week'" class="mt-4 input-group">
+      <div v-if="frequency === 'week'" class="mt-4 input-group">
         <label class="label">Days</label>
         <div class="flex flex-col md:flex-row gap-2 lg:gap-4 days-of-week">
           <button
-            v-for="day in daysOfWeek"
+            v-for="day in orderedDaysOfWeek"
             :key="day"
             type="button"
             :class="{
@@ -192,7 +200,7 @@ function toggleDayOfWeek(day) {
         </div>
       </div>
 
-      <div v-else-if="period === 'month'" class="mt-4 input-group">
+      <div v-else-if="frequency === 'month'" class="mt-4 input-group">
         <Dropdown
           label="Day of the month"
           v-model="v$.daysOfMonth.$model"
@@ -211,9 +219,16 @@ function toggleDayOfWeek(day) {
 
         <div class="input-group">
           <Dropdown
+            v-if="frequency === 'week'"
             label="Backup retention (weeks)"
             v-model="v$.retention.$model"
             :options="retentionWeeks"
+          />
+          <Dropdown
+            v-if="frequency === 'month'"
+            label="Backup retention (months)"
+            v-model="v$.retention.$model"
+            :options="retentionMonths"
           />
         </div>
       </div>
@@ -222,8 +237,8 @@ function toggleDayOfWeek(day) {
         <button
           type="submit"
           class="button button--success button--small sm:max-w-xs"
-          :disabled="loading"
-        >Update settings</button>
+          :disabled="loading || !v$.$anyDirty"
+        >Save changes</button>
         <button
           class="button button--error button--small sm:max-w-xs"
           @click="disable"
