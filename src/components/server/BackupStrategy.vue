@@ -278,6 +278,7 @@ function toggleDayOfWeek(day) {
       <template v-slot:body>
         <div class="flex flex-col space-y-2 text-center">
           <span>Are you sure you want to disable automatic backups?</span>
+          <span>Existing backups will not be removed. You can manage them on this page.</span>
         </div>
       </template>
       <template v-slot:buttons>

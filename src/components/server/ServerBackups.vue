@@ -4,7 +4,7 @@
     <div class="box">
       <h4>Create a backup</h4>
       <p class="mt-3 text-gray-500">A backup is a disk image of your server, which can be used for recovery in case of data loss. You can create an instant backup at any time, whether or not automatic backups are enabled for this server.</p>
-      <p class="mt-3 text-gray-500">Backups for this server will be retained for {{ backupRetentionWeeks }} week(s).</p>
+      <p v-if="autoExpire" class="mt-3 text-gray-500">Manual backups for this server are subject to the same retention policy as automatic backups.</p>
       <div class="flex flex-col w-full mt-4 sm:space-x-4 sm:items-end sm:flex-row">
         <div class="flex-1 w-full sm:w-auto input-group">
           <label class="label">Backup name</label>
@@ -175,13 +175,11 @@ export default {
         && !this.balanceSuspend
         && !this.balanceWarning
     },
-    backupRetentionWeeks() {
-      const week = 1000 * 60 * 60 * 24 * 7
-      let retention = this.config.server && this.config.server.backups && this.config.server.backups.defaultRetention || week
-      if (this.server.backups && this.server.backups.strategy && this.server.backups.strategy.retention) {
-        retention = this.server.backups.strategy.retention
+    autoExpire() {
+      if (this.server.backups) {
+        return true
       }
-      return retention / week
+      return false
     },
     currentPage() {
       return this.pageHistory[this.pageHistory.length - 1]
