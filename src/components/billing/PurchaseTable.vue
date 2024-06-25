@@ -77,7 +77,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import PurchaseTableItem from '@/components/billing/PurchaseTableItem'
@@ -116,11 +116,7 @@ export default {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
-      const purchases = await api.purchases.getPurchases(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        params
-      )
+      const purchases = await utils.getPurchases(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, params)
       this.purchases = purchases.results
       this.metadata = purchases.metadata
     },
