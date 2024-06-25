@@ -316,6 +316,7 @@
 
 import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import AddAccountEmail from '@/components/account/AddAccountEmail'
 import Cookies from 'js-cookie'
@@ -521,11 +522,9 @@ export default {
       }
     },
     async resendEmail() {
-      await api.accounts.resendVerificationEmail(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.generatedSession._key,
-        this.generatedAccount._key
-      )
+      await utils.resendAccountVerificationEmail(process.env.VUE_APP_ACCOUNT_API_URL, this.generatedSession._key, {
+        account: this.generatedAccount._key
+      })
       this.resetEmailCooldown()
     },
     resetEmailCooldown() {
@@ -547,12 +546,10 @@ export default {
       if (this.v$.verificationCode.$invalid) return
       this.isVerifying = true
       try {
-        await api.accounts.verifyEmail(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.generatedSession._key,
-          this.generatedAccount._key,
-          this.verificationSecret
-        )
+        await utils.verifyAccountEmail(process.env.VUE_APP_ACCOUNT_API_URL, this.generatedSession._key, {
+          account: this.generatedAccount._key,
+          secret: this.verificationSecret
+        })
         setTimeout(async () => {
           this.signIn()
           this.changeStep(3)

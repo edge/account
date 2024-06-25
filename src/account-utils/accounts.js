@@ -4,14 +4,6 @@
 
 import superagent from 'superagent'
 
-export const addEmail = async (host, sessionId, account, address) => {
-  const url = `${host}/account/email`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ account, address })
-  return response.body
-}
-
 export const addTOTP = async (host, sessionId, options) => {
   const url = `${host}/account/totp`
   const response = await superagent.post(url)
@@ -63,22 +55,6 @@ export const getWallet = async (host, sessionId) => {
   return response.body
 }
 
-export const removeEmail = async (host, sessionId, account) => {
-  const url = `${host}/account/email`
-  const response = await superagent.delete(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ account })
-  return response.body
-}
-
-export const resendVerificationEmail = async (host, sessionId, account) => {
-  const url = `${host}/account/email/verify/resend`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ account })
-  return response.body
-}
-
 export const sendMagicLink = async (host, address) => {
   const url = `${host}/account/magicLink`
   const response = await superagent.post(url)
@@ -92,22 +68,6 @@ export const updateAccount = async (host, sessionId, account, data) => {
     .set({ Authorization: `Bearer ${sessionId}` })
     .send({ account, ...data })
   return res.body
-}
-
-export const updateEmail = async (host, sessionId, account, address) => {
-  const url = `${host}/account/email`
-  const response = await superagent.put(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ account, address })
-  return response.body
-}
-
-export const verifyEmail = async (host, sessionId, account, secret) => {
-  const url = `${host}/account/email/verify`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ account, secret })
-  return response.body
 }
 
 export const verifyMagicLinkToken = async (host, token) => {
