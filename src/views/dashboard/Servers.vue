@@ -55,7 +55,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
 import * as utils from '@edge/account-utils'
 import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -117,11 +116,7 @@ export default {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created']
 
-      const { results, metadata } = await api.servers.getServers(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        params
-      )
+      const { results, metadata } = await utils.getServers(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, params)
       this.servers = results
       this.metadata = metadata
       this.loaded = true
