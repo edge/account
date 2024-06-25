@@ -86,14 +86,10 @@ const store = createStore({
       commit('setTasks', results)
     },
     async getAnnouncements({ commit, state }) {
-      const { results } = await api.announcements.getAnnouncements(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key,
-        {
-          limit: 3,
-          unread: true
-        }
-      )
+      const { results } = await utils.getAnnouncements(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key, {
+        limit: 3,
+        unread: true
+      })
       commit('setAnnouncements', results)
     },
     removeBackupCodes({ commit }) {
