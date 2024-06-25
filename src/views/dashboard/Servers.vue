@@ -56,6 +56,7 @@
 /* global process */
 
 import * as api from '@/account-utils/index'
+import * as utils from '@edge/account-utils'
 import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
@@ -109,10 +110,7 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateRegions() {
-      const { results } = await api.region.getRegions(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
+      const { results } = await utils.getRegions(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
       this.regions = results
     },
     async updateServers() {

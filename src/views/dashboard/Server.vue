@@ -299,6 +299,7 @@
 
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import DestroyServerConfirmation from '@/components/confirmations/DestroyServerConfirmation'
 import DistroIcon from '@/components/icons/DistroIcon'
@@ -485,11 +486,7 @@ export default {
     },
     async updateRegion() {
       try {
-        const { region } = await api.region.getRegion(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.server.region
-        )
+        const { region } = await utils.getRegion(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server.region)
         this.region = region
       }
       catch (error) {
