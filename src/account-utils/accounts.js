@@ -4,25 +4,9 @@
 
 import superagent from 'superagent'
 
-export const addTOTP = async (host, sessionId, options) => {
-  const url = `${host}/account/totp`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send(options)
-  return response.body
-}
-
 export const createAccount = async (host, body) => {
   const url = `${host}/account`
   const response = await superagent.post(url)
-    .send(body)
-  return response.body
-}
-
-export const disableTOTP = async (host, sessionId, body) => {
-  const url = `${host}/account/totp`
-  const response = await superagent.delete(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
     .send(body)
   return response.body
 }
