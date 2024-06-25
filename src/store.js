@@ -149,7 +149,7 @@ const store = createStore({
       commit('setServices', services)
     },
     async updateSubscriptions({ commit, state }) {
-      const { results } = await api.products.subscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
+      const { results } = await utils.getProductSubscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setSubscriptions', results)
     },
     async updateTasks({ commit, state }) {
