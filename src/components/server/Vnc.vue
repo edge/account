@@ -117,7 +117,6 @@
  * touch screen devices.
  */
 
-import * as api from '@/account-utils/index'
 import * as utils from '@edge/account-utils'
 import KeyTable from '@novnc/novnc/core/input/keysym'
 import Keyboard from '@novnc/novnc/core/input/keyboard'
