@@ -75,7 +75,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import DeletePageConfirmation from '@/components/confirmations/DeletePageConfirmation.vue'
 import DeployIntegrationContent from '@/components/page/DeployIntegrationContent.vue'
 import DeployIntegrationDisplayName from '@/components/page/DeployIntegrationDisplayName.vue'
@@ -169,11 +169,7 @@ export default {
     },
     async confirmDeletePage() {
       try {
-        await api.integration.deleteIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key
-        )
+        await utils.deleteIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key)
         clearInterval(this.iIntegration)
         this.deleted = true
         this.showConfirmationModal = false
@@ -190,12 +186,7 @@ export default {
     async updatePage() {
       this.updating = true
       try {
-        const { integration } = await api.integration.updateIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integrationId,
-          this.integration
-        )
+        const { integration } = await utils.updateIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integrationId, this.integration)
         this.integration = integration
         console.log(this.integration)
       }
@@ -211,11 +202,7 @@ export default {
     },
     async updateIntegration() {
       try {
-        const { integration } = await api.integration.getIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integrationId
-        )
+        const { integration } = await utils.getIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integrationId)
         this.integration = integration
 
         console.log(this.integration)

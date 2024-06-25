@@ -157,11 +157,10 @@ export default {
         this.deploying = true
         this.httpError = null
 
-        const { integration } = await api.integration.addIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          { ...this.integration, account: this.account._key }
-        )
+        const { integration } = await utils.createIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          ...this.integration,
+          account: this.account._key
+        })
         this.deployedIntegration = integration
 
         // Check whether the domain is apex/not

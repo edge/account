@@ -215,18 +215,13 @@ export default {
       try {
         this.deploying = true
         this.httpError = null
-        const { integration } = await api.integration.addIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          { ...this.integration, account: this.account._key }
-        )
+        const { integration } = await utils.createIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          ...this.integration,
+          account: this.account._key
+        })
         this.deployedIntegration = integration
 
-        const { records } = await api.integration.checkDnsRecords(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          integration._key
-        )
+        const { records } = await utils.checkIntegrationDnsRecords(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, integration._key)
         this.dnsRecords = records
 
         await new Promise(resolve => setTimeout(resolve, 800))

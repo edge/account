@@ -116,7 +116,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import FileExplorer from '@/components/storage/FileExplorer'
 import IntegrationApiKey from '@/components/storage/IntegrationApiKey'
 import IntegrationConfig from '@/components/storage/IntegrationConfig'
@@ -179,11 +179,7 @@ export default {
     },
     async updateIntegration() {
       try {
-        const { integration } = await api.integration.getIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integrationId
-        )
+        const { integration } = await utils.getIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integrationId)
         this.integration = integration
       }
       catch (error) {

@@ -128,7 +128,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import IntegrationCache from '@/components/cdn/IntegrationCache'
 import IntegrationConfig from '@/components/cdn/IntegrationConfig'
 import IntegrationDestroy from '@/components/cdn/IntegrationDestroy'
@@ -183,11 +183,7 @@ export default {
     },
     async updateIntegration() {
       try {
-        const { integration } = await api.integration.getIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integrationKey
-        )
+        const { integration } = await utils.getIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integrationKey)
         this.integration = integration
       }
       catch (error) {

@@ -5,4 +5,3 @@
 export * as billing from './billing'
 export * as files from './files'
 export * as helpers from './helpers'
-export * as integration from './integration'
