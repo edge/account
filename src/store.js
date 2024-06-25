@@ -93,10 +93,7 @@ const store = createStore({
       commit('setBackupCodes', null)
     },
     async sessionHeartbeat({ commit, state }) {
-      const { session } = await api.sessions.putSession(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
+      const { session } = await utils.updateSession(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setSession', session)
     },
     signIn({ commit }, payload) {
