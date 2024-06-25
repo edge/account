@@ -6,6 +6,7 @@
 
 import * as api from './account-utils/index'
 import * as libcrisp from './crisp'
+import * as utils from '@edge/account-utils'
 import { createStore } from 'vuex'
 
 const store = createStore({
@@ -122,17 +123,11 @@ const store = createStore({
       localStorage.removeItem('session')
     },
     async updateAccount({ commit, state }) {
-      const { account } = await api.accounts.getAccount(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
-      commit('setAccount', account)
+      const res = await utils.getAccount(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
+      commit('setAccount', res.account)
     },
     async updateProgress({ commit, state }) {
-      const progress = await api.accounts.getProgress(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
+      const progress = await utils.getAccountProgress(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setProgress', progress)
     },
     async updateBalance({ commit, state }) {

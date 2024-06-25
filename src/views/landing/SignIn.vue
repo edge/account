@@ -207,6 +207,7 @@
 
 import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import AuthCodeInput from '@/components/AuthCodeInput'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
@@ -319,10 +320,7 @@ export default {
       this.requires2FA = false
     },
     async sendMagicLink() {
-      await api.accounts.sendMagicLink(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.signInInput
-      )
+      await utils.sendAccountMagicLink(process.env.VUE_APP_ACCOUNT_API_URL, { address: this.signInInput })
       this.resetEmailCooldown()
     },
     async signIn() {
@@ -339,10 +337,7 @@ export default {
             this.signInBody
           )
           if (session._key) {
-            const { account } = await api.accounts.getAccount(
-              process.env.VUE_APP_ACCOUNT_API_URL,
-              session._key
-            )
+            const { account } = await utils.getAccount(process.env.VUE_APP_ACCOUNT_API_URL, session._key)
             this.is2FACodeValid = true
             const payload = { account, session }
             this.$store.dispatch('signIn', payload)
@@ -390,10 +385,7 @@ export default {
     },
     async verifyMagicLinkToken() {
       try {
-        this.magicLinkResponse = await api.accounts.verifyMagicLinkToken(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.magicLinkToken
-        )
+        this.magicLinkResponse = await utils.verifyAccountMagicLinkToken(process.env.VUE_APP_ACCOUNT_API_URL, this.magicLinkToken)
         await this.signIn()
       }
       catch (error) {

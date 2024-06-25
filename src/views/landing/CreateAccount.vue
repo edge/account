@@ -314,7 +314,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
 import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
@@ -439,20 +438,17 @@ export default {
       const promoCode = Cookies.get('promoCode')
 
       this.isCreating = true
-      const body = { promoCode, referralCode }
-      if (this.emailInput) body.address = this.emailInput
+      const data = { promoCode, referralCode }
+      if (this.emailInput) data.address = this.emailInput
 
       // create account (with referral code if given)
-      const { account, session } = await api.accounts.createAccount(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        body
-      )
+      const res = await utils.createAccount(process.env.VUE_APP_ACCOUNT_API_URL, data)
       Cookies.remove('promoCode')
       Cookies.remove('referralCode')
 
       // set state
-      this.generatedAccount = account
-      this.generatedSession = session
+      this.generatedAccount = res.account
+      this.generatedSession = res.session
       this.isCreating = false
     },
     async createAnonymousAccount() {
