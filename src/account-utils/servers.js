@@ -5,24 +5,6 @@
 import superagent from 'superagent'
 import { toQueryString } from './helpers'
 
-// configure backup strategy
-export const configureBackupStrategy = async (host, sessionId, serverId, strategy) => {
-  const url = `${host}/server/${serverId}/backups/strategy`
-  const response = await superagent.put(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ strategy })
-  return response.body
-}
-
-// create a backup
-export const createBackup = async (host, sessionId, serverId, comment) => {
-  const url = `${host}/server/${serverId}/backups`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-    .send({ comment })
-  return response.body
-}
-
 // create a new server
 export const createServer = async (host, sessionId, accountId, serverOptions) => {
   const url = `${host}/servers`
@@ -36,43 +18,10 @@ export const createServer = async (host, sessionId, accountId, serverOptions) =>
   return response.body
 }
 
-// delete server backup
-export const deleteBackup = async (host, sessionId, serverId, backupID) => {
-  const url = `${host}/server/${serverId}/backups/${backupID}`
-  const response = await superagent.delete(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
 // delete server
 export const deleteServer = async (host, sessionId, serverId) => {
   const url = `${host}/server/${serverId}`
   const response = await superagent.delete(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-// disable backup strategy
-export const disableBackupStrategy = async (host, sessionId, serverId) => {
-  const url = `${host}/server/${serverId}/backups/strategy`
-  const response = await superagent.delete(url).set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-// get backups for server by id
-export const getBackups = async (host, sessionId, serverId, params) => {
-  let url = `${host}/server/${serverId}/backups`
-  // add query params
-  if (params !== undefined) url += `?${toQueryString(params)}`
-  const response = await superagent.get(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
-  return response.body
-}
-
-// get total backups usage for server by id
-export const getBackupsUsage = async (host, sessionId, serverId) => {
-  const url = `${host}/server/${serverId}/backups/usage`
-  const response = await superagent.get(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
@@ -133,14 +82,6 @@ export const resizeServer = async (host, sessionId, serverId, newServerSpec) => 
   const response = await superagent.post(url)
     .set({ 'Authorization': `Bearer ${sessionId}` })
     .send({ spec: newServerSpec })
-  return response.body
-}
-
-// resize server
-export const restoreBackup = async (host, sessionId, serverId, backupId) => {
-  const url = `${host}/server/${serverId}/backup/${backupId}/restore`
-  const response = await superagent.post(url)
-    .set({ 'Authorization': `Bearer ${sessionId}` })
   return response.body
 }
 
