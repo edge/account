@@ -134,7 +134,7 @@ const store = createStore({
       commit('setBalance', balance)
     },
     async updateConfig({ commit }) {
-      const config = await api.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
+      const config = await utils.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
       commit('setConfig', config)
     },
     async updateServices({ commit, state }) {
