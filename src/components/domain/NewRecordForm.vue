@@ -140,8 +140,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as regex from '@/utils/regex'
+import * as utils from '@edge/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
@@ -250,18 +250,13 @@ export default {
         if (this.type === 'TXT') {
           if (this.value[0] !== '"' && this.value.slice(-1) !== '"') value = `"${value}"`
         }
-        await api.dns.createRecord(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.domainName,
-          {
-            account: this.account._key,
-            name: this.hostname.toLowerCase(),
-            ttl: this.ttl,
-            type: this.type,
-            value
-          }
-        )
+        await utils.createDnsZoneRecord(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.domainName, {
+          account: this.account._key,
+          name: this.hostname.toLowerCase(),
+          ttl: this.ttl,
+          type: this.type,
+          value
+        })
         this.$emit('createRecord')
         setTimeout(async () => {
           await this.resetForm()
@@ -284,16 +279,11 @@ export default {
       }
     },
     async getSyncRecords() {
-      const { results, metadata} = await api.dns.getRecords(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.domainName,
-        {
-          limit: 1,
-          name: this.hostname || '',
-          type: this.type
-        }
-      )
+      const { results, metadata} = await utils.getDnsZoneRecords(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.domainName, {
+        limit: 1,
+        name: this.hostname || '',
+        type: this.type
+      })
       this.syncRecordsCount = metadata.totalCount
       this.syncRecordsTTL = results.length ? results[0].ttl : null
     },

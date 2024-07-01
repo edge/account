@@ -1,8 +1,8 @@
 <script setup>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import AddFundsCalculator from './AddFundsCalculator.vue'
 import BillingTransactionTable from '@/components/billing/BillingTransactionTable'
 import FAQ from '../FAQ.vue'
@@ -49,11 +49,7 @@ async function startPurchase() {
     }
   }
 
-  const { purchase } = await api.purchases.createPurchase(
-    process.env.VUE_APP_ACCOUNT_API_URL,
-    store.state.session._key,
-    data
-  )
+  const { purchase } = await utils.beginStripePurchase(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, data)
 
   router.push({ name: 'Purchase', params: { id: purchase._key } })
 }

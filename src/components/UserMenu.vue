@@ -80,8 +80,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import {ChevronDownIcon} from '@heroicons/vue/solid'
 import { mapState } from 'vuex'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
@@ -107,10 +107,7 @@ export default {
     },
     async signOut() {
       try {
-        await api.sessions.deleteSession(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
-        )
+        await utils.deleteSession(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
         this.$store.dispatch('signOut')
         this.$router.push('/sign-in')
       }

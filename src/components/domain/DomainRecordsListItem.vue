@@ -203,8 +203,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as regex from '@/utils/regex'
+import * as utils from '@edge/account-utils'
 import { ChevronDownIcon } from '@heroicons/vue/solid'
 import DeleteRecordConfirmation from '@/components/confirmations/DeleteRecordConfirmation'
 import HttpError from '@/components/HttpError'
@@ -369,19 +369,13 @@ export default {
         if (this.value.slice(-1) !== '.') value += '.'
       }
       try {
-        await api.dns.editRecord(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.record.zone,
-          this.record._key,
-          {
-            account: this.account._key,
-            name: this.hostname.toLowerCase(),
-            ttl: this.ttl,
-            type: this.type,
-            value
-          }
-        )
+        await utils.updateDnsZoneRecord(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.record.zone, this.record._key, {
+          account: this.account._key,
+          name: this.hostname.toLowerCase(),
+          ttl: this.ttl,
+          type: this.type,
+          value
+        })
         this.$emit('updateRecords')
         this.cancelEditing()
       }
@@ -394,12 +388,7 @@ export default {
       this.isDeleting = true
       this.toggleDeleteConfirmationModal()
       try {
-        await api.dns.deleteRecord(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.record.zone,
-          this.record._key
-        )
+        await utils.deleteDnsZoneRecord(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.record.zone, this.record._key)
         this.$emit('updateRecords')
       }
       catch (error) {
@@ -414,16 +403,11 @@ export default {
       }
     },
     async getSyncRecords() {
-      const { results, metadata} = await api.dns.getRecords(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.domainName,
-        {
-          limit: 1,
-          name: this.hostname || '',
-          type: this.type
-        }
-      )
+      const { results, metadata} = await utils.getDnsZoneRecords(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.domainName, {
+        limit: 1,
+        name: this.hostname || '',
+        type: this.type
+      })
       if (this.record.name === this.hostname && this.record.type === this.type) this.syncRecordsCount = metadata.totalCount - 1
       else this.syncRecordsCount = metadata.totalCount
 

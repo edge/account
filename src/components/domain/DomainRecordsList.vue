@@ -32,7 +32,7 @@
 
 <script>
 /* global process */
-import * as api from '@/account-utils/'
+import * as utils from '@edge/account-utils'
 import DomainRecordsListItem from '@/components/domain/DomainRecordsListItem'
 import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -81,12 +81,7 @@ export default {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, 'type', 'name', 'value']
 
-      const { results, metadata } = await api.dns.getRecords(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.domain._key,
-        params
-      )
+      const { results, metadata } = await utils.getDnsZoneRecords(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.domain._key, params)
       this.records = results
       this.metadata = metadata
       this.loaded = true

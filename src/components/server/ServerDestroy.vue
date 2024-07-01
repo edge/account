@@ -47,7 +47,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import DestroyServerConfirmation from '@/components/confirmations/DestroyServerConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -82,11 +82,7 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        const response = await api.servers.deleteServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
+        const response = await utils.destroyServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId)
         if (response.task) this.$store.commit('addTask', response.task)
         this.isLoading = false
       }

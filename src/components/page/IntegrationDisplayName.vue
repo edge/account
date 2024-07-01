@@ -33,7 +33,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import ValidationError from '@/components/ValidationError.vue'
@@ -79,15 +79,10 @@ export default {
       if (!this.canConfirmEdit) return
       try {
         this.isSaving = true
-        await api.integration.updateIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          {
-            ...this.integration,
-            name: this.newDisplayName
-          }
-        )
+        await utils.updateIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, {
+          ...this.integration,
+          name: this.newDisplayName
+        })
         this.$emit('update-integration')
         setTimeout(() => {
           this.isSaving = false
