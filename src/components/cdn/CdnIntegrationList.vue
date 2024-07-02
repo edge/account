@@ -32,7 +32,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/'
 import * as utils from '@edge/account-utils'
 import CdnIntegrationListItem from '@/components/cdn/CdnIntegrationListItem'
 import ListSortingMenu from '@/components/ListSortingMenu'

@@ -84,7 +84,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/'
 import * as utils from '@edge/account-utils'
 import DeployIntegrationContent from '@/components/page/DeployIntegrationContent.vue'
 import DeployIntegrationDisplayName from '@/components/page/DeployIntegrationDisplayName.vue'

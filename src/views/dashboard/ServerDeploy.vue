@@ -115,7 +115,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import DeploymentWarning from '../../components/DeploymentWarning.vue'

@@ -108,7 +108,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/'
 import * as utils from '@edge/account-utils'
 import CdnConfig from '@/components/cdn/CdnConfig.vue'
 import CdnDisplayName from '@/components/cdn/CdnDisplayName.vue'

@@ -32,7 +32,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'

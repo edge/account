@@ -101,7 +101,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as utils from '@edge/account-utils'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import CloudUploadIcon from '@/components/icons/CloudUploadIcon'

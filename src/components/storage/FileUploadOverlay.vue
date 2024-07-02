@@ -58,7 +58,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as utils from '@edge/account-utils'
 import FileExplorerOverlay from '@/components/storage/FileExplorerOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'

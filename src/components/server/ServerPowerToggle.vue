@@ -46,7 +46,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as utils from '@edge/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Modal from '../Modal.vue'

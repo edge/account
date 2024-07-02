@@ -82,7 +82,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
 import * as utils from '@edge/account-utils'
 import FileExplorerNodeDeleteConfirmation from '@/components/storage/FileExplorerNodeDeleteConfirmation'

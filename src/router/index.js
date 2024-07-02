@@ -4,7 +4,6 @@
 
 /* global process */
 
-import * as api from '@/account-utils/index'
 import * as utils from '@edge/account-utils'
 import Account from '@/views/dashboard/Account'
 import Billing from '@/views/dashboard/Billing'
