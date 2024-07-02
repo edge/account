@@ -13,7 +13,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import PaymentMethodItem from '@/components/billing/PaymentMethodItem'
 import { mapState } from 'vuex'
 
@@ -44,14 +44,10 @@ export default {
       this.updatePaymentMethods()
     },
     async updatePaymentMethods() {
-      const { results, metadata } = await api.billing.getPaymentMethods(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        {
-          limit: this.limit,
-          page: this.currentPage
-        }
-      )
+      const { results, metadata } = await utils.getPaymentMethods(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+        limit: this.limit,
+        page: this.currentPage
+      })
       this.paymentMethods = results
       this.metadata = metadata
       this.$emit('updatePaymentMethods', results)

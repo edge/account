@@ -75,7 +75,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import * as format from '@/utils/format'
 import Tooltip from '@/components/Tooltip'
 import { mapState } from 'vuex'
@@ -179,11 +179,7 @@ export default {
       if (!this.onHold || !this.canPay) return
       this.unholdError = false
       try {
-        await api.billing.unholdInvoice(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.invoice._key
-        )
+        await utils.unholdInvoice(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.invoice._key)
       }
       catch (error) {
         this.unholdError = true

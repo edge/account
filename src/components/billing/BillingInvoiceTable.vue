@@ -73,7 +73,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import BillingInvoiceTableItem from '@/components/billing/BillingInvoiceTableItem'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
@@ -115,11 +115,7 @@ export default {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created']
 
-      const { results, metadata } = await api.billing.getInvoices(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        params
-      )
+      const { results, metadata } = await utils.getInvoices(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, params)
       this.invoices = results
       this.metadata = metadata
     },

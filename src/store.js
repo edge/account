@@ -4,7 +4,6 @@
 
 /* global process */
 
-import * as api from './account-utils/index'
 import * as libcrisp from './crisp'
 import * as utils from '@edge/account-utils'
 import { createStore } from 'vuex'
@@ -121,10 +120,7 @@ const store = createStore({
       commit('setProgress', progress)
     },
     async updateBalance({ commit, state }) {
-      const balance = await api.billing.getBalance(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
+      const balance = await utils.getAccountBalance(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setBalance', balance)
     },
     async updateConfig({ commit }) {

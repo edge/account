@@ -146,7 +146,6 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
 import * as utils from '@edge/account-utils'
 import { InformationCircleIcon } from '@heroicons/vue/solid'
@@ -303,10 +302,7 @@ export default {
       }
     },
     async getPaymentMethods() {
-      const { results } = await api.billing.getPaymentMethods(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
+      const { results } = await utils.getPaymentMethods(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
       this.paymentMethods = results
       this.paymentCard = results[0]
     },
