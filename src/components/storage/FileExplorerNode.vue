@@ -84,6 +84,7 @@
 
 import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import FileExplorerNodeDeleteConfirmation from '@/components/storage/FileExplorerNodeDeleteConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import { mapState } from 'vuex'
@@ -140,12 +141,7 @@ export default {
       try {
         this.showDeleteConfirmationModal = false
         this.deleting = true
-        await api.files.deleteNode(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          this.node.fullPath
-        )
+        await utils.deleteStorageNode(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, this.node.fullPath)
         this.$emit('delete')
       }
       catch (error) {
@@ -170,13 +166,7 @@ export default {
       try {
         this.renaming = true
         const fullPath = this.path.length > 0 ? `${this.path}/${this.newName}` : this.newName
-        await api.files.moveNode(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          this.node.fullPath,
-          fullPath
-        )
+        await utils.updateStorageNode(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, this.node.fullPath, { fullPath })
         this.$emit('rename')
       }
       catch (error) {
