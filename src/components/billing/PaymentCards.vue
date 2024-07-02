@@ -208,7 +208,9 @@ export default {
     },
     async startAddPaymentMethod() {
       if (this.showAddNewCard) return
-      const { setup } = await utils.createStripeSetupIntent(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.account._key)
+      const { setup } = await utils.createStripeSetupIntent(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+        account: this.account._key
+      })
       this.stripeElements = this.stripe.elements({ clientSecret: setup.client_secret })
       this.paymentElement = this.stripeElements.create('payment')
       this.paymentElement.mount(this.$refs.paymentElement)
