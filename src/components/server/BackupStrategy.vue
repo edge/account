@@ -144,8 +144,10 @@ async function submit() {
     loading.value = true
     error.value = undefined
     await utils.updateServerBackupStrategy(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, props.server._key, {
-      schedule,
-      retention
+      strategy: {
+        schedule,
+        retention
+      }
     })
     emit('update-server')
     v$.value.$reset()

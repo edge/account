@@ -154,7 +154,9 @@ export default {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        const { tasks } = await utils.resizeServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key, this.newSpec)
+        const { tasks } = await utils.resizeServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key, {
+          spec: this.newSpec
+        })
         tasks.forEach(task => {
           this.$store.commit('addTask', task)
         })

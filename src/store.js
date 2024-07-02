@@ -141,7 +141,7 @@ const store = createStore({
       if (!state.tasks.some(task => ['created', 'running'].includes(task.status))) return
 
       const { results } = await utils.getTasks(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key, {
-        key: tasks.map(task => task._key)
+        key: state.tasks.map(task => task._key)
       })
       const tasks = results
       const updatedTasks = state.tasks.map(task => tasks.find(updatedTask => updatedTask._key === task._key))

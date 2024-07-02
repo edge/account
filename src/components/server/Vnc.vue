@@ -181,7 +181,7 @@ export default {
     async launchConsole() {
       // get VNC session details from API
       const { session, password } = await utils.getServerVncCredentials(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId)
-      const url = `${this.replaceURL(process.env.VUE_APP_ACCOUNT_API_URL)}/servers/${this.serverId}/vnc?session=${session}`
+      const url = `${this.replaceURL(process.env.VUE_APP_ACCOUNT_API_URL)}/server/${this.serverId}/vnc?session=${session}`
       // initiate RFB
       this.rfb = new RFB(
         this.$refs.noVNC_container,
