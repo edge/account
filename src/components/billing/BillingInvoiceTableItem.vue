@@ -137,6 +137,8 @@ export default {
     async downloadInvoice() {
       try {
         this.downloadError = false
+        /** @todo replace blob getting with utils function */
+        // const blob = await utils.downloadInvoice(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.invoice._key)
         const url = `${process.env.VUE_APP_ACCOUNT_API_URL}/billing/invoices/${this.invoice._key}/download`
         const response = await fetch(url, {
           headers: {
