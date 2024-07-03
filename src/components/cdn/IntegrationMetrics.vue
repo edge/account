@@ -19,7 +19,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import IntegrationMetricsBandwidth from '@/components/cdn/IntegrationMetricsBandwidth'
 import IntegrationMetricsCache from '@/components/cdn/IntegrationMetricsCache'
 import IntegrationMetricsRangeToggle from '@/components/cdn/IntegrationMetricsRangeToggle'
@@ -62,12 +62,7 @@ export default {
       this.selectedPeriod = period
     },
     async updateMetrics() {
-      const results = await api.integration.getIntegrationMetrics(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.integration._key,
-        this.metricsOptions
-      )
+      const results = await utils.getCdnGraphData(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, this.metricsOptions)
       this.updateTimeSeries(results)
       this.metrics = results
 

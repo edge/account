@@ -72,8 +72,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import BackupMenu from '@/components/server/BackupMenu'
 import DestroyBackupConfirmation from '@/components/confirmations/DestroyBackupConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -160,12 +160,7 @@ export default {
       this.attemptingDestroy = true
       this.toggleDestroyConfirmationModal()
       try {
-        const { task } = await api.servers.deleteBackup(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId,
-          this.backupId
-        )
+        const { task } = await utils.deleteServerBackup(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId, this.backupId)
         this.$emit('update-backups')
         this.$store.commit('addTask', task)
         this.attemptingDestroy = false
@@ -182,12 +177,7 @@ export default {
       this.attemptingRestore = true
       this.toggleRestoreConfirmationModal()
       try {
-        const { task } = await api.servers.restoreBackup(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId,
-          this.backupId
-        )
+        const { task } = await utils.restoreServerBackup(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId, this.backupId)
         this.$emit('update-backups')
         this.$store.commit('addTask', task)
         this.attemptingRestore = false

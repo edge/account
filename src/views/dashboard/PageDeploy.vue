@@ -84,7 +84,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/'
+import * as utils from '@edge/account-utils'
 import DeployIntegrationContent from '@/components/page/DeployIntegrationContent.vue'
 import DeployIntegrationDisplayName from '@/components/page/DeployIntegrationDisplayName.vue'
 import DeployIntegrationDomain from '@/components/page/DeployIntegrationDomain.vue'
@@ -156,19 +156,14 @@ export default {
         this.deploying = true
         this.httpError = null
 
-        const { integration } = await api.integration.addIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          { ...this.integration, account: this.account._key }
-        )
+        const { integration } = await utils.createIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          ...this.integration,
+          account: this.account._key
+        })
         this.deployedIntegration = integration
 
         // Check whether the domain is apex/not
-        const psl = await api.helpers.pslParse(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          integration.data.config.domain
-        )
+        const psl = await utils.parseDomain(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, integration.data.config.domain)
         this.apex = psl.apex
 
         await new Promise(resolve => setTimeout(resolve, 800))

@@ -32,7 +32,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import ValidationError from '@/components/ValidationError.vue'
@@ -81,16 +81,11 @@ export default {
       if (!this.canConfirmEdit) return
       try {
         this.isSaving = true
-        await api.servers.updateServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.server._key,
-          {
-            settings: {
-              name: this.newDisplayName
-            }
+        await utils.updateServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key, {
+          settings: {
+            name: this.newDisplayName
           }
-        )
+        })
         this.$emit('update-server')
         setTimeout(() => {
           this.isSaving = false

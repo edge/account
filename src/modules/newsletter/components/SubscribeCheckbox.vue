@@ -1,7 +1,7 @@
 <script setup>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import { useStore } from 'vuex'
 import { computed, effect, ref } from 'vue'
 
@@ -19,7 +19,7 @@ async function reload() {
   loading.value = true
   error.value = undefined
   try {
-    const res = await api.newsletter.getSubscription(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key)
+    const res = await utils.getNewsletterSubscription(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key)
     subscriber.value = res.subscriber
   }
   catch (err) {
@@ -38,18 +38,14 @@ async function toggle() {
   try {
     let res
     if (subscriber && subscriber.value.isSubscribed) {
-      res = await api.newsletter.unsubscribe(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        store.state.session._key,
-        store.state.session.account
-      )
+      res = await utils.unsubscribeFromNewsletter(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, {
+        account: store.state.session.account
+      })
     }
     else {
-      res = await api.newsletter.subscribe(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        store.state.session._key,
-        store.state.session.account
-      )
+      res = await utils.subscribeToNewsletter(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, {
+        account: store.state.session.account
+      })
     }
     subscriber.value = res.subscriber
   }

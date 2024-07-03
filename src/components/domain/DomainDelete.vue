@@ -35,7 +35,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import DeleteDomainConfirmation from '@/components/confirmations/DeleteDomainConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -64,11 +64,7 @@ export default {
       this.isDeleting = true
       try {
         this.toggleConfirmationModal()
-        await api.dns.deleteZone(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.domain._key
-        )
+        await utils.deleteDnsZone(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.domain._key)
         setTimeout(() => {
           this.isDeleting = false
           this.$emit('delete-domain')

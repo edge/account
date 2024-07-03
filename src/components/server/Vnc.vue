@@ -117,7 +117,7 @@
  * touch screen devices.
  */
 
-import * as api from '@/account-utils/index'
+import * as utils from '@edge/account-utils'
 import KeyTable from '@novnc/novnc/core/input/keysym'
 import Keyboard from '@novnc/novnc/core/input/keyboard'
 import KeyboardIcon from '@/components/icons/KeyboardIcon'
@@ -180,12 +180,8 @@ export default {
     },
     async launchConsole() {
       // get VNC session details from API
-      const { session, password } = await api.servers.getVncSession(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
-      const url = `${this.replaceURL(process.env.VUE_APP_ACCOUNT_API_URL)}/servers/${this.serverId}/vnc?session=${session}`
+      const { session, password } = await utils.getServerVncCredentials(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId)
+      const url = `${this.replaceURL(process.env.VUE_APP_ACCOUNT_API_URL)}/server/${this.serverId}/vnc?session=${session}`
       // initiate RFB
       this.rfb = new RFB(
         this.$refs.noVNC_container,

@@ -32,7 +32,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/'
+import * as utils from '@edge/account-utils'
 import CdnIntegrationListItem from '@/components/cdn/CdnIntegrationListItem'
 import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -77,21 +77,14 @@ export default {
       this.pageHistory = [...this.pageHistory, newPage]
     },
     async updateUsage() {
-      const usage = await api.integration.getIntegrationsUsage(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
+      const usage = await utils.getInstantIntegrationUsage(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
       return usage
     },
     async updateIntegrations() {
       const params = { limit: this.limit, page: this.currentPage, service: 'cdn' }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
-      const { results, metadata } = await api.integration.getIntegrations(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        params
-      )
+      const { results, metadata } = await utils.getIntegrations(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, params)
       const usage = await this.updateUsage()
       // add usage data to each integration
       this.integrations = results.map(i => {

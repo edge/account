@@ -115,7 +115,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import DeploymentWarning from '../../components/DeploymentWarning.vue'
 import Domain from '@/components/server/deploy/Domain'
@@ -245,12 +245,10 @@ export default {
       this.httpError = null
       this.internalServerError = null
       try {
-        const { server, task } = await api.servers.createServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.account._key,
-          this.serverOptions
-        )
+        const { server, task } = await utils.createServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          ...this.serverOptions,
+          account: this.account._key
+        })
         // add task to store and redirect to server page
         this.$store.commit('addTask', task)
         this.$router.push({ name: 'Server', params: { id: server._key }})
@@ -274,10 +272,7 @@ export default {
       return this.selectedRegion.capacity[spec] - (this.selectedRegion.usage && this.selectedRegion.usage[spec] || 0)
     },
     async getHostname() {
-      const { hostname } = await api.servers.getHostname(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
+      const { hostname } = await utils.createServerHostname(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
       this.hostname = hostname
       this.updateServerName(hostname)
     },

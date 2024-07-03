@@ -90,7 +90,7 @@
 <script>
 /* global process*/
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import DisableAutoPaymentsConfirmation from '@/components/confirmations/DisableAutoPaymentsConfirmation'
 import HttpError from '@/components/HttpError'
@@ -151,11 +151,7 @@ export default {
       this.httpError = ''
       try {
         this.disabling = true
-        await api.billing.disableAutoPayment(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.account._key
-        )
+        await utils.removeDefaultPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.account._key)
         this.toggleDisableConfirmationModal()
         setTimeout(() => {
           this.disabling = false
@@ -172,14 +168,10 @@ export default {
       this.httpError = ''
       try {
         this.enabling = true
-        await api.billing.enableAutoPayment(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          {
-            account: this.account._key,
-            paymentMethod: this.paymentCard._key
-          }
-        )
+        await utils.setDefaultPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          paymentMethod: this.paymentCard._key
+        })
         setTimeout(() => {
           this.enabling = false
           this.$store.dispatch('updateAccount')

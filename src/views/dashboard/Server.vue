@@ -297,8 +297,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import DestroyServerConfirmation from '@/components/confirmations/DestroyServerConfirmation'
 import DistroIcon from '@/components/icons/DistroIcon'
@@ -462,11 +462,7 @@ export default {
       this.isLoading = true
       try {
         this.toggleDestroyConfirmationModal()
-        const response = await api.servers.deleteServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
+        const response = await utils.destroyServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId)
         if (response.task) this.$store.commit('addTask', response.task)
         this.isLoading = false
       }
@@ -485,11 +481,7 @@ export default {
     },
     async updateRegion() {
       try {
-        const { region } = await api.region.getRegion(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.server.region
-        )
+        const { region } = await utils.getRegion(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server.region)
         this.region = region
       }
       catch (error) {
@@ -498,11 +490,7 @@ export default {
     },
     async updateServer() {
       try {
-        const { server } = await api.servers.getServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
+        const { server } = await utils.getServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId)
         this.server = server
       }
       catch (error) {

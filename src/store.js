@@ -4,8 +4,8 @@
 
 /* global process */
 
-import * as api from './account-utils/index'
 import * as libcrisp from './crisp'
+import * as utils from '@edge/account-utils'
 import { createStore } from 'vuex'
 
 const store = createStore({
@@ -76,33 +76,23 @@ const store = createStore({
   },
   actions: {
     async getActiveTasks({ commit, state }) {
-      const statusParams = 'status=created&status=running'
-      const { results } = await api.tasks.getTasks(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key,
-        statusParams
-      )
+      const { results } = await utils.getTasks(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key, {
+        status: ['created', 'running']
+      })
       commit('setTasks', results)
     },
     async getAnnouncements({ commit, state }) {
-      const { results } = await api.announcements.getAnnouncements(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key,
-        {
-          limit: 3,
-          unread: true
-        }
-      )
+      const { results } = await utils.getAnnouncements(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key, {
+        limit: 3,
+        unread: true
+      })
       commit('setAnnouncements', results)
     },
     removeBackupCodes({ commit }) {
       commit('setBackupCodes', null)
     },
     async sessionHeartbeat({ commit, state }) {
-      const { session } = await api.sessions.putSession(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
+      const { session } = await utils.updateSession(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setSession', session)
     },
     signIn({ commit }, payload) {
@@ -122,39 +112,27 @@ const store = createStore({
       localStorage.removeItem('session')
     },
     async updateAccount({ commit, state }) {
-      const { account } = await api.accounts.getAccount(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
-      commit('setAccount', account)
+      const res = await utils.getAccount(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
+      commit('setAccount', res.account)
     },
     async updateProgress({ commit, state }) {
-      const progress = await api.accounts.getProgress(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
+      const progress = await utils.getAccountProgress(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setProgress', progress)
     },
     async updateBalance({ commit, state }) {
-      const balance = await api.billing.getBalance(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
+      const balance = await utils.getAccountBalance(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setBalance', balance)
     },
     async updateConfig({ commit }) {
-      const config = await api.config.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
+      const config = await utils.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)
       commit('setConfig', config)
     },
     async updateServices({ commit, state }) {
-      const { services } = await api.services.getAccountServices(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key
-      )
-      commit('setServices', services)
+      const res = await utils.getServices(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
+      commit('setServices', res.results)
     },
     async updateSubscriptions({ commit, state }) {
-      const { results } = await api.products.subscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
+      const { results } = await utils.getProductSubscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setSubscriptions', results)
     },
     async updateTasks({ commit, state }) {
@@ -162,22 +140,18 @@ const store = createStore({
       if (!state.tasks.length) return
       if (!state.tasks.some(task => ['created', 'running'].includes(task.status))) return
 
-      const keyParams = state.tasks.map(task => `key=${task._key}`).join('&')
-      const { results } = await api.tasks.getTasks(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key,
-        keyParams
-      )
+      const { results } = await utils.getTasks(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key, {
+        key: state.tasks.map(task => task._key)
+      })
       const tasks = results
       const updatedTasks = state.tasks.map(task => tasks.find(updatedTask => updatedTask._key === task._key))
       commit('setTasks', updatedTasks)
     },
     async updateUnreadNotifications({ commit, state }) {
-      const { metadata } = await api.notifications.getNotifications(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        state.session._key,
-        { limit: 1, read: false }
-      )
+      const { metadata } = await utils.getNotifications(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key, {
+        limit: 1,
+        read: false
+      })
       commit('setUnreadNotifications', metadata.totalCount)
     }
   },

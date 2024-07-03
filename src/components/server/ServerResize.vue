@@ -62,7 +62,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import { ExclamationIcon } from '@heroicons/vue/outline'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -145,26 +145,18 @@ export default {
   },
   methods: {
     async getLastResize() {
-      const tasks = await api.servers.getTasks(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.server._key,
-        {
-          limit: 100
-        }
-      )
+      const tasks = await utils.getServerTasks(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key, {
+        limit: 100
+      })
       this.lastResizeTask = tasks.results.filter(task => task.action === 'resizeResource')[0]
     },
     async resizeServer () {
       this.isLoading = true
       try {
         this.toggleConfirmationModal()
-        const { tasks } = await api.servers.resizeServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.server._key,
-          this.newSpec
-        )
+        const { tasks } = await utils.resizeServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key, {
+          spec: this.newSpec
+        })
         tasks.forEach(task => {
           this.$store.commit('addTask', task)
         })

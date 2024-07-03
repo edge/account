@@ -58,8 +58,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import AddAccountEmail from '@/components/account/AddAccountEmail'
 import Disable2FA from '@/components/account/Disable2FA'
 import Enable2FA from '@/components/account/Enable2FA'
@@ -116,12 +116,10 @@ export default {
       this.showAddExtra2FA = false
     },
     async toggleCryptoView() {
-      await api.accounts.updateAccount(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.account._key,
-        { useCryptoView: !this.account.useCryptoView }
-      )
+      await utils.updateAccount(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+        account: this.account._key,
+        useCryptoView: !this.account.useCryptoView
+      })
       this.$store.dispatch('updateAccount')
     },
     toggleShowAccountNumber() {
