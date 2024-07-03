@@ -106,8 +106,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -181,16 +181,12 @@ export default {
 
       this.isLoading = true
       try {
-        const { totp } = await api.accounts.addTOTP(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          {
-            account: this.account._key,
-            otp: this.otp,
-            secret: this.secret.base32
-          }
-        )
-        this.$store.commit('setBackupCodes', totp.backupCodes)
+        const res = await utils.addAccountTOTP(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          otp: this.otp,
+          secret: this.secret.base32
+        })
+        this.$store.commit('setBackupCodes', res.totp.backupCodes)
         await this.updateAccount()
         this.$emit('enable2FA')
         this.isLoading = false

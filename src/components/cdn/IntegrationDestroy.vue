@@ -34,7 +34,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import HttpError from '@/components/HttpError'
 import IntegrationDestroyConfirmation from '@/components/confirmations/IntegrationDestroyConfirmation'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -67,11 +67,7 @@ export default {
       try {
         this.toggleConfirmationModal()
         setTimeout(async () => {
-          await api.integration.deleteIntegration(
-            process.env.VUE_APP_ACCOUNT_API_URL,
-            this.session._key,
-            this.integration._key
-          )
+          await utils.deleteIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key)
           this.$emit('confirm-delete')
           this.isLoading = false
         }, 800)

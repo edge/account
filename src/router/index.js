@@ -4,7 +4,7 @@
 
 /* global process */
 
-import * as api from '@/account-utils/index'
+import * as utils from '@edge/account-utils'
 import Account from '@/views/dashboard/Account'
 import Billing from '@/views/dashboard/Billing'
 import CdnDeploy  from '@/views/dashboard/CdnDeploy'
@@ -232,13 +232,12 @@ const router = createRouter({
   routes
 })
 
-const ACCOUNT_API_URL = process.env.VUE_APP_ACCOUNT_API_URL
 const confirmSessionKey = async () => {
   const sessionKey = localStorage.getItem('session')
   try {
-    const { session } = await api.sessions.getSession(ACCOUNT_API_URL, sessionKey)
+    const { session } = await utils.getSession(process.env.VUE_APP_ACCOUNT_API_URL, sessionKey)
     if (session._key) {
-      const { account } = await api.accounts.getAccount(ACCOUNT_API_URL, session._key)
+      const { account } = await utils.getAccount(process.env.VUE_APP_ACCOUNT_API_URL, session._key)
       await store.commit('setAccount', account)
       await store.commit('setSession', session)
       await store.commit('setIsAuthed', true)

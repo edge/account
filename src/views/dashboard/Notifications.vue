@@ -76,8 +76,8 @@
 
 <script>
 /* global process */
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import Tooltip from '@/components/Tooltip'
@@ -183,34 +183,41 @@ export default {
     },
     async markAllRead() {
       if (this.notifications.length === 0) return
-      await api.notifications.markAllRead(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.account._key)
+      await utils.updateAllNotifications(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+        account: this.account._key,
+        read: true
+      })
       await this.refresh()
     },
     async markRead(notification) {
-      await api.notifications.markRead(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
+      await utils.updateNotifications(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [{
+        _key: notification._key,
+        read: true
+      }])
       await this.refresh()
     },
     async markUnread(notification) {
-      await api.notifications.markUnread(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
+      await utils.updateNotifications(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [{
+        _key: notification._key,
+        read: false
+      }])
       await this.refresh()
     },
     async refresh() {
-      const res = await api.notifications.getNotifications(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        {
-          limit: this.limit,
-          page: this.currentPage,
-          read: this.includeRead ? undefined : false
-        }
-      )
+      const res = await utils.getNotifications(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+        limit: this.limit,
+        page: this.currentPage,
+        read: this.includeRead ? undefined : false
+      })
       this.notifications = res.results
       this.metadata = res.metadata
       this.loaded = true
       this.$store.dispatch('updateUnreadNotifications')
     },
     async remove(notification) {
-      await api.notifications.deleteNotifications(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [notification])
+      await utils.deleteNotifications(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, [{
+        _key: notification._key
+      }])
       await this.refresh()
       this.$store.dispatch('updateUnreadNotifications')
     },

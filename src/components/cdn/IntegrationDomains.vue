@@ -103,7 +103,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import CdnDomains from '@/components/cdn/CdnDomains'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -161,18 +161,13 @@ export default {
         const isApex = recordToCreate.domain === recordToCreate.zone
         const subDomain = recordToCreate.domain.replace('.' + recordToCreate.zone, '')
 
-        const { record } = await api.dns.createRecord(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          recordToCreate.zone,
-          {
-            account: this.account._key,
-            name: isApex ? '@' : subDomain,
-            ttl: 3600,
-            type: isApex ? 'ALIAS' : 'CNAME',
-            value: `gateway.${this.isTestnet ? 'test' : 'edge'}.network.`
-          }
-        )
+        const { record } = await utils.createDnsZoneRecord(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, recordToCreate.zone, {
+          account: this.account._key,
+          name: isApex ? '@' : subDomain,
+          ttl: 3600,
+          type: isApex ? 'ALIAS' : 'CNAME',
+          value: `gateway.${this.isTestnet ? 'test' : 'edge'}.network.`
+        })
 
         await new Promise(resolve => setTimeout(resolve, 500))
         if (record) recordToCreate.recordExists = true
@@ -201,12 +196,7 @@ export default {
       updatedIntegration.data.config.additionalDomains = this.workingDomains.filter(domain =>  !domain.primary).map(domain => domain.name)
       try {
         this.isSaving = true
-        await api.integration.updateIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          updatedIntegration
-        )
+        await utils.updateIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, updatedIntegration)
         this.$emit('refresh-integration')
         this.updateDnsRecords()
       }
@@ -220,11 +210,7 @@ export default {
       }, 800)
     },
     async updateDnsRecords() {
-      const { records } = await api.integration.checkDnsRecords(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.integration._key
-      )
+      const { records } = await utils.checkIntegrationDnsRecords(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key)
       this.dnsRecords = records
     }
   },

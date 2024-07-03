@@ -58,7 +58,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import ServerHistoryItem from '@/components/server/ServerHistoryItem'
@@ -101,12 +101,7 @@ export default {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created', 'updated']
 
-      const { results, metadata } = await api.servers.getTasks(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId,
-        params
-      )
+      const { results, metadata } = await utils.getServerTasks(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId, params)
       this.tasks = results
       this.metadata = metadata
     },

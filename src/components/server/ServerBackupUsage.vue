@@ -41,8 +41,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import { mapState } from 'vuex'
 
 export default {
@@ -76,11 +76,7 @@ export default {
   },
   methods: {
     async updateBackupsUsage() {
-      const { usage } = await api.servers.getBackupsUsage(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId
-      )
+      const { usage } = await utils.getServerBackupsUsage(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId)
       this.totalBackupUsage = usage
     }
   },

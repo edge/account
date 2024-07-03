@@ -39,7 +39,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import CdnConfig from '@/components/cdn/CdnConfig'
 import HttpError from '@/components/HttpError.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -104,12 +104,7 @@ export default {
       }
       try {
         this.isSaving = true
-        await api.integration.updateIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          updatedIntegration
-        )
+        await utils.updateIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, updatedIntegration)
         this.$emit('refresh-integration')
       }
       catch (error) {

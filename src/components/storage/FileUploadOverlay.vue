@@ -58,7 +58,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import FileExplorerOverlay from '@/components/storage/FileExplorerOverlay'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Tooltip from '@/components/Tooltip'
@@ -145,13 +145,7 @@ export default {
             if (['uploaded', 'uploading'].includes(file.status)) return
             this.files[index].status = 'uploading'
             const fullPath = this.path.length > 0 ? `${this.path}/${file.name}` : file.name
-            await api.files.uploadFile(
-              process.env.VUE_APP_GATEWAY_URL,
-              this.integration._key,
-              this.apiKey,
-              fullPath,
-              file.file
-            )
+            await utils.uploadStorageFile(process.env.VUE_APP_GATEWAY_URL, this.apiKey, this.integration._key, fullPath, file.file)
             this.files[index].status = 'uploaded'
           }
           catch (error) {

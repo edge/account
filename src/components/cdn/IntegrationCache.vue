@@ -37,7 +37,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -79,12 +79,9 @@ export default {
       this.isFlushingCache = true
       try {
         // this.toggleConfirmationModal()
-        await api.integration.flushCache(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          this.path
-        )
+        await utils.deleteCdnCache(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, {
+          path: this.path
+        })
         setTimeout(async () => {
           this.path = ''
           await this.v$.$reset()

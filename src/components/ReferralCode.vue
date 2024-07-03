@@ -26,7 +26,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
+import * as utils from '@edge/account-utils'
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 
@@ -58,10 +58,7 @@ export default {
       }, 1000)
     },
     async updateReferralCount() {
-      const { metadata } = await api.accounts.getReferrals(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
+      const { metadata } = await utils.getAccountReferredAccounts(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
       this.referralCount = metadata.totalCount
     }
   },

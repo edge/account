@@ -51,7 +51,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
+import * as utils from '@edge/account-utils'
 import OperatingSystemOptions from '@/components/server/deploy/OperatingSystemOptions'
 import { mapState } from 'vuex'
 import {
@@ -87,10 +87,7 @@ export default {
     },
     async updateOS() {
       try {
-        const { results } = await api.os.getOS(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key
-        )
+        const { results } = await utils.getOperatingSystems(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
         this.osVersionList = results
         this.osList = results.reduce((o, d) => {
           if (!d.active) return

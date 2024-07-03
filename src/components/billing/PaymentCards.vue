@@ -114,7 +114,7 @@
 <script>
 /* global process*/
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import FAQ from '../FAQ.vue'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import PaymentMethodList from '@/components/billing/PaymentMethodList'
@@ -181,26 +181,18 @@ export default {
     },
     async handleSetupIntentRedirect() {
       if (this.$route.query.redirect_status === 'succeeded') {
-        await api.billing.addPaymentMethod(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          {
-            account: this.account._key,
-            name: 'Credit Card',
-            stripe: this.$route.query.setup_intent
-          }
-        )
+        await utils.addPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          name: 'Credit Card',
+          stripe: this.$route.query.setup_intent
+        })
         const methods = await this.$refs.paymentMethodList.updatePaymentMethods()
         if (methods.length === 1 && !this.account.useCryptoView) {
           // If the account uses fiat view, the sole payment method should be enabled by default
-          await api.billing.enableAutoPayment(
-            process.env.VUE_APP_ACCOUNT_API_URL,
-            this.session._key,
-            {
-              account: this.account._key,
-              paymentMethod: methods[0]._key
-            }
-          )
+          await utils.setDefaultPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+            account: this.account._key,
+            paymentMethod: methods[0]._key
+          })
           this.$refs.paymentMethodList.updatePaymentMethods()
           // Redirect to getting started
           if (!this.progress.all) this.$router.push('/getting-started')
@@ -216,11 +208,9 @@ export default {
     },
     async startAddPaymentMethod() {
       if (this.showAddNewCard) return
-      const { setup } = await api.billing.createStripeSetupIntent(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.account._key
-      )
+      const { setup } = await utils.createStripeSetupIntent(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+        account: this.account._key
+      })
       this.stripeElements = this.stripe.elements({ clientSecret: setup.client_secret })
       this.paymentElement = this.stripeElements.create('payment')
       this.paymentElement.mount(this.$refs.paymentElement)
