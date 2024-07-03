@@ -57,8 +57,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import HttpError from '@/components/HttpError'
@@ -112,13 +112,11 @@ export default {
     async disable2FA() {
       this.isLoading = true
       try {
-        const body = { account: this.account._key }
-        this.useBackupCode ? body.backupCode = this.backupCode : body.otp = this.otp
-        await api.accounts.disableTOTP(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          body
-        )
+        await utils.removeAccountTOTP(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          backupCode: this.useBackupCode ? this.backupCode : undefined,
+          otp: this.useBackupCode ? undefined : this.otp
+        })
         setTimeout(async () => {
           this.isLoading = false
           this.confirmationCode = ''

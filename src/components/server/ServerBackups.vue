@@ -114,7 +114,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import BackupStrategy from './BackupStrategy.vue'
 import HttpError from '@/components/HttpError'
@@ -202,12 +202,9 @@ export default {
       this.isCreating = true
       try {
         this.httpError = null
-        const { task } = await api.servers.createBackup(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId,
-          this.comment
-        )
+        const { task } = await utils.createServerBackup(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId, {
+          comment: this.comment
+        })
         this.$store.commit('addTask', task)
         this.comment = ''
         this.isCreating = false
@@ -227,12 +224,7 @@ export default {
       const params = { limit: this.limit, page: this.currentPage }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created']
 
-      const { results, metadata } = await api.servers.getBackups(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key,
-        this.serverId,
-        params
-      )
+      const { results, metadata } = await utils.getServerBackups(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId, params)
       this.backups = results
       this.metadata = metadata
       this.loadedBackups = true

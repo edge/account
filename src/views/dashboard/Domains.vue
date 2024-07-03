@@ -79,7 +79,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import DeploymentWarning from '../../components/DeploymentWarning.vue'
 import DomainsList from '@/components/domain/DomainsList'
@@ -134,12 +134,10 @@ export default {
       let domain
       try {
         this.addingDomain = true
-        const { zone } = await api.dns.addZone(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.account._key,
-          this.newDomainName.toLowerCase()
-        )
+        const { zone } = await utils.createDnsZone(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          zone: this.newDomainName.toLowerCase()
+        })
         domain = zone
         this.newDomainName = null
         await this.v$.$reset()

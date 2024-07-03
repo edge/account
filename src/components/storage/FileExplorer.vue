@@ -101,7 +101,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import CloudUploadIcon from '@/components/icons/CloudUploadIcon'
 import FileExplorerFileInfo from '@/components/storage/FileExplorerFileInfo'
@@ -182,12 +182,7 @@ export default {
       try {
         this.creatingFolder = true
         const fullPath = this.path.length > 0 ? `${this.path}/${name}` : name
-        await api.files.createFolder(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          fullPath
-        )
+        await utils.createStorageNode(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, fullPath)
         await this.updateFiles()
       }
       catch (error) {
@@ -287,12 +282,7 @@ export default {
       try {
         this.httpError = null
         this.loading = true
-        const { children } = await api.files.getNode(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          this.path
-        )
+        const { children } = await utils.getStorageNode(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, this.path)
         this.nodes = children
         await this.$nextTick()
         this.fileToView = null

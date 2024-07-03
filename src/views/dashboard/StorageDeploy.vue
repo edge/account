@@ -74,7 +74,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/'
+import * as utils from '@edge/account-utils'
 import Config from '@/components/storage/Config.vue'
 import DeployIntegrationDisplayName from '@/components/storage/DeployIntegrationDisplayName.vue'
 import DeploymentWarning from '../../components/DeploymentWarning.vue'
@@ -154,11 +154,10 @@ export default {
       try {
         this.deploying = true
         this.httpError = null
-        const { integration } = await api.integration.addIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          { ...this.integration, account: this.account._key }
-        )
+        const { integration } = await utils.createIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          ...this.integration,
+          account: this.account._key
+        })
         this.deployedIntegration = integration
 
         await new Promise(resolve => setTimeout(resolve, 800))

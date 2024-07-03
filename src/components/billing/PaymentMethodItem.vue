@@ -51,7 +51,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import CardBrandIcon from '@/components/icons/CardBrandIcon'
 import DeletePaymentMethodConfirmation from '@/components/confirmations/DeletePaymentMethodConfirmation'
@@ -101,11 +101,7 @@ export default {
     async deletePaymentMethod() {
       try {
         this.isDeleting = true
-        await api.billing.deletePaymentMethod(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.paymentMethod._key
-        )
+        await utils.deletePaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.paymentMethod._key)
         this.toggleDeleteConfirmationModal()
 
         setTimeout(() => {
@@ -121,14 +117,10 @@ export default {
     async setAsAutoPayment() {
       try {
         // this.enabling = true
-        await api.billing.enableAutoPayment(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          {
-            account: this.account._key,
-            paymentMethod: this.paymentMethod._key
-          }
-        )
+        await utils.setDefaultPaymentMethod(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          paymentMethod: this.paymentMethod._key
+        })
         this.$store.dispatch('updateAccount')
 
         // setTimeout(() => {

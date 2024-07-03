@@ -14,7 +14,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import MarkdownIt from 'markdown-it'
 import { XIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
@@ -41,12 +41,10 @@ export default {
   methods: {
     async dismissAnnouncement() {
       try {
-        await api.announcements.dismissAnnouncements(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.account._key,
-          [this.announcement._key]
-        )
+        await utils.markAnnouncementsRead(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          announcements: [this.announcement._key]
+        })
         this.dismissed = true
       }
       catch (error) {

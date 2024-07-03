@@ -1,8 +1,8 @@
 <script setup>
 /* global process */
 
-import * as api from '@/account-utils'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import PromotionTable from './PromotionTable.vue'
 import ValidationError from '@/components/ValidationError.vue'
@@ -65,12 +65,10 @@ async function submit() {
   error.value = undefined
   added.value = undefined
   try {
-    const res = await api.promos.redeem(
-      process.env.VUE_APP_ACCOUNT_API_URL,
-      session._key,
-      session.account,
-      formState.code
-    )
+    const res = await utils.redeemPromoCode(process.env.VUE_APP_ACCOUNT_API_URL, session._key, {
+      account: session.account,
+      code: formState.code
+    })
     added.value = res.entitlement
     v$.value.code.$model = ''
     v$.value.$reset()

@@ -51,7 +51,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import StorageRegenerateKeyConfirmation from '@/components/confirmations/StorageRegenerateKeyConfirmation'
@@ -103,12 +103,7 @@ export default {
       }
       try {
         this.toggleShowConfirmationModal()
-        await api.integration.updateIntegration(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.integration._key,
-          updatedIntegration
-        )
+        await utils.updateIntegration(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.integration._key, updatedIntegration)
         setTimeout(() => {
           this.isRegenerating = false
           this.$emit('regenerate')

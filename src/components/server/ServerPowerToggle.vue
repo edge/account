@@ -46,7 +46,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Modal from '../Modal.vue'
 import StopServerConfirmation from '@/components/confirmations/StopServerConfirmation'
@@ -112,11 +112,7 @@ export default {
     },
     async startServer() {
       try {
-        const { task } = await api.servers.startServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
+        const { task } = await utils.startServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId)
         this.$store.commit('addTask', task)
       }
       catch (error) {
@@ -126,11 +122,7 @@ export default {
     },
     async stopServer() {
       try {
-        const { task } = await api.servers.stopServer(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.serverId
-        )
+        const { task } = await utils.stopServer(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.serverId)
         this.$store.commit('addTask', task)
       }
       catch (error) {

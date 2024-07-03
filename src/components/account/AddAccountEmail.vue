@@ -92,8 +92,8 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
 import * as format from '@/utils/format'
+import * as utils from '@edge/account-utils'
 import * as validation from '@/utils/validation'
 import { BadgeCheckIcon } from '@heroicons/vue/solid'
 import { ExclamationIcon } from '@heroicons/vue/outline'
@@ -161,12 +161,10 @@ export default {
       this.isLoading = true
 
       try {
-        await api.accounts.addEmail(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.account._key,
-          this.email
-        )
+        await utils.addAccountEmail(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          address: this.email
+        })
         await this.updateAccount()
 
         setTimeout(async () => {
@@ -196,12 +194,10 @@ export default {
       if (this.v$.confirmationCode.$invalid) return
       this.isLoading = true
       try {
-        await api.accounts.verifyEmail(
-          process.env.VUE_APP_ACCOUNT_API_URL,
-          this.session._key,
-          this.account._key,
-          this.secret
-        )
+        await utils.verifyAccountEmail(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, {
+          account: this.account._key,
+          secret: this.secret
+        })
         setTimeout(async () => {
           await this.updateAccount()
           this.isLoading = false

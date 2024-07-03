@@ -1,6 +1,6 @@
 <script setup>
 /* global process */
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import Dropdown from '../Dropdown.vue'
 import { ExclamationIcon } from '@heroicons/vue/solid'
 import HttpError from '../HttpError.vue'
@@ -104,11 +104,7 @@ async function disable() {
   try {
     loading.value = true
     error.value = undefined
-    await api.servers.disableBackupStrategy(
-      process.env.VUE_APP_ACCOUNT_API_URL,
-      store.state.session._key,
-      props.server._key
-    )
+    await utils.removeServerBackupStrategy(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, props.server._key)
     emit('update-server')
     closeDisableModal()
   }
@@ -144,17 +140,15 @@ async function submit() {
     retention = parseInt(formState.retention) * month
   }
 
-  const strategy = { schedule, retention }
-
   try {
     loading.value = true
     error.value = undefined
-    await api.servers.configureBackupStrategy(
-      process.env.VUE_APP_ACCOUNT_API_URL,
-      store.state.session._key,
-      props.server._key,
-      strategy
-    )
+    await utils.updateServerBackupStrategy(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, props.server._key, {
+      strategy: {
+        schedule,
+        retention
+      }
+    })
     emit('update-server')
     v$.value.$reset()
   }

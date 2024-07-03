@@ -56,7 +56,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils/index'
+import * as utils from '@edge/account-utils'
 import { CheckIcon } from '@heroicons/vue/outline'
 import { mapState } from 'vuex'
 import {
@@ -103,10 +103,7 @@ export default {
       return this.isRegionAtCapacity(region) || !region.active
     },
     async updateRegions() {
-      const { results } = await api.region.getRegions(
-        process.env.VUE_APP_ACCOUNT_API_URL,
-        this.session._key
-      )
+      const { results } = await utils.getRegions(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key)
       this.regions = results.sort((a, b) => a.name > b.name ? 1 : b.name > a.name ? -1 : 0)
       // pre-select first active region
       this.selected = results.find(region => region.active)

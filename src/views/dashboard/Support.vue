@@ -184,8 +184,8 @@
 
 <script>
 /* global process */
-import * as api from '@/account-utils'
 import * as libcrisp from '@/crisp'
+import * as utils from '@edge/account-utils'
 import CancelSubscriptionConfirmation from '@/components/confirmations/CancelSubscriptionConfirmation'
 import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
@@ -283,7 +283,7 @@ export default {
     },
     async refreshProducts() {
       const getResult = await Promise.allSettled(productIDs.map(async id => {
-        const { product } = await api.products.get(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, id)
+        const { product } = await utils.getProduct(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, id)
         return product
       }))
       const products = getResult
@@ -301,7 +301,7 @@ export default {
     async subscribe(product) {
       delete this.errors[product._key]
       try {
-        await api.products.subscribe(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, product._key)
+        await utils.subscribeToProduct(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, product._key)
         await this.refreshSubscriptions()
       }
       catch (err) {
@@ -321,7 +321,7 @@ export default {
     async unsubscribe(product) {
       delete this.errors[product._key]
       try {
-        await api.products.unsubscribe(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, product._key)
+        await utils.unsubscribeFromProduct(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, product._key)
         await this.refreshSubscriptions()
       }
       catch (err) {

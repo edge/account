@@ -1,7 +1,7 @@
 <script setup>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import LoadingTableDataRow from '@/components/LoadingTableDataRow'
 import Pagination from '@/components/Pagination'
 import PromotionTableItem from '@/components/billing/PromotionTableItem'
@@ -32,11 +32,7 @@ async function reload() {
   loading.value = true
   error.value = undefined
   try {
-    const res = await api.promos.getEntitlements(
-      process.env.VUE_APP_ACCOUNT_API_URL,
-      session._key,
-      params
-    )
+    const res = await utils.getPromoEntitlements(process.env.VUE_APP_ACCOUNT_API_URL, session._key, params)
     entitlements.value = res.results
     metadata.value = res.metadata
   }

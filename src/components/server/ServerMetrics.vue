@@ -50,7 +50,7 @@
 <script>
 /* global process */
 
-import * as api from '@/account-utils'
+import * as utils from '@edge/account-utils'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import RocketIcon from '@/components/icons/RocketIcon.vue'
 import ServerMetricsCPU from './ServerMetricsCPU.vue'
@@ -88,7 +88,7 @@ export default {
   methods: {
     async reload() {
       try {
-        const res = await api.servers.getMetrics(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key)
+        const res = await utils.getServerMetrics(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.server._key)
         this.metrics = res
       }
       catch (err) {
