@@ -17,8 +17,8 @@ import SuspensionWarning from '@/components/SuspensionWarning'
 import TopNavigation from '@/components/TopNavigation'
 import { mapState } from 'vuex'
 
-const STORE_REFRESH_INTERVAL = 5 * 1000
-const CHECK_SESSION_INTERVAL = 15 * 1000
+const STORE_REFRESH_INTERVAL = 60 * 1000
+const CHECK_SESSION_INTERVAL = 60 * 1000
 const NOTIFICATION_INTERVAL = 60 * 1000
 const HEARTBEAT_INTERVAL = 10 * 60 * 1000
 
@@ -70,6 +70,7 @@ export default {
     this.$store.dispatch('getAnnouncements')
     this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
+    this.$store.dispatch('updateBareMetals')
     this.$store.dispatch('updateProgress')
     this.$store.dispatch('updateBalance')
     this.$store.dispatch('updateServices')
