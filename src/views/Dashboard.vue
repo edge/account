@@ -70,6 +70,7 @@ export default {
     this.$store.dispatch('getAnnouncements')
     this.$store.dispatch('updateConfig')
     this.$store.dispatch('updateAccount')
+    this.$store.dispatch('updateBareMetals')
     this.$store.dispatch('updateProgress')
     this.$store.dispatch('updateBalance')
     this.$store.dispatch('updateServices')
