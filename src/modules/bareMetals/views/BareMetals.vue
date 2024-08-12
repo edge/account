@@ -43,7 +43,7 @@ effect(() => {
 <template>
   <div class="mainContent__inner">
     <div class="flex flex-col sm:flex-row justify-between">
-      <h1>Edge Bare Metal Servers</h1>
+      <h1>Edge Bare Metal</h1>
     </div>
     <div v-if="error" class="box">
       <div class="flex flex-col space-y-4 items-center justify-center py-4">

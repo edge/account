@@ -62,7 +62,7 @@ const routes = [
       },
       {
         path: 'bare-metals',
-        name: 'Bare Metal Servers',
+        name: 'Bare Metal',
         component: BareMetals
       },
       {

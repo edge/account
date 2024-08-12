@@ -67,7 +67,7 @@ export default {
           {
             _key: 'baremetal',
             link: '/bare-metals',
-            text: 'Bare Metal Servers'
+            text: 'Bare Metal'
           },
           ...nav.slice(2)
         ]
