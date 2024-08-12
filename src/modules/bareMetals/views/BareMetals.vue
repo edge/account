@@ -160,6 +160,10 @@ effect(() => {
     @apply flex-1;
     flex-basis: 200px;
   }
+  .region {
+    @apply flex-1;
+    flex-basis: 100px;
+  }
   .status {
     @apply flex-1 row-start-1 flex-shrink-0;
     flex-basis: 70px;
