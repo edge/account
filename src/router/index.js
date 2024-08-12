@@ -6,6 +6,7 @@
 
 import * as utils from '@edge/account-utils'
 import Account from '@/views/dashboard/Account'
+import BareMetal from '../modules/bareMetals/views/BareMetal.vue'
 import BareMetals from '../modules/bareMetals/views/BareMetals.vue'
 import Billing from '@/views/dashboard/Billing'
 import CdnDeploy  from '@/views/dashboard/CdnDeploy'
@@ -62,8 +63,13 @@ const routes = [
       },
       {
         path: 'bare-metals',
-        name: 'Bare Metal',
+        name: 'Bare Metals',
         component: BareMetals
+      },
+      {
+        path: 'bare-metal/:key',
+        name: 'Bare Metal',
+        component: BareMetal
       },
       {
         path: 'billing',

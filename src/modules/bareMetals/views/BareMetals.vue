@@ -2,19 +2,18 @@
 /* global process */
 
 import * as utils from '@edge/account-utils'
+import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import StatusDot from '@/components/StatusDot'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { effect, ref } from 'vue'
 
+const router = useRouter()
 const store = useStore()
 
 const data = ref()
 const error = ref()
 const loading = ref(true)
-
-function gotoServer(e) {
-  console.log(e)
-}
 
 async function reload() {
   try {
@@ -59,15 +58,15 @@ effect(() => {
         <li
           v-for="{ bareMetal } in data.results"
           :key="bareMetal._key"
-          @click="gotoServer(bareMetal._key)"
+          @click="router.push({ name: 'Bare Metal', params: { key: bareMetal._key }})"
           class="bareMetals__item"
-          :class="bareMetal ? 'active' : 'inactive'"
+          :class="bareMetal.active ? 'active' : 'inactive'"
         >
           <!-- name -->
           <div class="bareMetals__field name overflow-hidden">
             <span
               class="text-md truncate"
-              :class="isActive ? 'text-green' : 'text-red'"
+              :class="bareMetal.active ? 'text-green' : 'text-red'"
               :title="bareMetal.label"
             >
               {{ bareMetal.label }}
