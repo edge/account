@@ -15,6 +15,7 @@ const store = createStore({
     config: null,
     backupCodes: null,
     balance: null,
+    bareMetals: 0,
     isAuthed: false,
     isTestnet: process.env.VUE_APP_ACCOUNT_API_URL.includes('test'),
     progress: {
@@ -50,6 +51,9 @@ const store = createStore({
     },
     setBalance(state, balance) {
       state.balance = balance
+    },
+    setBareMetals(state, bareMetals) {
+      state.bareMetals = bareMetals
     },
     setConfig(state, config) {
       state.config = config
@@ -122,6 +126,10 @@ const store = createStore({
     async updateBalance({ commit, state }) {
       const balance = await utils.getAccountBalance(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
       commit('setBalance', balance)
+    },
+    async updateBareMetals({ commit, state }) {
+      const res = await utils.getBareMetals(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key, { limit: 1 })
+      commit('setBareMetals', res.metadata.totalCount)
     },
     async updateConfig({ commit }) {
       const config = await utils.getConfig(process.env.VUE_APP_ACCOUNT_API_URL)

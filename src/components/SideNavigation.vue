@@ -18,49 +18,61 @@ import Menu from '@/components/Menu'
 // import NavigationTools from '@/components/NavigationTools'
 import { mapState } from 'vuex'
 
-const nav = [
-  {
-    _key: 'cdn',
-    link: '/cdn',
-    text: 'Content Delivery'
-  },
-  {
-    _key: 'servers',
-    link: '/servers',
-    text: 'Servers'
-  },
-  {
-    _key: 'dns',
-    link: '/domains',
-    text: 'Domains'
-  },
-  {
-    _key: 'page',
-    link: '/pages',
-    text: 'Pages'
-  },
-  {
-    _key: 'storage',
-    link: '/storage',
-    text: 'Storage'
-  },
-  {
-    _key: 'db',
-    link: '/databases',
-    text: 'Databases'
-  },
-  {
-    _key: 'shield',
-    link: '/shield',
-    text: 'Shield'
-  }
-]
-
 export default {
   name: 'SideNavigation',
   computed: {
-    ...mapState(['account', 'services']),
+    ...mapState(['account', 'bareMetals', 'services']),
     mainNav() {
+      let nav = [
+        {
+          _key: 'cdn',
+          link: '/cdn',
+          text: 'Content Delivery'
+        },
+        {
+          _key: 'servers',
+          link: '/servers',
+          text: 'Servers'
+        },
+        {
+          _key: 'dns',
+          link: '/domains',
+          text: 'Domains'
+        },
+        {
+          _key: 'page',
+          link: '/pages',
+          text: 'Pages'
+        },
+        {
+          _key: 'storage',
+          link: '/storage',
+          text: 'Storage'
+        },
+        {
+          _key: 'db',
+          link: '/databases',
+          text: 'Databases'
+        },
+        {
+          _key: 'shield',
+          link: '/shield',
+          text: 'Shield'
+        }
+      ]
+
+      if (this.bareMetals > 0) {
+        nav = [
+          ...nav.slice(0, 2),
+          {
+            _key: 'baremetal',
+            link: '/bare-metals',
+            text: 'Bare Metal'
+          },
+          ...nav.slice(2)
+        ]
+      }
+
       const navItems = nav.map(item => {
         const service = this.services.find(s => s._key === item._key)
         const disabled = !service || (!service.public && !service.beta)
