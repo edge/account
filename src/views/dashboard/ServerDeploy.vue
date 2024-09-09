@@ -76,6 +76,9 @@
           :isRegionDisabled="isRegionDisabled"
         />
         <ValidationError :errors="v$.serverOptions.settings.password.$errors" />
+        <p class="mt-4 mb-0">
+          You can connect to the server as <code>root</code> with this password.
+        </p>
       </div>
 
       <!-- deploy button & error message -->

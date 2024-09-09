@@ -3,7 +3,7 @@
 
     <!-- input -->
     <div class="flex-1 input-group">
-      <label class="label">Password</label>
+      <label class="label">Root Password</label>
       <div class="relative flex items-center">
         <input
           autocomplete="off"
