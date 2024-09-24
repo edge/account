@@ -140,8 +140,8 @@ const store = createStore({
       commit('setServices', res.results)
     },
     async updateSubscriptions({ commit, state }) {
-      const { results } = await utils.getProductSubscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
-      commit('setSubscriptions', results)
+      const res = await utils.getProductSubscriptions(process.env.VUE_APP_ACCOUNT_API_URL, state.session._key)
+      commit('setSubscriptions', res.results)
     },
     async updateTasks({ commit, state }) {
       // do nothing if there are no pending ('created' || 'running') tasks
