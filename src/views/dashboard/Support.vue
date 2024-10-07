@@ -364,13 +364,15 @@ effect(() => {
           </span>
         </div>
         <div v-else>
-          You can receive free basic support on:
-          <ul>
-            <li><a href="#" @click="crisp.open">Live chat</a></li>
-            <li><a :href="wikiUrl" target="_blank">Community Wiki</a></li>
-            <li><a :href="discordUrl" target="_blank">Discord</a></li>
+          You are subscribed to Basic Support. To access support:
+          <ul class="flex flex-col md:flex-row mt-4 mb-8 gap-4">
+            <li class="flex flex-col flex-grow text-center">
+              <ChatIcon class="w-12 self-center mb-1" />
+              <a href="#" @click="crisp.open" class="hover:text-green">Open live chat</a>
+            </li>
           </ul>
-          You can upgrade to another support plan for dedicated support.
+          <p>For other guides and resources, you can also visit our <a :href="wikiUrl" target="_blank" class="hover:text-green">Community Wiki</a> or join the <a :href="discordUrl" target="_blank" class="hover:text-green">Discord community.</a></p>
+          You can upgrade to a paid support plan for dedicated support.
         </div>
       </div>
     </div>
