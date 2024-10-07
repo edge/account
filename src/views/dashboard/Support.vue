@@ -5,7 +5,7 @@ import HttpError from '@/components/HttpError'
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
 import Modal from '@/components/Modal'
 import { useStore } from 'vuex'
-import { InboxIcon, InboxInIcon } from '@heroicons/vue/outline'
+import { AtSymbolIcon, ChatIcon, InboxIcon, InboxInIcon, PhoneIcon } from '@heroicons/vue/outline'
 import { computed, effect, ref, shallowRef } from 'vue'
 import { useCrisp, useTitle } from '@/hooks'
 
@@ -24,6 +24,7 @@ const title = useTitle()
 const data = shallowRef()
 const error = ref()
 const loading = ref(true)
+const loadingError = ref()
 const showSubscribeModal = ref(false)
 const subscribeIntent = ref()
 
@@ -41,8 +42,14 @@ const prioritySupport = computed(() => data.value && data.value.results.find(p =
 const managedHosting = computed(() => data.value && data.value.results.find(p => p._key === process.env.VUE_APP_PRODUCT_ID_MANAGEDHOSTING))
 
 const currentSubscription = computed(() => store.state.subscriptions.find(s => productKeys.includes(s.product)))
-const currentSubscriptionEnds = computed(() => currentSubscription.value ? currentSubscription.value.created + (currentSubscription.value.minDuration * 1000 * 60 * 60) : 0)
 const currentProduct = computed(() => currentSubscription.value && data.value && data.value.results.find(p => p._key === currentSubscription.value.product))
+
+const currentSubscriptionEnds = computed(() => {
+  if (currentProduct.value && currentProduct.value.minDuration) {
+    return currentSubscription.value.created + (currentProduct.value.minDuration * 1000 * 60 * 60)
+  }
+  return 0
+})
 
 function canDowngradeTo(product) {
   if (currentProduct.value) {
@@ -86,6 +93,7 @@ function closeSubscribeModal() {
 }
 
 function getDisplayMinimumTerm(product) {
+  if (product.minDuration === 24) return '1 day'
   const days = Math.floor(product.minDuration / 24)
   return `${days} days`
 }
@@ -120,6 +128,7 @@ function openSubscribeModal(product) {
 async function reloadProducts() {
   try {
     loading.value = true
+    loadingError.value = undefined
 
     const res = await utils.getProducts(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, {
       key: productKeys
@@ -128,7 +137,7 @@ async function reloadProducts() {
   }
   catch (err) {
     console.error(err)
-    error.value = err
+    loadingError.value = err
   }
   finally {
     loading.value = false
@@ -166,8 +175,8 @@ effect(() => {
       <h1>Support</h1>
     </div>
 
-    <div v-if="error" class="flex items-center">
-      <HttpError :error="error"/>
+    <div v-if="loadingError" class="flex items-center">
+      <HttpError :error="loadingError"/>
     </div>
 
     <div v-if="loading" class="flex items-center">
@@ -176,36 +185,6 @@ effect(() => {
     </div>
 
     <div v-else>
-      <h2>Your Support</h2>
-
-      <div class="support box">
-        <div v-if="currentSubscription">
-          You are subscribed to {{ currentProduct.name }}. To access support:
-          <ul>
-            <li><a href="#" @click="crisp.open">Open live chat</a></li>
-            <li><a :href="`mailto:${{ supportEmail }}`">Email us</a></li>
-            <li>Call us on <a href="tel:02080641444">020 8064 1444</a></li>
-            <li><a :href="wikiUrl" target="_blank">Community Wiki</a></li>
-            <li><a :href="discordUrl" target="_blank">Discord</a></li>
-          </ul>
-          <span v-if="currentSubscriptionEnds < Date.now()">
-            You are in the minimum term of your current subscription, which ends on {{ new Date(currentSubscriptionEnds).toLocaleString() }}.
-            You can change your support plan after that time.
-          </span>
-        </div>
-        <div v-else>
-          You can receive free basic support on:
-          <ul>
-            <li><a href="#" @click="crisp.open">Live chat</a></li>
-            <li><a :href="wikiUrl" target="_blank">Community Wiki</a></li>
-            <li><a :href="discordUrl" target="_blank">Discord</a></li>
-          </ul>
-          You can upgrade to another support plan for dedicated support.
-        </div>
-      </div>
-
-      <h2>Plans</h2>
-
       <div class="products">
         <!-- Basic Support -->
         <div v-if="basicSupport" class="product box" :class="isSubscribed(basicSupport) ? 'active' : ''">
@@ -279,10 +258,7 @@ effect(() => {
             </div>
             <div class="product__section account-manager">
               <span class="label">Account manager</span>
-              <span v-if="isSubscribed(prioritySupport)" class="info">
-                <a :href="`mailto:${supportEmail}`">{{ supportEmail }}</a>
-              </span>
-              <span v-else class="info">Available</span>
+              <span class="info">Available</span>
             </div>
             <div v-if="prioritySupport.minDuration" class="product__section min-term">
               <span class="label">Minimum term</span>
@@ -357,7 +333,48 @@ effect(() => {
           </div>
         </div>
       </div>
+
+      <div v-if="error" class="box mb-4 mt-4">
+        <HttpError :error="error"/>
+      </div>
+
+      <div class="mt-4 support box">
+        <h4>Your Support</h4>
+
+        <div v-if="currentSubscription">
+          You are subscribed to {{ currentProduct.name }}. To access support:
+          <ul class="flex flex-col md:flex-row mt-4 mb-8 gap-4">
+            <li class="flex flex-col flex-grow text-center">
+              <ChatIcon class="w-12 self-center mb-1" />
+              <a href="#" @click="crisp.open" class="hover:text-green">Open live chat</a>
+            </li>
+            <li class="flex flex-col flex-grow text-center">
+              <AtSymbolIcon class="w-12 self-center mb-1" />
+              Email an account manager: <a :href="`mailto:${{ supportEmail }}`" class="hover:text-green">{{ supportEmail }}</a>
+            </li>
+            <li class="flex flex-col flex-grow text-center">
+              <PhoneIcon class="w-12 self-center mb-1" />
+              Call us on <a href="tel:02080641444" class="hover:text-green">020 8064 1444</a>
+            </li>
+          </ul>
+          <p>For other guides and resources, you can also visit our <a :href="wikiUrl" target="_blank" class="hover:text-green">Community Wiki</a> or join the <a :href="discordUrl" target="_blank" class="hover:text-green">Discord community.</a></p>
+          <span v-if="currentSubscriptionEnds > Date.now()">
+            You are in the minimum term of your current subscription.
+            You can change your support plan on or after {{ new Date(currentSubscriptionEnds).toLocaleDateString() }}.
+          </span>
+        </div>
+        <div v-else>
+          You can receive free basic support on:
+          <ul>
+            <li><a href="#" @click="crisp.open">Live chat</a></li>
+            <li><a :href="wikiUrl" target="_blank">Community Wiki</a></li>
+            <li><a :href="discordUrl" target="_blank">Discord</a></li>
+          </ul>
+          You can upgrade to another support plan for dedicated support.
+        </div>
+      </div>
     </div>
+
     <Modal v-if="showSubscribeModal">
       <template v-slot:header>
         <span class="text-green">Change of Support Plan</span>
@@ -365,7 +382,8 @@ effect(() => {
       <template v-slot:body>
         <div class="flex flex-col space-y-2">
           <span>You are switching from {{ currentProduct && currentProduct.name || basicSupport.name }} to {{ subscribeIntent.name }}.</span>
-          <span v-if="subscribeIntent.price.type === 'fixed'">You will be billed monthly for this support plan.</span>
+          <span v-if="subscribeIntent._key === ''">You will not be billed for free basic support.</span>
+          <span v-else-if="subscribeIntent.price.type === 'fixed'">You will be billed monthly for this support plan.</span>
           <span v-else-if="subscribeIntent.price.type === 'flatRate'">You will be billed daily for this support plan.</span>
           <span v-if="subscribeIntent.minDuration">
             There is a minimum term of {{ getDisplayMinimumTerm(subscribeIntent) }} before you can change your support plan again.
