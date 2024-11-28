@@ -41,7 +41,7 @@
                 <span>{{region.city}}</span>
               </RadioGroupDescription>
             </div>
-            <img :src='flagSrc' width="40" class="rounded-sm" />
+            <img :src='region.flag' width="40" class="rounded-sm" />
           </div>
         </RadioGroupOption>
         <span v-if="isRegionAtCapacity(region)" class="capacity__warning">This region has reached capacity.</span>
@@ -84,11 +84,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['session']),
-    flagSrc() {
-      return 'https://hatscripts.github.io/circle-flags/flags/gb.svg'
-      // return `https://hatscripts.github.io/circle-flags/flags/${region.flag}.svg`
-    }
+    ...mapState(['session'])
   },
   methods: {
     isRegionAtCapacity(region) {
