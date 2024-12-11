@@ -14,9 +14,13 @@
 
     <div class="box mb-4" v-if="showNameserversNotice">
       <div class="float-left"><InformationCircleIcon class="w-5 mr-1"/></div>
-      <span>You will need to update your nameservers with your domain registrar in order for these records to work.
+      <span>
+        You will need to update your nameservers with your domain registrar in order for these records to work.
+        If you have already updated your nameservers, run a DNS check to check they are correct.
         <!-- <a class="underline hover:text-green cursor-pointer">Learn more</a>. -->
       </span>
+      <button v-if="domain.ns.confirmRequested" class="button button--success button--small mt-2.5 block" disabled>Checking DNS...</button>
+      <button v-else-if="!domain.ns.confirmed" class="button button--success button--small mt-2.5 block" @click="scan">Check DNS</button>
     </div>
 
     <div v-if=deleted class="box">
@@ -171,6 +175,9 @@ export default {
     async updateDomain() {
       try {
         const { zone } = await utils.getDnsZone(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.domainName)
+        if (!this.domain && !zone.ns.confirmed) {
+          this.scan()
+        }
         this.domain = zone
       }
       catch (error) {
@@ -179,6 +186,16 @@ export default {
           this.notFound = true
           clearInterval(this.iDomain)
         }
+      }
+    },
+
+    async scan() {
+      try {
+        const { zone } = await utils.requestDnsZoneScan(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.domainName)
+        this.domain = zone
+      }
+      catch (error) {
+        console.error(error)
       }
     }
   },
