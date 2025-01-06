@@ -139,12 +139,17 @@ export default {
         this.downloadError = false
         /** @todo replace blob getting with utils function */
         // const blob = await utils.downloadInvoice(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, this.invoice._key)
-        const url = `${process.env.VUE_APP_ACCOUNT_API_URL}/billing/invoices/${this.invoice._key}/download`
+        const url = `${process.env.VUE_APP_ACCOUNT_API_URL}/billing/invoice/${this.invoice._key}/download`
         const response = await fetch(url, {
           headers: {
             'Authorization': `Bearer ${this.session._key}`
           }
         })
+
+        if (!response.ok) {
+          throw new Error('invalid response')
+        }
+
         const blob = await response.blob()
         // explicitly set the mime-type to avoid browser issues
         const newBlob = new Blob([blob], { type: 'application/pdf' })
