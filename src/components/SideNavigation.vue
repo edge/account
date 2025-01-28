@@ -35,6 +35,11 @@ export default {
           text: 'Servers'
         },
         {
+          _key: 'vpn',
+          link: '/vpns',
+          text: 'VPN'
+        },
+        {
           _key: 'dns',
           link: '/domains',
           text: 'Domains'
