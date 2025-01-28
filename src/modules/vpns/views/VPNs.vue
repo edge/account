@@ -49,6 +49,13 @@ effect(() => {
   <div class="mainContent__inner">
     <div class="flex flex-col sm:flex-row justify-between">
       <h1>Edge VPN</h1>
+      <router-link
+        v-if="data && data.results.length > 0"
+        :to="{ name: 'Deploy VPN' }"
+        class="button button--success button--small h-full mb-5 sm:mb-0"
+      >
+        Deploy VPN
+      </router-link>
     </div>
     <div v-if="error" class="box">
       <div class="flex flex-col space-y-4 items-center justify-center py-4">
@@ -60,11 +67,11 @@ effect(() => {
       <div class="ml-2"><LoadingSpinner /></div>
     </div>
     <div v-else-if="data">
-      <ul class="space-y-2">
+      <ul v-if="data.results.length > 0" class="space-y-2">
         <li
           v-for="{ vpn, server } in data.results"
           :key="vpn._key"
-          @click="router.push({ name: 'Bare Metal', params: { key: vpn._key }})"
+          @click="router.push({ name: 'VPN', params: { id: vpn._key }})"
           class="vpns__item"
           :class="vpn.active ? 'active' : 'inactive'"
         >
@@ -122,6 +129,18 @@ effect(() => {
           </div>
         </li>
       </ul>
+
+      <div v-else class="box">
+      <div class="flex flex-col space-y-4 items-center justify-center py-4">
+        <p>You haven't deployed any VPNs yet. Once you deploy your first VPN it will be available here.</p>
+        <router-link
+          :to="{ name: 'Deploy VPN' }"
+          class="button button--success button--small"
+        >
+          Deploy VPN
+        </router-link>
+      </div>
+    </div>
     </div>
   </div>
 </template>
