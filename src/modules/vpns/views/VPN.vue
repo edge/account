@@ -7,18 +7,19 @@ import DistroIcon from '../../../components/icons/DistroIcon.vue'
 import EditableTitle from '../../../layout/EditableTitle.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
 import ProgressBar from '../../../components/ProgressBar.vue'
+import ServerMetrics from '../../../components/server/ServerMetrics.vue'
 import ServerPowerToggle from '../../../components/server/ServerPowerToggle.vue'
 import StatusDot from '../../../components/StatusDot.vue'
 import Tooltip from '../../../components/Tooltip.vue'
+import VPNOverview from '../components/VPNOverview.vue'
 import ValidationError from '../../../components/ValidationError.vue'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 import { ArrowLeftIcon, InformationCircleIcon } from '@heroicons/vue/outline'
 import { RouterLink, useRoute } from 'vue-router'
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { computed, effect, reactive, ref } from 'vue'
 import { minLength, required } from '@vuelidate/validators'
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
-import VPNOverview from '../components/VPNOverview.vue'
 
 const route = useRoute()
 const store = useStore()
@@ -244,11 +245,23 @@ effect(() => {
                 Overview
               </button>
             </Tab>
+            <Tab v-slot="{selected}">
+              <button
+                class="tab"
+                :class="[selected ? 'tab--selected' : '']"
+              >
+                Metrics
+              </button>
+            </Tab>
           </TabList>
 
           <TabPanels class="mt-4">
-            <TabPanel v-if="region && server && vpn">
-              <VPNOverview :region="region" :server="server" :vpn="vpn" />
+            <TabPanel>
+              <VPNOverview v-if="region && server && vpn" :region="region" :server="server" :vpn="vpn" />
+            </TabPanel>
+
+            <TabPanel>
+              <ServerMetrics v-if="server" :server="server" />
             </TabPanel>
           </TabPanels>
         </TabGroup>
