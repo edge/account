@@ -15,6 +15,7 @@ import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 import { RadioGroup, RadioGroupDescription, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import { computed, reactive, ref } from 'vue'
+import SpeedSlider from '../components/SpeedSlider.vue'
 
 const router = useRouter()
 const store = useStore()
@@ -60,8 +61,6 @@ const v$ = useVuelidate({
 
 const canDeploy = computed(() => v$.value.$anyDirty && !v$.value.$invalid)
 
-const speedMarks = { 0: 'Fast', 1: 'Faster', 2: 'Fastest' }
-
 async function deploy() {
   await v$.value.$validate()
   if (v$.$invalid) return
@@ -94,18 +93,8 @@ async function deploy() {
   console.log({ ...formState })
 }
 
-function formatSpeedMark(value) {
-  if (value === 2) return 'Fastest'
-  if (value === 1) return 'Faster'
-  return 'Fast'
-}
-
 function setRegion(region) {
   formState.region = region._key
-}
-
-function setSpeed(value) {
-  formState.speed = formatSpeedMark(value).toLowerCase()
 }
 </script>
 
@@ -168,16 +157,7 @@ function setSpeed(value) {
         </RadioGroup>
 
         <!-- VPN speed -->
-        <Slider
-          :disabled="disabled"
-          :formatter="formatSpeedMark"
-          :marks="speedMarks"
-          :max="2"
-          :min="0"
-          title="Speed"
-          tooltip="always"
-          @change="setSpeed"
-        />
+        <SpeedSlider v-model="v$.speed.$model" />
         <ValidationError :errors="v$.speed.$errors" />
       </div>
 
