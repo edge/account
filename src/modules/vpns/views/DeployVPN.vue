@@ -8,14 +8,13 @@ import DeploymentWarning from '../../../components/DeploymentWarning.vue'
 import HttpError from '../../../components/HttpError.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
 import NetworkRegion from '../../../components/server/deploy/NetworkRegion.vue'
-import Slider from '../../../layout/Slider.vue'
+import SpeedSlider from '../components/SpeedSlider.vue'
 import ValidationError from '../../../components/ValidationError.vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 import { RadioGroup, RadioGroupDescription, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import { computed, reactive, ref } from 'vue'
-import SpeedSlider from '../components/SpeedSlider.vue'
 
 const router = useRouter()
 const store = useStore()
