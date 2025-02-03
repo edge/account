@@ -12,6 +12,7 @@ import ServerPowerToggle from '../../../components/server/ServerPowerToggle.vue'
 import StatusDot from '../../../components/StatusDot.vue'
 import Tooltip from '../../../components/Tooltip.vue'
 import VPNOverview from '../components/VPNOverview.vue'
+import VPNResize from '../components/VPNResize.vue'
 import ValidationError from '../../../components/ValidationError.vue'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
@@ -253,6 +254,14 @@ effect(() => {
                 Metrics
               </button>
             </Tab>
+            <Tab v-slot="{selected}">
+              <button
+                class="tab"
+                :class="[selected ? 'tab--selected' : '']"
+              >
+                Resize
+              </button>
+            </Tab>
           </TabList>
 
           <TabPanels class="mt-4">
@@ -262,6 +271,10 @@ effect(() => {
 
             <TabPanel>
               <ServerMetrics v-if="server" :server="server" />
+            </TabPanel>
+
+            <TabPanel>
+              <VPNResize v-if="vpn" :vpn="vpn" />
             </TabPanel>
           </TabPanels>
         </TabGroup>
