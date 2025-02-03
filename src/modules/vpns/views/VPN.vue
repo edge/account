@@ -4,9 +4,11 @@
 import * as utils from '@edge/account-utils'
 import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import EditableTitle from '../../../layout/EditableTitle.vue'
+import ValidationError from '../../../components/ValidationError.vue'
 import { useStore } from 'vuex'
+import useVuelidate from '@vuelidate/core'
 import { RouterLink, useRoute } from 'vue-router'
-import { computed, effect, ref } from 'vue'
+import { computed, effect, reactive, ref } from 'vue'
 import { minLength, required } from '@vuelidate/validators'
 
 const route = useRoute()
@@ -18,12 +20,21 @@ const error = ref()
 const loading = ref(false)
 const vpn = computed(() => data.value && data.value.vpn)
 
+const formState = reactive({
+  name: ''
+})
+
+const v$ = useVuelidate({
+  name: [required, minLength(3)]
+}, formState)
+
 async function reload() {
   try {
     error.value = undefined
     loading.value = true
 
     data.value = await utils.getVpn(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, route.params.id)
+    reset()
   }
   catch (err) {
     error.value = err
@@ -33,16 +44,23 @@ async function reload() {
   }
 }
 
-async function updateName(name) {
+function reset() {
+  if (vpn.value) {
+    v$.value.name.$model = vpn.value.name
+  }
+}
+
+async function updateName() {
   try {
     error.value = undefined
     busy.value = true
 
     data.value = await utils.updateVpn(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key, route.params.id, {
       vpn: {
-        name
+        name: v$.value.name.$model
       }
     })
+    reset()
   }
   catch (err) {
     error.value = err
@@ -66,11 +84,12 @@ effect(() => {
     </div>
 
     <EditableTitle
-      :busy="busy"
+      v-model="v$.name.$model"
       placeholder="VPN name"
-      :validation="[required, minLength(3)]"
-      :value="vpn.name"
-      @change="updateName"
+      :busy="busy"
+      :invalid="v$.name.$invalid"
+      @save="updateName"
     />
+    <ValidationError :errors="v$.name.$errors" />
   </div>
 </template>

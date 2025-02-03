@@ -15,13 +15,17 @@ defineProps({
 
 const emit = defineEmits(['change'])
 
-const value = defineModel()
+const model = defineModel()
 </script>
 
 <template>
   <div class="slider__container" :class="{ disabled }">
     <span v-if="title" class="slider__title">{{ title }}</span>
     <vue-slider
+      v-model="model"
+      adsorb
+      tooltipPlacement="top"
+      width="100%"
       :contained="true"
       :disabled="disabled"
       :dot-style="{ background: '#4ecd5f', boxShadow: '0 0 2px 1px #eee', border: 'none' }"
@@ -35,10 +39,6 @@ const value = defineModel()
       :tooltip="tooltip || 'hover'"
       :tooltip-formatter="formatter"
       :tooltip-style="{ background: '#4ecd5f', borderColor: '#4ecd5f' }"
-      adsorb
-      tooltipPlacement="top"
-      v-model=value
-      width="100%"
       @change="val => emit('change', val)"
     />
   </div>

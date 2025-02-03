@@ -1,92 +1,81 @@
 <script setup>
 import LoadingSpinner from '@/components/icons/LoadingSpinner.vue'
-import ValidationError from '@/components/ValidationError.vue'
-import { required } from '@vuelidate/validators'
-import useVuelidate from '@vuelidate/core'
 import { CheckIcon, PencilIcon, XIcon } from '@heroicons/vue/outline'
-import { computed, defineEmits, defineProps, reactive, ref, watchEffect } from 'vue'
+import { defineEmits, defineModel, defineProps, ref, watchPostEffect } from 'vue'
 
-const emit = defineEmits(['change'])
+const emit = defineEmits(['cancel', 'edit','save'])
 
 const props = defineProps({
   busy: Boolean,
   disabled: Boolean,
-  placeholder: String,
-  validation: [Function, Object],
-  value: String
+  invalid: Boolean,
+  placeholder: String
 })
 
-const formState = reactive({
-  newValue: ''
-})
-
-const v$ = useVuelidate({ newValue: props.validation || { required } }, formState)
-
-const canSave = computed(() => !props.disabled && !v$.value.$invalid)
 const editing = ref(false)
-const inputRef = ref(null)
+const input = ref(null)
+const model = defineModel()
+const previousValue = ref(model.value)
 
-function cancelEdit() {
+function cancel() {
   editing.value = false
-  reset()
+  model.value = previousValue.value
+
+  emit('cancel')
 }
 
-function reset() {
-  v$.value.newValue.$model = props.value || ''
-  v$.value.$reset()
-}
-
-function startEdit() {
-  reset()
+function edit() {
   editing.value = true
+
+  emit('edit')
 }
 
-async function stopEdit() {
-  if (!await v$.value.$validate()) {
-    console.log(v$.value.$errors)
-    return
-  }
-
-  emit('change', v$.value.newValue.$model)
+function save() {
+  if (props.invalid) return
 
   editing.value = false
+  previousValue.value = model.value
+
+  emit('save')
 }
 
-watchEffect(() => {
-  if (inputRef.value) {
-    inputRef.value.focus()
+watchPostEffect(() => {
+  if (input.value) {
+    input.value.focus()
   }
 })
 </script>
 
 <template>
-  <div class="editable-title__container flex">
-    <div v-if="editing">
-      <input
-        v-model="v$.newValue.$model"
-        @keypress.enter="stopEdit"
-        class="editable-title__value"
-        :placeholder="placeholder"
-        ref="inputRef"
-        type="text"
-      />
-      <ValidationError :errors="v$.newValue.$errors" />
+  <div v-if="editing" class="editable-title__container flex">
+    <input
+      v-model="model"
+      @keypress.enter="save"
+      class="editable-title__value"
+      :placeholder="placeholder"
+      ref="input"
+      type="text"
+    />
+
+    <div class="mt-3 flex">
+      <button class="ml-2" @click="save" :disabled="invalid || disabled">
+        <CheckIcon class="button__icon text-green hover:text-green-600" />
+      </button>
+      <button @click="cancel" class="ml-2">
+        <XIcon class="button__icon text-red hover:text-red-600" />
+      </button>
     </div>
-    <h1 v-else class="w-max mb-0">{{ busy ? v$.newValue.$model : value }}</h1>
+  </div>
+
+  <div v-else class="editable-title__container flex">
+    <h1 class="w-max mb-0">{{ model }}</h1>
 
     <div class="mt-3">
       <button v-if="busy" class="ml-2" disabled>
         <LoadingSpinner />
       </button>
-      <button v-else-if="editing" class="ml-2" @click="stopEdit" :disabled="!canSave">
-        <CheckIcon class="button__icon text-green hover:text-green-600" />
-      </button>
-      <button v-else class="ml-2" @click="startEdit" :disabled="disabled">
+      <button v-else class="ml-2" @click="edit" :disabled="disabled">
         <PencilIcon class="button__icon text-gray-400 hover:text-green" />
-      </button>
-
-      <button v-if="!busy && editing" @click="cancelEdit" class="ml-2">
-        <XIcon class="button__icon text-red hover:text-red-600" />
       </button>
     </div>
   </div>
