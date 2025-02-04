@@ -1,12 +1,13 @@
 <script setup>
 import Slider from '../../../layout/Slider.vue'
-import { defineModel, defineProps } from 'vue'
+import { defineModel, defineProps, effect, ref } from 'vue'
 
 defineProps({
   disabled: Boolean
 })
 
 const model = defineModel()
+const ready = ref(false)
 
 const rawMarks = [
   ['fast', 'Fast'],
@@ -15,7 +16,7 @@ const rawMarks = [
 ]
 
 const marks = rawMarks.reduce((ms, m, i) => {
-  ms[i] = m[0]
+  ms[i] = m[1]
   return ms
 }, {})
 
@@ -26,6 +27,13 @@ function formatter(i) {
 function setSpeed(i) {
   model.value = rawMarks[i][0]
 }
+
+effect(() => {
+  if (!ready.value) {
+    /** WIP */
+    ready.value = true
+  }
+})
 </script>
 
 <template>

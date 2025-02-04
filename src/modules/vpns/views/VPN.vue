@@ -12,7 +12,7 @@ import ServerPowerToggle from '../../../components/server/ServerPowerToggle.vue'
 import StatusDot from '../../../components/StatusDot.vue'
 import Tooltip from '../../../components/Tooltip.vue'
 import VPNOverview from '../components/VPNOverview.vue'
-import VPNResize from '../components/VPNResize.vue'
+import VPNSettings from '../components/VPNSettings.vue'
 import ValidationError from '../../../components/ValidationError.vue'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
@@ -259,7 +259,7 @@ effect(() => {
                 class="tab"
                 :class="[selected ? 'tab--selected' : '']"
               >
-                Resize
+                Settings
               </button>
             </Tab>
           </TabList>
@@ -274,7 +274,7 @@ effect(() => {
             </TabPanel>
 
             <TabPanel>
-              <VPNResize v-if="vpn" :vpn="vpn" />
+              <VPNSettings v-if="vpn" :vpn="vpn" />
             </TabPanel>
           </TabPanels>
         </TabGroup>
