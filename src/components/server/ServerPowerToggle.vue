@@ -55,7 +55,7 @@ import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'ServerPowerToggle',
-  props: ['activeTasks', 'disableActions', 'server'],
+  props: ['disableActions', 'server'],
   data() {
     return {
       showConfirmationModal: false,
@@ -71,6 +71,9 @@ export default {
   computed: {
     ...mapGetters(['balanceSuspend']),
     ...mapState(['session']),
+    activeTasks() {
+      return this.$store.getters.tasksByServerId(this.serverId)
+    },
     destroying() {
       return this.activeTasks.some(task => task.action === 'destroy')
     },

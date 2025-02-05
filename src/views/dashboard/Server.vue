@@ -59,11 +59,7 @@
         </div>
       </div>
       <div class="flex-shrink-0" v-if="!isDestroyed && !isCrashed">
-        <ServerPowerToggle
-          :activeTasks=activeTasks
-          :disableActions=disableActions
-          :server=server
-        />
+        <ServerPowerToggle :disableActions=disableActions :server=server />
       </div>
 
     </div>

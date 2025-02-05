@@ -10,6 +10,11 @@ import { email as _email, required as _required, helpers, or } from '@vuelidate/
  */
 export const required = helpers.withMessage('A value is required.', _required)
 
+export const oneOf = values => {
+  const message = `Must be one of "${values.join('", "')}"`
+  return helpers.withMessage(message, value => values.includes(value))
+}
+
 /**
  * Account number validator.
  */
