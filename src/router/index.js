@@ -139,6 +139,16 @@ const routes = [
         component: GettingStarted
       },
       {
+        path: 'gpus',
+        name: 'GPUs',
+        component: () => import('../modules/gpu/views/GPUList.vue')
+      },
+      {
+        path: 'gpus/deploy',
+        name: 'Deploy GPU',
+        component: () => import('../modules/gpu/views/GPUDeploy.vue')
+      },
+      {
         path: 'notifications',
         name: 'Notifications',
         component: Notifications
