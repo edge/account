@@ -6,13 +6,15 @@ const model = defineModel()
 
 const gpus = [
   {
-    id: 'nvidia-a100-pcie',
+    _key: 'a100',
+    cudoId: 'nvidia-a100-pcie',
     vendorName: 'nvidia',
     modelName: 'A100 PCI-E',
     memoryGib: 80
   },
   {
-    id: 'nvidia-h100-nvl-pcie',
+    _key: 'h100',
+    cudoId: 'nvidia-h100-nvl-pcie',
     vendorName: 'nvidia',
     modelName: 'H100 NVL PCI-E',
     memoryGib: 96
@@ -30,8 +32,8 @@ const gpus = [
         v-slot="{ active, checked, disabled }"
         as="template"
         :disabled="disabled"
-        :key="gpu.id"
-        :value="gpu.id"
+        :key="gpu._key"
+        :value="gpu._key"
       >
         <div
           :class="{ active, checked, disabled }"
