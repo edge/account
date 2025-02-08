@@ -35,6 +35,11 @@ export default {
           text: 'Servers'
         },
         {
+          _key: 'gpu',
+          link: '/gpus',
+          text: 'GPUs'
+        },
+        {
           _key: 'dns',
           link: '/domains',
           text: 'Domains'
