@@ -11,6 +11,9 @@
       </router-link>
     </div>
 
+    <!-- Search Component -->
+    <Search @search="handleSearch" />
+
     <div v-if="!loaded" class="flex items-center">
       <span>Loading servers</span>
       <div class="ml-2"><LoadingSpinner /></div>
@@ -60,6 +63,7 @@ import ListSortingMenu from '@/components/ListSortingMenu'
 import LoadingSpinner from '@/components/icons/LoadingSpinner'
 import Pagination from '@/components/Pagination'
 import ServerListItem from '@/components/server/ServerListItem'
+import Search from '../../components/Search.vue'
 import { mapState } from 'vuex'
 
 const sortFields = [
@@ -83,7 +87,8 @@ export default {
     ListSortingMenu,
     LoadingSpinner,
     Pagination,
-    ServerListItem
+    ServerListItem,
+    Search
   },
   data() {
     return {
@@ -95,7 +100,8 @@ export default {
       regions: [],
       servers: [],
       sortFields: sortFields,
-      sortQuery: ''
+      sortQuery: '',
+      searchQuery: ''
     }
   },
   computed: {
@@ -113,16 +119,24 @@ export default {
       this.regions = results
     },
     async updateServers() {
-      const params = { limit: this.limit, page: this.currentPage }
+      const params = { limit: this.limit, page: this.currentPage, search: this.searchQuery }
       if (this.sortQuery) params.sort = [this.sortQuery, '-created']
-
+    try{
       const { results, metadata } = await utils.getServers(process.env.VUE_APP_ACCOUNT_API_URL, this.session._key, params)
       this.servers = results
       this.metadata = metadata
       this.loaded = true
+    } catch (error) {
+        console.error("Failed to fetch servers:", error)
+        this.loaded = true // Ensure loading state is properly set
+      }
     },
     updateSortQuery (newQuery) {
       this.sortQuery = newQuery
+    },
+    handleSearch(query) {
+      this.searchQuery = query
+      this.updateServers()
     }
   },
   async mounted() {
@@ -141,6 +155,9 @@ export default {
     },
     sortQuery() {
       this.updateServers()
+    },
+    searchQuery() {
+      this.updateServers() // Update servers when searchQuery changes
     }
   }
 }
