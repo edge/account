@@ -1,8 +1,11 @@
 <script setup>
-import { defineModel } from 'vue'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
+import { defineModel, defineProps } from 'vue'
 
 const model = defineModel()
+defineProps({
+  disabled: Boolean
+})
 
 const gpus = [
   {
