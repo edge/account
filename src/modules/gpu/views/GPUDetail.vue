@@ -170,6 +170,7 @@ effect(() => {
       :busy="busy || loading"
       :disabled="busy || disabled"
       :invalid="v$.name.$invalid"
+      @cancel="v$.name.$reset()"
       @save="updateName"
     />
     <ValidationError :errors="v$.name.$errors" />
