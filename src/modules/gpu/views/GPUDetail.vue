@@ -10,7 +10,7 @@ import superagent from 'superagent'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
-import { ArrowLeftIcon, DuplicateIcon } from '@heroicons/vue/solid'
+import { ArrowLeftIcon, DuplicateIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { effect, reactive, ref } from 'vue'
 import { minLength, required } from '@vuelidate/validators'
@@ -19,6 +19,7 @@ const route = useRoute()
 const store = useStore()
 
 const busy = ref(false)
+const copied = ref(false)
 const disabled = ref(false)
 const error = ref()
 const gpu = ref()
@@ -34,6 +35,15 @@ const v$ = useVuelidate({
   name: [required, minLength(3)],
   active: []
 }, formState)
+
+async function copyToClipboard(str) {
+  await navigator.clipboard.writeText(str)
+  copied.value = true
+
+  setTimeout(() => {
+    copied.value = false
+  }, 1000)
+}
 
 async function reload() {
   if (!route.params.id || !store.state.session || !store.state.session._key) return
@@ -67,14 +77,20 @@ function stopPoll() {
   if (poll.value) {
     clearInterval(poll.value)
     poll.value = undefined
+    busy.value = false
   }
 }
 
-function startPoll(cb) {
+function startPoll() {
   if (poll.value) return
+  busy.value = true
+
   poll.value = setInterval(() => {
     reload().then(() => {
-      cb?.()
+      if (gpu.value.status === 'active' || gpu.value.status === 'stopped') {
+        stopPoll()
+        busy.value = false
+      }
     })
   }, 5000)
 }
@@ -84,8 +100,6 @@ async function togglePower(toActive) {
   if (!store.state.session || !store.state.session._key) return
 
   try {
-    busy.value = true
-
     if (toActive) {
       await superagent.post(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/start/${gpu.value.id}`)
         .set('Authorization', `Bearer ${store.state.session._key}`)
@@ -95,16 +109,10 @@ async function togglePower(toActive) {
         .set('Authorization', `Bearer ${store.state.session._key}`)
     }
 
-    startPoll(() => {
-      if (gpu.value.status === 'active' || gpu.value.status === 'stopped') {
-        stopPoll()
-        busy.value = false
-      }
-    })
+    startPoll()
   }
   catch (err) {
     error.value = err
-    busy.value = false
   }
 }
 
@@ -114,7 +122,11 @@ async function updateName() {
 }
 
 effect(() => {
-  reload()
+  reload().then(() => {
+    if (gpu.value.status !== 'active' && gpu.value.status !== 'stopped') {
+      startPoll()
+    }
+  })
 
   return () => {
     stopPoll()
@@ -234,7 +246,6 @@ effect(() => {
                       <span class="label">IP Address</span>
                       <div class="relative flex w-max">
                         <span>{{ gpu.ipAddress }}</span>
-                        <!--
                         <button
                           @click.prevent="copyToClipboard(gpu.ipAddress)"
                           class="text-gray-400 hover:text-green"
@@ -242,7 +253,6 @@ effect(() => {
                           <DuplicateIcon class="ml-2 w-5 h-5" />
                         </button>
                         <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
-                        -->
                       </div>
                     </div>
                   </div>
