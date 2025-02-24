@@ -13,7 +13,7 @@ import useVuelidate from '@vuelidate/core'
 import { ArrowLeftIcon, DuplicateIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { effect, reactive, ref } from 'vue'
-import { minLength, required } from '@vuelidate/validators'
+import { helpers, minLength, required } from '@vuelidate/validators'
 
 const route = useRoute()
 const store = useStore()
@@ -32,7 +32,7 @@ const formState = reactive({
 })
 
 const v$ = useVuelidate({
-  name: [required, minLength(3)],
+  name: [required, minLength(3), helpers.withMessage('Currently unable to change GPU name. This feature is coming soon', () => false)],
   active: []
 }, formState)
 
@@ -135,7 +135,7 @@ effect(() => {
 </script>
 
 <template>
-  <div v-if="loading" class="mainContent__inner pt-0 mt-6">
+  <div v-if="!gpu && loading" class="mainContent__inner pt-0 mt-6">
     <div class="flex items-center">
       <span>Loading GPU</span>
       <LoadingSpinner />
