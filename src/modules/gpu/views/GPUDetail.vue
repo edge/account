@@ -1,17 +1,19 @@
 <script setup>
 /* global process */
 
-import { ArrowLeftIcon } from '@heroicons/vue/solid'
 import EditableTitle from '../../../layout/EditableTitle.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
+import PowerToggle from '../../../layout/PowerToggle.vue'
+import StatusDot from '../../../components/StatusDot.vue'
 import ValidationError from '../../../components/ValidationError.vue'
 import superagent from 'superagent'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
+import { ArrowLeftIcon, DuplicateIcon } from '@heroicons/vue/solid'
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { effect, reactive, ref } from 'vue'
 import { minLength, required } from '@vuelidate/validators'
-import StatusDot from '../../../components/StatusDot.vue'
 
 const route = useRoute()
 const store = useStore()
@@ -23,11 +25,13 @@ const gpu = ref()
 const loading = ref(true)
 
 const formState = reactive({
-  name: ''
+  name: '',
+  active: true
 })
 
 const v$ = useVuelidate({
-  name: [required, minLength(3)]
+  name: [required, minLength(3)],
+  active: []
 }, formState)
 
 async function reload() {
@@ -53,6 +57,17 @@ async function reload() {
 
 function reset() {
   v$.value.name.$model = gpu.value.name
+  v$.value.active.$model = gpu.value.status === 'active'
+
+  v$.value.$reset()
+}
+
+async function togglePower(toActive) {
+  console.log(toActive)
+  busy.value = true
+  setTimeout(() => {
+    busy.value = false
+  }, 5000)
 }
 
 /** @todo */
@@ -142,13 +157,102 @@ effect(() => {
           </div>
         </div>
       </div>
-      <div class="flex-shrink-0" v-if="!isDestroyed && !isCrashed">
-        <ServerPowerToggle
-          :activeTasks=activeTasks
-          :disableActions=disableActions
-          :server=server
-        />
+
+      <div class="flex-shrink-0">
+        <PowerToggle v-model="v$.active.$model" :busy="busy" @click="togglePower" />
       </div>
+    </div>
+
+    <div class="mt-4 space-x-10">
+      <!-- Tabs -->
+      <TabGroup as="div" class="tabGroup">
+        <div class="absolute top-0 right-0 w-10 h-5 bg-gradient-to-l from-gray-200" />
+        <TabList class="tabs pr-6">
+          <Tab v-slot="{selected}">
+            <button :class="{ tab: true, 'tab--selected': selected }">Overview</button>
+          </Tab>
+        </TabList>
+
+        <TabPanels class="mt-4">
+          <!-- Overview -->
+          <TabPanel>
+            <div class="grid gap-4 xl:grid-cols-2">
+              <div class="box overflow_hidden server__details xl:col-span-2">
+                <h4 class="section__title">Details</h4>
+                <div class="overview__grid">
+                  <!-- Name, hostname, IP address -->
+                  <div class="grid__col col__1">
+                    <div class="info__section">
+                      <span class="label">Name</span><span class="info">{{ gpu.name }}</span>
+                    </div>
+                    <div class="info__section">
+                      <span class="label">Hostname</span><span class="info">{{ gpu.hostname }}</span>
+                    </div>
+                    <div class="info__section">
+                      <span class="label">IP Address</span>
+                      <div class="relative flex w-max">
+                        <span>{{ gpu.ipAddress }}</span>
+                        <!--
+                        <button
+                          @click.prevent="copyToClipboard(gpu.ipAddress)"
+                          class="text-gray-400 hover:text-green"
+                        >
+                          <DuplicateIcon class="ml-2 w-5 h-5" />
+                        </button>
+                        <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
+                        -->
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid__col col__2">
+                    <div class="info__section">
+                      <span class="label">Status</span>
+                      <span class="info">
+                        <StatusDot
+                          :isActive="gpu.status === 'active'"
+                          :isInactive="gpu.status !== 'active'"
+                          :statusText="gpu.status === 'active' ? 'Active' : 'Inactive'"
+                        />
+                      </span>
+                    </div>
+                    <div class="info__section">
+                      <span class="label">Created</span>
+                      <span class="info">{{ gpu.created }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="box overflow_hidden server__specs">
+                <h4 class="section__title">GPU specs</h4>
+                <!-- vcpus, ram, disk, bandwidth -->
+                <div class="overview__grid">
+                  <div class="info__section col-span-2 lg:col-span-4">
+                    <span class="label">GPU Model</span>
+                    <span class="info">{{ gpu.gpuModel }}</span>
+                  </div>
+                  <div class="info__section">
+                    <span class="label">GPU</span>
+                    <span class="info">{{ gpu.gpuCount }}</span>
+                  </div>
+                  <div class="info__section">
+                    <span class="label">vCPUs</span>
+                    <span class="info">{{ gpu.cpuCount }}</span>
+                  </div>
+                  <div class="info__section">
+                    <span class="label">RAM</span>
+                    <span class="info">{{ gpu.memoryGiB }}</span>
+                  </div>
+                  <div class="info__section">
+                    <span class="label">Disk</span>
+                    <span class="info">{{ gpu.diskGiB }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabPanel>
+        </TabPanels>
+      </TabGroup>
     </div>
   </div>
 
@@ -226,6 +330,84 @@ effect(() => {
   }
   .collapse.gpu-info .divider {
     @apply block;
+  }
+}
+
+.section__title {
+  @apply mb-4;
+}
+.overview__grid {
+  @apply grid grid-cols-1 gap-y-4;
+}
+.grid__col {
+  @apply flex flex-col space-y-4
+}
+.info__section {
+  @apply flex overflow-hidden w-full;
+}
+.label {
+  @apply font-bold block mr-2 flex-shrink-0 w-24;
+}
+.server__details .info__section {
+  @apply flex-col;
+}
+
+.info {
+  @apply flex-shrink-0 truncate w-full;
+}
+
+.copied {
+  @apply absolute pointer-events-none opacity-0 top-0 left-0 flex items-center justify-center w-full h-full font-medium bg-white bg-opacity-95 text-green;
+  @apply transition-opacity duration-200 ease-in;
+}
+.copied.visible {
+  @apply opacity-100;
+}
+
+@media (max-width: 450px) {
+  .server__details .info__section {
+    @apply flex-col;
+  }
+}
+
+@media (min-width: 450px) {
+  .server__details .info__section {
+    @apply flex-row;
+  }
+
+  .server__specs .overview__grid, .server__costs .overview__grid {
+    @apply grid-cols-2;
+  }
+  .server__specs .label, .server__costs .label {
+    @apply w-20;
+  }
+
+  /* .overview__grid {
+    @apply grid-cols-2
+  } */
+}
+@screen lg {
+  .server__specs .overview__grid {
+    @apply grid-cols-4;
+  }
+  .server__specs .label {
+    @apply w-max;
+  }
+  .server__costs .label {
+    @apply w-max;
+  }
+}
+@screen xl {
+  .server__details .overview__grid {
+    @apply grid-cols-2
+  }
+  .server__specs .overview__grid {
+    @apply grid-cols-2
+  }
+}
+@screen 2xl {
+  .server__specs .overview__grid {
+    grid-template-columns: repeat(3, 1fr) auto;
   }
 }
 </style>
