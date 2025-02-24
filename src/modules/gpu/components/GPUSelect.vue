@@ -1,28 +1,62 @@
 <script setup>
+/* global process */
+
+import superagent from 'superagent'
+import { useStore } from 'vuex'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
-import { defineModel, defineProps } from 'vue'
+import { defineModel, defineProps, effect, ref } from 'vue'
 
 const model = defineModel()
+const store = useStore()
+
 defineProps({
   disabled: Boolean
 })
 
-const gpus = [
-  {
-    _key: 'a100',
-    cudoId: 'nvidia-a100-pcie',
-    vendorName: 'nvidia',
-    modelName: 'A100 PCI-E',
-    memoryGib: 80
-  },
-  {
-    _key: 'h100',
-    cudoId: 'nvidia-h100-nvl-pcie',
-    vendorName: 'nvidia',
-    modelName: 'H100 NVL PCI-E',
-    memoryGib: 96
+const error = ref()
+const gpus = ref([])
+const loading = ref(true)
+
+async function reload() {
+  if (!store.state.session || !store.state.session._key) return
+
+  try {
+    loading.value = true
+    error.value = undefined
+
+    const res = await superagent.get(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/gpu-models`)
+      .set('Authorization', `Bearer ${store.state.session._key}`)
+
+    gpus.value = res.body
   }
-]
+  catch (err) {
+    error.value = err
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+effect(() => {
+  reload()
+})
+
+// const gpus = [
+//   {
+//     _key: 'a100',
+//     cudoId: 'nvidia-a100-pcie',
+//     vendorName: 'nvidia',
+//     modelName: 'A100 PCI-E',
+//     memoryGib: 80
+//   },
+//   {
+//     _key: 'h100',
+//     cudoId: 'nvidia-h100-nvl-pcie',
+//     vendorName: 'nvidia',
+//     modelName: 'H100 NVL PCI-E',
+//     memoryGib: 96
+//   }
+// ]
 </script>
 
 <template>
@@ -35,8 +69,8 @@ const gpus = [
         v-slot="{ active, checked, disabled }"
         as="template"
         :disabled="disabled"
-        :key="gpu._key"
-        :value="gpu._key"
+        :key="gpu.id"
+        :value="gpu.id"
       >
         <div
           :class="{ active, checked, disabled }"

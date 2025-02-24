@@ -1,51 +1,83 @@
 <script setup>
+/* global process */
+
 import GPUSelect from '../components/GPUSelect.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
 import Password from '../../../components/server/deploy/Password.vue'
 import Slider from '../../../layout/Slider.vue'
 import ValidationError from '../../../components/ValidationError.vue'
+import { serverNameChars } from '../../../utils/validation'
+import superagent from 'superagent'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
 import { computed, reactive, ref } from 'vue'
 import { maxValue, minLength, minValue, required } from '@vuelidate/validators'
 
+const router = useRouter()
+const store = useStore()
+
 const formState = reactive({
-  gpu: '',
-  disk: 10,
-  gpus: 1,
-  ram: 2,
-  vcpus: 1,
   name: '',
+  hostname: '',
+  gpuModel: '',
+  gpuCount: 1,
+  cpuCount: 1,
+  memoryGiB: 2,
+  diskGiB: 10,
   password: ''
 })
 
 const v$ = useVuelidate({
-  gpu: [required],
-  disk: [minValue(10), maxValue(200)],
-  gpus: [minValue(1), maxValue(8)],
-  ram: [minValue(2), maxValue(32)],
-  vcpus: [minValue(1), maxValue(32)],
   name: [required, minLength(3)],
+  hostname: [required, minLength(3), serverNameChars],
+  gpuModel: [required],
+  gpuCount: [minValue(1), maxValue(8)],
+  cpuCount: [minValue(1), maxValue(32)],
+  memoryGiB: [minValue(2), maxValue(32)],
+  diskGiB: [minValue(10), maxValue(200)],
   password: [required, minLength(8)]
 }, formState)
 
 const busy = ref(false)
 const canDeploy = computed(() => v$.value.$anyDirty && !v$.value.$invalid)
+const error = ref()
+
 
 function setPassword(value) {
   v$.value.password.$model = value
 }
 
 async function submit() {
+  if (!store.state.session || !store.state.session._key) return
+
   const data = {
-    gpu: v$.value.gpu.$model,
-    disk: v$.value.disk.$model,
-    gpus: v$.value.gpus.$model,
-    ram: v$.value.ram.$model,
-    vcpus: v$.value.vcpus.$model,
     name: v$.value.name.$model,
+    hostname: v$.value.hostname.$model,
+    gpuModel: v$.value.gpuModel.$model,
+    gpuCount: v$.value.gpuCount.$model,
+    cpuCount: v$.value.cpuCount.$model,
+    memoryGiB: v$.value.memoryGiB.$model,
+    diskGiB: v$.value.diskGiB.$model,
     password: v$.value.password.$model
   }
-  console.log(data)
+
+  try {
+    busy.value = true
+    error.value = undefined
+
+    const res = await superagent.post(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms`)
+      .set('Authorization', `Bearer ${store.state.session._key}`)
+      .send(data)
+
+    router.push({ name: 'GPU', params: { id: res.id } })
+  }
+  catch (err) {
+    error.value = err
+  }
+  finally {
+    busy.value = false
+  }
 }
 </script>
 
@@ -56,8 +88,8 @@ async function submit() {
     <form class="flex flex-col col-span-12 pb-20 space-y-4" @submit.prevent="submit">
       <div class="box">
         <h4>Select GPU</h4>
-        <GPUSelect v-model="v$.gpu.$model" />
-        <ValidationError :errors="v$.gpu.$errors" />
+        <GPUSelect v-model="v$.gpuModel.$model" />
+        <ValidationError :errors="v$.gpuModel.$errors" />
       </div>
 
       <div class="box">
@@ -65,7 +97,7 @@ async function submit() {
         <div class="grid grid-cols-2 gap-4">
           <div>
             <Slider
-              v-model="v$.gpus.$model"
+              v-model="v$.gpuCount.$model"
               :disabled="busy"
               :marks="[1,2,4,8]"
               :max="8"
@@ -73,12 +105,12 @@ async function submit() {
               title="GPUs"
               tooltip="always"
             />
-            <ValidationError :errors="v$.gpus.$errors" />
+            <ValidationError :errors="v$.gpuCount.$errors" />
           </div>
 
           <div>
             <Slider
-              v-model="v$.vcpus.$model"
+              v-model="v$.cpuCount.$model"
               :disabled="busy"
               :marks="[1,2,4,8,12,16,24,32]"
               :max="32"
@@ -86,12 +118,12 @@ async function submit() {
               title="vCPUs"
               tooltip="always"
             />
-            <ValidationError :errors="v$.vcpus.$errors" />
+            <ValidationError :errors="v$.cpuCount.$errors" />
           </div>
 
           <div>
             <Slider
-              v-model="v$.ram.$model"
+              v-model="v$.memoryGiB.$model"
               :disabled="busy"
               :formatter="size => `${size} GiB`"
               :marks="[2,4,8,12,16,24,32]"
@@ -100,12 +132,12 @@ async function submit() {
               title="RAM (GiB)"
               tooltip="always"
             />
-            <ValidationError :errors="v$.ram.$errors" />
+            <ValidationError :errors="v$.memoryGiB.$errors" />
           </div>
 
           <div>
             <Slider
-              v-model="v$.disk.$model"
+              v-model="v$.diskGiB.$model"
               :disabled="busy"
               :formatter="size => `${size} GiB`"
               :marks="[10,20,50,100,200]"
@@ -114,7 +146,7 @@ async function submit() {
               title="Disk (GiB)"
               tooltip="always"
             />
-            <ValidationError :errors="v$.disk.$errors" />
+            <ValidationError :errors="v$.diskGiB.$errors" />
           </div>
         </div>
       </div>
@@ -134,6 +166,21 @@ async function submit() {
               type="text"
             />
             <ValidationError :errors="v$.name.$errors" />
+          </div>
+
+          <!-- Hostname -->
+          <div class="input-group">
+            <label class="label">Hostname</label>
+            <input
+              v-model="v$.hostname.$model"
+              :disabled="busy"
+              :class="busy ? 'disabled' : ''"
+              class="input input--floating"
+              placeholder="Hostname of your server e.g. my-gpu.example.com"
+              required
+              type="text"
+            />
+            <ValidationError :errors="v$.hostname.$errors" />
           </div>
         </div>
       </div>

@@ -149,6 +149,11 @@ const routes = [
         component: () => import('../modules/gpu/views/GPUDeploy.vue')
       },
       {
+        path: 'gpu/:id',
+        name: 'GPU',
+        component: () => import('../modules/gpu/views/GPUDetail.vue')
+      },
+      {
         path: 'notifications',
         name: 'Notifications',
         component: Notifications
