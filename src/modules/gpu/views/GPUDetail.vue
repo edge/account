@@ -1,7 +1,10 @@
 <script setup>
 /* global process */
 
+import { ArrowLeftIcon } from '@heroicons/vue/outline'
 import EditableTitle from '../../../layout/EditableTitle.vue'
+import GPUDestroyPanel from '../components/GPUDestroyPanel.vue'
+import GPUOverviewPanel from '../components/GPUOverviewPanel.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
 import PowerToggle from '../../../layout/PowerToggle.vue'
 import StatusDot from '../../../components/StatusDot.vue'
@@ -10,21 +13,22 @@ import superagent from 'superagent'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
-import { ArrowLeftIcon, DuplicateIcon } from '@heroicons/vue/outline'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
-import { effect, reactive, ref } from 'vue'
+import { computed, effect, reactive, ref } from 'vue'
 import { helpers, minLength, required } from '@vuelidate/validators'
 
 const route = useRoute()
 const store = useStore()
 
 const busy = ref(false)
-const copied = ref(false)
+const destroying = ref(false)
 const disabled = ref(false)
 const error = ref()
 const gpu = ref()
 const loading = ref(true)
 const poll = ref()
+
+const destroyed = computed(() => gpu.value && gpu.value.status === 'deleted')
 
 const formState = reactive({
   name: '',
@@ -36,13 +40,19 @@ const v$ = useVuelidate({
   active: []
 }, formState)
 
-async function copyToClipboard(str) {
-  await navigator.clipboard.writeText(str)
-  copied.value = true
+async function destroy() {
+  try {
+    destroying.value = true
+    error.value = undefined
 
-  setTimeout(() => {
-    copied.value = false
-  }, 1000)
+    await superagent.delete(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/${route.params.id}`)
+      .set('Authorization', `Bearer ${store.state.session._key}`)
+
+    startPoll(['deleted'])
+  }
+  catch (err) {
+    error.value = err
+  }
 }
 
 async function reload() {
@@ -59,7 +69,13 @@ async function reload() {
     reset()
   }
   catch (err) {
-    error.value = err
+    // Workaround for deletion
+    if (destroying.value && gpu.value && err.status === 404) {
+      gpu.value.status = 'deleted'
+    }
+    else {
+      error.value = err
+    }
   }
   finally {
     loading.value = false
@@ -81,13 +97,13 @@ function stopPoll() {
   }
 }
 
-function startPoll() {
+function startPoll(stopOnStatus) {
   if (poll.value) return
   busy.value = true
 
   poll.value = setInterval(() => {
     reload().then(() => {
-      if (gpu.value.status === 'active' || gpu.value.status === 'stopped') {
+      if (stopOnStatus.includes(gpu.value.status)) {
         stopPoll()
         busy.value = false
       }
@@ -109,7 +125,7 @@ async function togglePower(toActive) {
         .set('Authorization', `Bearer ${store.state.session._key}`)
     }
 
-    startPoll()
+    startPoll(['active', 'deleted', 'stopped'])
   }
   catch (err) {
     error.value = err
@@ -123,8 +139,8 @@ async function updateName() {
 
 effect(() => {
   reload().then(() => {
-    if (gpu.value.status !== 'active' && gpu.value.status !== 'stopped') {
-      startPoll()
+    if (!['active', 'deleted', 'stopped'].includes(gpu.value.status)) {
+      startPoll(['active', 'deleted', 'stopped'])
     }
   })
 
@@ -135,14 +151,34 @@ effect(() => {
 </script>
 
 <template>
-  <div v-if="!gpu && loading" class="mainContent__inner pt-0 mt-6">
+  <div v-if="destroying || destroyed" class="mainContent__inner pt-0 mt-6">
+    <div v-if="destroyed" class="box">
+      <h4>Destroy GPU</h4>
+      <p class="mt-3 mb-1 text-gray-500">Your GPU and backups have been successfully deleted.</p>
+      <router-link
+        class="button button--success button--small w-full md:max-w-xs"
+        :to="{ name: 'GPUs' }"
+      >
+      <span>Return to GPUs</span>
+      </router-link>
+    </div>
+    <div v-else class="box">
+      <h4>Destroy GPU</h4>
+      <div class="flex">
+        <span>Destroying {{ gpu && gpu.name }}</span>
+        <span class="ml-2"><LoadingSpinner /></span>
+      </div>
+    </div>
+  </div>
+
+  <div v-else-if="!gpu && loading" class="mainContent__inner pt-0 mt-6">
     <div class="flex items-center">
       <span>Loading GPU</span>
       <LoadingSpinner />
     </div>
   </div>
 
-  <div v-else-if="error">
+  <div v-else-if="error" class="mainContent__inner pt-0 mt-6">
     <div class="box">
       <div class="flex flex-col items-center justify-center text-center">
         <div class="flex items-center mt-4">
@@ -226,83 +262,20 @@ effect(() => {
           <Tab v-slot="{selected}">
             <button :class="{ tab: true, 'tab--selected': selected }">Overview</button>
           </Tab>
+          <Tab v-slot="{selected}">
+            <button :class="{ tab: true, 'tab--selected': selected }">Destroy</button>
+          </Tab>
         </TabList>
 
         <TabPanels class="mt-4">
           <!-- Overview -->
           <TabPanel>
-            <div class="grid gap-4 xl:grid-cols-2">
-              <div class="box overflow_hidden server__details xl:col-span-2">
-                <h4 class="section__title">Details</h4>
-                <div class="overview__grid">
-                  <!-- Name, hostname, IP address -->
-                  <div class="grid__col col__1">
-                    <div class="info__section">
-                      <span class="label">Name</span><span class="info">{{ gpu.name }}</span>
-                    </div>
-                    <div class="info__section">
-                      <span class="label">Hostname</span><span class="info">{{ gpu.hostname }}</span>
-                    </div>
-                    <div class="info__section">
-                      <span class="label">IP Address</span>
-                      <div class="relative flex w-max">
-                        <span>{{ gpu.ipAddress }}</span>
-                        <button
-                          @click.prevent="copyToClipboard(gpu.ipAddress)"
-                          class="text-gray-400 hover:text-green"
-                        >
-                          <DuplicateIcon class="ml-2 w-5 h-5" />
-                        </button>
-                        <div class="copied" :class="copied ? 'visible' : ''">Copied!</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="grid__col col__2">
-                    <div class="info__section">
-                      <span class="label">Status</span>
-                      <span class="info">
-                        <StatusDot
-                          :isActive="gpu.status === 'active'"
-                          :isInactive="gpu.status !== 'active'"
-                          :statusText="gpu.status === 'active' ? 'Active' : 'Inactive'"
-                        />
-                      </span>
-                    </div>
-                    <div class="info__section">
-                      <span class="label">Created</span>
-                      <span class="info">{{ gpu.created }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <GPUOverviewPanel :gpu="gpu" />
+          </TabPanel>
 
-              <div class="box overflow_hidden server__specs">
-                <h4 class="section__title">GPU specs</h4>
-                <!-- vcpus, ram, disk, bandwidth -->
-                <div class="overview__grid">
-                  <div class="info__section col-span-2 lg:col-span-4">
-                    <span class="label">GPU Model</span>
-                    <span class="info">{{ gpu.gpuModel }}</span>
-                  </div>
-                  <div class="info__section">
-                    <span class="label">GPU</span>
-                    <span class="info">{{ gpu.gpuCount }}</span>
-                  </div>
-                  <div class="info__section">
-                    <span class="label">vCPUs</span>
-                    <span class="info">{{ gpu.cpuCount }}</span>
-                  </div>
-                  <div class="info__section">
-                    <span class="label">RAM</span>
-                    <span class="info">{{ gpu.memoryGiB }}</span>
-                  </div>
-                  <div class="info__section">
-                    <span class="label">Disk</span>
-                    <span class="info">{{ gpu.diskGiB }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <!-- Destroy -->
+          <TabPanel>
+            <GPUDestroyPanel :gpu="gpu" @destroy="destroy" />
           </TabPanel>
         </TabPanels>
       </TabGroup>
