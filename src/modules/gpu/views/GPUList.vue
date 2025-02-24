@@ -58,10 +58,10 @@ effect(() => {
       <h1>Edge GPUs</h1>
       <router-link
         v-if="gpus.length"
-        :to="{ name: 'ServerDeploy' }"
+        :to="{ name: 'Deploy GPU' }"
         class="button button--success button--small h-full mb-5 sm:mb-0"
       >
-        Deploy Server
+        Deploy GPU
       </router-link>
     </div>
 

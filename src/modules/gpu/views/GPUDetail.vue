@@ -23,6 +23,7 @@ const disabled = ref(false)
 const error = ref()
 const gpu = ref()
 const loading = ref(true)
+const poll = ref()
 
 const formState = reactive({
   name: '',
@@ -62,12 +63,49 @@ function reset() {
   v$.value.$reset()
 }
 
-async function togglePower(toActive) {
-  console.log(toActive)
-  busy.value = true
-  setTimeout(() => {
-    busy.value = false
+function stopPoll() {
+  if (poll.value) {
+    clearInterval(poll.value)
+    poll.value = undefined
+  }
+}
+
+function startPoll(cb) {
+  if (poll.value) return
+  poll.value = setInterval(() => {
+    reload().then(() => {
+      cb?.()
+    })
   }, 5000)
+}
+
+async function togglePower(toActive) {
+  if (!gpu.value) return
+  if (!store.state.session || !store.state.session._key) return
+
+  try {
+    busy.value = true
+
+    if (toActive) {
+      await superagent.post(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/start/${gpu.value.id}`)
+        .set('Authorization', `Bearer ${store.state.session._key}`)
+    }
+    else {
+      await superagent.post(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/stop/${gpu.value.id}`)
+        .set('Authorization', `Bearer ${store.state.session._key}`)
+    }
+
+    startPoll(() => {
+      if (gpu.value.status === 'active' || gpu.value.status === 'stopped') {
+        stopPoll()
+        busy.value = false
+      }
+    })
+  }
+  catch (err) {
+    error.value = err
+    busy.value = false
+  }
 }
 
 /** @todo */
@@ -77,6 +115,10 @@ async function updateName() {
 
 effect(() => {
   reload()
+
+  return () => {
+    stopPoll()
+  }
 })
 </script>
 

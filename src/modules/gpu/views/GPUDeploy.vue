@@ -43,7 +43,6 @@ const busy = ref(false)
 const canDeploy = computed(() => v$.value.$anyDirty && !v$.value.$invalid)
 const error = ref()
 
-
 function setPassword(value) {
   v$.value.password.$model = value
 }
@@ -70,7 +69,7 @@ async function submit() {
       .set('Authorization', `Bearer ${store.state.session._key}`)
       .send(data)
 
-    router.push({ name: 'GPU', params: { id: res.id } })
+    router.push({ name: 'GPU', params: { id: res.body.id } })
   }
   catch (err) {
     error.value = err
