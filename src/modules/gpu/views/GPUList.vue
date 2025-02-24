@@ -108,6 +108,8 @@ effect(() => {
             </div>
             <!-- specs -->
             <div class="flex flex-col space-x-0 sm:flex-row sm:space-x-1.5 text-m">
+              <span>{{ gpu.gpuCount }} GPU</span>
+              <span class="h-full bg-gray-400 block" style="width: 1px"></span>
               <span>{{ gpu.cpuCount }} vCPU</span>
               <span class="h-full bg-gray-400 block" style="width: 1px"></span>
               <span>{{ gpu.diskGiB }} Disk</span>
