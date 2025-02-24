@@ -83,7 +83,7 @@ effect(() => {
       <ul role="list" class="space-y-2">
         <li
           v-for="gpu in gpus"
-          class="grid grid-cols-2 lg:grid-cols-4 gap-y-4 bg-white text-gray-500 border-t-8 border-gray-400 rounded-md w-full p-5 pr-8 cursor-pointer transition-all duration-100"
+          class="grid grid-cols-2 lg:grid-cols-4 gap-y-4 bg-white text-gray-500 border-l-8 border-gray-400 rounded-md w-full p-5 pr-8 cursor-pointer transition-all duration-100"
           :class="{ 'border-green': gpu.status === 'active', 'border-red': gpu.status !== 'active' }"
           :key="gpu.id"
           @click="router.push({ name: 'GPU', params: { id: gpu.id }})"
