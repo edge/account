@@ -16,7 +16,6 @@ import useVuelidate from '@vuelidate/core'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
 import { computed, effect, reactive, ref } from 'vue'
 import { helpers, minLength, required } from '@vuelidate/validators'
-import GPUAPIKeysPanel from '../components/GPUAPIKeysPanel.vue'
 
 const route = useRoute()
 const store = useStore()
@@ -265,9 +264,6 @@ effect(() => {
             <button :class="{ tab: true, 'tab--selected': selected }">Overview</button>
           </Tab>
           <Tab v-slot="{selected}">
-            <button :class="{ tab: true, 'tab--selected': selected }">API Keys</button>
-          </Tab>
-          <Tab v-slot="{selected}">
             <button :class="{ tab: true, 'tab--selected': selected }">Destroy</button>
           </Tab>
         </TabList>
@@ -276,11 +272,6 @@ effect(() => {
           <!-- Overview -->
           <TabPanel>
             <GPUOverviewPanel :gpu="gpu" />
-          </TabPanel>
-
-          <!-- API keys -->
-          <TabPanel>
-            <GPUAPIKeysPanel :gpu="gpu" />
           </TabPanel>
 
           <!-- Destroy -->
