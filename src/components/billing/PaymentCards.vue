@@ -101,7 +101,7 @@
                 <RouterLink :to="{ name: 'Wallet' }" class="text-green">View your wallet</RouterLink> to start funding your account manually.
               </p>
               <p v-else>
-                <RouterLink :to="{ name: 'Account' }" class="text-green">Enable Crypto View</RouterLink> to start funding your account manually.
+                <RouterLink :to="{ name: 'Settings' }" class="text-green">Enable Crypto View</RouterLink> to start funding your account manually.
               </p>
             </section>
           </article>

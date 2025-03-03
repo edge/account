@@ -5,7 +5,6 @@
 /* global process */
 
 import * as utils from '@edge/account-utils'
-import Account from '@/views/dashboard/Account'
 import BareMetal from '../modules/bareMetals/views/BareMetal.vue'
 import BareMetals from '../modules/bareMetals/views/BareMetals.vue'
 import Billing from '@/views/dashboard/Billing'
@@ -55,11 +54,6 @@ const routes = [
         path: '',
         name: 'Index',
         component: Index
-      },
-      {
-        path: 'account',
-        name: 'Account',
-        component: Account
       },
       {
         path: 'bare-metals',
@@ -139,6 +133,21 @@ const routes = [
         component: GettingStarted
       },
       {
+        path: 'gpus',
+        name: 'GPUs',
+        component: () => import('../modules/gpu/views/GPUList.vue')
+      },
+      {
+        path: 'gpus/deploy',
+        name: 'Deploy GPU',
+        component: () => import('../modules/gpu/views/GPUDeploy.vue')
+      },
+      {
+        path: 'gpu/:id',
+        name: 'GPU',
+        component: () => import('../modules/gpu/views/GPUDetail.vue')
+      },
+      {
         path: 'notifications',
         name: 'Notifications',
         component: Notifications
@@ -177,6 +186,11 @@ const routes = [
         path: 'server/:id',
         name: 'Server',
         component: Server
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('../modules/settings/views/SettingsView.vue')
       },
       {
         path: 'shield',
