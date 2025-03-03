@@ -1,6 +1,7 @@
 <script setup>
 /* global process */
 
+import ErrorV2 from '../../../layout/ErrorV2.vue'
 import GPUSelect from '../components/GPUSelect.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
 import Password from '../../../components/server/deploy/Password.vue'
@@ -189,7 +190,9 @@ async function submit() {
         <ValidationError :errors="v$.password.$errors" />
       </div>
 
-      <div class="flex flex-col w-full space-y-2">
+      <div class="flex flex-col w-full space-y-2 items-end">
+        <ErrorV2 :error="error" />
+
         <button
           :disabled="!canDeploy"
           class="button button--success self-end w-full md:max-w-xs"

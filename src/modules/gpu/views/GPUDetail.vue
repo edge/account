@@ -53,6 +53,7 @@ async function destroy() {
   }
   catch (err) {
     error.value = err
+    destroying.value = false
   }
 }
 
