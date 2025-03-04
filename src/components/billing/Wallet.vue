@@ -108,7 +108,7 @@ async function startPurchase() {
                 You're currently using the crypto view, which provides comprehensive visibility of your wallet and transactions on the XE blockchain.
                 This page enables you to manage your account balance directly using XE.
                 If you're new to cryptocurrency, you can <a href="https://wiki.edge.network/getting-and-storing-tokens/wallets" target="_blank" class="text-green">learn more about XE on the Edge Wiki</a>.
-                Alternatively, if you prefer a more streamlined interface, you can <RouterLink :to="{ name: 'Account' }" class="text-green">disable the crypto view</RouterLink>.
+                Alternatively, if you prefer a more streamlined interface, you can <RouterLink :to="{ name: 'Settings' }" class="text-green">disable the crypto view</RouterLink>.
               </p>
             </section>
           </article>

@@ -5,7 +5,6 @@
 /* global process */
 
 import * as utils from '@edge/account-utils'
-import Account from '@/views/dashboard/Account'
 import BareMetal from '../modules/bareMetals/views/BareMetal.vue'
 import BareMetals from '../modules/bareMetals/views/BareMetals.vue'
 import Billing from '@/views/dashboard/Billing'
@@ -14,6 +13,7 @@ import CdnIntegration  from '@/views/dashboard/CdnIntegration'
 import CdnIntegrations from '@/views/dashboard/CdnIntegrations'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
+import DeployVPN from '../modules/vpns/views/DeployVPN.vue'
 import Domain from '@/views/dashboard/Domain'
 import Domains from '@/views/dashboard/Domains'
 import GettingStarted from '@/views/dashboard/GettingStarted'
@@ -40,6 +40,8 @@ import Storage from '@/views/dashboard/Storage'
 import StorageDeploy from '@/views/dashboard/StorageDeploy'
 import StorageIntegration from '@/views/dashboard/StorageIntegration'
 import Support from '@/views/dashboard/Support'
+import VPN from '../modules/vpns/views/VPN.vue'
+import VPNs from '../modules/vpns/views/VPNs.vue'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -55,11 +57,6 @@ const routes = [
         path: '',
         name: 'Index',
         component: Index
-      },
-      {
-        path: 'account',
-        name: 'Account',
-        component: Account
       },
       {
         path: 'bare-metals',
@@ -139,6 +136,21 @@ const routes = [
         component: GettingStarted
       },
       {
+        path: 'gpus',
+        name: 'GPUs',
+        component: () => import('../modules/gpu/views/GPUList.vue')
+      },
+      {
+        path: 'gpus/deploy',
+        name: 'Deploy GPU',
+        component: () => import('../modules/gpu/views/GPUDeploy.vue')
+      },
+      {
+        path: 'gpu/:id',
+        name: 'GPU',
+        component: () => import('../modules/gpu/views/GPUDetail.vue')
+      },
+      {
         path: 'notifications',
         name: 'Notifications',
         component: Notifications
@@ -179,6 +191,11 @@ const routes = [
         component: Server
       },
       {
+        path: 'settings',
+        name: 'Settings',
+        component: () => import('../modules/settings/views/SettingsView.vue')
+      },
+      {
         path: 'shield',
         name: 'Shield',
         component: Shield
@@ -202,6 +219,21 @@ const routes = [
         path: '/support',
         name: 'Support',
         component: Support
+      },
+      {
+        path: '/vpns',
+        name: 'VPNs',
+        component: VPNs
+      },
+      {
+        path: '/vpns/deploy',
+        name: 'Deploy VPN',
+        component: DeployVPN
+      },
+      {
+        path: '/vpn/:id',
+        name: 'VPN',
+        component: VPN
       }
     ]
   },

@@ -43,11 +43,11 @@ const isCryptoView = Boolean(store.state.account?.useCryptoView)
               If you add an email address to your account, you will receive an email notification when a new invoice is generated and whenever your account status changes.
               You can also use your email address to log in to your Edge Account, keeping your account number secure.
               <span v-if="!accountEmail">
-                <RouterLink :to="{ name: 'Account' }" class="text-green">Add an email address</RouterLink>.
+                <RouterLink :to="{ name: 'Settings' }" class="text-green">Add an email address</RouterLink>.
               </span>
               <span v-else>
                 Your email address is <span class="text-green">{{ accountEmail }}</span>.
-                You can <RouterLink :to="{ name: 'Account' }" class="text-green">change your email address</RouterLink> if you need to.
+                You can <RouterLink :to="{ name: 'Settings' }" class="text-green">change your email address</RouterLink> if you need to.
               </span>
             </p>
             <p>
