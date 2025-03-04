@@ -39,6 +39,7 @@ import Storage from '@/views/dashboard/Storage'
 import StorageDeploy from '@/views/dashboard/StorageDeploy'
 import StorageIntegration from '@/views/dashboard/StorageIntegration'
 import Support from '@/views/dashboard/Support'
+import VPNs from '../modules/vpns/views/VPNs.vue'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -216,6 +217,11 @@ const routes = [
         path: '/support',
         name: 'Support',
         component: Support
+      },
+      {
+        path: '/vpns',
+        name: 'VPN',
+        component: VPNs
       }
     ]
   },
