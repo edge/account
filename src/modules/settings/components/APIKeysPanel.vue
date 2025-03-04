@@ -1,6 +1,7 @@
 <script setup>
 /* global process */
 
+import ErrorV2 from '../../../layout/ErrorV2.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
 import superagent from 'superagent'
 import { useStore } from 'vuex'
@@ -90,75 +91,85 @@ effect(() => {
 </script>
 
 <template>
-  <div v-if="loading" class="box flex pb-20">
-    <span class="mr-2">Loading</span>
-    <LoadingSpinner />
-  </div>
+  <div>
+    <ErrorV2 class="mb-2 text-center w-full" :error="error" />
 
-  <div v-else-if="keys.length" class="pb-20">
-    <ul class="space-y-2">
-      <li
-        v-for="key in keys"
-        class="grid grid-cols-2 lg:grid-cols-4 gap-y-4 bg-white text-gray-500 border-l-8 border-green rounded-md w-full p-5 pr-8 transition-all duration-100"
-        :key="key.id"
-      >
-        <span class="text-md text-gray-500 truncate">{{ key.id }}</span>
-        <div class="flex flex-col">
-          <span class="text-md text-gray-500">Created</span>
-          <span class="text-sm text-gray-500">{{ key.created }}</span>
-        </div>
-        <div class="flex flex-col items-end">
-          <button class="button button--error" @click.prevent="deleteKey(key.id)">
-            <TrashIcon class="w-4" />
-            <span>Delete</span>
+    <div v-if="loading" class="box flex pb-20">
+      <span class="mr-2">Loading</span>
+      <LoadingSpinner />
+    </div>
+
+    <div v-if="keys.length" class="pb-20">
+      <ul class="space-y-2">
+        <li
+          v-for="key in keys"
+          class="flex flex-col lg:grid keys-grid gap-y-4 bg-white text-gray-500 border-l-8 border-green rounded-md w-full p-5 pr-8 transition-all duration-100"
+          :key="key.id"
+        >
+          <span class="text-md text-gray-500 truncate">{{ key.id }}</span>
+          <div class="flex flex-col">
+            <span class="text-md text-gray-500">Created</span>
+            <span class="text-sm text-gray-500">{{ key.created }}</span>
+          </div>
+          <div class="flex flex-col items-end">
+            <button class="button button--error" @click.prevent="deleteKey(key.id)">
+              <TrashIcon class="w-4" />
+              <span>Delete</span>
+            </button>
+          </div>
+        </li>
+      </ul>
+
+      <div v-if="generatedKey" class="box flex flex-col mt-4">
+        <h4>Your new API key</h4>
+        <div class="mb-2">
+          <code class="font-mono text-green text-lg">{{ generatedKey.secret }}</code>
+          <button
+            class="text-gray-400 hover:text-green"
+            @click.prevent="copyToClipboard(generatedKey.secret)"
+          >
+            <DuplicateIcon class="ml-2 w-5 h-5" />
           </button>
         </div>
-      </li>
-    </ul>
-
-    <div v-if="generatedKey" class="box flex flex-col mt-4">
-      <h4>Your new API key</h4>
-      <div class="mb-2">
-        <code class="font-mono text-green text-lg">{{ generatedKey.secret }}</code>
-        <button
-          class="text-gray-400 hover:text-green"
-          @click.prevent="copyToClipboard(generatedKey.secret)"
-        >
-          <DuplicateIcon class="ml-2 w-5 h-5" />
+        <p>
+          Copy this API key to a safe place.
+          This key's ID is {{ generatedKey.id }}.
+        </p>
+        <button @click="hideGeneratedKey" class="button button--success">
+          <span>I confirm have stored my API key in a safe place</span>
         </button>
       </div>
-      <p>
-        Copy this API key to a safe place.
-        This key's ID is {{ generatedKey.id }}.
-      </p>
-      <button @click="hideGeneratedKey" class="button button--success">
-        <span>I confirm have stored my API key in a safe place</span>
-      </button>
-    </div>
 
-    <div class="flex flex-col w-full mt-4 space-y-2">
-      <button
-        :disabled="busy"
-        class="button button--success self-end w-full md:max-w-xs"
-        @click="generate"
-      >
-        Generate API Key
-      </button>
-    </div>
-  </div>
-
-  <div v-else class="pb-20">
-    <div class="box box-flex">
-      <div class="flex flex-col items-center justify-center py-4">
-        <p>You haven't created any API keys yet.</p>
+      <div class="flex flex-col w-full mt-4 space-y-2">
         <button
           :disabled="busy"
-          class="button button--success w-full md:max-w-xs"
+          class="button button--success self-end w-full md:max-w-xs"
           @click="generate"
         >
           Generate API Key
         </button>
       </div>
     </div>
+
+    <div v-else class="pb-20">
+      <div class="box box-flex">
+        <div class="flex flex-col items-center justify-center py-4">
+          <p>You haven't created any API keys yet.</p>
+          <button
+            :disabled="busy"
+            class="button button--success w-full md:max-w-xs"
+            @click="generate"
+          >
+            Generate API Key
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.keys-grid {
+  grid-template-columns: 2fr 1fr 1fr;
+}
+</style>
