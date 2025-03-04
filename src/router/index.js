@@ -13,6 +13,7 @@ import CdnIntegration  from '@/views/dashboard/CdnIntegration'
 import CdnIntegrations from '@/views/dashboard/CdnIntegrations'
 import CreateAccount from '@/views/landing/CreateAccount'
 import Dashboard from '@/views/Dashboard'
+import DeployVPN from '../modules/vpns/views/DeployVPN.vue'
 import Domain from '@/views/dashboard/Domain'
 import Domains from '@/views/dashboard/Domains'
 import GettingStarted from '@/views/dashboard/GettingStarted'
@@ -39,6 +40,7 @@ import Storage from '@/views/dashboard/Storage'
 import StorageDeploy from '@/views/dashboard/StorageDeploy'
 import StorageIntegration from '@/views/dashboard/StorageIntegration'
 import Support from '@/views/dashboard/Support'
+import VPN from '../modules/vpns/views/VPN.vue'
 import VPNs from '../modules/vpns/views/VPNs.vue'
 import Wallet from '@/components/billing/Wallet'
 import store from '@/store'
@@ -220,8 +222,18 @@ const routes = [
       },
       {
         path: '/vpns',
-        name: 'VPN',
+        name: 'VPNs',
         component: VPNs
+      },
+      {
+        path: '/vpns/deploy',
+        name: 'Deploy VPN',
+        component: DeployVPN
+      },
+      {
+        path: '/vpn/:id',
+        name: 'VPN',
+        component: VPN
       }
     ]
   },
