@@ -45,7 +45,9 @@ async function reload() {
 }
 
 function reset() {
-  v$.value.name.$model = data.value && data.value.vpn && data.value.vpn.name
+  if (vpn.value) {
+    v$.value.name.$model = vpn.value.name
+  }
 }
 
 async function updateName() {
@@ -58,6 +60,7 @@ async function updateName() {
         name: v$.value.name.$model
       }
     })
+    reset()
   }
   catch (err) {
     error.value = err
@@ -81,12 +84,12 @@ effect(() => {
     </div>
 
     <EditableTitle
-      placeholder="VPN name"
       v-model="v$.name.$model"
+      placeholder="VPN name"
       :busy="busy"
       :invalid="v$.name.$invalid"
       @save="updateName"
     />
-    <ValidationError v-if="v$.name.$errors" :errors="v$.name.$errors" />
+    <ValidationError :errors="v$.name.$errors" />
   </div>
 </template>
