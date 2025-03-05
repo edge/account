@@ -1,13 +1,19 @@
 <template>
   <div class="search"
     :class="[
-      (size==='large' ? 'search--lge' : ''),
-      (size==='full' ? 'search--full' : '' ),
-      (border ? 'search--border' : '' ),
-      (background === 'transparent' ? 'search--transparent' : '' )
+      (size === 'large' ? 'search--lge' : ''),
+      (size === 'full' ? 'search--full' : ''),
+      (border ? 'search--border' : ''),
+      (background === 'transparent' ? 'search--transparent' : '')
     ]"
   >
-    <input @keyup.enter="search" class="search__input" v-model="searchInput" type="text" placeholder="Search servers by IP, name or tag" />
+    <input
+      @keyup.enter="search"
+      class="search__input"
+      v-model="searchInput"
+      type="text"
+      placeholder="Search servers by IP, name, or tag"
+    />
     <button
       class="search__submit"
       @click="search"
@@ -56,46 +62,22 @@ export default {
       type: String
     }
   },
-  data: function () {
+  data() {
     return {
       isSearching: false,
-      searchFeedback: '',
-      searchInput: '',
-      showFeedback: false
+      searchInput: ''
     }
   },
   methods: {
-    async search () {
+    async search() {
       this.isSearching = true
 
-      // const result = await search(this.searchInput)
-
-      // const { address, blocks, transactions } = result
-
-      // Edge case - resets searching flag in case the search was
-      // performed from the same page.
-      // if (
-      //   address
-      //   || (blocks && blocks[0])
-      //   || (transactions && transactions[0])
-      // ) {
-      //   this.isSearching = false
-      // }
-
-      // if (address) {
-      //   this.$router.push(`/wallet/${address}`)
-      // } else if (blocks && blocks[0]) {
-      //   this.$router.push(`/block/${blocks[0].height}`)
-      // } else if (transactions && transactions[0]) {
-      //   this.$router.push(`/transaction/${transactions[0].hash}`)
-      // } else {
-      //   // No result.
-      //   setTimeout(() => {
-      //     this.searchFeedback = "That doesn't appear to be a valid Address, Tx or Block ID."
-      //     this.showFeedback = true
-      //     this.isSearching = false
-      //   }, 1000)
-      // }
+      // Emit the search input value to parent component
+      this.$emit('search', this.searchInput)
+      // Simulate an API search or processing delay
+      setTimeout(() => {
+        this.isSearching = false
+      }, 1000)
     }
   }
 }
