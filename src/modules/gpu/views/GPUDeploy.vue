@@ -104,7 +104,7 @@ onMounted(() => {
       </div>
 
       <div class="box">
-        <h4>Specs</h4>
+        <h4>Server specs</h4>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <Slider
@@ -158,6 +158,19 @@ onMounted(() => {
               tooltip="always"
             />
             <ValidationError :errors="v$.diskGiB.$errors" />
+          </div>
+        </div>
+
+        <div class="flex flex-col items-baseline mt-8">
+          <span class="text-green">Your server</span>
+          <div class="flex items-center space-x-2 mt-1">
+            <span class="text-lg">{{ v$.gpuCount.$model }} GPU</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+            <span class="text-lg">{{ v$.cpuCount.$model }} vCPU</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+            <span class="text-lg">{{ v$.memoryGiB.$model }} GiB RAM</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+            <span class="text-lg">{{ v$.diskGiB.$model }} GiB Disk</span>
           </div>
         </div>
       </div>
