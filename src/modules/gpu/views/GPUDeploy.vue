@@ -12,8 +12,9 @@ import superagent from 'superagent'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, onMounted } from 'vue'
 import { maxValue, minLength, minValue, required } from '@vuelidate/validators'
+import * as utils from '@edge/account-utils'
 
 const router = useRouter()
 const store = useStore()
@@ -79,6 +80,16 @@ async function submit() {
     busy.value = false
   }
 }
+
+async function getHostname() {
+  const { hostname } = await utils.createServerHostname(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key)
+  formState.hostname = `${hostname}.edge.network`
+  formState.name = hostname
+}
+
+onMounted(() => {
+  getHostname()
+})
 </script>
 
 <template>
@@ -155,7 +166,7 @@ async function submit() {
         <!-- Name -->
         <div class="flex flex-col pb-2 space-y-6">
           <div class="input-group">
-            <label class="label">Name</label>
+            <label class="label">Server Name</label>
             <input
               v-model="v$.name.$model"
               :disabled="busy"
