@@ -199,6 +199,9 @@ onMounted(() => {
       <div class="box">
         <Password :disableControls="busy" @password-changed="setPassword" />
         <ValidationError :errors="v$.password.$errors" />
+        <p class="mt-4 mb-0">
+          You can connect to the server as <code>root</code> with this password.
+        </p>
       </div>
 
       <div class="flex flex-col w-full space-y-2 items-end">
