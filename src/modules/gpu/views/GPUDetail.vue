@@ -28,10 +28,14 @@ const error = ref()
 const gpu = ref()
 const loading = ref(true)
 const poll = ref()
-const deploymentMessage = ref('')
 
 const destroyed = computed(() => gpu.value && gpu.value.status === 'deleted')
 const isCreating = computed(() => gpu.value && ['queued', 'created', 'pending', 'starting'].includes(gpu.value.status))
+const deploymentMessage = computed(() => {
+  if (destroying.value) return 'Destroying your GPU'
+  if (isCreating.value) return 'Deploying your new GPU'
+  return ''
+})
 
 const formState = reactive({
   name: '',
@@ -123,13 +127,13 @@ async function togglePower(toActive) {
     if (toActive) {
       await superagent.post(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/start/${gpu.value.id}`)
         .set('Authorization', `Bearer ${store.state.session._key}`)
+      startPoll(['active'])
     }
     else {
       await superagent.post(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/stop/${gpu.value.id}`)
         .set('Authorization', `Bearer ${store.state.session._key}`)
+      startPoll(['stopped'])
     }
-
-    startPoll(['active', 'deleted', 'stopped'])
   }
   catch (err) {
     error.value = err
@@ -143,16 +147,6 @@ async function updateName() {
 
 effect(() => {
   reload().then(() => {
-    if (gpu.value) {
-      if (isCreating.value) {
-        deploymentMessage.value = 'Deploying your new GPU'
-      } else if (destroying.value) {
-        deploymentMessage.value = 'Destroying your GPU'
-      } else {
-        deploymentMessage.value = ''
-      }
-    }
-
     if (!['active', 'deleted', 'stopped'].includes(gpu.value.status)) {
       startPoll(['active', 'deleted', 'stopped'])
     }
