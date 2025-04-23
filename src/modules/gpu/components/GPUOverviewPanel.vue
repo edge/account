@@ -72,12 +72,12 @@ function formatTimestamp(ts) {
 
     <div class="box overflow_hidden gpu-specs">
       <h4 class="section__title">GPU specs</h4>
+      <div class="info__section mb-4">
+        <span class="label">GPU Model</span>
+        <span class="info">{{ gpu.gpuModel }}</span>
+      </div>
       <!-- vcpus, ram, disk, bandwidth -->
       <div class="overview__grid">
-        <div class="info__section col-span-2 lg:col-span-4">
-          <span class="label">GPU Model</span>
-          <span class="info">{{ gpu.gpuModel }}</span>
-        </div>
         <div class="info__section">
           <span class="label">GPU</span>
           <span class="info">{{ gpu.gpuCount }}</span>
