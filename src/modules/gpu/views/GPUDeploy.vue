@@ -81,14 +81,10 @@ async function submit() {
   }
 }
 
-async function getHostname() {
+onMounted(async () => {
   const { hostname } = await utils.createServerHostname(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key)
   formState.hostname = `${hostname}.edge.network`
   formState.name = hostname
-}
-
-onMounted(() => {
-  getHostname()
 })
 </script>
 
