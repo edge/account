@@ -112,9 +112,9 @@ effect(() => {
               <span class="h-full bg-gray-400 block" style="width: 1px"></span>
               <span>{{ gpu.cpuCount }} vCPU</span>
               <span class="h-full bg-gray-400 block" style="width: 1px"></span>
-              <span>{{ gpu.diskGiB }} Disk</span>
+              <span>{{ gpu.diskGiB }} GiB Disk</span>
               <span class="h-full bg-gray-400 block" style="width: 1px"></span>
-              <span>{{ gpu.memoryGiB }} RAM</span>
+              <span>{{ gpu.memoryGiB }} GiB RAM</span>
             </div>
           </div>
 
