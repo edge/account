@@ -145,9 +145,9 @@ effect(() => {
   reload().then(() => {
     if (gpu.value) {
       if (isCreating.value) {
-        deploymentMessage.value = 'Deploying your new server'
+        deploymentMessage.value = 'Deploying your new GPU'
       } else if (destroying.value) {
-        deploymentMessage.value = 'Destroying your server'
+        deploymentMessage.value = 'Destroying your GPU'
       } else {
         deploymentMessage.value = ''
       }
