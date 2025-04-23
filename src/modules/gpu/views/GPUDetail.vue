@@ -7,6 +7,7 @@ import GPUDestroyPanel from '../components/GPUDestroyPanel.vue'
 import GPUOverviewPanel from '../components/GPUOverviewPanel.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
 import PowerToggle from '../../../layout/PowerToggle.vue'
+import ProgressBar from '../../../components/ProgressBar.vue'
 import StatusDot from '../../../components/StatusDot.vue'
 import ValidationError from '../../../components/ValidationError.vue'
 import superagent from 'superagent'
@@ -27,8 +28,10 @@ const error = ref()
 const gpu = ref()
 const loading = ref(true)
 const poll = ref()
+const deploymentMessage = ref('')
 
 const destroyed = computed(() => gpu.value && gpu.value.status === 'deleted')
+const isCreating = computed(() => gpu.value && ['queued', 'created', 'starting'].includes(gpu.value.status))
 
 const formState = reactive({
   name: '',
@@ -140,6 +143,16 @@ async function updateName() {
 
 effect(() => {
   reload().then(() => {
+    if (gpu.value) {
+      if (isCreating.value) {
+        deploymentMessage.value = 'Deploying your new server'
+      } else if (destroying.value) {
+        deploymentMessage.value = 'Destroying your server'
+      } else {
+        deploymentMessage.value = ''
+      }
+    }
+
     if (!['active', 'deleted', 'stopped'].includes(gpu.value.status)) {
       startPoll(['active', 'deleted', 'stopped'])
     }
@@ -155,7 +168,7 @@ effect(() => {
   <div v-if="destroying || destroyed" class="mainContent__inner pt-0 mt-6">
     <div v-if="destroyed" class="box">
       <h4>Destroy GPU</h4>
-      <p class="mt-3 mb-1 text-gray-500">Your GPU and backups have been successfully deleted.</p>
+      <p class="mt-3 mb-1 text-gray-500">Your GPU has been successfully deleted.</p>
       <router-link
         class="button button--success button--small w-full md:max-w-xs"
         :to="{ name: 'GPUs' }"
@@ -235,9 +248,9 @@ effect(() => {
             <span class="divider"/>
             <span class="gpu-detail">{{ gpu.cpuCount }} vCPU</span>
             <span class="divider"/>
-            <span class="gpu-detail">{{ gpu.diskGiB }} Disk</span>
+            <span class="gpu-detail">{{ gpu.diskGiB }} GiB Disk</span>
             <span class="divider"/>
-            <span class="gpu-detail">{{ gpu.memoryGiB }} RAM</span>
+            <span class="gpu-detail">{{ gpu.memoryGiB }} GiB RAM</span>
           </div>
           <span class="divider"/>
           <div class="flex items-center space-x-1">
@@ -255,7 +268,16 @@ effect(() => {
       </div>
     </div>
 
-    <div class="mt-4 space-x-10">
+    <!-- action in progress section -->
+    <div v-if="isCreating || destroying" class="box box--tall">
+      <div class="flex flex-col items-center justify-center text-center">
+        <h4 class="mt-4">{{ deploymentMessage }}</h4>
+        <p class="mt-2 mb-0 text-gray-500">This may take a few minutes. Feel free to close this page.</p>
+        <div class="mt-4 max-w-full"><ProgressBar :red="destroying" /></div>
+      </div>
+    </div>
+
+    <div v-else class="mt-4 space-x-10">
       <!-- Tabs -->
       <TabGroup as="div" class="tabGroup">
         <div class="absolute top-0 right-0 w-10 h-5 bg-gradient-to-l from-gray-200" />
@@ -436,5 +458,9 @@ effect(() => {
   .server__specs .overview__grid {
     grid-template-columns: repeat(3, 1fr) auto;
   }
+}
+
+.box.box--tall {
+  @apply py-20 !important;
 }
 </style>
