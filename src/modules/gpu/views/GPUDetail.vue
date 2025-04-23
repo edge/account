@@ -31,7 +31,7 @@ const poll = ref()
 const deploymentMessage = ref('')
 
 const destroyed = computed(() => gpu.value && gpu.value.status === 'deleted')
-const isCreating = computed(() => gpu.value && ['queued', 'created', 'starting'].includes(gpu.value.status))
+const isCreating = computed(() => gpu.value && ['queued', 'created', 'pending', 'starting'].includes(gpu.value.status))
 
 const formState = reactive({
   name: '',
@@ -165,48 +165,7 @@ effect(() => {
 </script>
 
 <template>
-  <div v-if="destroying || destroyed" class="mainContent__inner pt-0 mt-6">
-    <div v-if="destroyed" class="box">
-      <h4>Destroy GPU</h4>
-      <p class="mt-3 mb-1 text-gray-500">Your GPU has been successfully deleted.</p>
-      <router-link
-        class="button button--success button--small w-full md:max-w-xs"
-        :to="{ name: 'GPUs' }"
-      >
-      <span>Return to GPUs</span>
-      </router-link>
-    </div>
-    <div v-else class="box">
-      <h4>Destroy GPU</h4>
-      <div class="flex">
-        <span>Destroying {{ gpu && gpu.name }}</span>
-        <span class="ml-2"><LoadingSpinner /></span>
-      </div>
-    </div>
-  </div>
-
-  <div v-else-if="!gpu && loading" class="mainContent__inner pt-0 mt-6">
-    <div class="flex items-center">
-      <span>Loading GPU</span>
-      <LoadingSpinner />
-    </div>
-  </div>
-
-  <div v-else-if="error" class="mainContent__inner pt-0 mt-6">
-    <div class="box">
-      <div class="flex flex-col items-center justify-center text-center">
-        <div class="flex items-center mt-4">
-          <h4>Error</h4>
-        </div>
-        <p class="mt-3 mb-1 text-gray-500">{{ error.message }}</p>
-        <router-link :to="{ name: 'GPUs' }" class="mt-4 button button--success button--small">
-          <span>Return to Edge GPUs</span>
-        </router-link>
-      </div>
-    </div>
-  </div>
-
-  <div v-else-if="gpu" class="mainContent__inner pt-0 mt-6">
+  <div v-if="gpu" class="mainContent__inner pt-0 mt-6">
     <!-- Backlink -->
     <div class="w-max">
       <router-link :to="{ name: 'GPUs' }" class="flex items-center space-x-1 hover:text-green mb-4">
@@ -268,8 +227,37 @@ effect(() => {
       </div>
     </div>
 
+    <div v-if="destroyed" class="mainContent__inner pt-0 mt-6">
+      <div class="box">
+        <div class="flex flex-col items-center justify-center text-center">
+          <h4>GPU Destroyed</h4>
+          <p class="mb-0 text-gray-500">This GPU has been successfully destroyed.</p>
+          <router-link
+            class="mt-4 button button--success button--small"
+            :to="{ name: 'GPUs' }"
+          >
+          <span>Return to GPUs</span>
+          </router-link>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="error" class="mainContent__inner pt-0 mt-6">
+      <div class="box">
+        <div class="flex flex-col items-center justify-center text-center">
+          <div class="flex items-center mt-4">
+            <h4>Error</h4>
+          </div>
+          <p class="mt-3 mb-1 text-gray-500">{{ error.message }}</p>
+          <router-link :to="{ name: 'GPUs' }" class="mt-4 button button--success button--small">
+            <span>Return to Edge GPUs</span>
+          </router-link>
+        </div>
+      </div>
+    </div>
+
     <!-- action in progress section -->
-    <div v-if="isCreating || destroying" class="box box--tall">
+    <div v-else-if="isCreating || destroying" class="box box--tall">
       <div class="flex flex-col items-center justify-center text-center">
         <h4 class="mt-4">{{ deploymentMessage }}</h4>
         <p class="mt-2 mb-0 text-gray-500">This may take a few minutes. Feel free to close this page.</p>
@@ -302,6 +290,13 @@ effect(() => {
           </TabPanel>
         </TabPanels>
       </TabGroup>
+    </div>
+  </div>
+
+  <div v-else-if="loading" class="mainContent__inner pt-0 mt-6">
+    <div class="flex items-center">
+      <span>Loading GPU</span>
+      <LoadingSpinner />
     </div>
   </div>
 
