@@ -2,6 +2,7 @@
 import { DuplicateIcon } from '@heroicons/vue/outline'
 import StatusDot from '../../../components/StatusDot.vue'
 import { defineProps, ref } from 'vue'
+import * as format from '@/utils/format'
 
 defineProps({
   gpu: Object
@@ -17,12 +18,16 @@ async function copyToClipboard(str) {
     copied.value = false
   }, 1000)
 }
+
+function formatTimestamp(ts) {
+  return `${format.date(ts)}, ${format.time(ts)}`
+}
 </script>
 
 <template>
   <div class="grid gap-4 xl:grid-cols-2">
     <div class="box overflow_hidden gpu-details xl:col-span-2">
-      <h4 class="section__title">Details</h4>
+      <h4 class="section__title">Server details</h4>
       <div class="overview__grid">
         <!-- Name, hostname, IP address -->
         <div class="grid__col col__1">
@@ -59,7 +64,7 @@ async function copyToClipboard(str) {
           </div>
           <div class="info__section">
             <span class="label">Created</span>
-            <span class="info">{{ gpu.created }}</span>
+            <span class="info">{{ formatTimestamp(gpu.created) }}</span>
           </div>
         </div>
       </div>
@@ -67,12 +72,12 @@ async function copyToClipboard(str) {
 
     <div class="box overflow_hidden gpu-specs">
       <h4 class="section__title">GPU specs</h4>
+      <div class="info__section mb-4">
+        <span class="label">GPU Model</span>
+        <span class="info">{{ gpu.gpuModel }}</span>
+      </div>
       <!-- vcpus, ram, disk, bandwidth -->
       <div class="overview__grid">
-        <div class="info__section col-span-2 lg:col-span-4">
-          <span class="label">GPU Model</span>
-          <span class="info">{{ gpu.gpuModel }}</span>
-        </div>
         <div class="info__section">
           <span class="label">GPU</span>
           <span class="info">{{ gpu.gpuCount }}</span>
@@ -83,11 +88,11 @@ async function copyToClipboard(str) {
         </div>
         <div class="info__section">
           <span class="label">RAM</span>
-          <span class="info">{{ gpu.memoryGiB }}</span>
+          <span class="info">{{ gpu.memoryGiB }} GiB</span>
         </div>
         <div class="info__section">
           <span class="label">Disk</span>
-          <span class="info">{{ gpu.diskGiB }}</span>
+          <span class="info">{{ gpu.diskGiB }} GiB</span>
         </div>
       </div>
     </div>

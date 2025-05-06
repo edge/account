@@ -12,8 +12,9 @@ import superagent from 'superagent'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import useVuelidate from '@vuelidate/core'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, onMounted } from 'vue'
 import { maxValue, minLength, minValue, required } from '@vuelidate/validators'
+import * as utils from '@edge/account-utils'
 
 const router = useRouter()
 const store = useStore()
@@ -79,6 +80,12 @@ async function submit() {
     busy.value = false
   }
 }
+
+onMounted(async () => {
+  const { hostname } = await utils.createServerHostname(process.env.VUE_APP_ACCOUNT_API_URL, store.state.session._key)
+  formState.hostname = `${hostname}.edge.network`
+  formState.name = hostname
+})
 </script>
 
 <template>
@@ -93,7 +100,7 @@ async function submit() {
       </div>
 
       <div class="box">
-        <h4>Specs</h4>
+        <h4>Server specs</h4>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <Slider
@@ -149,13 +156,26 @@ async function submit() {
             <ValidationError :errors="v$.diskGiB.$errors" />
           </div>
         </div>
+
+        <div class="flex flex-col items-baseline mt-8">
+          <span class="text-green">Your server</span>
+          <div class="flex items-center space-x-2 mt-1">
+            <span class="text-lg">{{ v$.gpuCount.$model }} GPU</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+            <span class="text-lg">{{ v$.cpuCount.$model }} vCPU</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+            <span class="text-lg">{{ v$.memoryGiB.$model }} GiB RAM</span>
+            <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+            <span class="text-lg">{{ v$.diskGiB.$model }} GiB Disk</span>
+          </div>
+        </div>
       </div>
 
       <div class="box">
         <!-- Name -->
         <div class="flex flex-col pb-2 space-y-6">
           <div class="input-group">
-            <label class="label">Name</label>
+            <label class="label">Server Name</label>
             <input
               v-model="v$.name.$model"
               :disabled="busy"
@@ -188,6 +208,9 @@ async function submit() {
       <div class="box">
         <Password :disableControls="busy" @password-changed="setPassword" />
         <ValidationError :errors="v$.password.$errors" />
+        <p class="mt-4 mb-0">
+          You can connect to the server as <code>root</code> with this password.
+        </p>
       </div>
 
       <div class="flex flex-col w-full space-y-2 items-end">

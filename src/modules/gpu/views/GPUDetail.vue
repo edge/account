@@ -7,6 +7,7 @@ import GPUDestroyPanel from '../components/GPUDestroyPanel.vue'
 import GPUOverviewPanel from '../components/GPUOverviewPanel.vue'
 import LoadingSpinner from '../../../components/icons/LoadingSpinner.vue'
 import PowerToggle from '../../../layout/PowerToggle.vue'
+import ProgressBar from '../../../components/ProgressBar.vue'
 import StatusDot from '../../../components/StatusDot.vue'
 import ValidationError from '../../../components/ValidationError.vue'
 import superagent from 'superagent'
@@ -29,6 +30,12 @@ const loading = ref(true)
 const poll = ref()
 
 const destroyed = computed(() => gpu.value && gpu.value.status === 'deleted')
+const isCreating = computed(() => gpu.value && ['queued', 'created', 'pending', 'starting'].includes(gpu.value.status))
+const deploymentMessage = computed(() => {
+  if (destroying.value) return 'Destroying your GPU'
+  if (isCreating.value) return 'Deploying your new GPU'
+  return ''
+})
 
 const formState = reactive({
   name: '',
@@ -120,13 +127,13 @@ async function togglePower(toActive) {
     if (toActive) {
       await superagent.post(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/start/${gpu.value.id}`)
         .set('Authorization', `Bearer ${store.state.session._key}`)
+      startPoll(['active'])
     }
     else {
       await superagent.post(`${process.env.VUE_APP_ACCOUNT_API_URL}/v2/v1/vms/stop/${gpu.value.id}`)
         .set('Authorization', `Bearer ${store.state.session._key}`)
+      startPoll(['stopped'])
     }
-
-    startPoll(['active', 'deleted', 'stopped'])
   }
   catch (err) {
     error.value = err
@@ -152,48 +159,7 @@ effect(() => {
 </script>
 
 <template>
-  <div v-if="destroying || destroyed" class="mainContent__inner pt-0 mt-6">
-    <div v-if="destroyed" class="box">
-      <h4>Destroy GPU</h4>
-      <p class="mt-3 mb-1 text-gray-500">Your GPU and backups have been successfully deleted.</p>
-      <router-link
-        class="button button--success button--small w-full md:max-w-xs"
-        :to="{ name: 'GPUs' }"
-      >
-      <span>Return to GPUs</span>
-      </router-link>
-    </div>
-    <div v-else class="box">
-      <h4>Destroy GPU</h4>
-      <div class="flex">
-        <span>Destroying {{ gpu && gpu.name }}</span>
-        <span class="ml-2"><LoadingSpinner /></span>
-      </div>
-    </div>
-  </div>
-
-  <div v-else-if="!gpu && loading" class="mainContent__inner pt-0 mt-6">
-    <div class="flex items-center">
-      <span>Loading GPU</span>
-      <LoadingSpinner />
-    </div>
-  </div>
-
-  <div v-else-if="error" class="mainContent__inner pt-0 mt-6">
-    <div class="box">
-      <div class="flex flex-col items-center justify-center text-center">
-        <div class="flex items-center mt-4">
-          <h4>Error</h4>
-        </div>
-        <p class="mt-3 mb-1 text-gray-500">{{ error.message }}</p>
-        <router-link :to="{ name: 'GPUs' }" class="mt-4 button button--success button--small">
-          <span>Return to Edge GPUs</span>
-        </router-link>
-      </div>
-    </div>
-  </div>
-
-  <div v-else-if="gpu" class="mainContent__inner pt-0 mt-6">
+  <div v-if="gpu" class="mainContent__inner pt-0 mt-6">
     <!-- Backlink -->
     <div class="w-max">
       <router-link :to="{ name: 'GPUs' }" class="flex items-center space-x-1 hover:text-green mb-4">
@@ -235,9 +201,9 @@ effect(() => {
             <span class="divider"/>
             <span class="gpu-detail">{{ gpu.cpuCount }} vCPU</span>
             <span class="divider"/>
-            <span class="gpu-detail">{{ gpu.diskGiB }} Disk</span>
+            <span class="gpu-detail">{{ gpu.diskGiB }} GiB Disk</span>
             <span class="divider"/>
-            <span class="gpu-detail">{{ gpu.memoryGiB }} RAM</span>
+            <span class="gpu-detail">{{ gpu.memoryGiB }} GiB RAM</span>
           </div>
           <span class="divider"/>
           <div class="flex items-center space-x-1">
@@ -255,7 +221,45 @@ effect(() => {
       </div>
     </div>
 
-    <div class="mt-4 space-x-10">
+    <div v-if="destroyed" class="mainContent__inner pt-0 mt-6">
+      <div class="box">
+        <div class="flex flex-col items-center justify-center text-center">
+          <h4>GPU Destroyed</h4>
+          <p class="mb-0 text-gray-500">This GPU has been successfully destroyed.</p>
+          <router-link
+            class="mt-4 button button--success button--small"
+            :to="{ name: 'GPUs' }"
+          >
+          <span>Return to GPUs</span>
+          </router-link>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="error" class="mainContent__inner pt-0 mt-6">
+      <div class="box">
+        <div class="flex flex-col items-center justify-center text-center">
+          <div class="flex items-center mt-4">
+            <h4>Error</h4>
+          </div>
+          <p class="mt-3 mb-1 text-gray-500">{{ error.message }}</p>
+          <router-link :to="{ name: 'GPUs' }" class="mt-4 button button--success button--small">
+            <span>Return to Edge GPUs</span>
+          </router-link>
+        </div>
+      </div>
+    </div>
+
+    <!-- action in progress section -->
+    <div v-else-if="isCreating || destroying" class="box box--tall">
+      <div class="flex flex-col items-center justify-center text-center">
+        <h4 class="mt-4">{{ deploymentMessage }}</h4>
+        <p class="mt-2 mb-0 text-gray-500">This may take a few minutes. Feel free to close this page.</p>
+        <div class="mt-4 max-w-full"><ProgressBar :red="destroying" /></div>
+      </div>
+    </div>
+
+    <div v-else class="mt-4 space-x-10">
       <!-- Tabs -->
       <TabGroup as="div" class="tabGroup">
         <div class="absolute top-0 right-0 w-10 h-5 bg-gradient-to-l from-gray-200" />
@@ -280,6 +284,13 @@ effect(() => {
           </TabPanel>
         </TabPanels>
       </TabGroup>
+    </div>
+  </div>
+
+  <div v-else-if="loading" class="mainContent__inner pt-0 mt-6">
+    <div class="flex items-center">
+      <span>Loading GPU</span>
+      <LoadingSpinner />
     </div>
   </div>
 
@@ -436,5 +447,9 @@ effect(() => {
   .server__specs .overview__grid {
     grid-template-columns: repeat(3, 1fr) auto;
   }
+}
+
+.box.box--tall {
+  @apply py-20 !important;
 }
 </style>
