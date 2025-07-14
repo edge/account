@@ -24,6 +24,7 @@
         </button>
         <!-- remove -->
         <button
+          v-if="canRemoveEmail"
           class="button button--error sm:w-52"
           @click=toggleRemoveConfirmationModal
         >
@@ -210,7 +211,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account', 'session']),
+    ...mapState(['account', 'config', 'session']),
+    canRemoveEmail() {
+      if (this.config && this.config.accounts && this.config.accounts.email) return !this.config.accounts.email.required
+      return true
+    },
     canUpdate() {
       return !this.v$.newEmail.$invalid && !this.errors.newEmail && !this.isUpdating
     },
