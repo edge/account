@@ -91,7 +91,7 @@
                   </button>
 
                   <!-- return to create account options -->
-                  <button @click="setAccountType(null)"
+                  <button v-if="canCreateAnonymousAccount" @click="setAccountType(null)"
                     class="w-full text-sm text-center text-gray-500 underline hover:text-green"
                   >
                     Create anonymous account instead
@@ -397,7 +397,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['account', 'backupCodes', 'session']),
+    ...mapState(['account', 'backupCodes', 'config', 'session']),
+    canCreateAnonymousAccount() {
+      if (this.config && this.config.accounts && this.config.accounts.email) return !this.config.accounts.email.required
+      return true
+    },
     canVerify() {
       return !this.v$.verificationCode.$invalid && !this.errors.verificationCode && !this.isVerifying
     },

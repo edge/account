@@ -19,6 +19,9 @@ export default {
     filePath() {
       return '/assets/edge-bg-map.png'
     }
+  },
+  mounted() {
+    this.$store.dispatch('updateConfig')
   }
 }
 </script>
