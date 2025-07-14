@@ -28,7 +28,7 @@
         </MenuItem>
         <MenuItem v-slot="{ active }">
           <button
-            @click.prevent="navigate('/account')"
+            @click.prevent="navigate({ name: 'Settings' })"
             :class="[
               'menu__item',
               active ? 'active' : ''

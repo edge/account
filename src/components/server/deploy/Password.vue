@@ -55,7 +55,12 @@
 <script>
 import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 
-const passwordCharset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789*#$!?-_'
+const passwordCharset = {
+  lowercase: 'abcdefghijklmnopqrstuvwxyz',
+  uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  numbers: '0123456789',
+  symbols: '@#$%^&*'
+}
 
 export default {
   name: 'Password',
@@ -82,13 +87,21 @@ export default {
       }, 2000)
     },
     generate() {
-      this.password = (new Array(24))
-        .fill(null)
-        .map(() => {
-          const n = Math.floor(Math.random() * passwordCharset.length)
-          return passwordCharset[n]
-        })
-        .join('')
+      const password = [
+        passwordCharset.lowercase[Math.floor(Math.random() * passwordCharset.lowercase.length)],
+        passwordCharset.uppercase[Math.floor(Math.random() * passwordCharset.uppercase.length)],
+        passwordCharset.numbers[Math.floor(Math.random() * passwordCharset.numbers.length)],
+        passwordCharset.symbols[Math.floor(Math.random() * passwordCharset.symbols.length)]
+      ]
+      const allChars = Object.values(passwordCharset).join('')
+      for (let i = password.length; i < 24; i++) {
+        password.push(allChars[Math.floor(Math.random() * allChars.length)])
+      }
+      for (let i = password.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[password[i], password[j]] = [password[j], password[i]]
+      }
+      this.password = password.join('')
     },
     toggleShowPassword() {
       if (this.disableControls) return
