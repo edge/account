@@ -7,7 +7,7 @@
       <div v-else><CashIcon class="w-8"/></div>
       <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-10 xl:space-x-20">
         <span>{{ warning.message }}</span>
-        <RouterLink v-if="account.useCryptoView" :to="{ name: 'Wallet' }" class="button button--solid button--small h-8 w-max flex-shrink-0">
+        <RouterLink v-if="account.useCryptoView || !config.accounts.limits.ignoreBalanceRestrictionsWithCard" :to="{ name: 'Wallet' }" class="button button--solid button--small h-8 w-max flex-shrink-0">
           <span>Add Funds</span>
         </RouterLink>
         <RouterLink v-else :to="{ name: 'Payment Cards' }" class="button button--solid button--small h-8 w-max flex-shrink-0">
@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     ...mapGetters(['nextInvoiceDate']),
-    ...mapState(['account', 'balance']),
+    ...mapState(['account', 'balance', 'config']),
     warning() {
       // Show status of pending purchases irrespective of account status and Pay By Card configuration
       if (this.balance.purchases.pending > 0) {
@@ -49,7 +49,8 @@ export default {
       }
 
       // Show no other possible warnings if account is managed (thus exempt from all billing effects) or uses Pay By Card
-      if (this.account.managed || this.account.topup) return null
+      if (this.account.managed) return null
+      if (this.config.accounts.limits.ignoreBalanceRestrictionsWithCard && this.account.topup) return null
 
       // Account has been suspended due to non-payment of invoices
       if (this.account.suspended) {
@@ -79,11 +80,25 @@ export default {
 
       // The account balance is exactly $0 and the account is not consuming any services (default message)
       if (this.balance.total.usd === 0 && !this.balance.consumption.any) {
+        let message
+        if (this.account && this.account.useCryptoView) {
+          if (this.config.accounts.limits.ignoreBalanceRestrictionsWithCard) {
+            message = `Please transfer at least $${this.balance.threshold.warning.usd} of funds to your account or add a payment card to enable services.`
+          }
+          else {
+            message = `Please purchase or transfer at least $${this.balance.threshold.warning.usd} of funds to your account to enable services.`
+          }
+        }
+        else if (this.config.accounts.limits.ignoreBalanceRestrictionsWithCard) {
+          message = 'Please add a payment card to enable services.'
+        }
+        else {
+          message = `Please purchase at least $${this.balance.threshold.warning.usd} of funds to enable services.`
+        }
+
         return {
           class: bannerClass.blue,
-          message: this.account && this.account.useCryptoView
-            ? `Please transfer at least $${this.balance.threshold.warning.usd} of funds to your account or add a payment card to enable services.`
-            : 'Please add a payment card to enable services.'
+          message
         }
       }
 

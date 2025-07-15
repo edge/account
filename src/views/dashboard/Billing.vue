@@ -42,7 +42,7 @@ effect(() => {
       <div class="tab" :class="isSelected('promotions') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Promotions'}">Promo Codes</router-link>
       </div>
-      <div v-if="store.state.account.useCryptoView" class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
+      <div v-if="store.state.account.useCryptoView || !store.state.config.accounts.limits.ignoreBalanceRestrictionsWithCard" class="tab" :class="isSelected('wallet') ? 'tab--selected' : ''">
         <router-link :to="{name: 'Wallet'}">Wallet</router-link>
       </div>
     </div>
